@@ -33,7 +33,7 @@ def fetch_index_stock(file_path, type: str) -> list:
     
 
     if type == "NASDAQ":
-        symbols = df.iloc[:, 0].astype(str).str[:4].unique().tolist() 
+        symbols = df.iloc[:, 0].astype(str).str[:4]
 
     elif type == "NYSE":
         
@@ -50,13 +50,11 @@ def fetch_index_stock(file_path, type: str) -> list:
 
         df['Base_Symbol'] = df['Symbol'].apply(get_base_ticker)
 
-        print(df['Base_Symbol'])
-
         clean_df = df.groupby('Base_Symbol', group_keys=False).apply(lambda g: select_primary_ticker(g, g.name)).reset_index()
 
-        clean_df = clean_df[~clean_df['Name'].str.contains(pattern, case=False, na=False, regex=True)].replace('/', '-', regex=False)
+        clean_df = clean_df[~clean_df['Name'].str.contains(pattern, case=False, na=False, regex=True)]
+        symbols = clean_df['Symbol'].str.replace('/', '-', regex=False)
 
-        symbols = clean_df['Symbol'].unique().tolist() 
-
+    symbols = symbols.dropna().unique().tolist() 
 
     return symbols
