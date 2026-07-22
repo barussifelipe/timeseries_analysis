@@ -2,18 +2,10 @@ from model import *
 import wandb
 import torch 
 from torch.utils.data import DataLoader, TensorDataset
+import os 
 
-wandb.init(
-    entity="personalfeb",  # Name of your project
-    name="experiment_hidden64_lr001",   # Optional: specific run name
-    config={                            # Store model hyperparameters
-        "learning_rate": 0.001,
-        "epochs": 50,
-        "batch_size": 32,
-        "hidden_size": 64,
-        "window_size": 30
-    }
-)
+
+
 
 def losses(outputs, labels, epsilon=1e-8):
     """
@@ -138,21 +130,20 @@ def test_batch(model, criterion, data_loader, type="val"):
         f"{type}/r2": avg_loss_r2,
     }  # Return the average loss values for logging
 
-def train(model, train_data, train_labels, val_data, val_labels, optimizer, criterion, num_epochs, batch_size, device):
+def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, batch_size, device, name_run):
     """
     Trains the given model using the provided training data and true prices.
 
     Args:
         model (nn.Module): The model to be trained.
-        train_data (torch.Tensor): The input training data.
-        train_labels (torch.Tensor): The true labels corresponding to the training data.
-        val_data (torch.Tensor): The input validation data.
-        val_labels (torch.Tensor): The true labels corresponding to the validation data.
+        train_dataset (Dataset): The training dataset.
+        val_dataset (Dataset): The validation dataset.
         optimizer (torch.optim.Optimizer): The optimizer for updating model parameters.
         criterion (nn.Module): The loss function to compute the loss.
         num_epochs (int): The number of epochs for training.
         batch_size (int): The size of each training batch.
         device (torch.device): The device to run the training on (CPU or GPU).
+        name_run (str): The name of the current training run for logging purposes.
     """
     model.to(device)
     train_data = train_data.to(device)
@@ -161,8 +152,6 @@ def train(model, train_data, train_labels, val_data, val_labels, optimizer, crit
     val_labels = val_labels.to(device)
 
     # Create DataLoaders for training and validation data
-    train_dataset = TensorDataset(train_data, train_labels)
-    val_dataset = TensorDataset(val_data, val_labels)
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
@@ -174,3 +163,46 @@ def train(model, train_data, train_labels, val_data, val_labels, optimizer, crit
 
         if (epoch + 1) % 10 == 0:
             print(f"Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_metrics['train/mse']:.4f}, Val Loss: {val_metrics['val/mse']:.4f}")
+        
+        checkpoint_path = f"model/checkpoints/{name_run}_epoch_{epoch + 1}.pth"
+
+        checkpoint = {
+            'epoch': epoch + 1,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+            'train_loss': train_metrics['train/mse'],
+            'val_loss': val_metrics['val/mse'],
+        }
+
+        torch.save(checkpoint, checkpoint_path)  # Save the model checkpoint
+        wandb.save(checkpoint_path)  # Save the checkpoint to wandb
+
+    return train_metrics, val_metrics  # Return the final training and validation metrics
+
+def parameters_memory(model):
+    # Total parameters (including frozen/non-trainable)
+    total_params = sum(p.numel() for p in model.parameters())
+
+    # Trainable parameters only (requires_grad = True)
+    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+    if torch.cuda.is_available():
+        # 1. Memory currently occupied by tensors/weights (in Bytes -> MB)
+        allocated_mb = torch.cuda.memory_allocated() / (1024 ** 2)
+        
+        # 2. Total memory reserved by PyTorch's caching allocator
+        reserved_mb = torch.cuda.memory_reserved() / (1024 ** 2)
+        
+        # 3. Peak memory used during the run (great for finding batch size limits)
+        max_allocated_mb = torch.cuda.max_memory_allocated() / (1024 ** 2)
+
+    print(f"Allocated VRAM: {allocated_mb:.2f} MB")
+    print(f"Reserved VRAM:  {reserved_mb:.2f} MB")
+    print(f"Peak VRAM:      {max_allocated_mb:.2f} MB")
+
+    print(f"Total Parameters: {total_params:,}")
+    print(f"Trainable Parameters: {trainable_params:,}")
+        
+
+
+    
