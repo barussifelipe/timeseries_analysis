@@ -203,6 +203,23 @@ def parameters_memory(model):
     print(f"Total Parameters: {total_params:,}")
     print(f"Trainable Parameters: {trainable_params:,}")
         
+def load_model(model, checkpoint_path): 
+    """
+    Loads a model from a checkpoint file.
 
-
-    
+    Args:
+        model (nn.Module): The model architecture to load the weights into.
+        checkpoint_path (str): The path to the checkpoint file.
+    Returns: 
+        model (nn.Module): The model with loaded weights.
+        epoch (int): The epoch at which the checkpoint was saved.
+        train_loss (float): The training loss at the time of saving.
+        val_loss (float): The validation loss at the time of saving.
+    """
+    if os.path.exists(checkpoint_path):
+        checkpoint = torch.load(checkpoint_path, map_location=torch.device('cpu'))  # Load to CPU first
+        model.load_state_dict(checkpoint['model_state_dict'])
+        print(f"Model loaded from {checkpoint_path}")
+        return model, checkpoint['epoch'], checkpoint['train_loss'], checkpoint['val_loss']
+    else:
+        print(f"Checkpoint file not found at {checkpoint_path}")
