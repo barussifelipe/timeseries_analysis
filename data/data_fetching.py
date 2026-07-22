@@ -41,7 +41,8 @@ def load_data(conn, table_name):
 class TimeSeriesDataset(Dataset):
     def __init__(self, dataframe, window_size=30, type_return='intraday_returns'):
         # Convert pandas dataframe to PyTorch tensors
-    
+        print("NaN count in DataFrame:", dataframe.isna().sum().sum())
+        print("Inf count in DataFrame:", np.isinf(dataframe['intraday_returns']).sum())
         self.data = torch.tensor(dataframe[type_return].values, dtype=torch.float32)
         if self.data.dim() == 1:
             self.data = self.data.unsqueeze(-1)  # Add a feature dimension

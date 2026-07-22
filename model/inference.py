@@ -17,7 +17,7 @@ if __name__ == "__main__":
     conn = sqlite3.connect("data/src/stock_data.db")
 
     epochs = 50
-    learning_rate = 1e-3
+    learning_rate = 1e-4
     batch_size = 128
     hidden_size = 64
     window_size = 30
@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     print(f"Datasets created. Train size: {len(train_dataset)}, Val size: {len(val_dataset)}, Test size: {len(test_dataset)}")
 
-    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # Gradient clipping
+    
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     criterion = torch.nn.MSELoss()
 

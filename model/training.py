@@ -63,6 +63,7 @@ def train_batch(model, optimizer, criterion, data_loader, device):
             loss_mae, loss_rmse, loss_mape, loss_r2 = losses(outputs, labels_batch)
         # Backward pass and optimization
         loss_mse.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # Gradient clipping
         optimizer.step()
 
         num_batches += 1
@@ -175,6 +176,8 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
 
         current_val_loss = val_metrics['val/mse']
         print(f"Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_metrics['train/mse']:.4f}, Val Loss: {val_metrics['val/mse']:.4f}")
+
+        torch.autograd.set_detect_anomaly(True)  # Enable anomaly detection for debugging
 
         if current_val_loss < best_val_loss:
 
