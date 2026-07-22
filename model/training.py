@@ -155,13 +155,13 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
         device (torch.device): The device to run the training on (CPU or GPU).
         name_run (str): The name of the current training run for logging purposes.
     """
-    model.to(device)
-    print(f"Training on device: {device}")
     # Create DataLoaders for training and validation data
     print(f"Creating DataLoaders with batch size: {batch_size}")
-    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
-    val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True)
+    val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=4, pin_memory=True)
     print(f"DataLoaders created. Train batches: {len(train_dataloader)}, Val batches: {len(val_dataloader)}")
+
+    best_val_loss = float('inf')  # Initialize best validation loss to infinity
 
     for epoch in range(num_epochs): 
         print(f"Starting epoch {epoch + 1}/{num_epochs}")
@@ -170,48 +170,69 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
         epoch_logs = {**train_metrics, **val_metrics, "epoch": epoch + 1}
         wandb.log(epoch_logs)  # Log the epoch logs to wandb
 
-        if (epoch + 1) % 10 == 0:
-            print(f"Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_metrics['train/mse']:.4f}, Val Loss: {val_metrics['val/mse']:.4f}")
+        if (epoch + 1) == 1:
+            memory() 
+
+        current_val_loss = val_metrics['val/mse']
+        print(f"Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_metrics['train/mse']:.4f}, Val Loss: {val_metrics['val/mse']:.4f}")
+
+        if current_val_loss < best_val_loss:
+
+            best_val_loss = current_val_loss
+            print(f"New best validation loss: {best_val_loss:.4f}. Saving model checkpoint...")
         
-        checkpoint_path = f"model/checkpoints/{name_run}_epoch_{epoch + 1}.pth"
+            checkpoint_path = f"model/checkpoints/{name_run}_epoch_{epoch + 1}.pth"
 
-        checkpoint = {
-            'epoch': epoch + 1,
-            'model_state_dict': model.state_dict(),
-            'optimizer_state_dict': optimizer.state_dict(),
-            'train_loss': train_metrics['train/mse'],
-            'val_loss': val_metrics['val/mse'],
-        }
-        print(f"Saving model checkpoint to {checkpoint_path}...")
+            checkpoint = {
+                'epoch': epoch + 1,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'train_loss': train_metrics['train/mse'],
+                'val_loss': val_metrics['val/mse'],
+            }
+            print(f"Saving model checkpoint to {checkpoint_path}...")
 
-        torch.save(checkpoint, checkpoint_path)  # Save the model checkpoint
-        wandb.save(checkpoint_path)  # Save the checkpoint to wandb
+            torch.save(checkpoint, checkpoint_path)  # Save the model checkpoint
+            wandb.save(checkpoint_path)  # Save the checkpoint to wandb
+        else:
+            print(f"No improvement in validation loss. Current: {current_val_loss:.4f}, Best: {best_val_loss:.4f}")
 
     return train_metrics, val_metrics  # Return the final training and validation metrics
 
-def parameters_memory(model):
+def parameters(model):
     # Total parameters (including frozen/non-trainable)
     total_params = sum(p.numel() for p in model.parameters())
 
     # Trainable parameters only (requires_grad = True)
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
+    # Rough calculation of parameter size in MB (4 bytes per float32 parameter)
+
+    trainable_params_size = (trainable_params * 4) / (1024 ** 2)
+    param_size_mb = (total_params * 4) / (1024 ** 2)
+
+    print(f"Total Parameters: {total_params:,}")
+    print(f"Trainable Parameters: {trainable_params:,}")
+    print(f"Trainable Parameters Memory: {trainable_params_size:.2f} MB")
+    print(f"Model Weights Memory: {param_size_mb:.2f} MB")
+    print("-" * 50)
+
+def memory(): 
     if torch.cuda.is_available():
-        # 1. Memory currently occupied by tensors/weights (in Bytes -> MB)
-        allocated_mb = torch.cuda.memory_allocated() / (1024 ** 2)
-        
-        # 2. Total memory reserved by PyTorch's caching allocator
-        reserved_mb = torch.cuda.memory_reserved() / (1024 ** 2)
-        
-        # 3. Peak memory used during the run (great for finding batch size limits)
-        max_allocated_mb = torch.cuda.max_memory_allocated() / (1024 ** 2)
+            # 1. Memory currently occupied by tensors/weights (in Bytes -> MB)
+            allocated_mb = torch.cuda.memory_allocated() / (1024 ** 2)
+            
+            # 2. Total memory reserved by PyTorch's caching allocator
+            reserved_mb = torch.cuda.memory_reserved() / (1024 ** 2)
+            
+            # 3. Peak memory used during the run (great for finding batch size limits)
+            max_allocated_mb = torch.cuda.max_memory_allocated() / (1024 ** 2)
 
     print(f"Allocated VRAM: {allocated_mb:.2f} MB")
     print(f"Reserved VRAM:  {reserved_mb:.2f} MB")
     print(f"Peak VRAM:      {max_allocated_mb:.2f} MB")
 
-    print(f"Total Parameters: {total_params:,}")
-    print(f"Trainable Parameters: {trainable_params:,}")
+    
         
 def load_model(model, checkpoint_path): 
     """

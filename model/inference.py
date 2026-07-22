@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     epochs = 50
     learning_rate = 1e-3
-    batch_size = 32
+    batch_size = 128
     hidden_size = 64
     window_size = 30
     run_name = f"first_run_bs{batch_size}_hs{hidden_size}_ws{window_size}_lr{learning_rate}_epochs{epochs}"
@@ -36,9 +36,13 @@ if __name__ == "__main__":
         }
     )
     print(f"Initializing model with hidden size: {hidden_size}, window size: {window_size}, learning rate: {learning_rate}, epochs: {epochs}, batch size: {batch_size}")
-    model = FEBLSTM(input_size=1, hidden_size=hidden_size, output_size=1)
+    model = FEBLSTM(input_size=1, hidden_size=hidden_size, output_size=1)    
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
+    model.to(device)
+    model = torch.compile(model)  # Compile the model for optimized performance
+
+    parameters(model)  # Print model parameters and memory usage
 
     print(f"Loading data from database...")
     df_train, df_val, df_test = load_data(conn, "intraday_returns")
@@ -58,10 +62,9 @@ if __name__ == "__main__":
     print(f"Starting training...")
     train_metrics, val_metrics = train(model, train_dataset, val_dataset, optimizer, criterion, epochs, batch_size, device, name_run=run_name)
 
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=4, pin_memory=True)
     test_metrics = test_batch(model, criterion, test_loader, device, type="test")
 
-    parameters_memory(model)
 
     wandb.log({"test_metrics": test_metrics})  # Log test metrics to wandb
     wandb.finish()  # Finish the wandb run
