@@ -1,8 +1,10 @@
 import sqlite3
+from duckdb import df
 import yfinance as yf 
 from .filtering_stock import * 
 import torch 
 from torch.utils.data import Dataset
+import numpy as np
 
 def df_to_sql(df, type_return):
     """
@@ -43,6 +45,7 @@ class TimeSeriesDataset(Dataset):
         # Convert pandas dataframe to PyTorch tensors
         print("NaN count in DataFrame:", dataframe.isna().sum().sum())
         print("Inf count in DataFrame:", np.isinf(dataframe['intraday_returns']).sum())
+        dataframe = dataframe.replace([np.inf, -np.inf], np.nan).fillna(0)
         self.data = torch.tensor(dataframe[type_return].values, dtype=torch.float32)
         if self.data.dim() == 1:
             self.data = self.data.unsqueeze(-1)  # Add a feature dimension
@@ -110,7 +113,10 @@ if __name__ == "__main__":
 
     print(f"Data cleaned. Now with {full_df['Close'].shape[1]} tickers after dropping columns with NaN values.")
 
-    intraday_full_returns = (full_df['Close'] - full_df['Open'])/full_df['Open']
+    intraday_full_returns = (full_df['Close'] - full_df['Open'])/(full_df['Open'])
+
+    
+
     intraday_full_returns = df_to_sql(intraday_full_returns, 'intraday_returns')
 
     overnight_full_returns = ((full_df['Open'] - full_df['Close'].shift(1))/full_df['Close'].shift(1)).dropna()

@@ -7,6 +7,7 @@ import os
 
 
 
+
 def losses(outputs, labels, epsilon=1e-8):
     """
     Computes the Mean Squared Error (MSE) loss between the model's outputs and the true labels.
@@ -111,7 +112,8 @@ def test_batch(model, criterion, data_loader, device, type="val"):
     model.eval()  # Set the model to evaluation mode
     with torch.no_grad():  # Disable gradient computation
         for x_batch, labels_batch in data_loader:
-            print(f"Evaluating batch {num_batches + 1}/{len(data_loader)} for {type}...")
+            if num_batches % 1000 == 0:
+                print(f"Evaluating batch {num_batches + 1}/{len(data_loader)} for {type}...")
             x_batch = x_batch.to(device)
             labels_batch = labels_batch.to(device)
             # Forward pass
