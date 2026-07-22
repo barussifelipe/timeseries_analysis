@@ -62,15 +62,15 @@ class FEBLSTM(nn.Module):
         #Since the output of the LSTM is a value between -1 and 1, we can use a Xavier initialization for the output layer.
         init.xavier_uniform_(self.output_layer.weight)
         init.zeros_(self.output_layer.bias)
-    def forward(self, x, h_prev, c_prev): 
+    def forward(self, x): 
         """
-        x shape: (batch_size, sequence_length(window_size), input_size) -> e.g (32, 30, 1) 
+        x shape: (batch_size, number_of_days, number_of_features)
         """
-        batch_size, sequence_length, _ = x.shape
+        batch_size, number_of_days, _ = x.shape
         h_t = torch.zeros(batch_size, self.hidden_size, device=x.device) 
         c_t = torch.zeros(batch_size, self.hidden_size, device=x.device)
 
-        for t in range(sequence_length):
+        for t in range(number_of_days):
             x_t = x[:, t, :]  # (batch_size, input_size)
             h_t, c_t = self.cell(x_t, h_t, c_t)
         
