@@ -28,7 +28,7 @@ def losses(outputs, labels, epsilon=1e-8):
 
     return loss_mae, loss_rmse, loss_mape, loss_r2
 
-def train_batch(model, optimizer, criterion, data_loader):
+def train_batch(model, optimizer, criterion, data_loader, device):
     """
     Trains the model on a single batch of data.
 
@@ -37,6 +37,7 @@ def train_batch(model, optimizer, criterion, data_loader):
         optimizer (torch.optim.Optimizer): The optimizer for updating model parameters.
         criterion (nn.Module): The loss function to compute the loss.
         data_loader (DataLoader): The DataLoader providing batches of training data.
+        device (torch.device): The device to run the training on (CPU or GPU).
 
     Returns:
         float: The computed loss for the current batch.
@@ -50,9 +51,13 @@ def train_batch(model, optimizer, criterion, data_loader):
 
     model.train()  # Set the model to training mode
     for x_batch, labels_batch in data_loader:
+        if num_batches % 1000 == 0:
+            print(f"Evaluating batch {num_batches + 1}/{len(data_loader)} for training...") 
+        x_batch = x_batch.to(device)
+        labels_batch = labels_batch.to(device)
         optimizer.zero_grad()  # Zero the gradients before the backward pass
         # Forward pass
-        outputs = model(x_batch)
+        outputs = model(x_batch)  # (batch_size, output_size (1))
         loss_mse = criterion(outputs, labels_batch)
         with torch.no_grad():  # Disable gradient computation for loss metrics
             loss_mae, loss_rmse, loss_mape, loss_r2 = losses(outputs, labels_batch)
@@ -82,7 +87,7 @@ def train_batch(model, optimizer, criterion, data_loader):
         "train/r2": avg_loss_r2,
     }  # Return the average loss values for logging
 
-def test_batch(model, criterion, data_loader, type="val"):
+def test_batch(model, criterion, data_loader, device, type="val"):
     """
     Evaluates the model on a single batch of data.
 
@@ -90,6 +95,8 @@ def test_batch(model, criterion, data_loader, type="val"):
         model (nn.Module): The model to be evaluated.
         criterion (nn.Module): The loss function to compute the loss.
         data_loader (DataLoader): The DataLoader providing batches of evaluation data.
+        device (torch.device): The device to run the evaluation on (CPU or GPU).
+        type (str): The type of evaluation (e.g., "val", "test").
 
     Returns:
         float: The computed loss for the current batch.
@@ -103,6 +110,9 @@ def test_batch(model, criterion, data_loader, type="val"):
     model.eval()  # Set the model to evaluation mode
     with torch.no_grad():  # Disable gradient computation
         for x_batch, labels_batch in data_loader:
+            print(f"Evaluating batch {num_batches + 1}/{len(data_loader)} for {type}...")
+            x_batch = x_batch.to(device)
+            labels_batch = labels_batch.to(device)
             # Forward pass
             outputs = model(x_batch)
             loss_mse = criterion(outputs, labels_batch)
@@ -146,18 +156,17 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
         name_run (str): The name of the current training run for logging purposes.
     """
     model.to(device)
-    train_data = train_data.to(device)
-    train_labels = train_labels.to(device)
-    val_data = val_data.to(device)
-    val_labels = val_labels.to(device)
-
+    print(f"Training on device: {device}")
     # Create DataLoaders for training and validation data
-    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+    print(f"Creating DataLoaders with batch size: {batch_size}")
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
+    val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
+    print(f"DataLoaders created. Train batches: {len(train_dataloader)}, Val batches: {len(val_dataloader)}")
 
     for epoch in range(num_epochs): 
-        train_metrics = train_batch(model, optimizer, criterion, train_dataloader)
-        val_metrics = test_batch(model, criterion, val_dataloader, type="val")
+        print(f"Starting epoch {epoch + 1}/{num_epochs}")
+        train_metrics = train_batch(model, optimizer, criterion, train_dataloader, device)
+        val_metrics = test_batch(model, criterion, val_dataloader, device, type="val")
         epoch_logs = {**train_metrics, **val_metrics, "epoch": epoch + 1}
         wandb.log(epoch_logs)  # Log the epoch logs to wandb
 
@@ -173,6 +182,7 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
             'train_loss': train_metrics['train/mse'],
             'val_loss': val_metrics['val/mse'],
         }
+        print(f"Saving model checkpoint to {checkpoint_path}...")
 
         torch.save(checkpoint, checkpoint_path)  # Save the model checkpoint
         wandb.save(checkpoint_path)  # Save the checkpoint to wandb

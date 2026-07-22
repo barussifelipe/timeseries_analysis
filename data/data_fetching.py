@@ -1,6 +1,6 @@
 import sqlite3
 import yfinance as yf 
-from filtering_stock import * 
+from .filtering_stock import * 
 import torch 
 from torch.utils.data import Dataset
 
@@ -39,15 +39,19 @@ def load_data(conn, table_name):
     return df_train, df_val, df_test
 
 class TimeSeriesDataset(Dataset):
-    def __init__(self, dataframe, window_size=30):
+    def __init__(self, dataframe, window_size=30, type_return='intraday_returns'):
         # Convert pandas dataframe to PyTorch tensors
-        self.data = torch.tensor(dataframe.values, dtype=torch.float32)
+    
+        self.data = torch.tensor(dataframe[type_return].values, dtype=torch.float32)
+        if self.data.dim() == 1:
+            self.data = self.data.unsqueeze(-1)  # Add a feature dimension
+
         self.window_size = window_size
 
         self.valid_indices = []
         
         # Count how many rows exist for each ticker
-        ticker_counts = self.df['Ticker'].value_counts(sort=False)
+        ticker_counts = dataframe['Ticker'].value_counts(sort=False)
         
         current_idx = 0
         for ticker, count in ticker_counts.items():
@@ -72,10 +76,11 @@ class TimeSeriesDataset(Dataset):
         start_idx = self.valid_indices[idx]
         end_idx = start_idx + self.window_size
         x_window = self.data[start_idx : end_idx]
-        
+
+
         # Extract the target label (the 31st day)
         # Assuming the target you want to predict is the first column (index 0)
-        y_label = self.data[end_idx, 0] 
+        y_label = self.data[end_idx, 0].unsqueeze(-1) 
         
         return x_window, y_label
 

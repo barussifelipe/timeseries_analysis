@@ -76,6 +76,6 @@ class FEBLSTM(nn.Module):
         
         output = self.output_layer(h_t)  # (batch_size, output_size)
 
-        return output, h_t, c_t
+        return output
     
 
