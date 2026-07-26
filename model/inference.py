@@ -45,13 +45,14 @@ if __name__ == "__main__":
     parameters(model)  # Print model parameters and memory usage
 
     print(f"Loading data from database...")
-    df_train, df_val, df_test = load_data(conn, "intraday_returns")
+    type_return = 'overnight_returns'  # or 'intraday_returns', depending on your needs
+    df_train, df_val, df_test = load_data(conn, table_name=type_return)
     print(f"Data loaded. Train shape: {df_train.shape}, Val shape: {df_val.shape}, Test shape: {df_test.shape}")
 
     print(f"Creating datasets...")
-    train_dataset = TimeSeriesDataset(df_train, window_size=window_size, type_return='intraday_returns')
-    val_dataset = TimeSeriesDataset(df_val, window_size=window_size, type_return='intraday_returns')
-    test_dataset = TimeSeriesDataset(df_test, window_size=window_size, type_return='intraday_returns')
+    train_dataset = TimeSeriesDataset(df_train, window_size=window_size, type_return=type_return)
+    val_dataset = TimeSeriesDataset(df_val, window_size=window_size, type_return=type_return)
+    test_dataset = TimeSeriesDataset(df_test, window_size=window_size, type_return=type_return)
 
     print(f"Datasets created. Train size: {len(train_dataset)}, Val size: {len(val_dataset)}, Test size: {len(test_dataset)}")
 

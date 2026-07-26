@@ -41,12 +41,12 @@ def load_data(conn, table_name):
     return df_train, df_val, df_test
 
 class TimeSeriesDataset(Dataset):
-    def __init__(self, dataframe, window_size=30, type_return='intraday_returns'):
+    def __init__(self, dataframe, window_size=30, type_return='overnight_returns'):
         # Convert pandas dataframe to PyTorch tensors
-        print("NaN count in DataFrame:", dataframe.isna().sum().sum())
-        print("Inf count in DataFrame:", np.isinf(dataframe['intraday_returns']).sum())
+        print(f"NaN count in DataFrame {type_return}:", dataframe.isna().sum().sum())
+        print(f"Inf count in DataFrame {type_return}:", np.isinf(dataframe[type_return]).sum())
         dataframe = dataframe.replace([np.inf, -np.inf], np.nan).fillna(0)
-        self.data = torch.tensor(dataframe[type_return].values, dtype=torch.float32)
+        self.data = torch.tensor(dataframe[type_return].values * 100, dtype=torch.float32)
         if self.data.dim() == 1:
             self.data = self.data.unsqueeze(-1)  # Add a feature dimension
 
