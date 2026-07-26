@@ -1,5 +1,4 @@
 import sqlite3
-from duckdb import df
 import yfinance as yf 
 from .filtering_stock import * 
 import torch 
@@ -111,19 +110,19 @@ if __name__ == "__main__":
 
     full_df = full_df.dropna(how='any', axis=1)
 
-    print(f"Data cleaned. Now with {full_df['Close'].shape[1]} tickers after dropping columns with NaN values.")
+    print(f"Data cleaned. Now with {full_df['Adj Close'].shape[1]} tickers after dropping columns with NaN values.")
 
-    intraday_full_returns = (full_df['Close'] - full_df['Open'])/(full_df['Open'])
+    intraday_full_returns = (full_df['Adj Close'] - full_df['Open'])/(full_df['Open'])
 
     
 
     intraday_full_returns = df_to_sql(intraday_full_returns, 'intraday_returns')
 
-    overnight_full_returns = ((full_df['Open'] - full_df['Close'].shift(1))/full_df['Close'].shift(1)).dropna()
+    overnight_full_returns = ((full_df['Open'] - full_df['Adj Close'].shift(1))/full_df['Adj Close'].shift(1)).dropna()
     overnight_full_returns = df_to_sql(overnight_full_returns, 'overnight_returns')
 
 
-    daily_full_returns = ((full_df['Close'] - full_df['Close'].shift(1))/full_df['Close'].shift(1)).dropna()
+    daily_full_returns = ((full_df['Adj Close'] - full_df['Adj Close'].shift(1))/full_df['Adj Close'].shift(1)).dropna()
     daily_full_returns = df_to_sql(daily_full_returns, 'daily_returns')
 
 
