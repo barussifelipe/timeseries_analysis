@@ -1,26 +1,30 @@
 import sqlite3
 import yfinance as yf 
 from .filtering_stock import * 
+import pandas as pd
 import torch 
 from torch.utils.data import Dataset
 import numpy as np
 
-def df_to_sql(df, type_return):
+def df_to_sql(df, returns, type_return):
     """
-    Formats the DataFrame to be compatible with SQL storage.
+    Formats the downloaded OHLCV data and matching returns for SQL storage.
 
     Args:
         df (pd.DataFrame): The DataFrame to format.
+        returns (pd.DataFrame): The returns DataFrame.
         type_return (str): The type of return to include in the column name.
 
     Returns:
         pd.DataFrame: The formatted DataFrame.
     """
+    feature_frame = df.stack(level=1).rename_axis(index=['Date', 'Ticker']).reset_index()
+    return_frame = returns.stack().rename(type_return).reset_index()
+    return_frame.columns = ['Date', 'Ticker', type_return]
 
-    df = df.stack().reset_index()
-    df.columns = ['Date', 'Ticker', f'{type_return}']
-    df = df.sort_values(by=['Date', 'Ticker']).reset_index(drop=True)
-    df.to_sql(f'{type_return}', conn, if_exists='replace', index=True)
+    df = feature_frame.merge(return_frame, on=['Date', 'Ticker'], how='inner')
+    df = df.sort_values(by=['Ticker', 'Date']).reset_index(drop=True)
+    df.to_sql(f'{type_return}', conn, if_exists='replace', index=False)
 
     return df
 
@@ -32,43 +36,61 @@ def load_data(conn, table_name):
         conn: Database connection object.
         table_name (str): The name of the table to load data from.
     """
-    df = pd.read_sql_query(f"SELECT * FROM {table_name}", conn, index_col='Date', parse_dates=['Date'])
-    df_train = df[df.index < '2016-01-01']
-    df_val = df[(df.index >= '2016-01-01') & (df.index < '2019-01-01')]
-    df_test = df[df.index >= '2019-01-01'] 
+    df = pd.read_sql_query(f"SELECT * FROM {table_name}", conn, parse_dates=['Date'])
+    df_train = df[df['Date'] < '2016-01-01']
+    df_val = df[(df['Date'] >= '2016-01-01') & (df['Date'] < '2019-01-01')]
+    df_test = df[df['Date'] >= '2019-01-01'] 
 
     return df_train, df_val, df_test
 
 class TimeSeriesDataset(Dataset):
     def __init__(self, dataframe, window_size=30, type_return='overnight_returns'):
-        # Convert pandas dataframe to PyTorch tensors
-        print(f"NaN count in DataFrame {type_return}:", dataframe.isna().sum().sum())
-        print(f"Inf count in DataFrame {type_return}:", np.isinf(dataframe[type_return]).sum())
-        dataframe = dataframe.replace([np.inf, -np.inf], np.nan).fillna(0)
-        self.data = torch.tensor(dataframe[type_return].values * 100, dtype=torch.float32)
-        if self.data.dim() == 1:
-            self.data = self.data.unsqueeze(-1)  # Add a feature dimension
+        dataframe = dataframe.sort_values(by=['Ticker', 'Date']).reset_index(drop=True)
 
         self.window_size = window_size
+        self.target_column = type_return
+        self.feature_columns = [
+            column for column in dataframe.columns
+            if column not in {'Date', 'Ticker', type_return}
+        ]
+        self.input_size = len(self.feature_columns)
 
+        self.data = []
+        self.targets = []
         self.valid_indices = []
-        
-        # Count how many rows exist for each ticker
-        ticker_counts = dataframe['Ticker'].value_counts(sort=False)
-        
+
         current_idx = 0
-        for ticker, count in ticker_counts.items():
-            # If a company has 1000 days of data, and window is 30,
-            # valid starting indices are 0 through 969.
+        for _, ticker_frame in dataframe.groupby('Ticker', sort=False):
+            ticker_frame = ticker_frame.sort_values(by='Date')
+            clean_frame = ticker_frame.replace([np.inf, -np.inf], np.nan).fillna(0)
+
+            feature_tensor = torch.tensor(
+                clean_frame[self.feature_columns].to_numpy(dtype=np.float32),
+                dtype=torch.float32,
+            )
+            target_tensor = torch.tensor(
+                clean_frame[type_return].to_numpy(dtype=np.float32),
+                dtype=torch.float32,
+            ).unsqueeze(-1)
+
+            self.data.append(feature_tensor)
+            self.targets.append(target_tensor)
+
+            count = len(ticker_frame)
             max_start_idx = count - self.window_size
-            
+
             if max_start_idx > 0:
-                # Add all safe starting indices for this specific ticker
                 for i in range(max_start_idx):
                     self.valid_indices.append(current_idx + i)
-            
-            # Jump the current index forward to the next ticker's starting row
+
             current_idx += count
+
+        if self.data:
+            self.data = torch.cat(self.data, dim=0)
+            self.targets = torch.cat(self.targets, dim=0)
+        else:
+            self.data = torch.empty((0, self.input_size), dtype=torch.float32)
+            self.targets = torch.empty((0, 1), dtype=torch.float32)
         
     def __len__(self):
         # If we have 100 days and window is 30, we can make 70 windows
@@ -82,8 +104,7 @@ class TimeSeriesDataset(Dataset):
 
 
         # Extract the target label (the 31st day)
-        # Assuming the target you want to predict is the first column (index 0)
-        y_label = self.data[end_idx, 0].unsqueeze(-1) 
+        y_label = self.targets[end_idx]
         
         return x_window, y_label
 
@@ -110,19 +131,26 @@ if __name__ == "__main__":
 
     full_df = full_df.dropna(how='any', axis=1)
 
+    common_tickers = full_df['Open'].columns.intersection(full_df['Adj Close'].columns)
+    full_df = full_df.loc[:, (slice(None), common_tickers)]
+
     print(f"Data cleaned. Now with {full_df['Adj Close'].shape[1]} tickers after dropping columns with NaN values.")
 
-    intraday_full_returns = (full_df['Adj Close'] - full_df['Open'])/(full_df['Open'])
+    open_prices = full_df['Open']
+    adj_close_prices = full_df['Adj Close']
+
+    intraday_full_returns = (adj_close_prices - open_prices) / open_prices
 
     
 
-    intraday_full_returns = df_to_sql(intraday_full_returns, 'intraday_returns')
+    intraday_full_returns = df_to_sql(full_df, returns=intraday_full_returns, type_return='intraday_returns')
 
-    overnight_full_returns = ((full_df['Open'] - full_df['Adj Close'].shift(1))/full_df['Adj Close'].shift(1)).dropna()
-    overnight_full_returns = df_to_sql(overnight_full_returns, 'overnight_returns')
+    overnight_full_returns = ((open_prices - adj_close_prices.shift(1)) / adj_close_prices.shift(1)).dropna()
+    
+    overnight_full_returns = df_to_sql(full_df, returns=overnight_full_returns, type_return='overnight_returns')
 
 
-    daily_full_returns = ((full_df['Adj Close'] - full_df['Adj Close'].shift(1))/full_df['Adj Close'].shift(1)).dropna()
-    daily_full_returns = df_to_sql(daily_full_returns, 'daily_returns')
+    daily_full_returns = ((adj_close_prices - adj_close_prices.shift(1)) / adj_close_prices.shift(1)).dropna()
+    daily_full_returns = df_to_sql(full_df, returns=daily_full_returns, type_return='daily_returns')
 
 

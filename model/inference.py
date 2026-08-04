@@ -36,16 +36,8 @@ if __name__ == "__main__":
         }
     )
     print(f"Initializing model with hidden size: {hidden_size}, window size: {window_size}, learning rate: {learning_rate}, epochs: {epochs}, batch size: {batch_size}")
-    model = FEBLSTM(input_size=1, hidden_size=hidden_size, output_size=1)    
-    device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"Using device: {device}")
-    model.to(device)
-    model = torch.compile(model)  # Compile the model for optimized performance
-
-    parameters(model)  # Print model parameters and memory usage
-
-    print(f"Loading data from database...")
     type_return = 'overnight_returns'  # or 'intraday_returns', depending on your needs
+    print(f"Loading data from database...")
     df_train, df_val, df_test = load_data(conn, table_name=type_return)
     print(f"Data loaded. Train shape: {df_train.shape}, Val shape: {df_val.shape}, Test shape: {df_test.shape}")
 
@@ -55,6 +47,14 @@ if __name__ == "__main__":
     test_dataset = TimeSeriesDataset(df_test, window_size=window_size, type_return=type_return)
 
     print(f"Datasets created. Train size: {len(train_dataset)}, Val size: {len(val_dataset)}, Test size: {len(test_dataset)}")
+
+    model = FEBLSTM(input_size=train_dataset.input_size, hidden_size=hidden_size, output_size=1)    
+    device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}")
+    model.to(device)
+    model = torch.compile(model)  # Compile the model for optimized performance
+
+    parameters(model)  # Print model parameters and memory usage
 
     
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
