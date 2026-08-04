@@ -21,7 +21,7 @@ if __name__ == "__main__":
     batch_size = 128
     hidden_size = 64
     window_size = 30
-    run_name = f"first_run_bs{batch_size}_hs{hidden_size}_ws{window_size}_lr{learning_rate}_epochs{epochs}"
+    run_name = f"fixed_sorting_run_bs{batch_size}_hs{hidden_size}_ws{window_size}_lr{learning_rate}_epochs{epochs}"
 
     wandb.init(
         project="timeseries analysis",
