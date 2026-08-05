@@ -1,33 +1,40 @@
 import sqlite3
 import yfinance as yf
-from filtering_stock import *
+from .filtering_stock import *
 import pandas as pd
 import torch
 from torch.utils.data import Dataset
 import numpy as np
 import matplotlib.pyplot as plt
 
-def df_to_sql(df, returns, type_return):
+def df_to_sql(extra_features):
     """
-    Formats the downloaded OHLCV data and matching returns for SQL storage.
+    Assembles the per-ticker, per-date feature frames into a single table and
+    writes it to SQL. No raw OHLCV data is loaded here - only the already
+    computed relative/return features are needed.
 
     Args:
-        df (pd.DataFrame): The DataFrame to format.
-        returns (pd.DataFrame): The returns DataFrame.
-        type_return (str): The type of return to include in the column name.
+        extra_features (dict[str, pd.DataFrame]): Per-ticker, per-date feature
+            frames (e.g. relative range, log volume, returns) to merge together.
+            Only rows present in every feature (inner join) are kept.
 
     Returns:
         pd.DataFrame: The formatted DataFrame.
     """
-    feature_frame = df.stack(level=1).rename_axis(index=['Date', 'Ticker']).reset_index()
-    return_frame = returns.stack().rename(type_return).reset_index()
-    return_frame.columns = ['Date', 'Ticker', type_return]
+    feature_names = list(extra_features)
+    first_name = feature_names[0]
+    feature_canvas = extra_features[first_name].stack().rename(first_name).reset_index()
+    feature_canvas.columns = ['Date', 'Ticker', first_name]
 
-    df = feature_frame.merge(return_frame, on=['Date', 'Ticker'], how='inner')
-    df = df.sort_values(by=['Ticker', 'Date']).reset_index(drop=True)
-    df.to_sql(f'{type_return}', conn, if_exists='replace', index=False)
+    for feature_name in feature_names[1:]:
+        feature_frame = extra_features[feature_name].stack().rename(feature_name).reset_index()
+        feature_frame.columns = ['Date', 'Ticker', feature_name]
+        feature_canvas = feature_canvas.merge(feature_frame, on=['Date', 'Ticker'], how='inner')
 
-    return df
+    feature_canvas = feature_canvas.sort_values(by=['Ticker', 'Date']).reset_index(drop=True)
+    feature_canvas.to_sql('features', conn, if_exists='replace', index=False)
+
+    return feature_canvas
 
 def load_data(conn, table_name):
     """
@@ -42,7 +49,49 @@ def load_data(conn, table_name):
     df_val = df[(df['Date'] >= '2016-01-01') & (df['Date'] < '2019-01-01')]
     df_test = df[df['Date'] >= '2019-01-01'] 
 
-    return df, df_train, df_val, df_test
+    return df_train, df_val, df_test
+
+def fit_zscore_stats(df_train, column='log_volume'):
+    """
+    Computes per-ticker mean/std for a column using the training split only.
+
+    Fitting on train alone keeps validation/test statistics out of the transform,
+    and doing it per-ticker means the z-score answers "is this value unusual for
+    THIS stock" rather than encoding how large the stock is.
+
+    Args:
+        df_train (pd.DataFrame): The training split.
+        column (str): Column to compute statistics for.
+
+    Returns:
+        pd.DataFrame: Indexed by Ticker, with 'mean' and 'std' columns.
+    """
+    return df_train.groupby('Ticker')[column].agg(['mean', 'std'])
+
+def apply_zscore(split_df, stats, column='log_volume'):
+    """
+    Applies per-ticker z-scoring to a split using train-fitted statistics.
+
+    Tickers missing from the stats (absent in train) or with zero/NaN std are
+    left at 0.0, since there is no reliable scale to normalize them against.
+
+    Args:
+        split_df (pd.DataFrame): Split to transform (train, val or test).
+        stats (pd.DataFrame): Output of fit_zscore_stats.
+        column (str): Column to transform.
+
+    Returns:
+        pd.DataFrame: A copy of split_df with the column z-scored.
+    """
+    split_df = split_df.copy()
+
+    mean = split_df['Ticker'].map(stats['mean'])
+    std = split_df['Ticker'].map(stats['std'])
+
+    usable = std.notna() & (std != 0) & mean.notna()
+    split_df[column] = ((split_df[column] - mean) / std).where(usable, 0.0)
+
+    return split_df
 
 def plot_returns_by_split(df_train, df_val, df_test, type_return='overnight_returns', n_tickers=10):
     """
@@ -85,7 +134,7 @@ class TimeSeriesDataset(Dataset):
         self.target_column = type_return
         self.feature_columns = [
             column for column in dataframe.columns
-            if column not in {'Date', 'Ticker', type_return}
+            if column not in {'Date', 'Ticker'}
         ]
         self.input_size = len(self.feature_columns)
 
@@ -134,7 +183,7 @@ class TimeSeriesDataset(Dataset):
         # Extract the 30-day window
         start_idx = self.valid_indices[idx]
         end_idx = start_idx + self.window_size 
-        x_window = self.targets[start_idx : end_idx] #To test only with the returns. 
+        x_window = self.data[start_idx : end_idx] #To test only with the returns. 
 
 
         # Extract the target label (the 31st day)
@@ -171,20 +220,29 @@ if __name__ == "__main__":
     print(f"Data cleaned. Now with {full_df['Close'].shape[1]} tickers after dropping columns with NaN values.")
 
     open_prices = full_df['Open']
+    high_prices = full_df['High']
+    low_prices = full_df['Low']
     close_prices = full_df['Close']
+    volume = full_df['Volume']
 
     intraday_full_returns = (close_prices - open_prices) / open_prices
-
-    
-
-    intraday_full_returns = df_to_sql(full_df, returns=intraday_full_returns, type_return='intraday_returns')
-
     overnight_full_returns = ((open_prices - close_prices.shift(1)) / close_prices.shift(1)).dropna()
     
-    overnight_full_returns = df_to_sql(full_df, returns=overnight_full_returns, type_return='overnight_returns')
+    # Relative OHLCV features: kept scale-free/stationary so they sit on the
+    # same footing as the returns instead of raw, non-stationary price/volume levels.
+    range_pct = (high_prices - low_prices) / close_prices
+    log_volume = np.log(volume.replace(0, np.nan))
+
+    extra_features = {
+                'range_pct': range_pct,
+                'log_volume': log_volume,
+                'overnight_returns': overnight_full_returns,
+                'intraday_returns': intraday_full_returns,
+                           }
+
+    feature_df = df_to_sql(extra_features=extra_features)
+    
+    
 
 
-    daily_full_returns = ((close_prices - close_prices.shift(1)) / close_prices.shift(1)).dropna()
-    daily_full_returns = df_to_sql(full_df, returns=daily_full_returns, type_return='daily_returns')
-
-
+    
