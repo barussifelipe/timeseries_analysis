@@ -41,7 +41,7 @@ def load_data(conn, table_name):
     df_val = df[(df['Date'] >= '2016-01-01') & (df['Date'] < '2019-01-01')]
     df_test = df[df['Date'] >= '2019-01-01'] 
 
-    return df_train, df_val, df_test
+    return df, df_train, df_val, df_test
 
 class TimeSeriesDataset(Dataset):
     def __init__(self, dataframe, window_size=30, type_return='overnight_returns'):
@@ -51,7 +51,7 @@ class TimeSeriesDataset(Dataset):
         self.target_column = type_return
         self.feature_columns = [
             column for column in dataframe.columns
-            if column not in {'Date', 'Ticker', type_return}
+            if column not in {'Date', 'Ticker', type_return, 'Close'}
         ]
         self.input_size = len(self.feature_columns)
 
@@ -99,8 +99,8 @@ class TimeSeriesDataset(Dataset):
     def __getitem__(self, idx):
         # Extract the 30-day window
         start_idx = self.valid_indices[idx]
-        end_idx = start_idx + self.window_size
-        x_window = self.data[start_idx : end_idx]
+        end_idx = start_idx + self.window_size 
+        x_window = self.targets[start_idx : end_idx] #To test only with the returns. 
 
 
         # Extract the target label (the 31st day)
