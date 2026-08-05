@@ -27,7 +27,7 @@ if __name__ == "__main__":
     batch_size = 128
     hidden_size = 64
     window_size = 30
-    run_name = f"fixed_sorting_run_bs{batch_size}_hs{hidden_size}_ws{window_size}_lr{learning_rate}_epochs{epochs}"
+    run_name = f"newfeatures_run_bs{batch_size}_hs{hidden_size}_ws{window_size}_lr{learning_rate}_epochs{epochs}"
 
     wandb.init(
         project="timeseries analysis",
@@ -44,9 +44,9 @@ if __name__ == "__main__":
     print(f"Initializing model with hidden size: {hidden_size}, window size: {window_size}, learning rate: {learning_rate}, epochs: {epochs}, batch size: {batch_size}")
     type_return = 'overnight_returns'  # or 'intraday_returns', depending on your needs
     print(f"Loading data from database...")
-    df_train, df_val, df_test = load_data(conn, table_name=type_return)
-    plot_returns_by_split(df_train, df_val, df_test, type_return='overnight_returns', n_tickers=100)
-    plot_returns_by_split(df_train, df_val, df_test, type_return='intraday_returns', n_tickers=100)
+    df_train, df_val, df_test = load_data(conn, table_name='features')
+    # plot_returns_by_split(df_train, df_val, df_test, type_return='overnight_returns', n_tickers=100)
+    # plot_returns_by_split(df_train, df_val, df_test, type_return='intraday_returns', n_tickers=100)
 
     print(f"Data loaded. Train shape: {df_train.shape}, Val shape: {df_val.shape}, Test shape: {df_test.shape}")
 
@@ -59,36 +59,36 @@ if __name__ == "__main__":
 
     print(f"log_volume normalized. Train mean: {df_train['log_volume'].mean():.4f}, std: {df_train['log_volume'].std():.4f}")
 
-    # print(f"Creating datasets...")
-    # train_dataset = TimeSeriesDataset(df_train, window_size=window_size, type_return=type_return)
-    # val_dataset = TimeSeriesDataset(df_val, window_size=window_size, type_return=type_return)
-    # test_dataset = TimeSeriesDataset(df_test, window_size=window_size, type_return=type_return)
+    print(f"Creating datasets...")
+    train_dataset = TimeSeriesDataset(df_train, window_size=window_size, type_return=type_return)
+    val_dataset = TimeSeriesDataset(df_val, window_size=window_size, type_return=type_return)
+    test_dataset = TimeSeriesDataset(df_test, window_size=window_size, type_return=type_return)
 
-    # print(f"Datasets created. Train size: {len(train_dataset)}, Val size: {len(val_dataset)}, Test size: {len(test_dataset)}")
+    print(f"Datasets created. Train size: {len(train_dataset)}, Val size: {len(val_dataset)}, Test size: {len(test_dataset)}")
 
-    # model = FEBLSTM(input_size=len(train_dataset.feature_columns), hidden_size=hidden_size, output_size=1)    
-    # device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # print(f"Using device: {device}")
-    # model.to(device)
-    # model = torch.compile(model)  # Compile the model for optimized performance
+    model = FEBLSTM(input_size=len(train_dataset.feature_columns), hidden_size=hidden_size, output_size=1)    
+    device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}")
+    model.to(device)
+    model = torch.compile(model)  # Compile the model for optimized performance
 
-    # parameters(model)  # Print model parameters and memory usage
+    parameters(model)  # Print model parameters and memory usage
 
     
-    # optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-    # criterion = torch.nn.MSELoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    criterion = torch.nn.MSELoss()
 
-    # print(f"Starting training...")
-    # train_metrics, val_metrics = train(model, train_dataset, val_dataset, optimizer, criterion, epochs, batch_size, device, name_run=run_name)
+    print(f"Starting training...")
+    train_metrics, val_metrics = train(model, train_dataset, val_dataset, optimizer, criterion, epochs, batch_size, device, name_run=run_name)
 
-    # test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=4, pin_memory=True)
-    # test_metrics = test_batch(model, criterion, test_loader, device, type="test")
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=4, pin_memory=True)
+    test_metrics = test_batch(model, criterion, test_loader, device, type="test")
 
 
-    # wandb.log({"test_metrics": test_metrics})  # Log test metrics to wandb
-    # wandb.finish()  # Finish the wandb run
+    wandb.log({"test_metrics": test_metrics})  # Log test metrics to wandb
+    wandb.finish()  # Finish the wandb run
 
-    # print("Test Metrics:", test_metrics, "Train Metrics:", train_metrics, "Validation Metrics:", val_metrics)
+    print("Test Metrics:", test_metrics, "Train Metrics:", train_metrics, "Validation Metrics:", val_metrics)
 
 
     
