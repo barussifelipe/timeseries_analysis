@@ -1,10 +1,11 @@
 import sqlite3
-import yfinance as yf 
-from .filtering_stock import * 
+import yfinance as yf
+from .filtering_stock import *
 import pandas as pd
-import torch 
+import torch
 from torch.utils.data import Dataset
 import numpy as np
+import matplotlib.pyplot as plt
 
 def df_to_sql(df, returns, type_return):
     """
@@ -42,6 +43,39 @@ def load_data(conn, table_name):
     df_test = df[df['Date'] >= '2019-01-01'] 
 
     return df, df_train, df_val, df_test
+
+def plot_returns_by_split(df_train, df_val, df_test, type_return='overnight_returns', n_tickers=10):
+    """
+    Plots returns over time (one line per ticker) for the train, val, and test splits.
+
+    Args:
+        df_train, df_val, df_test (pd.DataFrame): Splits returned by load_data.
+        type_return (str): Column name of the return to plot.
+        n_tickers (int): Number of tickers to plot per split (randomly sampled from the
+            tickers present in that split).
+    """
+    splits = {'Train': df_train, 'Val': df_val, 'Test': df_test}
+
+    fig, axes = plt.subplots(len(splits), 1, figsize=(14, 4 * len(splits)), sharex=False)
+
+    for ax, (split_name, split_df) in zip(axes, splits.items()):
+        tickers = split_df['Ticker'].unique()
+        sampled_tickers = np.random.choice(tickers, size=min(n_tickers, len(tickers)), replace=False)
+
+        for ticker in sampled_tickers:
+            ticker_frame = split_df[split_df['Ticker'] == ticker].sort_values('Date')
+            ax.plot(ticker_frame['Date'], ticker_frame[type_return], label=ticker, linewidth=0.8)
+
+        ax.set_title(f'{split_name} — {type_return}')
+        ax.set_xlabel('Date')
+        ax.set_ylabel(type_return)
+        ax.legend(loc='upper right', fontsize='small', ncol=2)
+
+    fig.tight_layout()
+    plt.show()
+
+    return fig
+
 
 class TimeSeriesDataset(Dataset):
     def __init__(self, dataframe, window_size=30, type_return='overnight_returns'):
