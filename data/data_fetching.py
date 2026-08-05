@@ -1,6 +1,6 @@
 import sqlite3
 import yfinance as yf
-from .filtering_stock import *
+from filtering_stock import *
 import pandas as pd
 import torch
 from torch.utils.data import Dataset
@@ -85,7 +85,7 @@ class TimeSeriesDataset(Dataset):
         self.target_column = type_return
         self.feature_columns = [
             column for column in dataframe.columns
-            if column not in {'Date', 'Ticker', type_return, 'Close'}
+            if column not in {'Date', 'Ticker', type_return}
         ]
         self.input_size = len(self.feature_columns)
 
@@ -165,26 +165,26 @@ if __name__ == "__main__":
 
     full_df = full_df.dropna(how='any', axis=1)
 
-    common_tickers = full_df['Open'].columns.intersection(full_df['Adj Close'].columns)
+    common_tickers = full_df['Open'].columns.intersection(full_df['Close'].columns)
     full_df = full_df.loc[:, (slice(None), common_tickers)]
 
-    print(f"Data cleaned. Now with {full_df['Adj Close'].shape[1]} tickers after dropping columns with NaN values.")
+    print(f"Data cleaned. Now with {full_df['Close'].shape[1]} tickers after dropping columns with NaN values.")
 
     open_prices = full_df['Open']
-    adj_close_prices = full_df['Adj Close']
+    close_prices = full_df['Close']
 
-    intraday_full_returns = (adj_close_prices - open_prices) / open_prices
+    intraday_full_returns = (close_prices - open_prices) / open_prices
 
     
 
     intraday_full_returns = df_to_sql(full_df, returns=intraday_full_returns, type_return='intraday_returns')
 
-    overnight_full_returns = ((open_prices - adj_close_prices.shift(1)) / adj_close_prices.shift(1)).dropna()
+    overnight_full_returns = ((open_prices - close_prices.shift(1)) / close_prices.shift(1)).dropna()
     
     overnight_full_returns = df_to_sql(full_df, returns=overnight_full_returns, type_return='overnight_returns')
 
 
-    daily_full_returns = ((adj_close_prices - adj_close_prices.shift(1)) / adj_close_prices.shift(1)).dropna()
+    daily_full_returns = ((close_prices - close_prices.shift(1)) / close_prices.shift(1)).dropna()
     daily_full_returns = df_to_sql(full_df, returns=daily_full_returns, type_return='daily_returns')
 
 
