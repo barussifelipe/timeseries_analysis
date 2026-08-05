@@ -159,7 +159,7 @@ if __name__ == "__main__":
 
     index = index_nyse + index_nasdaq
 
-    full_df = yf.download(index, start="2006-01-01", end="2026-01-01", group_by='column', auto_adjust=False, threads=True, progress=True)
+    full_df = yf.download(index, start="2006-01-01", end="2026-01-01", group_by='column', auto_adjust=True, threads=True, progress=True)
 
     print(f"Downloaded data for {len(index)} tickers. Saving to database...")
 
