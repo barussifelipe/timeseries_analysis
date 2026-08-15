@@ -23,8 +23,6 @@ https://arxiv.org/abs/2205.07719
 Mouti, S. (2023). *Rough volatility: Evidence from range volatility estimators*
 (arXiv:2312.01426). arXiv. https://arxiv.org/abs/2312.01426
 
-Wang, Z., & Lu, X. (2024). *COMEX copper futures volatility forecasting: Econometric models
-and deep learning* (arXiv:2409.08356). arXiv. https://arxiv.org/abs/2409.08356
 
 ## 2. GARCH–neural network hybrids
 
