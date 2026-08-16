@@ -42,12 +42,45 @@ in the era of machine learning*
 - Could show that our data follow a fBm by two ways: either we run the model in parallel for each timeseries and then update the weights or we do as we are already doing. Could do both as well. 
 - Final objective: compare RFSV model to Deep Neural Networks. 
 ---
+## NOTES - 4.1 - *Forecasting realized volatility with time series foundation models: A comparison with econometric benchmarks* [https://arxiv.org/abs/2607.05291]
+- Using TSFM to predict. Use them to compare. 
+- Paper from July 2026. Recent. 
+- I'll need to compare the realized volatility with the squared intraday returns with the estimators to prove our point. 
+- As small as you observed the intraday returns, more precision you have about the real volatility. 
+- Refer to the HAR variations but doens't use them as comparisons. 
+- If I'm using TSFM to compare I can use the latest one of Google or I can also talk about the different models. The focus should be a overall view and focusing on the global structure. 
+- All of this TSFM are zeroshot. 
+- Use the formal model testing. 
+- Could use the vol and estimators as a separate section to compare how to performance of the models change. However, it would contain smaller data. 
+- Constrain on the least squares so that the parameters doesn't turn negative. 
+- Bounding Q-like over min RV and max RV to avoid distortions in loss. Q-LIKE diverges as forecast approaches zero. 
+- MZ regression to assess forecast efficiency. 
+---
+## NOTES - 4.2 - *Volatility-inspired σ-LSTM cell* [https://arxiv.org/abs/2205.07022]
+- Could use directly the vol-LSTM. Or use both. 
+- Standardization before training RNNs 
+- The benefits were low, however, were better than the LSTM itself. So good to know. 
+---
+## NOTES - 5.2 - *Forecasting volatility with machine learning and rough volatility: Example from the crypto-winter* [https://arxiv.org/abs/2311.04727]
+- Bitcoin volatility is rought based on the Takaishi paper. Could implement the framework of testing roughness to the full stock market dataset. 
+- Join crypto and stocks in the same dataset to test universality of the model 
+- Using SiLU allows to pass the true volatility, without making the gradient become 0. Maybe using it on the vol-LSTM instead of TanH. Need to study more this approach. 
+- LSTMs with return inputs but this is high frequency. 
+- Using sensitivity parameters to understand the behaviour of vol based on returns and variance to match with the previous studies. 
+- Crypto have an inverted assymetric volatility or inverse lerage effected. 
+- No asset-specific features 
+- RFSV with QRH with lambda at 0.15 in the linear combinatior gives a similar but much more parsimonious model for the universality. 
+- Zumbach effect: time reversal symmetric is broken. A trend can give the impulse to a spike in volatility after liquidation of assets, however, the spike in volatility does not follow a future trend. QRH solves this. Garch doesnt. It needs to have a mathemtical component that captures this effect conditioned by time and direction. 
+
+
+--- 
 ## NOTES - 6.1 - *Autoregressive conditional heteroscedasticity with estimates of the variance of United Kingdom inflation.* [https://www.jstor.org/stable/1912773?origin=crossref&googleloggedin=true&seq=1]
 - Lagrange Multiplier to check the distribution of the errors, if they are homoscedastic or not. 
 ---
 ## NOTES - 6.2 - *Generalized autoregressive conditional heteroskedasticity.* [https://d1wqtxts1xzle7.cloudfront.net/62739731/GENERALIZED_AUTOREGRESSIVE_CONDITIONAL20200402-79966-1j3fzc2-libre.pdf?1585986363=&response-content-disposition=inline%3B+filename%3DGENERALIZED_AUTOREGRESSIVE_CONDITIONAL_H.pdf&Expires=1786795899&Signature=YPhsB8xaRfELgAUAAK568pgjShVqysSSdKr48N1e40iMPkdSqRk8Xg~61DUJrKDTJ91TbNfPiQfwU10TVsWJI~ikjmL5ImUhjaQ0vGUJ7lnGreQyjERtJy8exmM7SD~nem4bh1eNCfyuYv-JduX8fGanAGA8crg0tlR-p-BOhIHeT76mGN5PYwqScg115g8tuDRugMmYgmcJYKRivafKOgk7YP7ckCijGa5I6svuvnGslij~Gvzk89otS4lXikYxxfRUMu1OCTMa9QZyKjWCKlfbTdfjkZuH94ZIgZvg5UdeHzU0-uEA4vLP7pU36X173O60TUtf9XneFbOFnTL0Lw__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA]
 - ACF and PCF work for GARCH AND ARCH as well. 
 - GARCH(p, q) can be interpret as a ARMA(m, p) in e^2 of orders m = max(p, q) and p. 
+
 
 
 
