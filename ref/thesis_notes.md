@@ -1,5 +1,7 @@
 # THESIS NOTES 
-
+- What we are doing is trying to unveil the structure behind the pricing or volatility and predict longer term ranges. What HFT does is basically work on it as it is to pursue imbalances on physical queues in bid and asks. 
+- We don't really act. 
+- We are trying to find the best structural model, not play with the effects of the structure. 
 ## NOTES - 1.1 - *HARd to beat: The overlooked impact of rolling windows* [https://arxiv.org/abs/2406.08041]
 in the era of machine learning*
 - Basically, the data is already defined. 
@@ -71,8 +73,6 @@ in the era of machine learning*
 - No asset-specific features 
 - RFSV with QRH with lambda at 0.15 in the linear combinatior gives a similar but much more parsimonious model for the universality. 
 - Zumbach effect: time reversal symmetric is broken. A trend can give the impulse to a spike in volatility after liquidation of assets, however, the spike in volatility does not follow a future trend. QRH solves this. Garch doesnt. It needs to have a mathemtical component that captures this effect conditioned by time and direction. 
-
-
 --- 
 ## NOTES - 6.1 - *Autoregressive conditional heteroscedasticity with estimates of the variance of United Kingdom inflation.* [https://www.jstor.org/stable/1912773?origin=crossref&googleloggedin=true&seq=1]
 - Lagrange Multiplier to check the distribution of the errors, if they are homoscedastic or not. 
@@ -80,8 +80,14 @@ in the era of machine learning*
 ## NOTES - 6.2 - *Generalized autoregressive conditional heteroskedasticity.* [https://d1wqtxts1xzle7.cloudfront.net/62739731/GENERALIZED_AUTOREGRESSIVE_CONDITIONAL20200402-79966-1j3fzc2-libre.pdf?1585986363=&response-content-disposition=inline%3B+filename%3DGENERALIZED_AUTOREGRESSIVE_CONDITIONAL_H.pdf&Expires=1786795899&Signature=YPhsB8xaRfELgAUAAK568pgjShVqysSSdKr48N1e40iMPkdSqRk8Xg~61DUJrKDTJ91TbNfPiQfwU10TVsWJI~ikjmL5ImUhjaQ0vGUJ7lnGreQyjERtJy8exmM7SD~nem4bh1eNCfyuYv-JduX8fGanAGA8crg0tlR-p-BOhIHeT76mGN5PYwqScg115g8tuDRugMmYgmcJYKRivafKOgk7YP7ckCijGa5I6svuvnGslij~Gvzk89otS4lXikYxxfRUMu1OCTMa9QZyKjWCKlfbTdfjkZuH94ZIgZvg5UdeHzU0-uEA4vLP7pU36X173O60TUtf9XneFbOFnTL0Lw__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA]
 - ACF and PCF work for GARCH AND ARCH as well. 
 - GARCH(p, q) can be interpret as a ARMA(m, p) in e^2 of orders m = max(p, q) and p. 
-
-
+---
+## NOTES - 8.2 - *Universal features of price formation in financial markets: Perspectives from deep learning. Quantitative Finance* [https://arxiv.org/abs/1803.06917] 
+- At the microstructural level, it holds stationarity. The structure behind what makes the price is not altered, being the effect larger or not. Which means that no matter the volatility, what happens behind it is the same. We are moving from volatility prediction to price direction based on the laws of price formation. 
+- The author assumes that the laws of price are universal. The microstructures behind it. 
+- In theory, shouldnt work with daily data. The non-stationarity effects gets too big and the price doesn't reflect the microstructure behind it. 
+- We cannot build a universal network that doesn't respect the chnological order if our assumptions depend on causality, which means that future won't affect the past, even if it's from two different stocks. They mantained the chnological order here. 
+- Maybe predicting direction might be interesting. If it's going to fall, you don't put. If it's going up, you go, even if it's small changes, you'll never lose. Maybe you will with the comission. Need to understand this. 
+ 
 
 
 
