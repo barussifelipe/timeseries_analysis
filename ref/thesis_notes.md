@@ -2,8 +2,7 @@
 - What we are doing is trying to unveil the structure behind the pricing or volatility and predict longer term ranges. What HFT does is basically work on it as it is to pursue imbalances on physical queues in bid and asks. 
 - We don't really act. 
 - We are trying to find the best structural model, not play with the effects of the structure. 
-## NOTES - 1.1 - *HARd to beat: The overlooked impact of rolling windows* [https://arxiv.org/abs/2406.08041]
-in the era of machine learning*
+## NOTES - 1.1 - *HARd to beat: The overlooked impact of rolling windows in the era of machine learning* [https://arxiv.org/abs/2406.08041]
 - Basically, the data is already defined. 
 - The models that we are going to compare need to be listed as well. 
 - So far HAR and LSTM. 
@@ -81,13 +80,38 @@ in the era of machine learning*
 - ACF and PCF work for GARCH AND ARCH as well. 
 - GARCH(p, q) can be interpret as a ARMA(m, p) in e^2 of orders m = max(p, q) and p. 
 ---
+## NOTES - 8.1 - *Principles and algorithms for forecasting groups of time series: Locality and globality. International Journal of Forecasting* [https://robjhyndman.com/papers/global-models.pdf]
+- Global and Local models can be equals by proposition one. However, if you have different time series and you want a different answer for each time series, you need more input to differentiate between the two of them. If you have the same input for Xi and Xj and you want a different result, you have to increase the window.
+- Generalization Error and metrics. We are assuming Ein to be the sample average while Eout to be the expected. Complexity term + Ein >= Eout 
+- How much the expected loss might differ on in-sampel and out-sample data points based on the model and the loss function. 
+- We can try to find a Global that produces the same in-sample error as the local and therefore understand the complexity terms and if it's within our budget. If it is, we get better generalization than the local alternative and better performance. 
+- We aim to equalize this error to control the complexity, which what we can do before seeing the data. 
+- Assuming a SoTA local algo, we can assume that the global approach will have the complexity as the sum of all individual algos in the set. 
+- Generalize for other datasets such as FUTURES, INDEX per day. 
+- Increase the size of the window inside the LSTM. 
+- Each window is independent. 
+- Could use opening or close prices with MASE as the error. 
+- Local model fits their own data better, but overfit when out-of-sample. When another time-series gets inputed to be predicted. 
+- Use the average error of all the time series. 
+
 ## NOTES - 8.2 - *Universal features of price formation in financial markets: Perspectives from deep learning. Quantitative Finance* [https://arxiv.org/abs/1803.06917] 
 - At the microstructural level, it holds stationarity. The structure behind what makes the price is not altered, being the effect larger or not. Which means that no matter the volatility, what happens behind it is the same. We are moving from volatility prediction to price direction based on the laws of price formation. 
 - The author assumes that the laws of price are universal. The microstructures behind it. 
 - In theory, shouldnt work with daily data. The non-stationarity effects gets too big and the price doesn't reflect the microstructure behind it. 
 - We cannot build a universal network that doesn't respect the chnological order if our assumptions depend on causality, which means that future won't affect the past, even if it's from two different stocks. They mantained the chnological order here. 
 - Maybe predicting direction might be interesting. If it's going to fall, you don't put. If it's going up, you go, even if it's small changes, you'll never lose. Maybe you will with the comission. Need to understand this. 
- 
+
+## NOTES - 8.3 - *Volatility forecasting with machine learning and intraday commonality* [https://arxiv.org/abs/2202.08962]
+- Commonality, which means, the measurement on how the vol of a single assets changes relative to the vol of the market increases the prediction power of the model. 
+- Past volatility also provide additional information for forecasting. 
+- Using ARFIMA as well. 
+- Review on Pearson and Spearman correlations and their differences. 
+- Winsorization to compensate the spikes created by anomalies in models like GARCH. We can explore the assumption for a heavy-tailed distribution or jump-diffusion models. 
+- Calculating commonality but using the Parkinson estimator. Commonality is the R^2 of the regression using RVm; Therefore R^2 is the explained variance by the market RV. Commonality. 
+- Use the utility equation to bring this back into the real world. Then do a portfolio simulation to find the return over week, month, semester, year, 2 years and 5 years. 
+- Increase the data to the maximum we can to compare in fully power. 
+- Sensitivy analysis. 
+
 
 
 

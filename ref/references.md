@@ -130,7 +130,7 @@ Markov Model* [Undergraduate thesis]. Universidade de Passo Fundo.
 ---
 
 ## 8. Cross-asset pooling and global forecasting models
-- Montero-Manso, P., & Hyndman, R. J. (2021). Principles and algorithms for forecasting groups of time series: Locality and globality. International Journal of Forecasting, 37(4), 1632–1653. https://doi.org/10.1016/j.ijforecast.2021.03.004 https://robjhyndman.com/papers/global-models.pdf
+- Montero-Manso, P., & Hyndman, R. J. (2021). Principles and algorithms for forecasting groups of time series: Locality and globality. International Journal of Forecasting, 37(4), 1632–1653. https://doi.org/10.1016/j.ijforecast.2021.03.004 
 
 - Sirignano, J., & Cont, R. (2019). Universal features of price formation in financial markets: Perspectives from deep learning. Quantitative Finance, 19(9), 1449–1459. https://arxiv.org/abs/1803.06917
 
