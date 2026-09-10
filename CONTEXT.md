@@ -1,6 +1,6 @@
 # Project context
 
-Last updated: 2026-09-09
+Last updated: 2026-09-10
 
 ## Goal
 
@@ -12,6 +12,9 @@ This thesis project is moving from short-horizon stock-return prediction toward 
 
 - NASDAQ and NYSE ticker-list ingestion and cleaning, including removal of non-equity instruments and consolidation of share classes.
 - Bulk daily OHLCV download from Yahoo Finance for 2006-01-01 through 2026-01-01.
+- Resumable, rate-limited maximum-history acquisition, with raw ticker-major
+  OHLCV and 20/25/30-year coverage metadata stored under
+  `D:\DBs\timeseries_analysis`.
 - Split/dividend-consistent OHLC adjustment via `auto_adjust=True`.
 - Scale-free features: intraday return, overnight return, relative high-low range, and log volume. Daily return was removed because it is determined by intraday and overnight returns.
 - SQLite persistence in a `features` table.
@@ -41,7 +44,7 @@ Still required to finish Step 1:
 2. Decide the canonical prediction target and horizon, then adapt the dataset windows to that target.
 3. Add the planned predictors: lagged RV, market-volatility commonality, and VIX.
 4. Run local and global descriptive/statistical analysis, including roughness and Hurst-exponent analysis.
-5. Confirm the usable universe/data volume and add scheduled or batched fetching only if Yahoo rate limits require it.
+5. Complete the running coverage scan and use its 20/25/30-year results to confirm the usable universe/data volume.
 6. Prepare the available crypto intraday data later as an unseen universality test; it is not currently in the repository.
 
 The next concrete task is to implement and validate the Parkinson and reduced Garman-Klass series in the data pipeline. After the volatility dataset is fixed, implement a small statistical baseline—preferably HAR/OLS—before adapting the LSTM and adding more complex models.

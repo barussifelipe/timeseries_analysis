@@ -1,11 +1,304 @@
+import io
+import logging
 import sqlite3
+import time
+from contextlib import closing
+from datetime import datetime, timezone
+
 import yfinance as yf
+from yfinance.exceptions import YFRateLimitError
 from .filtering_stock import *
 import pandas as pd
 import torch
 from torch.utils.data import Dataset
 import numpy as np
 import matplotlib.pyplot as plt
+
+
+HISTORY_PERIODS = ('20y', '25y', '30y', 'max')
+HISTORY_COLUMNS = ['Open', 'High', 'Low', 'Close', 'Volume']
+DATA_DIRECTORY = r'D:\DBs\timeseries_analysis'
+HISTORY_DB = rf'{DATA_DIRECTORY}\history_coverage.db'
+STOCK_DB = rf'{DATA_DIRECTORY}\stock_data.db'
+
+
+def _create_history_tables(conn):
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS raw_history (
+            Ticker TEXT NOT NULL,
+            Date TEXT NOT NULL,
+            Open REAL,
+            High REAL,
+            Low REAL,
+            Close REAL,
+            Volume REAL,
+            PRIMARY KEY (Ticker, Date)
+        ) WITHOUT ROWID
+    ''')
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS history_downloads (
+            ticker TEXT PRIMARY KEY,
+            active INTEGER NOT NULL DEFAULT 1,
+            status TEXT NOT NULL DEFAULT 'pending',
+            attempts INTEGER NOT NULL DEFAULT 0,
+            first_date TEXT,
+            last_date TEXT,
+            last_error TEXT,
+            updated_at TEXT
+        )
+    ''')
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS history_coverage (
+            ticker TEXT NOT NULL,
+            period TEXT NOT NULL,
+            before_na INTEGER NOT NULL,
+            after_na INTEGER NOT NULL,
+            rows_before_na INTEGER NOT NULL,
+            rows_after_na INTEGER NOT NULL,
+            PRIMARY KEY (ticker, period),
+            FOREIGN KEY (ticker) REFERENCES history_downloads(ticker)
+        )
+    ''')
+
+
+def _period_coverage(history, period, as_of):
+    if period not in HISTORY_PERIODS:
+        raise ValueError(f"period must be one of {HISTORY_PERIODS}")
+
+    frame = history.loc[history.index < as_of, HISTORY_COLUMNS]
+    cutoff = None if period == 'max' else as_of - pd.DateOffset(years=int(period[:-1]))
+    if cutoff is not None:
+        frame = frame.loc[frame.index >= cutoff]
+
+    rows_before = len(frame)
+    clean = frame.dropna(subset=HISTORY_COLUMNS)
+    before_na = rows_before > 0
+    after_na = before_na and len(clean) == rows_before
+
+    if cutoff is not None and after_na:
+        after_na = (
+            clean.index.min() <= cutoff + pd.Timedelta(days=7)
+            and clean.index.max() >= as_of - pd.Timedelta(days=7)
+        )
+
+    return before_na, after_na, rows_before, len(clean)
+
+
+def _normalize_history(history):
+    if history.empty:
+        return history
+
+    history = history.copy()
+    history.index = pd.to_datetime(history.index).tz_localize(None)
+    return history.sort_index()
+
+
+def _download_failure_status(error):
+    message = error.lower()
+    if 'rate limit' in message or '429' in message or 'too many requests' in message:
+        return 'rate_limited'
+    if 'no price data' in message or 'no timezone found' in message or 'possibly delisted' in message:
+        return 'empty'
+    if any(marker in message for marker in (
+        'timeout', 'timed out', 'connectionerror', 'connection reset',
+        'connection aborted', 'remotedisconnected', 'temporarily unavailable',
+        'jsondecodeerror',
+    )):
+        return 'transient'
+    return 'failed'
+
+
+def _raw_history_rows(ticker, history):
+    for date, row in history[HISTORY_COLUMNS].iterrows():
+        values = [None if pd.isna(value) else float(value) for value in row]
+        yield ticker, date.strftime('%Y-%m-%d'), *values
+
+
+def scan_history_coverage(
+    tickers,
+    db_filename=HISTORY_DB,
+    as_of='2026-01-01',
+    delay_seconds=2.0,
+    backoff_seconds=(30, 60, 120, 240),
+    transient_backoff_seconds=(5, 15),
+):
+    """Download each ticker's maximum history once and checkpoint coverage."""
+    tickers = list(dict.fromkeys(tickers))
+    as_of = pd.Timestamp(as_of)
+
+    with closing(sqlite3.connect(db_filename)) as conn, conn:
+        _create_history_tables(conn)
+        conn.execute('UPDATE history_downloads SET active = 0')
+        conn.executemany(
+            '''
+            INSERT INTO history_downloads (ticker, active)
+            VALUES (?, 1)
+            ON CONFLICT(ticker) DO UPDATE SET active = 1
+            ''',
+            ((ticker,) for ticker in tickers),
+        )
+
+    next_request_at = time.monotonic()
+    for position, ticker in enumerate(tickers, start=1):
+        with closing(sqlite3.connect(db_filename)) as conn, conn:
+            status, has_raw_data = conn.execute(
+                '''
+                SELECT d.status, EXISTS (
+                    SELECT 1 FROM raw_history r WHERE r.Ticker = d.ticker LIMIT 1
+                )
+                FROM history_downloads d
+                WHERE d.ticker = ?
+                ''',
+                (ticker,),
+            ).fetchone()
+        if status == 'success' and has_raw_data:
+            continue
+
+        last_error = None
+        final_status = 'failed'
+        history = pd.DataFrame()
+
+        attempt = 0
+        while True:
+            attempt += 1
+            wait = next_request_at - time.monotonic()
+            if wait > 0:
+                time.sleep(wait)
+            next_request_at = time.monotonic() + delay_seconds
+
+            captured_log = io.StringIO()
+            log_handler = logging.StreamHandler(captured_log)
+            logging.getLogger('yfinance').addHandler(log_handler)
+            try:
+                history = _normalize_history(yf.download(
+                    ticker,
+                    period='max',
+                    auto_adjust=True,
+                    threads=False,
+                    progress=False,
+                    multi_level_index=False,
+                ))
+                missing_columns = set(HISTORY_COLUMNS) - set(history.columns)
+                if missing_columns:
+                    raise ValueError(f"missing columns: {sorted(missing_columns)}")
+                if not history.empty:
+                    final_status = 'success'
+                    break
+                last_error = captured_log.getvalue().strip() or 'Yahoo returned no usable rows'
+                final_status = _download_failure_status(last_error)
+            except Exception as exc:
+                last_error = str(exc)
+                final_status = (
+                    'rate_limited'
+                    if isinstance(exc, YFRateLimitError)
+                    else _download_failure_status(last_error)
+                )
+            finally:
+                logging.getLogger('yfinance').removeHandler(log_handler)
+
+            retry_delays = (
+                backoff_seconds if final_status == 'rate_limited'
+                else transient_backoff_seconds if final_status == 'transient'
+                else ()
+            )
+            if attempt > len(retry_delays):
+                if final_status == 'transient':
+                    final_status = 'failed'
+                break
+            time.sleep(retry_delays[attempt - 1])
+
+        updated_at = datetime.now(timezone.utc).isoformat()
+        with closing(sqlite3.connect(db_filename)) as conn, conn:
+            if final_status == 'success':
+                conn.execute('DELETE FROM raw_history WHERE Ticker = ?', (ticker,))
+                conn.executemany(
+                    '''
+                    INSERT INTO raw_history
+                        (Ticker, Date, Open, High, Low, Close, Volume)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    ''',
+                    _raw_history_rows(ticker, history),
+                )
+                conn.execute('DELETE FROM history_coverage WHERE ticker = ?', (ticker,))
+                conn.executemany(
+                    '''
+                    INSERT INTO history_coverage
+                        (ticker, period, before_na, after_na, rows_before_na, rows_after_na)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    ''',
+                    (
+                        (ticker, period, int(before_na), int(after_na), rows_before, rows_after)
+                        for period in HISTORY_PERIODS
+                        for before_na, after_na, rows_before, rows_after
+                        in [_period_coverage(history, period, as_of)]
+                    ),
+                )
+                first_date = history.index.min().isoformat()
+                last_date = history.index.max().isoformat()
+                last_error = None
+            else:
+                first_date = last_date = None
+
+            conn.execute(
+                '''
+                UPDATE history_downloads
+                SET status = ?, attempts = ?, first_date = ?, last_date = ?,
+                    last_error = ?, updated_at = ?
+                WHERE ticker = ?
+                ''',
+                (
+                    final_status,
+                    attempt,
+                    first_date,
+                    last_date,
+                    last_error,
+                    updated_at,
+                    ticker,
+                ),
+            )
+        print(f'[{position}/{len(tickers)}] {ticker}: {final_status}')
+
+
+def history_lengths(period, db_filename=HISTORY_DB):
+    """Return and print ticker counts before and after NA completeness checks."""
+    if period not in HISTORY_PERIODS:
+        raise ValueError(f"period must be one of {HISTORY_PERIODS}")
+
+    with closing(sqlite3.connect(db_filename)) as conn, conn:
+        _create_history_tables(conn)
+        requested = conn.execute(
+            'SELECT COUNT(*) FROM history_downloads WHERE active = 1'
+        ).fetchone()[0]
+        before_na, after_na = conn.execute(
+            '''
+            SELECT COALESCE(SUM(c.before_na), 0), COALESCE(SUM(c.after_na), 0)
+            FROM history_coverage c
+            JOIN history_downloads d ON d.ticker = c.ticker
+            WHERE d.active = 1 AND d.status = 'success' AND c.period = ?
+            ''',
+            (period,),
+        ).fetchone()
+        statuses = dict(conn.execute(
+            '''
+            SELECT status, COUNT(*)
+            FROM history_downloads
+            WHERE active = 1
+            GROUP BY status
+            '''
+        ))
+
+    result = {
+        'period': period,
+        'requested': requested,
+        'before_na': before_na,
+        'after_na': after_na,
+        'rate_limited': statuses.get('rate_limited', 0),
+        'empty': statuses.get('empty', 0),
+        'failed': statuses.get('failed', 0),
+        'pending': statuses.get('pending', 0),
+    }
+    print(result)
+    return result
 
 def df_to_sql(extra_features):
     """
@@ -194,14 +487,14 @@ class TimeSeriesDataset(Dataset):
 
 if __name__ == "__main__":
 
-    db_filename = "data/src/stock_data.db"
+    db_filename = STOCK_DB
 
     conn = sqlite3.connect(db_filename)
 
     cursor = conn.cursor()
 
-    path_nasdaq = "data/src/stock_overview_NASDAQ.csv"
-    path_nyse = "data/src/stock_overview_NYSE.csv"
+    path_nasdaq = rf"{DATA_DIRECTORY}\stock_overview_NASDAQ.csv"
+    path_nyse = rf"{DATA_DIRECTORY}\stock_overview_NYSE.csv"
 
     index_nyse = fetch_index_stock(path_nyse, "NYSE")
     index_nasdaq = fetch_index_stock(path_nasdaq, "NASDAQ")
@@ -241,8 +534,3 @@ if __name__ == "__main__":
                            }
 
     feature_df = df_to_sql(extra_features=extra_features)
-    
-    
-
-
-    

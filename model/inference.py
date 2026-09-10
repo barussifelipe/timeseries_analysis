@@ -20,7 +20,7 @@ from data.data_fetching import (
 
 
 if __name__ == "__main__":
-    conn = sqlite3.connect("data/src/stock_data.db")
+    conn = sqlite3.connect(r"D:\DBs\timeseries_analysis\stock_data.db")
 
     epochs = 50
     learning_rate = 1e-4

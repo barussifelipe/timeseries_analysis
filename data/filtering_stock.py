@@ -33,7 +33,7 @@ def fetch_index_stock(file_path, type: str) -> list:
     
 
     if type == "NASDAQ":
-        symbols = df.iloc[:, 0].astype(str).str[:4]
+        symbols = df['Symbol'].astype(str).str.strip().str.replace('/', '-', regex=False)
 
     elif type == "NYSE":
         
