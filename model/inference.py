@@ -43,6 +43,18 @@ def save_table_image(columns, rows, path, title):
     plt.close(figure)
 
 
+def save_histogram(values, path, title, xlabel):
+    figure, axis = plt.subplots(figsize=(8, 5))
+    axis.hist(values, bins=50)
+    axis.set_title(title)
+    axis.set_xlabel(xlabel)
+    axis.set_ylabel("Ticker frequency")
+    axis.grid(axis="y", alpha=0.25)
+    figure.tight_layout()
+    figure.savefig(path, dpi=200, bbox_inches="tight")
+    plt.close(figure)
+
+
 def save_summary_latex(columns, rows, path):
     alignments = "l" + "r" * (len(columns) - 1)
     lines = [
@@ -224,32 +236,25 @@ if __name__ == "__main__":
             f"{split.title()} best 15 tickers by MSE",
         )
         final_logs[f"{split}_best_15_tickers_image"] = wandb.Image(str(table_path))
-        figure, axes = plt.subplots(len(metric_names), 2, figsize=(14, 18))
-        for index, metric in enumerate(metric_names):
+        for metric in metric_names:
             values = [row[metric] for row in rows if math.isfinite(row[metric])]
-            final_logs[f"{split}_{metric}_histogram"] = wandb.Histogram(values)
             ordered = sorted(values)
             lower = ordered[math.floor(0.005 * (len(ordered) - 1))]
             upper = ordered[math.ceil(0.995 * len(ordered)) - 1]
             central = [value for value in values if lower <= value <= upper]
-            for axis, plotted, title in (
-                (axes[index, 0], values, "full range"),
-                (axes[index, 1], central, "central 99%"),
+            for plotted, title, suffix in (
+                (values, "full range", "full"),
+                (central, "central 99%", "central_99"),
             ):
-                axis.hist(plotted, bins=50)
-                axis.set_title(f"{metric.upper()} — {title}")
-                axis.set_xlabel(metric.upper())
-                axis.set_ylabel("Ticker frequency")
-                axis.grid(axis="y", alpha=0.25)
+                histogram_path = report_dir / f"{split}_{metric}_{suffix}.png"
+                save_histogram(
+                    plotted, histogram_path,
+                    f"{split.title()} {metric.upper()} — {title}", metric.upper(),
+                )
+                final_logs[f"{split}_{metric}_{suffix}"] = wandb.Image(str(histogram_path))
             final_values[f"{split}_{metric}_central_lower"] = lower
             final_values[f"{split}_{metric}_central_upper"] = upper
             final_values[f"{split}_{metric}_outliers"] = len(values) - len(central)
-        figure.suptitle(f"{split.title()} losses per ticker")
-        figure.tight_layout()
-        distribution_path = report_dir / f"{split}_ticker_loss_distributions.png"
-        figure.savefig(distribution_path, dpi=200, bbox_inches="tight")
-        final_logs[f"{split}_ticker_loss_distributions"] = wandb.Image(str(distribution_path))
-        plt.close(figure)
 
     run.log(final_logs)
     run.summary.update(final_values)
