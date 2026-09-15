@@ -1,10 +1,10 @@
 # Project context
 
-Last updated: 2026-09-10
+Last updated: 2026-09-15
 
 ## Goal
 
-This thesis project is moving from short-horizon stock-return prediction toward a comparison of statistical/econometric and machine-learning models for realized-volatility forecasting. The intended outcome is a fair comparison of local and global models, followed by a portfolio-utility evaluation. The research also covers volatility roughness (fBm/fOU and the Hurst exponent) and whether learned behavior generalizes across assets and datasets.
+The work has two parts. **Part I is the VVSI project**, which predicts short-horizon stock returns with a global LSTM. **Part II is the full thesis project** described in `ref/plan.md`: a comparison of statistical/econometric and machine-learning models for realized-volatility forecasting, followed by portfolio-utility evaluation. The full thesis also covers volatility roughness (fBm/fOU and the Hurst exponent) and whether learned behavior generalizes across assets and datasets.
 
 `ref/plan.md` is the current plan. `ref/thesis_notes.md` contains the literature notes supporting it.
 
@@ -31,12 +31,25 @@ This thesis project is moving from short-horizon stock-return prediction toward 
 - Per-ticker rolling-window dataset construction. Data is sorted by `(Ticker, Date)`, and windows cannot cross ticker boundaries.
 - A PyTorch LSTM implemented from individual gates, with Xavier initialization and a forget-gate bias of one.
 - End-to-end return-model training, validation, testing, Weights & Biases logging, best-validation checkpointing, gradient clipping, GPU memory reporting, and `torch.compile` support.
+- The VVSI return pipeline now reads 3,000 longest-history tickers directly
+  from the existing raw-history database over 2006-01-01 through 2025-12-31,
+  logs exact observation-weighted MSE, RMSE, MAE, bounded sMAPE, and R-squared,
+  and produces final split tables, top-15 ticker tables, and full per-ticker
+  validation/test loss distributions in W&B.
+- A one-epoch, 30-day-window VVSI smoke run completed on 5,233,579 training,
+  2,011,665 validation, and 5,155,725 test observations. Its W&B artifacts
+  were validated offline; the three production runs have not started.
 - Several training runs and checkpoints exist locally. The earlier train/validation discrepancy led to fixes for mixed-ticker windows, inconsistent adjusted prices, and feature scaling.
 - Literature notes cover HAR/HARNet, GARCH, rough volatility, global versus local models, volatility commonality, TSFMs, evaluation losses, and economic utility.
 
 ## Current plan position
 
-We are in **Step 1: Build the dataset**, with the original return-prediction infrastructure complete but the revised volatility dataset incomplete.
+For **Part I / VVSI**, the return-prediction rerun infrastructure and smoke
+run are complete. The next action is user confirmation before starting the
+three production LSTM runs with window sizes 10, 30, and 100.
+
+For **Part II / the full thesis**, we are in **Step 1: Build the dataset**,
+with the revised volatility dataset incomplete.
 
 The current code predicts `overnight_returns`; it does not yet implement the realized-volatility target described in `ref/plan.md`. Therefore the project has not reached the plan's **Define the models** implementation stage, even though an LSTM prototype already exists and candidate models have been identified in the research notes.
 
