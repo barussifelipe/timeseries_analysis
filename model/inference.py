@@ -116,6 +116,9 @@ if __name__ == "__main__":
             "seed": seed,
         }
     )
+    run.define_metric("epoch")
+    run.define_metric("train/*", step_metric="epoch")
+    run.define_metric("val/*", step_metric="epoch")
     print(f"Initializing model with hidden size: {hidden_size}, window size: {window_size}, learning rate: {learning_rate}, epochs: {epochs}, batch size: {batch_size}")
     type_return = 'overnight_returns'
     ticker_count = prepare_return_tickers(conn)
