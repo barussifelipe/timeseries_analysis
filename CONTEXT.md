@@ -15,6 +15,14 @@ This thesis project is moving from short-horizon stock-return prediction toward 
 - Resumable, rate-limited maximum-history acquisition, with raw ticker-major
   OHLCV and 20/25/30-year coverage metadata stored under
   `D:\DBs\timeseries_analysis`.
+- A resumable altFINS crypto acquisition framework stores daily and 15-minute
+  OHLCV in separate SQLite tables, builds daily realized variance from squared
+  15-minute close-to-close log returns (including the preceding day's final
+  close), and records coverage before and after completeness checks. The live
+  download uses `ALTFINS_API_KEY` and logs to `crypto_history_scan.txt`. The
+  completed scan covered all 5,145 altFINS symbols and produced 2,055,008
+  aligned daily/proxy observations, below the 9,587,674-point stock target;
+  details are in `ref/crypto_history_coverage.md`.
 - Split/dividend-consistent OHLC adjustment via `auto_adjust=True`.
 - Scale-free features: intraday return, overnight return, relative high-low range, and log volume. Daily return was removed because it is determined by intraday and overnight returns.
 - SQLite persistence in a `features` table.
@@ -45,9 +53,15 @@ Still required to finish Step 1:
 3. Add the planned predictors: lagged RV, market-volatility commonality, and VIX.
 4. Run local and global descriptive/statistical analysis, including roughness and Hurst-exponent analysis.
 5. Complete the running coverage scan and use its 20/25/30-year results to confirm the usable universe/data volume.
-6. Prepare the available crypto intraday data later as an unseen universality test; it is not currently in the repository.
+6. Define the eligible crypto universe before using the completed altFINS data
+   as an unseen universality test.
 
-The next concrete task is to implement and validate the Parkinson and reduced Garman-Klass series in the data pipeline. After the volatility dataset is fixed, implement a small statistical baseline—preferably HAR/OLS—before adapting the LSTM and adding more complex models.
+The next concrete data tasks are to define the crypto eligibility rules and
+implement the Parkinson and reduced Garman-Klass equity series. The crypto scan
+confirmed that its 2,055,008 aligned observations do not independently meet the
+9,587,674-point stock target. After the volatility dataset is fixed, implement
+a small statistical baseline—preferably HAR/OLS—before adapting the LSTM and
+adding more complex models.
 
 ## Planned later work
 
