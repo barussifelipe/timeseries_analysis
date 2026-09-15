@@ -3,31 +3,66 @@ import wandb
 import torch 
 from torch.utils.data import DataLoader, TensorDataset
 import os 
+import math
 
 
 
 
 
 def losses(outputs, labels, epsilon=1e-8):
-    """
-    Computes the Mean Squared Error (MSE) loss between the model's outputs and the true labels.
+    """Return additive totals used to calculate exact epoch metrics."""
+    error = outputs - labels
+    absolute_error = torch.abs(error)
+    # sMAPE replaces MAPE because signed financial returns frequently equal or
+    # approach zero. It is symmetric and bounded between 0% and 200%.
+    smape = 200 * absolute_error / (torch.abs(outputs) + torch.abs(labels) + epsilon)
+    return {
+        "observations": labels.numel(),
+        "absolute_error": absolute_error.sum(),
+        "squared_error": torch.square(error).sum(),
+        "smape": smape.sum(),
+        "target_sum": labels.sum(),
+        "target_squared_sum": torch.square(labels).sum(),
+    }
 
-    Args:
-        outputs (torch.Tensor): The model's predicted outputs.
-        labels (torch.Tensor): The true labels corresponding to the inputs.
 
-    Returns:
-        loss_mae (torch.Tensor): The computed Mean Absolute Error (MAE) loss.
-        loss_mse (torch.Tensor): The computed Mean Squared Error (MSE) loss.
-        loss_rmse (torch.Tensor): The computed Root Mean Squared Error (RMSE) loss.
-        loss_mape (torch.Tensor): The computed Mean Absolute Percentage Error (MAPE) loss.
-    """
-    loss_mae = torch.mean(torch.abs(outputs - labels))  # Mean Absolute Error
-    loss_rmse = torch.sqrt(torch.mean((outputs - labels) ** 2) )                     # Root Mean Squared Error
-    loss_mape = torch.mean(torch.abs((labels - outputs) / (labels + epsilon))) * 100  # Mean Absolute Percentage Error
-    loss_r2 = 1 - (torch.sum((labels - outputs) ** 2) / torch.sum((labels - torch.mean(labels)) ** 2))  # R-squared
+def _empty_totals():
+    return {
+        "observations": 0,
+        "absolute_error": 0.0,
+        "squared_error": 0.0,
+        "smape": 0.0,
+        "target_sum": 0.0,
+        "target_squared_sum": 0.0,
+    }
 
-    return loss_mae, loss_rmse, loss_mape, loss_r2
+
+def _add_totals(total, batch):
+    for key, value in batch.items():
+        total[key] += value if isinstance(value, int) else value.item()
+
+
+def _metrics(total, prefix):
+    observations = total["observations"]
+    if observations == 0:
+        return {f"{prefix}/{name}": float("nan") for name in ("mse", "rmse", "mae", "smape", "r2")}
+
+    mse = total["squared_error"] / observations
+    target_variance = (
+        total["target_squared_sum"]
+        - total["target_sum"] ** 2 / observations
+    )
+    values = {
+        "mse": mse,
+        "rmse": math.sqrt(mse),
+        "mae": total["absolute_error"] / observations,
+        "smape": total["smape"] / observations,
+        "r2": (
+            1 - total["squared_error"] / target_variance
+            if target_variance > 0 else float("nan")
+        ),
+    }
+    return {f"{prefix}/{name}": value for name, value in values.items()}
 
 def train_batch(model, optimizer, criterion, data_loader, device):
     """
@@ -43,12 +78,8 @@ def train_batch(model, optimizer, criterion, data_loader, device):
     Returns:
         float: The computed loss for the current batch.
     """
-    num_batches = 0 
-    total_loss_mse = 0.0
-    total_loss_rmse = 0.0
-    total_loss_mape = 0.0
-    total_loss_mae = 0.0
-    total_loss_r2 = 0.0
+    num_batches = 0
+    totals = _empty_totals()
 
     model.train()  # Set the model to training mode
     for x_batch, labels_batch in data_loader:
@@ -60,8 +91,8 @@ def train_batch(model, optimizer, criterion, data_loader, device):
         # Forward pass
         outputs = model(x_batch)  # (batch_size, output_size (1))
         loss_mse = criterion(outputs, labels_batch)
-        with torch.no_grad():  # Disable gradient computation for loss metrics
-            loss_mae, loss_rmse, loss_mape, loss_r2 = losses(outputs, labels_batch)
+        with torch.no_grad():
+            batch_totals = losses(outputs, labels_batch)
         # Backward pass and optimization
         loss_mse.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # Gradient clipping
@@ -69,27 +100,11 @@ def train_batch(model, optimizer, criterion, data_loader, device):
 
         num_batches += 1
 
-        total_loss_mse += loss_mse.item()
-        total_loss_rmse += loss_rmse.item()
-        total_loss_mape += loss_mape.item()
-        total_loss_mae += loss_mae.item()
-        total_loss_r2 += loss_r2.item()
+        _add_totals(totals, batch_totals)
 
-    avg_loss_mse = total_loss_mse / num_batches if num_batches > 0 else 0.0
-    avg_loss_rmse = total_loss_rmse / num_batches if num_batches > 0 else 0.0
-    avg_loss_mape = total_loss_mape / num_batches if num_batches > 0 else 0.0
-    avg_loss_mae = total_loss_mae / num_batches if num_batches > 0 else 0.0
-    avg_loss_r2 = total_loss_r2 / num_batches if num_batches > 0 else 0.0
+    return _metrics(totals, "train")
 
-    return {
-        "train/mse": avg_loss_mse,
-        "train/rmse": avg_loss_rmse,
-        "train/mape": avg_loss_mape,
-        "train/mae": avg_loss_mae,
-        "train/r2": avg_loss_r2,
-    }  # Return the average loss values for logging
-
-def test_batch(model, criterion, data_loader, device, type="val"):
+def test_batch(model, criterion, data_loader, device, type="val", per_ticker=False):
     """
     Evaluates the model on a single batch of data.
 
@@ -103,12 +118,10 @@ def test_batch(model, criterion, data_loader, device, type="val"):
     Returns:
         float: The computed loss for the current batch.
     """
-    num_batches = 0 
-    total_loss_mse = 0.0
-    total_loss_rmse = 0.0
-    total_loss_mape = 0.0
-    total_loss_mae = 0.0
-    total_loss_r2 = 0.0
+    num_batches = 0
+    offset = 0
+    totals = _empty_totals()
+    ticker_totals = {}
     model.eval()  # Set the model to evaluation mode
     with torch.no_grad():  # Disable gradient computation
         for x_batch, labels_batch in data_loader:
@@ -118,30 +131,31 @@ def test_batch(model, criterion, data_loader, device, type="val"):
             labels_batch = labels_batch.to(device)
             # Forward pass
             outputs = model(x_batch)
-            loss_mse = criterion(outputs, labels_batch)
-            loss_mae, loss_rmse, loss_mape, loss_r2 = losses(outputs, labels_batch)
+            batch_totals = losses(outputs, labels_batch)
 
             num_batches += 1
+            _add_totals(totals, batch_totals)
 
-            total_loss_mse += loss_mse.item()
-            total_loss_rmse += loss_rmse.item()
-            total_loss_mape += loss_mape.item()
-            total_loss_mae += loss_mae.item()
-            total_loss_r2 += loss_r2.item()
+            if per_ticker:
+                outputs_cpu = outputs.cpu()
+                labels_cpu = labels_batch.cpu()
+                ticker_ids = data_loader.dataset.ticker_ids[offset:offset + labels_batch.numel()]
+                for ticker_id in torch.unique(ticker_ids).tolist():
+                    mask = ticker_ids == ticker_id
+                    ticker_total = ticker_totals.setdefault(ticker_id, _empty_totals())
+                    _add_totals(ticker_total, losses(outputs_cpu[mask], labels_cpu[mask]))
+                offset += labels_batch.numel()
 
-        avg_loss_mse = total_loss_mse / num_batches if num_batches > 0 else 0.0
-        avg_loss_rmse = total_loss_rmse / num_batches if num_batches > 0 else 0.0
-        avg_loss_mape = total_loss_mape / num_batches if num_batches > 0 else 0.0
-        avg_loss_mae = total_loss_mae / num_batches if num_batches > 0 else 0.0
-        avg_loss_r2 = total_loss_r2 / num_batches if num_batches > 0 else 0.0
+    ticker_metrics = []
+    for ticker_id, ticker_total in ticker_totals.items():
+        row = {
+            "ticker": data_loader.dataset.ticker_names[ticker_id],
+            "observations": ticker_total["observations"],
+        }
+        row.update({key.split("/", 1)[1]: value for key, value in _metrics(ticker_total, type).items()})
+        ticker_metrics.append(row)
 
-    return {
-        f"{type}/mse": avg_loss_mse,
-        f"{type}/rmse": avg_loss_rmse,
-        f"{type}/mape": avg_loss_mape,
-        f"{type}/mae": avg_loss_mae,
-        f"{type}/r2": avg_loss_r2,
-    }  # Return the average loss values for logging
+    return _metrics(totals, type), ticker_metrics
 
 def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, batch_size, device, name_run):
     """
@@ -165,11 +179,13 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
     print(f"DataLoaders created. Train batches: {len(train_dataloader)}, Val batches: {len(val_dataloader)}")
 
     best_val_loss = float('inf')  # Initialize best validation loss to infinity
+    os.makedirs("model/checkpoints", exist_ok=True)
+    checkpoint_path = f"model/checkpoints/{name_run}_best.pth"
 
     for epoch in range(num_epochs): 
         print(f"Starting epoch {epoch + 1}/{num_epochs}")
         train_metrics = train_batch(model, optimizer, criterion, train_dataloader, device)
-        val_metrics = test_batch(model, criterion, val_dataloader, device, type="val")
+        val_metrics, _ = test_batch(model, criterion, val_dataloader, device, type="val")
         epoch_logs = {**train_metrics, **val_metrics, "epoch": epoch + 1}
         wandb.log(epoch_logs)  # Log the epoch logs to wandb
 
@@ -179,15 +195,11 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
         current_val_loss = val_metrics['val/mse']
         print(f"Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_metrics['train/mse']:.4f}, Val Loss: {val_metrics['val/mse']:.4f}")
 
-        torch.autograd.set_detect_anomaly(True)  # Enable anomaly detection for debugging
-
         if current_val_loss < best_val_loss:
 
             best_val_loss = current_val_loss
             print(f"New best validation loss: {best_val_loss:.4f}. Saving model checkpoint...")
         
-            checkpoint_path = f"model/checkpoints/{name_run}_epoch_{epoch + 1}.pth"
-
             checkpoint = {
                 'epoch': epoch + 1,
                 'model_state_dict': model.state_dict(),
@@ -198,11 +210,11 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
             print(f"Saving model checkpoint to {checkpoint_path}...")
 
             torch.save(checkpoint, checkpoint_path)  # Save the model checkpoint
-            wandb.save(checkpoint_path)  # Save the checkpoint to wandb
         else:
             print(f"No improvement in validation loss. Current: {current_val_loss:.4f}, Best: {best_val_loss:.4f}")
 
-    return train_metrics, val_metrics  # Return the final training and validation metrics
+    wandb.save(checkpoint_path)
+    return checkpoint_path
 
 def parameters(model):
     # Total parameters (including frozen/non-trainable)
@@ -223,15 +235,12 @@ def parameters(model):
     print("-" * 50)
 
 def memory(): 
-    if torch.cuda.is_available():
-            # 1. Memory currently occupied by tensors/weights (in Bytes -> MB)
-            allocated_mb = torch.cuda.memory_allocated() / (1024 ** 2)
-            
-            # 2. Total memory reserved by PyTorch's caching allocator
-            reserved_mb = torch.cuda.memory_reserved() / (1024 ** 2)
-            
-            # 3. Peak memory used during the run (great for finding batch size limits)
-            max_allocated_mb = torch.cuda.max_memory_allocated() / (1024 ** 2)
+    if not torch.cuda.is_available():
+        return
+
+    allocated_mb = torch.cuda.memory_allocated() / (1024 ** 2)
+    reserved_mb = torch.cuda.memory_reserved() / (1024 ** 2)
+    max_allocated_mb = torch.cuda.max_memory_allocated() / (1024 ** 2)
 
     print(f"Allocated VRAM: {allocated_mb:.2f} MB")
     print(f"Reserved VRAM:  {reserved_mb:.2f} MB")
