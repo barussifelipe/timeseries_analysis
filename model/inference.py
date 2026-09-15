@@ -160,7 +160,7 @@ if __name__ == "__main__":
         ])
         final_logs.update({f"final/{key}": value for key, value in values.items()})
 
-    final_logs["final/loss_table"] = wandb.Table(
+    final_logs["loss_summary_table"] = wandb.Table(
         columns=["split", "observations", "tickers", *metric_names],
         data=summary_rows,
     )
@@ -168,15 +168,35 @@ if __name__ == "__main__":
     for split in ("val", "test"):
         rows = ticker_metrics[split]
         best = sorted(rows, key=lambda row: row["mse"])[:15]
-        final_logs[f"final/{split}_best_15_tickers"] = wandb.Table(
+        final_logs[f"{split}_best_15_tickers"] = wandb.Table(
             columns=ticker_columns,
             data=[[row[column] for column in ticker_columns] for row in best],
         )
         for metric in metric_names:
             values = [row[metric] for row in rows if math.isfinite(row[metric])]
-            final_logs[f"final/{split}_{metric}_ticker_distribution"] = wandb.Histogram(values)
+            cutoff = sorted(values)[math.ceil(0.99 * len(values)) - 1]
+            for suffix, plotted_values in (
+                ("", values),
+                ("_central_99pct", [value for value in values if value <= cutoff]),
+            ):
+                table = wandb.Table(
+                    columns=[metric],
+                    data=[[value] for value in plotted_values],
+                )
+                final_logs[f"{split}_{metric}_ticker_distribution{suffix}"] = wandb.plot.histogram(
+                    table,
+                    value=metric,
+                    title=f"{split} {metric.upper()} per ticker{suffix.replace('_', ' ')}",
+                )
+            final_logs[f"{split}_{metric}_p99"] = cutoff
+            final_logs[f"{split}_{metric}_outliers_above_p99"] = sum(
+                value > cutoff for value in values
+            )
 
     run.log(final_logs)
+    for split, metrics in final_metrics.items():
+        for key, value in metrics.items():
+            run.summary[f"final/{key}"] = value
     run.finish()
 
     print("Final metrics:", final_metrics)
