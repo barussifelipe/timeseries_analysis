@@ -1,4 +1,18 @@
-# NAME: 
+# NAME: Volatility Forecasting: A statistical and Deep Learning approach 
+
+## QUESTIONS
+1. What are the changes you'd do to this plan? Is this good enough for a thesis? Is there any paper you'd like me to read? 
+2. Can we define the cronogram in the following way: I finish this implementation in a week or week and a half. I write it it in a week? And then final revision? I need to deliver by 09 of October and send the request of laurea on the 20th of September, where you'd need to sign it. 
+3. Is the name ok or do you have a suggestion? 
+4. How will the VVSI project be graded? I'd need it graded and registered until the 20th of September since I need to send my request. 
+
+## NOTES 
+1. Adjust the MAPE. 
+2. Table of losses. 
+3. In the validation/testing, use the network to compute for a single ticket. Make the distribution of the error. 
+4. Use the full data. 
+5. Separate the code for VVSI. 
+
 
 ## OBJECTIVE
 1. Provide a comprehensive comparison between statistical/econometric and ML (Machine Learning) models in order to determine which is more efficient in predicting Realized Volatility (RV), as a proxy of Implied Volatility (IV), as a step to build a model in order to optimize a portfolio construction. [1.1](thesis_notes.md#notes---11---hard-to-beat-the-overlooked-impact-of-rolling-windows-in-the-era-of-machine-learning-httpsarxivorgabs240608041) [4.1](thesis_notes.md#notes---41---forecasting-realized-volatility-with-time-series-foundation-models-a-comparison-with-econometric-benchmarks-httpsarxivorgabs260705291)

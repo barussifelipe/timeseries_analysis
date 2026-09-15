@@ -26,7 +26,7 @@ if __name__ == "__main__":
     learning_rate = 1e-4
     batch_size = 128
     hidden_size = 64
-    window_size = 30
+    window_size = 30 #10, 30, 100 
     run_name = f"newfeatures_run_bs{batch_size}_hs{hidden_size}_ws{window_size}_lr{learning_rate}_epochs{epochs}"
 
     wandb.init(
