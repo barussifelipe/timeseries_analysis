@@ -12,6 +12,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from training import * 
 import wandb
 import sqlite3
+import matplotlib.pyplot as plt
 from model import FEBLSTM
 from data.data_fetching import (
     HISTORY_DB,
@@ -172,26 +173,29 @@ if __name__ == "__main__":
             columns=ticker_columns,
             data=[[row[column] for column in ticker_columns] for row in best],
         )
-        for metric in metric_names:
+        figure, axes = plt.subplots(len(metric_names), 2, figsize=(14, 18))
+        for index, metric in enumerate(metric_names):
             values = [row[metric] for row in rows if math.isfinite(row[metric])]
-            cutoff = sorted(values)[math.ceil(0.99 * len(values)) - 1]
-            for suffix, plotted_values in (
-                ("", values),
-                ("_central_99pct", [value for value in values if value <= cutoff]),
+            ordered = sorted(values)
+            lower = ordered[math.floor(0.005 * (len(ordered) - 1))]
+            upper = ordered[math.ceil(0.995 * len(ordered)) - 1]
+            central = [value for value in values if lower <= value <= upper]
+            for axis, plotted, title in (
+                (axes[index, 0], values, "full range"),
+                (axes[index, 1], central, "central 99%"),
             ):
-                table = wandb.Table(
-                    columns=[metric],
-                    data=[[value] for value in plotted_values],
-                )
-                final_logs[f"{split}_{metric}_ticker_distribution{suffix}"] = wandb.plot.histogram(
-                    table,
-                    value=metric,
-                    title=f"{split} {metric.upper()} per ticker{suffix.replace('_', ' ')}",
-                )
-            final_logs[f"{split}_{metric}_p99"] = cutoff
-            final_logs[f"{split}_{metric}_outliers_above_p99"] = sum(
-                value > cutoff for value in values
-            )
+                axis.hist(plotted, bins=50)
+                axis.set_title(f"{metric.upper()} — {title}")
+                axis.set_xlabel(metric.upper())
+                axis.set_ylabel("Ticker frequency")
+                axis.grid(axis="y", alpha=0.25)
+            final_logs[f"{split}_{metric}_central_lower"] = lower
+            final_logs[f"{split}_{metric}_central_upper"] = upper
+            final_logs[f"{split}_{metric}_outliers"] = len(values) - len(central)
+        figure.suptitle(f"{split.title()} losses per ticker")
+        figure.tight_layout()
+        final_logs[f"{split}_ticker_loss_distributions"] = wandb.Image(figure)
+        plt.close(figure)
 
     run.log(final_logs)
     for split, metrics in final_metrics.items():
