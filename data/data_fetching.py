@@ -20,6 +20,8 @@ HISTORY_COLUMNS = ['Open', 'High', 'Low', 'Close', 'Volume']
 DATA_DIRECTORY = r'D:\DBs\timeseries_analysis'
 HISTORY_DB = rf'{DATA_DIRECTORY}\history_coverage.db'
 STOCK_DB = rf'{DATA_DIRECTORY}\stock_data.db'
+RETURN_START = '2006-01-01'
+RETURN_END = '2026-01-01'
 
 
 def _create_history_tables(conn):
@@ -344,6 +346,59 @@ def load_data(conn, table_name):
 
     return df_train, df_val, df_test
 
+
+def prepare_return_tickers(conn, limit=3000):
+    """Select the longest-lived tickers in the fixed 20-year return period."""
+    conn.execute('DROP TABLE IF EXISTS temp.selected_return_tickers')
+    conn.execute('''
+        CREATE TEMP TABLE selected_return_tickers AS
+        SELECT Ticker, COUNT(*) AS observations
+        FROM raw_history
+        WHERE Date >= ? AND Date < ?
+          AND Open > 0 AND High > 0 AND Low > 0 AND Close > 0 AND Volume > 0
+        GROUP BY Ticker
+        ORDER BY observations DESC, Ticker
+        LIMIT ?
+    ''', (RETURN_START, RETURN_END, limit))
+    conn.execute(
+        'CREATE INDEX temp.selected_return_tickers_ticker '
+        'ON selected_return_tickers(Ticker)'
+    )
+    return conn.execute('SELECT COUNT(*) FROM selected_return_tickers').fetchone()[0]
+
+
+def load_return_split(conn, start, end):
+    """Load adjusted-price return features for one chronological split."""
+    context_start = max(
+        pd.Timestamp(RETURN_START),
+        pd.Timestamp(start) - pd.Timedelta(days=31),
+    ).strftime('%Y-%m-%d')
+    query = '''
+        WITH lagged AS (
+            SELECT r.Date, r.Ticker, r.Open, r.High, r.Low, r.Close, r.Volume,
+                   LAG(r.Close) OVER (PARTITION BY r.Ticker ORDER BY r.Date) AS previous_close
+            FROM raw_history r
+            JOIN selected_return_tickers s ON s.Ticker = r.Ticker
+            WHERE r.Date >= ? AND r.Date < ?
+              AND r.Open > 0 AND r.High > 0 AND r.Low > 0
+              AND r.Close > 0 AND r.Volume > 0
+        )
+        SELECT Date, Ticker,
+               (High - Low) / Close AS range_pct,
+               LN(Volume) AS log_volume,
+               (Open - previous_close) / previous_close AS overnight_returns,
+               (Close - Open) / Open AS intraday_returns
+        FROM lagged
+        WHERE Date >= ? AND previous_close > 0
+        ORDER BY Ticker, Date
+    '''
+    return pd.read_sql_query(
+        query,
+        conn,
+        params=(context_start, end, start),
+        parse_dates=['Date'],
+    )
+
 def fit_zscore_stats(df_train, column='log_volume'):
     """
     Computes per-ticker mean/std for a column using the training split only.
@@ -434,11 +489,14 @@ class TimeSeriesDataset(Dataset):
         self.data = []
         self.targets = []
         self.valid_indices = []
+        self.ticker_ids = []
+        self.ticker_names = []
 
         current_idx = 0
-        for _, ticker_frame in dataframe.groupby('Ticker', sort=False):
+        for ticker_id, (ticker, ticker_frame) in enumerate(dataframe.groupby('Ticker', sort=False)):
             ticker_frame = ticker_frame.sort_values(by='Date')
             clean_frame = ticker_frame.replace([np.inf, -np.inf], np.nan).fillna(0)
+            self.ticker_names.append(ticker)
 
             feature_tensor = torch.tensor(
                 clean_frame[self.feature_columns].to_numpy(dtype=np.float32),
@@ -456,17 +514,33 @@ class TimeSeriesDataset(Dataset):
             max_start_idx = count - self.window_size
 
             if max_start_idx > 0:
-                for i in range(max_start_idx):
-                    self.valid_indices.append(current_idx + i)
+                self.valid_indices.append(torch.arange(
+                    current_idx,
+                    current_idx + max_start_idx,
+                    dtype=torch.int64,
+                ))
+                self.ticker_ids.append(torch.full(
+                    (max_start_idx,), ticker_id, dtype=torch.int32
+                ))
 
             current_idx += count
 
         if self.data:
             self.data = torch.cat(self.data, dim=0)
             self.targets = torch.cat(self.targets, dim=0)
+            self.valid_indices = (
+                torch.cat(self.valid_indices)
+                if self.valid_indices else torch.empty(0, dtype=torch.int64)
+            )
+            self.ticker_ids = (
+                torch.cat(self.ticker_ids)
+                if self.ticker_ids else torch.empty(0, dtype=torch.int32)
+            )
         else:
             self.data = torch.empty((0, self.input_size), dtype=torch.float32)
             self.targets = torch.empty((0, 1), dtype=torch.float32)
+            self.valid_indices = torch.empty(0, dtype=torch.int64)
+            self.ticker_ids = torch.empty(0, dtype=torch.int32)
         
     def __len__(self):
         # If we have 100 days and window is 30, we can make 70 windows
@@ -474,7 +548,7 @@ class TimeSeriesDataset(Dataset):
         
     def __getitem__(self, idx):
         # Extract the 30-day window
-        start_idx = self.valid_indices[idx]
+        start_idx = self.valid_indices[idx].item()
         end_idx = start_idx + self.window_size 
         x_window = self.data[start_idx : end_idx] #To test only with the returns. 
 
