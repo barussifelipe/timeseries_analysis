@@ -187,7 +187,8 @@ if __name__ == "__main__":
     metric_names = ("mse", "rmse", "mae", "smape", "r2")
     summary_columns = ["split", "observations", "tickers", *metric_names]
     summary_rows = []
-    final_logs = {"best_epoch": best_epoch}
+    final_logs = {}
+    final_values = {"best_epoch": best_epoch}
     for split, dataset in (
         ("train", train_dataset),
         ("val", val_dataset),
@@ -200,7 +201,7 @@ if __name__ == "__main__":
             torch.unique(dataset.ticker_ids).numel(),
             *(values[f"{split}/{metric}"] for metric in metric_names),
         ])
-        final_logs.update({f"final/{key}": value for key, value in values.items()})
+        final_values.update({f"final/{key}": value for key, value in values.items()})
 
     report_dir = Path(checkpoint_path).with_suffix("")
     report_dir.mkdir(exist_ok=True)
@@ -240,9 +241,9 @@ if __name__ == "__main__":
                 axis.set_xlabel(metric.upper())
                 axis.set_ylabel("Ticker frequency")
                 axis.grid(axis="y", alpha=0.25)
-            final_logs[f"{split}_{metric}_central_lower"] = lower
-            final_logs[f"{split}_{metric}_central_upper"] = upper
-            final_logs[f"{split}_{metric}_outliers"] = len(values) - len(central)
+            final_values[f"{split}_{metric}_central_lower"] = lower
+            final_values[f"{split}_{metric}_central_upper"] = upper
+            final_values[f"{split}_{metric}_outliers"] = len(values) - len(central)
         figure.suptitle(f"{split.title()} losses per ticker")
         figure.tight_layout()
         distribution_path = report_dir / f"{split}_ticker_loss_distributions.png"
@@ -251,10 +252,7 @@ if __name__ == "__main__":
         plt.close(figure)
 
     run.log(final_logs)
-    run.summary["best_epoch"] = best_epoch
-    for split, metrics in final_metrics.items():
-        for key, value in metrics.items():
-            run.summary[f"final/{key}"] = value
+    run.summary.update(final_values)
     run.summary["final_summary"] = final_summary
     report_artifact = wandb.Artifact(f"{run.id}-evaluation", type="evaluation")
     report_artifact.add_dir(str(report_dir))
