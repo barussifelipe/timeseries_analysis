@@ -12,6 +12,8 @@ if str(PROJECT_ROOT) not in sys.path:
 from training import * 
 import wandb
 import sqlite3
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from model import FEBLSTM
 from data.data_fetching import (
@@ -22,6 +24,46 @@ from data.data_fetching import (
     fit_zscore_stats,
     apply_zscore,
 )
+
+
+def save_table_image(columns, rows, path, title):
+    display_rows = [
+        [f"{value:.6g}" if isinstance(value, float) else str(value) for value in row]
+        for row in rows
+    ]
+    figure, axis = plt.subplots(figsize=(16, 1.2 + 0.42 * len(rows)))
+    axis.axis("off")
+    axis.set_title(title, pad=12)
+    table = axis.table(cellText=display_rows, colLabels=columns, loc="center")
+    table.auto_set_font_size(False)
+    table.set_fontsize(9)
+    table.scale(1, 1.35)
+    figure.tight_layout()
+    figure.savefig(path, dpi=200, bbox_inches="tight")
+    plt.close(figure)
+
+
+def save_summary_latex(columns, rows, path):
+    alignments = "l" + "r" * (len(columns) - 1)
+    lines = [
+        r"\begin{table}[htbp]",
+        r"\centering",
+        r"\caption{Final metrics from the best-validation LSTM checkpoint.}",
+        r"\label{tab:lstm-final-summary}",
+        rf"\begin{{tabular}}{{{alignments}}}",
+        r"\hline",
+        " & ".join(columns) + r" \\",
+        r"\hline",
+    ]
+    lines.extend(
+        " & ".join(
+            f"{value:.6g}" if isinstance(value, float) else str(value)
+            for value in row
+        ) + r" \\"
+        for row in rows
+    )
+    lines.extend([r"\hline", r"\end{tabular}", r"\end{table}", ""])
+    path.write_text("\n".join(lines), encoding="utf-8")
 
 
 if __name__ == "__main__":
@@ -143,6 +185,7 @@ if __name__ == "__main__":
         ticker_metrics[split] = per_ticker
 
     metric_names = ("mse", "rmse", "mae", "smape", "r2")
+    summary_columns = ["split", "observations", "tickers", *metric_names]
     summary_rows = []
     final_logs = {"best_epoch": best_epoch}
     for split, dataset in (
@@ -159,21 +202,31 @@ if __name__ == "__main__":
         ])
         final_logs.update({f"final/{key}": value for key, value in values.items()})
 
-    final_logs["loss_summary_table"] = wandb.Table(
-        columns=["split", "observations", "tickers", *metric_names],
-        data=summary_rows,
-    )
+    report_dir = Path(checkpoint_path).with_suffix("")
+    report_dir.mkdir(exist_ok=True)
+    summary_path = report_dir / "final_summary.tex"
+    save_summary_latex(summary_columns, summary_rows, summary_path)
+    final_summary = wandb.Table(columns=summary_columns, data=summary_rows)
+    final_logs["final_summary"] = final_summary
     ticker_columns = ["ticker", "observations", *metric_names]
     for split in ("val", "test"):
         rows = ticker_metrics[split]
         best = sorted(rows, key=lambda row: row["mse"])[:15]
+        best_rows = [[row[column] for column in ticker_columns] for row in best]
         final_logs[f"{split}_best_15_tickers"] = wandb.Table(
             columns=ticker_columns,
-            data=[[row[column] for column in ticker_columns] for row in best],
+            data=best_rows,
         )
+        table_path = report_dir / f"{split}_best_15_tickers.png"
+        save_table_image(
+            ticker_columns, best_rows, table_path,
+            f"{split.title()} best 15 tickers by MSE",
+        )
+        final_logs[f"{split}_best_15_tickers_image"] = wandb.Image(str(table_path))
         figure, axes = plt.subplots(len(metric_names), 2, figsize=(14, 18))
         for index, metric in enumerate(metric_names):
             values = [row[metric] for row in rows if math.isfinite(row[metric])]
+            final_logs[f"{split}_{metric}_histogram"] = wandb.Histogram(values)
             ordered = sorted(values)
             lower = ordered[math.floor(0.005 * (len(ordered) - 1))]
             upper = ordered[math.ceil(0.995 * len(ordered)) - 1]
@@ -192,16 +245,27 @@ if __name__ == "__main__":
             final_logs[f"{split}_{metric}_outliers"] = len(values) - len(central)
         figure.suptitle(f"{split.title()} losses per ticker")
         figure.tight_layout()
-        final_logs[f"{split}_ticker_loss_distributions"] = wandb.Image(figure)
+        distribution_path = report_dir / f"{split}_ticker_loss_distributions.png"
+        figure.savefig(distribution_path, dpi=200, bbox_inches="tight")
+        final_logs[f"{split}_ticker_loss_distributions"] = wandb.Image(str(distribution_path))
         plt.close(figure)
 
     run.log(final_logs)
+    run.summary["best_epoch"] = best_epoch
     for split, metrics in final_metrics.items():
         for key, value in metrics.items():
             run.summary[f"final/{key}"] = value
+    run.summary["final_summary"] = final_summary
+    report_artifact = wandb.Artifact(f"{run.id}-evaluation", type="evaluation")
+    report_artifact.add_dir(str(report_dir))
+    run.log_artifact(report_artifact)
     run.finish()
 
-    print("Final metrics:", final_metrics)
+    print(f"Final report saved to {report_dir}")
+    print("Final summary:")
+    print(" | ".join(summary_columns))
+    for row in summary_rows:
+        print(" | ".join(f"{value:.6g}" if isinstance(value, float) else str(value) for value in row))
 
 
     
