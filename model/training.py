@@ -193,12 +193,12 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
             memory() 
 
         current_val_loss = val_metrics['val/mse']
-        print(f"Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_metrics['train/mse']:.4f}, Val Loss: {val_metrics['val/mse']:.4f}")
+        print(f"Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_metrics['train/mse']:.8f}, Val Loss: {val_metrics['val/mse']:.8f}")
 
         if current_val_loss < best_val_loss:
 
             best_val_loss = current_val_loss
-            print(f"New best validation loss: {best_val_loss:.4f}. Saving model checkpoint...")
+            print(f"New best validation loss: {best_val_loss:.8f}. Saving model checkpoint...")
         
             checkpoint = {
                 'epoch': epoch + 1,
@@ -211,7 +211,7 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
 
             torch.save(checkpoint, checkpoint_path)  # Save the model checkpoint
         else:
-            print(f"No improvement in validation loss. Current: {current_val_loss:.4f}, Best: {best_val_loss:.4f}")
+            print(f"No improvement in validation loss. Current: {current_val_loss:.8f}, Best: {best_val_loss:.8f}")
 
     wandb.save(checkpoint_path)
     return checkpoint_path
