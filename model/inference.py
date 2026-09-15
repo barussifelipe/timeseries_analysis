@@ -28,7 +28,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs", type=int, default=50)
     parser.add_argument("--window-size", type=int, choices=(10, 30, 100), default=30)
-    parser.add_argument("--ticker-limit", type=int, default=3000)
     parser.add_argument("--run-name")
     args = parser.parse_args()
 
@@ -56,8 +55,7 @@ if __name__ == "__main__":
             "batch_size": batch_size,
             "hidden_size": hidden_size,
             "window_size": window_size,
-            "ticker_limit": args.ticker_limit,
-            "ticker_selection": "most observations, then ticker name",
+            "ticker_selection": "complete 20y coverage",
             "data_start": "2006-01-01",
             "data_end_exclusive": "2026-01-01",
             "target": "next-day overnight_returns",
@@ -66,7 +64,7 @@ if __name__ == "__main__":
     )
     print(f"Initializing model with hidden size: {hidden_size}, window size: {window_size}, learning rate: {learning_rate}, epochs: {epochs}, batch size: {batch_size}")
     type_return = 'overnight_returns'
-    ticker_count = prepare_return_tickers(conn, args.ticker_limit)
+    ticker_count = prepare_return_tickers(conn)
     print(f"Selected {ticker_count} tickers. Loading train split...")
     df_train = load_return_split(conn, '2006-01-01', '2016-01-01')
 

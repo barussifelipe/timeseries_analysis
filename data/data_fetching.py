@@ -347,19 +347,18 @@ def load_data(conn, table_name):
     return df_train, df_val, df_test
 
 
-def prepare_return_tickers(conn, limit=3000):
-    """Select the longest-lived tickers in the fixed 20-year return period."""
+def prepare_return_tickers(conn):
+    """Select tickers with complete OHLCV coverage for the full 20 years."""
     conn.execute('DROP TABLE IF EXISTS temp.selected_return_tickers')
     conn.execute('''
         CREATE TEMP TABLE selected_return_tickers AS
-        SELECT Ticker, COUNT(*) AS observations
-        FROM raw_history
-        WHERE Date >= ? AND Date < ?
-          AND Open > 0 AND High > 0 AND Low > 0 AND Close > 0 AND Volume > 0
-        GROUP BY Ticker
-        ORDER BY observations DESC, Ticker
-        LIMIT ?
-    ''', (RETURN_START, RETURN_END, limit))
+        SELECT c.ticker AS Ticker
+        FROM history_coverage c
+        JOIN history_downloads d ON d.ticker = c.ticker
+        WHERE c.period = '20y' AND c.after_na = 1
+          AND d.active = 1 AND d.status = 'success'
+        ORDER BY c.ticker
+    ''')
     conn.execute(
         'CREATE INDEX temp.selected_return_tickers_ticker '
         'ON selected_return_tickers(Ticker)'
