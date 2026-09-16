@@ -238,6 +238,11 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
         raise RuntimeError("Training produced no finite validation checkpoint.")
     final_checkpoint_path = f"model/checkpoints/{name_run}_best_epoch{best_epoch}.pth"
     os.replace(checkpoint_path, final_checkpoint_path)
+    final_checkpoint_name = os.path.basename(final_checkpoint_path)
+    checkpoint_prefix = f"{name_run}_best_epoch"
+    for filename in os.listdir("model/checkpoints"):
+        if filename.startswith(checkpoint_prefix) and filename.endswith(".pth") and filename != final_checkpoint_name:
+            os.remove(os.path.join("model/checkpoints", filename))
     print(f"Best checkpoint saved as {final_checkpoint_path}")
     wandb.save(final_checkpoint_path)
     return final_checkpoint_path

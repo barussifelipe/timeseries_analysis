@@ -15,8 +15,12 @@ def test_learning_rate_retry_and_early_stop():
     logs = []
     final_path = Path("model/checkpoints/patience_check_best_epoch1.pth")
     temporary_path = Path("model/checkpoints/patience_check_best.pth")
+    previous_path = Path("model/checkpoints/patience_check_best_epoch9.pth")
+    unrelated_path = Path("model/checkpoints/other_run_best_epoch9.pth")
 
     try:
+        previous_path.write_bytes(b"old checkpoint")
+        unrelated_path.write_bytes(b"unrelated checkpoint")
         with (
             patch.object(training, "train_batch", return_value={"train/mse": 1.0}),
             patch.object(
@@ -38,9 +42,13 @@ def test_learning_rate_retry_and_early_stop():
         assert logs[2]["learning_rate"] == 0.1
         assert abs(logs[3]["learning_rate"] - 0.01) < 1e-12
         assert abs(optimizer.param_groups[0]["lr"] - 0.01) < 1e-12
+        assert not previous_path.exists()
+        assert unrelated_path.exists()
     finally:
         final_path.unlink(missing_ok=True)
         temporary_path.unlink(missing_ok=True)
+        previous_path.unlink(missing_ok=True)
+        unrelated_path.unlink(missing_ok=True)
 
 
 if __name__ == "__main__":
