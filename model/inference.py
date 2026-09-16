@@ -33,11 +33,18 @@ def save_table_image(columns, rows, path, title):
     ]
     figure, axis = plt.subplots(figsize=(16, 1.2 + 0.42 * len(rows)))
     axis.axis("off")
-    axis.set_title(title, pad=12)
     table = axis.table(cellText=display_rows, colLabels=columns, loc="center")
     table.auto_set_font_size(False)
     table.set_fontsize(9)
     table.scale(1, 1.35)
+    for column, reverse in {"mse": False, "rmse": False, "mae": False, "smape": False, "r2": True}.items():
+        column_index = columns.index(column)
+        ranked_rows = sorted(range(len(rows)), key=lambda index: rows[index][column_index], reverse=reverse)
+        for row_index, color in zip(ranked_rows[:2], ("red", "blue")):
+            text = table[(row_index + 1, column_index)].get_text()
+            text.set_color(color)
+            text.set_weight("bold")
+    axis.set_title(f"{title}\nRed = best; blue = second best", pad=12)
     figure.tight_layout()
     figure.savefig(path, dpi=200, bbox_inches="tight")
     plt.close(figure)
