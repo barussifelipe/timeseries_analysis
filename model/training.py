@@ -179,6 +179,7 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
     print(f"DataLoaders created. Train batches: {len(train_dataloader)}, Val batches: {len(val_dataloader)}")
 
     best_val_loss = float('inf')  # Initialize best validation loss to infinity
+    best_epoch = None
     os.makedirs("model/checkpoints", exist_ok=True)
     checkpoint_path = f"model/checkpoints/{name_run}_best.pth"
 
@@ -198,6 +199,7 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
         if current_val_loss < best_val_loss:
 
             best_val_loss = current_val_loss
+            best_epoch = epoch + 1
             print(f"New best validation loss: {best_val_loss:.8f}. Saving model checkpoint...")
         
             checkpoint = {
@@ -213,8 +215,13 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
         else:
             print(f"No improvement in validation loss. Current: {current_val_loss:.8f}, Best: {best_val_loss:.8f}")
 
-    wandb.save(checkpoint_path)
-    return checkpoint_path
+    if best_epoch is None:
+        raise RuntimeError("Training produced no finite validation checkpoint.")
+    final_checkpoint_path = f"model/checkpoints/{name_run}_best_epoch{best_epoch}.pth"
+    os.replace(checkpoint_path, final_checkpoint_path)
+    print(f"Best checkpoint saved as {final_checkpoint_path}")
+    wandb.save(final_checkpoint_path)
+    return final_checkpoint_path
 
 def parameters(model):
     # Total parameters (including frozen/non-trainable)
