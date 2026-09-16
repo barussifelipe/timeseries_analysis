@@ -85,6 +85,82 @@ def save_summary_latex(columns, rows, path):
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
+def evaluate_splits(model, criterion, datasets, batch_size, device):
+    final_metrics = {}
+    ticker_metrics = {}
+    for split, dataset in datasets.items():
+        loader = DataLoader(
+            dataset, batch_size=batch_size, shuffle=False,
+            num_workers=4, pin_memory=True,
+        )
+        metrics, per_ticker = test_batch(
+            model, criterion, loader, device, type=split,
+            per_ticker=split != "train",
+        )
+        final_metrics[split] = metrics
+        ticker_metrics[split] = per_ticker
+    return final_metrics, ticker_metrics
+
+
+def build_final_report(checkpoint_path, best_epoch, datasets, final_metrics, ticker_metrics):
+    metric_names = ("mse", "rmse", "mae", "smape", "r2")
+    summary_columns = ["split", "observations", "tickers", *metric_names]
+    summary_rows = []
+    final_logs = {}
+    final_values = {"best_epoch": best_epoch}
+    for split, dataset in datasets.items():
+        values = final_metrics[split]
+        summary_rows.append([
+            split,
+            len(dataset),
+            torch.unique(dataset.ticker_ids).numel(),
+            *(values[f"{split}/{metric}"] for metric in metric_names),
+        ])
+        final_values.update({f"final/{key}": value for key, value in values.items()})
+
+    report_dir = Path(checkpoint_path).with_suffix("")
+    report_dir.mkdir(exist_ok=True)
+    save_summary_latex(summary_columns, summary_rows, report_dir / "final_summary.tex")
+    final_summary = wandb.Table(columns=summary_columns, data=summary_rows)
+    final_logs["final_summary"] = final_summary
+    ticker_columns = ["ticker", "observations", *metric_names]
+    for split in ("val", "test"):
+        rows = ticker_metrics[split]
+        best = sorted(rows, key=lambda row: row["mse"])[:15]
+        best_rows = [[row[column] for column in ticker_columns] for row in best]
+        final_logs[f"{split}_best_15_tickers"] = wandb.Table(
+            columns=ticker_columns,
+            data=best_rows,
+        )
+        table_path = report_dir / f"{split}_best_15_tickers.png"
+        save_table_image(
+            ticker_columns, best_rows, table_path,
+            f"{split.title()} best 15 tickers by MSE",
+        )
+        final_logs[f"{split}_best_15_tickers_image"] = wandb.Image(str(table_path))
+        for metric in metric_names:
+            values = [row[metric] for row in rows if math.isfinite(row[metric])]
+            ordered = sorted(values)
+            lower = ordered[math.floor(0.005 * (len(ordered) - 1))]
+            upper = ordered[math.ceil(0.995 * len(ordered)) - 1]
+            central = [value for value in values if lower <= value <= upper]
+            for plotted, title, suffix in (
+                (values, "full range", "full"),
+                (central, "central 99%", "central_99"),
+            ):
+                histogram_path = report_dir / f"{split}_{metric}_{suffix}.png"
+                save_histogram(
+                    plotted, histogram_path,
+                    f"{split.title()} {metric.upper()} — {title}", metric.upper(),
+                )
+                final_logs[f"{split}_{metric}_{suffix}"] = wandb.Image(str(histogram_path))
+            final_values[f"{split}_{metric}_central_lower"] = lower
+            final_values[f"{split}_{metric}_central_upper"] = upper
+            final_values[f"{split}_{metric}_outliers"] = len(values) - len(central)
+
+    return final_logs, final_values, summary_columns, summary_rows, report_dir
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs", type=int, default=50)
@@ -193,83 +269,13 @@ if __name__ == "__main__":
     )
     model, best_epoch, _, _ = load_model(model, checkpoint_path)
 
-    final_metrics = {}
-    ticker_metrics = {}
-    for split, dataset in (
-        ("train", train_dataset),
-        ("val", val_dataset),
-        ("test", test_dataset),
-    ):
-        loader = DataLoader(
-            dataset, batch_size=batch_size, shuffle=False,
-            num_workers=4, pin_memory=True,
-        )
-        metrics, per_ticker = test_batch(
-            model, criterion, loader, device, type=split,
-            per_ticker=split != "train",
-        )
-        final_metrics[split] = metrics
-        ticker_metrics[split] = per_ticker
-
-    metric_names = ("mse", "rmse", "mae", "smape", "r2")
-    summary_columns = ["split", "observations", "tickers", *metric_names]
-    summary_rows = []
-    final_logs = {}
-    final_values = {"best_epoch": best_epoch}
-    for split, dataset in (
-        ("train", train_dataset),
-        ("val", val_dataset),
-        ("test", test_dataset),
-    ):
-        values = final_metrics[split]
-        summary_rows.append([
-            split,
-            len(dataset),
-            torch.unique(dataset.ticker_ids).numel(),
-            *(values[f"{split}/{metric}"] for metric in metric_names),
-        ])
-        final_values.update({f"final/{key}": value for key, value in values.items()})
-
-    report_dir = Path(checkpoint_path).with_suffix("")
-    report_dir.mkdir(exist_ok=True)
-    summary_path = report_dir / "final_summary.tex"
-    save_summary_latex(summary_columns, summary_rows, summary_path)
-    final_summary = wandb.Table(columns=summary_columns, data=summary_rows)
-    final_logs["final_summary"] = final_summary
-    ticker_columns = ["ticker", "observations", *metric_names]
-    for split in ("val", "test"):
-        rows = ticker_metrics[split]
-        best = sorted(rows, key=lambda row: row["mse"])[:15]
-        best_rows = [[row[column] for column in ticker_columns] for row in best]
-        final_logs[f"{split}_best_15_tickers"] = wandb.Table(
-            columns=ticker_columns,
-            data=best_rows,
-        )
-        table_path = report_dir / f"{split}_best_15_tickers.png"
-        save_table_image(
-            ticker_columns, best_rows, table_path,
-            f"{split.title()} best 15 tickers by MSE",
-        )
-        final_logs[f"{split}_best_15_tickers_image"] = wandb.Image(str(table_path))
-        for metric in metric_names:
-            values = [row[metric] for row in rows if math.isfinite(row[metric])]
-            ordered = sorted(values)
-            lower = ordered[math.floor(0.005 * (len(ordered) - 1))]
-            upper = ordered[math.ceil(0.995 * len(ordered)) - 1]
-            central = [value for value in values if lower <= value <= upper]
-            for plotted, title, suffix in (
-                (values, "full range", "full"),
-                (central, "central 99%", "central_99"),
-            ):
-                histogram_path = report_dir / f"{split}_{metric}_{suffix}.png"
-                save_histogram(
-                    plotted, histogram_path,
-                    f"{split.title()} {metric.upper()} — {title}", metric.upper(),
-                )
-                final_logs[f"{split}_{metric}_{suffix}"] = wandb.Image(str(histogram_path))
-            final_values[f"{split}_{metric}_central_lower"] = lower
-            final_values[f"{split}_{metric}_central_upper"] = upper
-            final_values[f"{split}_{metric}_outliers"] = len(values) - len(central)
+    datasets = {"train": train_dataset, "val": val_dataset, "test": test_dataset}
+    final_metrics, ticker_metrics = evaluate_splits(
+        model, criterion, datasets, batch_size, device,
+    )
+    final_logs, final_values, summary_columns, summary_rows, report_dir = build_final_report(
+        checkpoint_path, best_epoch, datasets, final_metrics, ticker_metrics,
+    )
 
     run.log(final_logs)
     run.summary.update(final_values)
