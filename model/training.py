@@ -157,7 +157,7 @@ def test_batch(model, criterion, data_loader, device, type="val", per_ticker=Fal
 
     return _metrics(totals, type), ticker_metrics
 
-def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, batch_size, device, name_run):
+def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, batch_size, device, name_run, patience=10):
     """
     Trains the given model using the provided training data and true prices.
 
@@ -172,6 +172,9 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
         device (torch.device): The device to run the training on (CPU or GPU).
         name_run (str): The name of the current training run for logging purposes.
     """
+    if patience < 1:
+        raise ValueError("patience must be at least 1")
+
     # Create DataLoaders for training and validation data
     print(f"Creating DataLoaders with batch size: {batch_size}")
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True)
@@ -180,6 +183,8 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
 
     best_val_loss = float('inf')  # Initialize best validation loss to infinity
     best_epoch = None
+    epochs_without_improvement = 0
+    learning_rate_reduced = False
     os.makedirs("model/checkpoints", exist_ok=True)
     checkpoint_path = f"model/checkpoints/{name_run}_best.pth"
 
@@ -187,7 +192,10 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
         print(f"Starting epoch {epoch + 1}/{num_epochs}")
         train_metrics = train_batch(model, optimizer, criterion, train_dataloader, device)
         val_metrics, _ = test_batch(model, criterion, val_dataloader, device, type="val")
-        epoch_logs = {**train_metrics, **val_metrics, "epoch": epoch + 1}
+        epoch_logs = {
+            **train_metrics, **val_metrics, "epoch": epoch + 1,
+            "learning_rate": optimizer.param_groups[0]["lr"],
+        }
         wandb.log(epoch_logs)  # Log the epoch logs to wandb
 
         if (epoch + 1) == 1:
@@ -200,6 +208,7 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
 
             best_val_loss = current_val_loss
             best_epoch = epoch + 1
+            epochs_without_improvement = 0
             print(f"New best validation loss: {best_val_loss:.8f}. Saving model checkpoint...")
         
             checkpoint = {
@@ -213,7 +222,17 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
 
             torch.save(checkpoint, checkpoint_path)  # Save the model checkpoint
         else:
-            print(f"No improvement in validation loss. Current: {current_val_loss:.8f}, Best: {best_val_loss:.8f}")
+            epochs_without_improvement += 1
+            print(f"No improvement in validation loss ({epochs_without_improvement}/{patience}). Current: {current_val_loss:.8f}, Best: {best_val_loss:.8f}")
+            if epochs_without_improvement >= patience:
+                if learning_rate_reduced:
+                    print(f"No improvement after {patience} epochs at the reduced learning rate. Stopping early.")
+                    break
+                for parameter_group in optimizer.param_groups:
+                    parameter_group["lr"] *= 0.1
+                learning_rate_reduced = True
+                epochs_without_improvement = 0
+                print(f"Reducing learning rate to {optimizer.param_groups[0]['lr']:.2e} and retrying for up to {patience} epochs.")
 
     if best_epoch is None:
         raise RuntimeError("Training produced no finite validation checkpoint.")
