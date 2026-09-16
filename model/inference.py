@@ -93,7 +93,7 @@ def save_summary_latex(columns, rows, path, window_size=None):
     lines = [
         r"% Requires \usepackage{xcolor}",
         r"% Requires \usepackage{graphicx}",
-        r"\begin{table}[htbp]",
+        r"\begin{table}[H]",
         r"\centering",
         rf"\caption{{Final metrics from the best-validation LSTM checkpoint{window_label}. Red denotes the best value and blue the second best.}}",
         rf"\label{{tab:lstm-final-summary{label_suffix}}}",
