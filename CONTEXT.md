@@ -31,22 +31,25 @@ The work has two parts. **Part I is the VVSI project**, which predicts short-hor
 - Per-ticker rolling-window dataset construction. Data is sorted by `(Ticker, Date)`, and windows cannot cross ticker boundaries.
 - A PyTorch LSTM implemented from individual gates, with Xavier initialization and a forget-gate bias of one.
 - End-to-end return-model training, validation, testing, Weights & Biases logging, best-validation checkpointing, gradient clipping, GPU memory reporting, and `torch.compile` support.
-- The VVSI return pipeline now reads 3,000 longest-history tickers directly
-  from the existing raw-history database over 2006-01-01 through 2025-12-31,
+- The VVSI return pipeline now reads the 1,834 tickers with complete 20-year
+  coverage directly from the existing raw-history database over 2006-01-01 through 2025-12-31,
   logs exact observation-weighted MSE, RMSE, MAE, bounded sMAPE, and R-squared,
   and produces final split tables, top-15 ticker tables, and full per-ticker
   validation/test loss distributions in W&B.
-- A one-epoch, 30-day-window VVSI smoke run completed on 5,233,579 training,
-  2,011,665 validation, and 5,155,725 test observations. Its W&B artifacts
-  were validated offline; the three production runs have not started.
+- The three 50-epoch VVSI production runs for window sizes 10, 30, and 100
+  completed. Their best-validation epochs were 19, 37, and 18 respectively.
+  Future runs use checkpoint filenames containing the best epoch and one
+  learning-rate retry: after 10 consecutive non-improving validation epochs,
+  the learning rate is reduced by a factor of 0.1; another 10 consecutive
+  misses stop training early.
 - Several training runs and checkpoints exist locally. The earlier train/validation discrepancy led to fixes for mixed-ticker windows, inconsistent adjusted prices, and feature scaling.
 - Literature notes cover HAR/HARNet, GARCH, rough volatility, global versus local models, volatility commonality, TSFMs, evaluation losses, and economic utility.
 
 ## Current plan position
 
-For **Part I / VVSI**, the return-prediction rerun infrastructure and smoke
-run are complete. The next action is user confirmation before starting the
-three production LSTM runs with window sizes 10, 30, and 100.
+For **Part I / VVSI**, the return-prediction rerun infrastructure and the
+three production LSTM runs are complete. The next action is to compare and
+report the window-size results.
 
 For **Part II / the full thesis**, we are in **Step 1: Build the dataset**,
 with the revised volatility dataset incomplete.
