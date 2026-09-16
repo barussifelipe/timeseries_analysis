@@ -240,6 +240,9 @@ standardized per ticker using training-only statistics, and the next-day
 overnight return was used as the target. The chronological split uses
 2006--2015 for training, 2016--2018 for validation, and 2019--2025 for testing.
 
+\subsection{Model}
+The model was implemented from scratch, without using Pytorch building blocks in order to have full control over the model setting and architecture. We've implemented it with a input size of X and state size of Y. We've built with only one layer of the LSTM base block and a window size of Z. 
+
 \section{Implementation}
 % Describe how the system was implemented.
 % Use pseudocode and/or informal or UML-style diagrams where useful.
