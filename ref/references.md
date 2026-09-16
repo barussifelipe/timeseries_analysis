@@ -72,7 +72,13 @@ https://arxiv.org/abs/2311.04727
 
 ## 6. Foundational works (non-arXiv, required citations)
 
-### 6.1 ARCH / GARCH family
+### 6.1 ARIMA / SARIMA
+
+Box, G. E. P., Jenkins, G. M., Reinsel, G. C., & Ljung, G. M. (2015). *Time
+series analysis: Forecasting and control* (5th ed.). John Wiley & Sons.
+ISBN 978-1-118-67502-1.
+
+### 6.2 ARCH / GARCH family
 
 Engle, R. F. (1982). Autoregressive conditional heteroscedasticity with estimates of the
 variance of United Kingdom inflation. *Econometrica, 50*(4), 987–1007.
@@ -88,7 +94,7 @@ Glosten, L. R., Jagannathan, R., & Runkle, D. E. (1993). On the relation between
 expected value and the volatility of the nominal excess return on stocks. *The Journal of
 Finance, 48*(5), 1779–1801. https://doi.org/10.1111/j.1540-6261.1993.tb05128.x
 
-### 6.2 HAR and realized volatility
+### 6.3 HAR and realized volatility
 
 Müller, U. A., Dacorogna, M. M., Davé, R. D., Olsen, R. B., Pictet, O. V., & von Weizsäcker,
 J. E. (1997). Volatilities of different time resolutions — Analyzing the dynamics of market
@@ -106,7 +112,7 @@ of Economics and Statistics, 89*(4), 701–720. https://doi.org/10.1162/rest.89.
 Corsi, F. (2009). A simple approximate long-memory model of realized volatility. *Journal of
 Financial Econometrics, 7*(2), 174–196. https://doi.org/10.1093/jjfinec/nbp001
 
-### 6.3 Estimators, evaluation, and ML in asset pricing
+### 6.4 Estimators, evaluation, and ML in asset pricing
 
 Parkinson, M. (1980). The extreme value method for estimating the variance of the rate of
 return. *The Journal of Business, 53*(1), 61–65. https://doi.org/10.1086/296071

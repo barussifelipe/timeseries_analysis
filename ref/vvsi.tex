@@ -36,9 +36,9 @@ In this project, we have two main contributions:
 \end{itemize}
 
 \subsection{Related Work}
-Legacy econometric models as SARIMA and GARCH have been extensive used for the purpose of predicting equities prices due to their instrinsic capacity of accounting for data-specific properties such as seasonality, stationarity, mean-reversal, etc. However, they lack the necessary tools for explaining non-linear behaviour. 
+Legacy econometric models as GARCH \cite{bollerslev1986} and SARIMA \cite{box2015} have been extensive used for the purpose of predicting equities prices due to their instrinsic capacity of accounting for data-specific properties such as seasonality, stationarity, mean-reversal, etc. However, they lack the necessary tools for explaining non-linear behaviour.
 
-LSTMs have been widely used as an substitute of RNNs due to its architecture amenizing the gradient-vanishing problem, while still maintaing an accurate cronological representation. Nevertheless, great majority of its implementations are with local models. 
+LSTMs \cite{vennerod2021} have been widely used as an substitute of RNNs due to its architecture amenizing the gradient-vanishing problem, while still maintaing an accurate cronological representation. Nevertheless, great majority of its implementations are with local models .
 
 \subsection{Outline}
 % Give an outline of the report structure using one short sentence per section.
@@ -84,7 +84,19 @@ LSTMs have been widely used as an substitute of RNNs due to its architecture ame
 % Summarize the work and outline possible future developments.
 
 \begin{thebibliography}{99}
-% Add one \bibitem entry for every paper or book cited in the main text.
+\bibitem{bollerslev1986}
+T. Bollerslev,
+``Generalized autoregressive conditional heteroskedasticity,''
+\textit{Journal of Econometrics}, vol. 31, no. 3, pp. 307--327, 1986.
+
+\bibitem{box2015}
+G. E. P. Box, G. M. Jenkins, G. C. Reinsel, and G. M. Ljung,
+\textit{Time Series Analysis: Forecasting and Control}, 5th ed.
+Hoboken, NJ: John Wiley \& Sons, 2015.
+
+\bibitem{vennerod2021}
+C. B. Venner{\o}d, A. Kj{\ae}rran, and E. S. Bugge,
+``Long short-term memory RNN,'' arXiv:2105.06756, 2021.
 \end{thebibliography}
 
 \end{document}
