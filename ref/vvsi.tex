@@ -1,6 +1,7 @@
 \documentclass[12pt,a4paper]{article}
 
 \usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath}
 
 \title{VVSI Project}
 \author{}
@@ -63,7 +64,155 @@ LSTMs \cite{vennerod2021} have been widely used as an substitute of RNNs due to 
   \end{enumerate}
 
 \section{Background}
-% Present all background knowledge required to understand the work.
+
+\subsection{Financial Concepts}
+
+Financial market data are commonly represented through OHLCV observations.
+For each asset and trading day, \textit{Open} is the price at the beginning of
+the trading session, \textit{High} and \textit{Low} are respectively the
+highest and lowest prices observed during the session, and \textit{Close} is
+the price at the end of the session. \textit{Volume} is the number of units
+traded during that period. Together, these variables summarize the daily price
+range, its endpoints, and the level of trading activity.
+
+Prices from different assets are not directly comparable because their levels
+and units differ. A return instead measures the relative change in price. The
+simple close-to-close return for day $t$ is
+
+\begin{equation}
+    r_t = \frac{C_t-C_{t-1}}{C_{t-1}},
+\end{equation}
+
+where $C_t$ is the closing price on day $t$. A positive return represents a
+price increase and a negative return represents a price decrease. Since
+returns are relative quantities, they make movements across assets more
+comparable than raw prices.
+
+This project predicts the overnight return, defined as
+
+\begin{equation}
+    r_t^{\mathrm{overnight}}
+    = \frac{O_t-C_{t-1}}{C_{t-1}},
+\end{equation}
+
+where $O_t$ is the opening price on day $t$. It measures the price movement
+between the previous market close and the next market open. This interval can
+reflect information released while the regular trading session is closed,
+including company announcements, macroeconomic news, and developments in
+other markets.
+
+\subsection{Long Short-Term Memory Networks}
+
+A Long Short-Term Memory (LSTM) network is a recurrent neural network designed
+to process ordered sequences while retaining information over time. At time
+$t$, an LSTM receives the current input vector $x_t$, the previous hidden state
+$h_{t-1}$, and the previous cell state $c_{t-1}$. Its behaviour is controlled
+by gates whose values lie between zero and one.
+
+The forget gate determines how much of the previous cell state is retained:
+
+\begin{equation}
+    f_t = \sigma\left(W_f[x_t,h_{t-1}] + b_f\right).
+\end{equation}
+
+The input gate determines how much new information is written, while the
+candidate state contains the new information that may be stored:
+
+\begin{align}
+    i_t &= \sigma\left(W_i[x_t,h_{t-1}] + b_i\right), \\
+    \widetilde{c}_t &= \tanh\left(W_c[x_t,h_{t-1}] + b_c\right).
+\end{align}
+
+The cell state is then updated by combining retained memory with new
+information:
+
+\begin{equation}
+    c_t = f_t \odot c_{t-1} + i_t \odot \widetilde{c}_t,
+\end{equation}
+
+where $\odot$ denotes element-wise multiplication. Finally, the output gate
+selects which part of the cell state becomes the hidden state passed to the
+next time step:
+
+\begin{align}
+    o_t &= \sigma\left(W_o[x_t,h_{t-1}] + b_o\right), \\
+    h_t &= o_t \odot \tanh(c_t).
+\end{align}
+
+The main contribution of the LSTM architecture is its gated cell state. Its
+additive update provides a more direct path through time for information and
+gradients, reducing the vanishing-gradient problem found in conventional
+recurrent neural networks. The model can therefore learn when to retain,
+replace, or expose information and can represent dependencies over longer
+periods. These properties make LSTMs suitable for financial time series, where
+the relevance of past observations can vary over time. LSTMs do not eliminate
+all optimization difficulties, but they make long-term dependencies
+substantially easier to learn \cite{vennerod2021}.
+
+\subsection{Evaluation Metrics}
+
+Let $y_i$ be the observed return, $\hat{y}_i$ the predicted return,
+$\bar{y}$ the mean observed return, and $n$ the number of predictions. This
+project reports five complementary evaluation metrics.
+
+The Mean Squared Error (MSE) is
+
+\begin{equation}
+    \mathrm{MSE} = \frac{1}{n}\sum_{i=1}^{n}(y_i-\hat{y}_i)^2.
+\end{equation}
+
+MSE is the optimization loss used to train the model. Squaring the errors
+penalizes large mistakes more strongly than small ones. Lower values are
+better, although the result is expressed in squared-return units.
+
+The Root Mean Squared Error (RMSE) is
+
+\begin{equation}
+    \mathrm{RMSE} = \sqrt{\mathrm{MSE}}.
+\end{equation}
+
+RMSE retains the stronger penalty for large errors but is expressed in the
+same units as the predicted return, making it easier to interpret than MSE.
+
+The Mean Absolute Error (MAE) is
+
+\begin{equation}
+    \mathrm{MAE} = \frac{1}{n}\sum_{i=1}^{n}|y_i-\hat{y}_i|.
+\end{equation}
+
+MAE represents the average absolute prediction error in return units. It gives
+each error a linear weight and is therefore less sensitive to isolated large
+errors than MSE and RMSE.
+
+The symmetric Mean Absolute Percentage Error (sMAPE) is
+
+\begin{equation}
+    \mathrm{sMAPE}
+    = \frac{200}{n}\sum_{i=1}^{n}
+      \frac{|y_i-\hat{y}_i|}{|y_i|+|\hat{y}_i|+\varepsilon},
+\end{equation}
+
+where $\varepsilon=10^{-8}$ prevents division by zero. sMAPE expresses error
+as a percentage and is bounded between 0\% and 200\%, with lower values being
+better. It is used instead of MAPE because financial returns frequently equal
+or approach zero and can be negative; dividing only by the observed value can
+therefore produce extremely large or undefined MAPE values. Despite its
+symmetry, sMAPE can still assign a large percentage error when both returns are
+close to zero, so it should be interpreted together with the absolute-error
+metrics.
+
+The coefficient of determination ($R^2$) is
+
+\begin{equation}
+    R^2 = 1-
+    \frac{\sum_{i=1}^{n}(y_i-\hat{y}_i)^2}
+         {\sum_{i=1}^{n}(y_i-\bar{y})^2}.
+\end{equation}
+
+An $R^2$ of 1 represents perfect predictions, while 0 indicates performance
+equivalent to always predicting the mean observed return. A negative value
+means that the model performs worse than that mean baseline. Unlike the four
+error metrics, a higher $R^2$ is better.
 
 \section{Methods}
 % Describe the system design and methodology. Do not include source code here.
