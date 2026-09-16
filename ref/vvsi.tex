@@ -241,7 +241,15 @@ overnight return was used as the target. The chronological split uses
 2006--2015 for training, 2016--2018 for validation, and 2019--2025 for testing.
 
 \subsection{Model}
-The model was implemented from scratch, without using Pytorch building blocks in order to have full control over the model setting and architecture. We've implemented it with a input size of X and state size of Y. We've built with only one layer of the LSTM base block and a window size of Z. 
+The model uses a custom PyTorch LSTM cell instead of the built-in
+\texttt{nn.LSTM}, providing explicit control over its gates and initialization.
+It has four input features, one recurrent layer with a 64-dimensional hidden
+and cell state, and a linear output layer that predicts one overnight-return
+value from the final hidden state. Gate and output weights use Xavier uniform
+initialization, while the forget-gate bias is initialized to one to encourage
+the retention of earlier information at the start of training. Three otherwise
+identical models use window sizes of 10, 30, and 100 trading days to evaluate
+the effect of different historical horizons.
 
 \section{Implementation}
 % Describe how the system was implemented.
