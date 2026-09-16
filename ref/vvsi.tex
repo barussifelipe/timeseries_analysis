@@ -217,15 +217,51 @@ error metrics, a higher $R^2$ is better.
 \section{Methods}
 
 \subsection{Data}
-The data processing was the most important part on the pipeline. 
+Data processing was a central part of the pipeline.
 
-\textbf{First step} was fetching the X tickets codes from NYSE and NASDAQ. Both have different ways of representation, therefore, we normalized all of this representation for YFinance API calls. 
+The \textbf{first step} collected 5,984 ticker symbols listed on NASDAQ and
+NYSE. The exchanges use different symbol conventions, particularly for
+securities with multiple share classes. The symbols were therefore filtered,
+deduplicated, and normalized to the hyphenated representation expected by the
+Yahoo Finance API.
 
-\textbf{Second step} was downloading the data. YFinance API has rate limits, then, to fully download all of X tickets, we needed to implement a scheduler with dynamic retries in case of timeouts fails. The data was downloaded already adjusted for splits (explain here). 
+The \textbf{second step} downloaded the maximum available daily OHLCV history
+for each symbol through the YFinance library. Since Yahoo Finance applies rate
+limits, requests were scheduled with a two-second interval and checkpointed in
+a SQLite database. Rate-limited requests used backoff intervals of 30, 60, 120,
+and 240 seconds, while transient network failures were retried after 5 and 15
+seconds. This process produced usable histories for 5,842 tickers; 138
+downloads failed and 4 returned no data.
 
-\textbf{Third step} was treating the data and analyzing its structure. Hence, we've separated the full historical data with relative periods depending on the stock to a set of Y tickets, totalizing a Z datapoints. 
+YFinance was called with automatic price adjustment enabled. Consequently,
+historical Open, High, Low, and Close prices were placed on a consistent basis
+after corporate actions such as stock splits and dividends. A stock split
+changes the number of shares and the quoted price without representing an
+equivalent economic loss, so unadjusted prices would create an artificial jump
+in the return series. Adjusting every price field by the same historical factor
+also keeps comparisons between Open and Close internally consistent.
 
-\textbf{Fourth and final step} was feature engineering. We've performed z-score normalization for volume, defined the range of High/Low and used both type of returns focusing on predicting the overnight one. 
+The \textbf{third step} measured the available history of every successfully
+downloaded ticker through January 1, 2026. The experiments retain the 1,834
+tickers that cover the complete period from January 1, 2006 to January 1, 2026
+and contain no missing OHLCV values. This selected universe contains 9,226,853
+daily OHLCV observations before constructing lagged returns and rolling
+windows.
+
+The \textbf{fourth and final step} was feature engineering. Four
+scale-independent features were derived from the adjusted data: the relative
+daily range $(H_t-L_t)/C_t$, the logarithm of volume $\ln(V_t)$, the overnight
+return $(O_t-C_{t-1})/C_{t-1}$, and the intraday return
+$(C_t-O_t)/O_t$. Log-volume was standardized separately for each ticker using
+z-score statistics fitted only on the training period, preventing validation
+or test information from influencing the transformation. The overnight return
+on the day immediately following each input window is the prediction target.
+
+The data were divided chronologically: observations before January 1, 2016
+form the training period, observations from 2016 through 2018 form the
+validation period, and observations from 2019 through 2025 form the test
+period. Chronological splitting preserves the temporal order of the problem
+and prevents future observations from leaking into earlier periods.
 
 \section{Implementation}
 % Describe how the system was implemented.
