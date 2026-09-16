@@ -271,12 +271,20 @@ The main goal of the experiment is the following:
 \end{itemize}
 
 \subsection{Setting}
-% Describe the experimental setting: hardware, software, datasets, splits,
-% hyperparameters, reproducibility controls, and evaluation metrics.
+In order to provide an accurate and comprehensive evaluation, as stated before, we've trained the model using three different window sizes to assess chronological effects in the prediction. The training was performed with a fixed epoch number of 50, batch size of 128 and hidden size of 64. 
 
 \subsection{Technical Evaluation}
-% Evaluate the effectiveness of the proposed approach.
-% Describe the experiments and summarize the results using tables and graphs.
+The data follows a linear process. When plotting the initial return data (figure 1), you're able to identify that the datapoints follow a linear path almost, with mean 0. 
+
+Even though we were able to train and achieve local optimality with extremely small MSE levels, the model wasn't able to fully capture the linerality of the process as good as an ARIMA model would be able to. (figure 2, 3, 4)
+
+After training in the different window setups, we could verify that the model tends to predict the zero-mean than the granular return, with the distribution of the tickets being concentrated in zero R2 (figure 5, 6, 7). 
+
+No big differences in this behaviour were observed within different WS (window size) values. All of the results holds, with the exception that with 100 WS, test R2 gets more concentrated in zero with 1750 occurences, whereas with a 10 WS zero - 1000 approximately (tilde symbol) with a minor skew to the left. When removing outliers (1 (percentage symbol)) we are able to verify this behaviour even clearer. (figure 8, 9, 10)
+
+The metrics results for the 15 best tickets show that the top 15 tickets are the same for all the WS, with changes in the best ticket from MSE and R2. Furthermore, we can't affirm that the best MSE gives the best R2. (figure 11, 12, 13)
+
+Finally for the comparison between the splits (tables 1, 2, 3)
 
 \section{Conclusions}
 % Summarize the work and outline possible future developments.
