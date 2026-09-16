@@ -25,6 +25,26 @@ from data.data_fetching import (
     apply_zscore,
 )
 
+METRIC_RANKING = {
+    "mse": False, "rmse": False, "mae": False, "smape": False, "r2": True,
+}
+
+
+def ranked_cells(columns, rows):
+    ranked = {}
+    for column, reverse in METRIC_RANKING.items():
+        if column not in columns:
+            continue
+        column_index = columns.index(column)
+        row_indices = sorted(
+            range(len(rows)),
+            key=lambda index: rows[index][column_index],
+            reverse=reverse,
+        )
+        for row_index, color in zip(row_indices[:2], ("red", "blue")):
+            ranked[row_index, column_index] = color
+    return ranked
+
 
 def save_table_image(columns, rows, path, title):
     display_rows = [
@@ -37,13 +57,10 @@ def save_table_image(columns, rows, path, title):
     table.auto_set_font_size(False)
     table.set_fontsize(9)
     table.scale(1, 1.35)
-    for column, reverse in {"mse": False, "rmse": False, "mae": False, "smape": False, "r2": True}.items():
-        column_index = columns.index(column)
-        ranked_rows = sorted(range(len(rows)), key=lambda index: rows[index][column_index], reverse=reverse)
-        for row_index, color in zip(ranked_rows[:2], ("red", "blue")):
-            text = table[(row_index + 1, column_index)].get_text()
-            text.set_color(color)
-            text.set_weight("bold")
+    for (row_index, column_index), color in ranked_cells(columns, rows).items():
+        text = table[(row_index + 1, column_index)].get_text()
+        text.set_color(color)
+        text.set_weight("bold")
     axis.set_title(f"{title}\nRed = best; blue = second best", pad=12)
     figure.tight_layout()
     figure.savefig(path, dpi=200, bbox_inches="tight")
@@ -64,10 +81,18 @@ def save_histogram(values, path, title, xlabel):
 
 def save_summary_latex(columns, rows, path):
     alignments = "l" + "r" * (len(columns) - 1)
+    colors = ranked_cells(columns, rows)
+
+    def format_cell(row_index, column_index, value):
+        formatted = f"{value:.6g}" if isinstance(value, float) else str(value)
+        color = colors.get((row_index, column_index))
+        return rf"\textcolor{{{color}}}{{\textbf{{{formatted}}}}}" if color else formatted
+
     lines = [
+        r"% Requires \usepackage{xcolor}",
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{Final metrics from the best-validation LSTM checkpoint.}",
+        r"\caption{Final metrics from the best-validation LSTM checkpoint. Red denotes the best value and blue the second best.}",
         r"\label{tab:lstm-final-summary}",
         rf"\begin{{tabular}}{{{alignments}}}",
         r"\hline",
@@ -76,10 +101,10 @@ def save_summary_latex(columns, rows, path):
     ]
     lines.extend(
         " & ".join(
-            f"{value:.6g}" if isinstance(value, float) else str(value)
-            for value in row
+            format_cell(row_index, column_index, value)
+            for column_index, value in enumerate(row)
         ) + r" \\"
-        for row in rows
+        for row_index, row in enumerate(rows)
     )
     lines.extend([r"\hline", r"\end{tabular}", r"\end{table}", ""])
     path.write_text("\n".join(lines), encoding="utf-8")
