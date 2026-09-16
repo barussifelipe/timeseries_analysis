@@ -215,7 +215,17 @@ means that the model performs worse than that mean baseline. Unlike the four
 error metrics, a higher $R^2$ is better.
 
 \section{Methods}
-% Describe the system design and methodology. Do not include source code here.
+
+\subsection{Data}
+The data processing was the most important part on the pipeline. 
+
+\textbf{First step} was fetching the X tickets codes from NYSE and NASDAQ. Both have different ways of representation, therefore, we normalized all of this representation for YFinance API calls. 
+
+\textbf{Second step} was downloading the data. YFinance API has rate limits, then, to fully download all of X tickets, we needed to implement a scheduler with dynamic retries in case of timeouts fails. The data was downloaded already adjusted for splits (explain here). 
+
+\textbf{Third step} was treating the data and analyzing its structure. Hence, we've separated the full historical data with relative periods depending on the stock to a set of Y tickets, totalizing a Z datapoints. 
+
+\textbf{Fourth and final step} was feature engineering. We've performed z-score normalization for volume, defined the range of High/Low and used both type of returns focusing on predicting the overnight one. 
 
 \section{Implementation}
 % Describe how the system was implemented.
