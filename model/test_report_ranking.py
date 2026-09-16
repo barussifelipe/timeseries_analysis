@@ -15,9 +15,11 @@ def test_report_ranking():
 
     with TemporaryDirectory() as directory:
         path = Path(directory) / "summary.tex"
-        save_summary_latex(columns, rows, path)
+        save_summary_latex(columns, rows, path, window_size=30)
         latex = path.read_text(encoding="utf-8")
         assert r"\usepackage{xcolor}" in latex
+        assert "window size 30" in latex
+        assert r"\label{tab:lstm-final-summary-ws30}" in latex
         assert r"\textcolor{red}{\textbf{0.1}}" in latex
         assert r"\textcolor{blue}{\textbf{0}}" in latex
 

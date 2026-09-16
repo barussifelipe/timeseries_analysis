@@ -79,9 +79,11 @@ def save_histogram(values, path, title, xlabel):
     plt.close(figure)
 
 
-def save_summary_latex(columns, rows, path):
+def save_summary_latex(columns, rows, path, window_size=None):
     alignments = "l" + "r" * (len(columns) - 1)
     colors = ranked_cells(columns, rows)
+    window_label = f" for window size {window_size}" if window_size else ""
+    label_suffix = f"-ws{window_size}" if window_size else ""
 
     def format_cell(row_index, column_index, value):
         formatted = f"{value:.6g}" if isinstance(value, float) else str(value)
@@ -92,8 +94,8 @@ def save_summary_latex(columns, rows, path):
         r"% Requires \usepackage{xcolor}",
         r"\begin{table}[htbp]",
         r"\centering",
-        r"\caption{Final metrics from the best-validation LSTM checkpoint. Red denotes the best value and blue the second best.}",
-        r"\label{tab:lstm-final-summary}",
+        rf"\caption{{Final metrics from the best-validation LSTM checkpoint{window_label}. Red denotes the best value and blue the second best.}}",
+        rf"\label{{tab:lstm-final-summary{label_suffix}}}",
         rf"\begin{{tabular}}{{{alignments}}}",
         r"\hline",
         " & ".join(columns) + r" \\",
@@ -127,7 +129,10 @@ def evaluate_splits(model, criterion, datasets, batch_size, device):
     return final_metrics, ticker_metrics
 
 
-def build_final_report(checkpoint_path, best_epoch, datasets, final_metrics, ticker_metrics):
+def build_final_report(
+    checkpoint_path, best_epoch, datasets, final_metrics, ticker_metrics,
+    window_size,
+):
     metric_names = ("mse", "rmse", "mae", "smape", "r2")
     summary_columns = ["split", "observations", "tickers", *metric_names]
     summary_rows = []
@@ -145,7 +150,10 @@ def build_final_report(checkpoint_path, best_epoch, datasets, final_metrics, tic
 
     report_dir = Path(checkpoint_path).with_suffix("")
     report_dir.mkdir(exist_ok=True)
-    save_summary_latex(summary_columns, summary_rows, report_dir / "final_summary.tex")
+    save_summary_latex(
+        summary_columns, summary_rows, report_dir / "final_summary.tex",
+        window_size,
+    )
     final_summary = wandb.Table(columns=summary_columns, data=summary_rows)
     final_logs["final_summary"] = final_summary
     ticker_columns = ["ticker", "observations", *metric_names]
@@ -160,7 +168,7 @@ def build_final_report(checkpoint_path, best_epoch, datasets, final_metrics, tic
         table_path = report_dir / f"{split}_best_15_tickers.png"
         save_table_image(
             ticker_columns, best_rows, table_path,
-            f"{split.title()} best 15 tickers by MSE",
+            f"Window size {window_size} — {split.title()} best 15 tickers by MSE",
         )
         final_logs[f"{split}_best_15_tickers_image"] = wandb.Image(str(table_path))
         for metric in metric_names:
@@ -176,7 +184,8 @@ def build_final_report(checkpoint_path, best_epoch, datasets, final_metrics, tic
                 histogram_path = report_dir / f"{split}_{metric}_{suffix}.png"
                 save_histogram(
                     plotted, histogram_path,
-                    f"{split.title()} {metric.upper()} — {title}", metric.upper(),
+                    f"Window size {window_size} — {split.title()} {metric.upper()} — {title}",
+                    metric.upper(),
                 )
                 final_logs[f"{split}_{metric}_{suffix}"] = wandb.Image(str(histogram_path))
             final_values[f"{split}_{metric}_central_lower"] = lower
@@ -300,6 +309,7 @@ if __name__ == "__main__":
     )
     final_logs, final_values, summary_columns, summary_rows, report_dir = build_final_report(
         checkpoint_path, best_epoch, datasets, final_metrics, ticker_metrics,
+        window_size,
     )
 
     run.log(final_logs)
