@@ -18,18 +18,27 @@
 % Write this section last.
 
 \subsection{Context}
-% Briefly describe the context of the work.
+One of the biggest challenges in finance is to be able to accurately predict the prices of a asset, it being a stock paper, options, crypto currencies, commodities, any type of product offered in the market. The reason is simple: if you know the price of the next day, you are able to fully optimize your profit. The base idea on predicting the price is simple: we want to know the price in the future (one day, five days, ...) based on the historical data of that asset, which is characterized as a time-series. 
+
+Time-series analysis is a complex type of investigation, since it involves many aspects such as stationarity, ergodicity, roughness, seasonality etc. Statistics have been tackling the problem of historical forecasting by analyzing these characteristics. However, with the rapid evolution of ML (Machine Learning) methods in the past 20 years, especially, DNN (Deep Neural Networks), with LSTMs and LLMs, there has been a risen on leveraging these models for performing such analysis, while delivering results that are better or even equal to statistical methods. 
 
 \subsection{Motivations}
-% Explain the problem that motivates the work.
+In the context of ML, the data is the key for a good model. However, the data is not explored as it's in the Statistics field, where the main focus is understanding properties of the data and devising a model dependent on those for forecasting the future and focused on one object of study (local model). The models in ML are built to derive the characteristics from the data and consequently perform the forecasting after a training process, while still maintaing the capability of being expanded for more than one subject (global model). 
+
+In this study, we are interested in understading how well the base LSTM predicts the overnight return of stock papers, while being trained with data composed of multiple tickets. 
 
 \subsection{Contributions}
-% Describe the contributions that address the gaps identified in the motivations.
+In this project, we have two main contributions: 
+\begin{itemize}
+    \item A reproducible pipeline for collecting and preparing 20 years of historical data across 1,834 equities.
+    \item A global LSTM model that predicts next-day overnight returns across many companies.
+
+\end{itemize}
 
 \subsection{Related Work}
-% Describe the state of the art, including relevant algorithms and tools.
-% For every paper or tool, explain what this work provides that is not already available.
-% When possible, list similar existing tools and explain how this work differs from them.
+Legacy econometric models as SARIMA and GARCH have been extensive used for the purpose of predicting equities prices due to their instrinsic capacity of accounting for data-specific properties such as seasonality, stationarity, mean-reversal, etc. However, they lack the necessary tools for explaining non-linear behaviour. 
+
+LSTMs have been widely used as an substitute of RNNs due to its architecture amenizing the gradient-vanishing problem, while still maintaing an accurate cronological representation. Nevertheless, great majority of its implementations are with local models. 
 
 \subsection{Outline}
 % Give an outline of the report structure using one short sentence per section.
