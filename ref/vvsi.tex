@@ -2,6 +2,8 @@
 
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{xcolor}
 
 \title{VVSI Project}
 \author{}
@@ -274,17 +276,150 @@ The main goal of the experiment is the following:
 In order to provide an accurate and comprehensive evaluation, as stated before, we've trained the model using three different window sizes to assess chronological effects in the prediction. The training was performed with a fixed epoch number of 50, batch size of 128 and hidden size of 64. 
 
 \subsection{Technical Evaluation}
-The data follows a linear process. When plotting the initial return data (figure 1), you're able to identify that the datapoints follow a linear path almost, with mean 0. 
+The overnight returns of the 15 sampled tickers fluctuate around zero, with
+occasional positive and negative spikes in every split
+(Figure~\ref{fig:overnight-returns}). This behaviour makes small numerical
+errors possible even when a model explains little of the variation between
+individual observations.
 
-Even though we were able to train and achieve local optimality with extremely small MSE levels, the model wasn't able to fully capture the linerality of the process as good as an ARIMA model would be able to. (figure 2, 3, 4)
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../model/checkpoints/overnight_returns_by_split.png}
+    \caption{Overnight returns for a deterministic sample of 15 tickers in the training, validation, and test periods.}
+    \label{fig:overnight-returns}
+\end{figure}
+\clearpage
 
-After training in the different window setups, we could verify that the model tends to predict the zero-mean than the granular return, with the distribution of the tickets being concentrated in zero R2 (figure 5, 6, 7). 
+Figures~\ref{fig:test-mse-ws10}--\ref{fig:test-mse-ws100} show how training and
+validation MSE evolve over the 50 epochs. Training MSE decreases steadily in
+all three runs, whereas validation MSE improves mainly during the earlier
+epochs and then fluctuates within a narrower range. This difference explains
+why the final evaluation reloads the checkpoint with the lowest validation
+MSE rather than automatically using the last epoch. Blue represents training
+MSE and red represents validation MSE.
 
-No big differences in this behaviour were observed within different WS (window size) values. All of the results holds, with the exception that with 100 WS, test R2 gets more concentrated in zero with 1750 occurences, whereas with a 10 WS zero - 1000 approximately (tilde symbol) with a minor skew to the left. When removing outliers (1 (percentage symbol)) we are able to verify this behaviour even clearer. (figure 8, 9, 10)
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../model/checkpoints/returns_bs128_hs64_ws10_lr0.0001_epochs50_best/mse_evolution.png}
+    \caption{MSE evolution for window size 10. Blue denotes training MSE and red validation MSE.}
+    \label{fig:test-mse-ws10}
+\end{figure}
 
-The metrics results for the 15 best tickets show that the top 15 tickets are the same for all the WS, with changes in the best ticket from MSE and R2. Furthermore, we can't affirm that the best MSE gives the best R2. (figure 11, 12, 13)
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../model/checkpoints/returns_bs128_hs64_ws30_lr0.0001_epochs50_best/mse_evolution.png}
+    \caption{MSE evolution for window size 30. Blue denotes training MSE and red validation MSE.}
+    \label{fig:test-mse-ws30}
+\end{figure}
 
-Finally for the comparison between the splits (tables 1, 2, 3)
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../model/checkpoints/returns_bs128_hs64_ws100_lr0.0001_epochs50_best/mse_evolution.png}
+    \caption{MSE evolution for window size 100. Blue denotes training MSE and red validation MSE.}
+    \label{fig:test-mse-ws100}
+\end{figure}
+\clearpage
+
+The full-range test $R^2$ distributions
+(Figures~\ref{fig:test-r2-ws10}--\ref{fig:test-r2-ws100}) are concentrated
+around zero and include negative outliers. An $R^2$ near zero indicates that a
+model performs similarly to the mean-return baseline, while a negative value
+indicates worse performance for that ticker.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../model/checkpoints/returns_bs128_hs64_ws10_lr0.0001_epochs50_best/test_r2_full.png}
+    \caption{Full-range test $R^2$ distribution for window size 10.}
+    \label{fig:test-r2-ws10}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../model/checkpoints/returns_bs128_hs64_ws30_lr0.0001_epochs50_best/test_r2_full.png}
+    \caption{Full-range test $R^2$ distribution for window size 30.}
+    \label{fig:test-r2-ws30}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../model/checkpoints/returns_bs128_hs64_ws100_lr0.0001_epochs50_best/test_r2_full.png}
+    \caption{Full-range test $R^2$ distribution for window size 100.}
+    \label{fig:test-r2-ws100}
+\end{figure}
+\clearpage
+
+Removing the lowest and highest 0.5\% of ticker-level values makes the central
+99\% easier to inspect (Figures~\ref{fig:test-r2-99-ws10}--\ref{fig:test-r2-99-ws100}).
+The concentration around zero remains for every window size and becomes
+narrower as the window grows. Therefore, increasing the historical window did
+not produce a material improvement in out-of-sample explanatory power.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../model/checkpoints/returns_bs128_hs64_ws10_lr0.0001_epochs50_best/test_r2_central_99.png}
+    \caption{Central 99\% of the test $R^2$ distribution for window size 10.}
+    \label{fig:test-r2-99-ws10}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../model/checkpoints/returns_bs128_hs64_ws30_lr0.0001_epochs50_best/test_r2_central_99.png}
+    \caption{Central 99\% of the test $R^2$ distribution for window size 30.}
+    \label{fig:test-r2-99-ws30}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../model/checkpoints/returns_bs128_hs64_ws100_lr0.0001_epochs50_best/test_r2_central_99.png}
+    \caption{Central 99\% of the test $R^2$ distribution for window size 100.}
+    \label{fig:test-r2-99-ws100}
+\end{figure}
+\clearpage
+
+The sets of 15 test tickers with the lowest MSE are broadly similar across
+window sizes (Figures~\ref{fig:test-top15-ws10}--\ref{fig:test-top15-ws100}),
+although their ordering and best values change. The ticker with the lowest MSE
+does not necessarily have the largest $R^2$, because MSE measures error size
+while $R^2$ measures improvement over the ticker's mean-return baseline. In
+each metric column, red identifies the best value and blue the second best;
+for $R^2$, the largest values are best.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../model/checkpoints/returns_bs128_hs64_ws10_lr0.0001_epochs50_best/test_best_15_tickers.png}
+    \caption{Best 15 test tickers by MSE for window size 10. Red denotes the best metric value and blue the second best; larger $R^2$ is better.}
+    \label{fig:test-top15-ws10}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../model/checkpoints/returns_bs128_hs64_ws30_lr0.0001_epochs50_best/test_best_15_tickers.png}
+    \caption{Best 15 test tickers by MSE for window size 30. Red denotes the best metric value and blue the second best; larger $R^2$ is better.}
+    \label{fig:test-top15-ws30}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../model/checkpoints/returns_bs128_hs64_ws100_lr0.0001_epochs50_best/test_best_15_tickers.png}
+    \caption{Best 15 test tickers by MSE for window size 100. Red denotes the best metric value and blue the second best; larger $R^2$ is better.}
+    \label{fig:test-top15-ws100}
+\end{figure}
+\clearpage
+
+Tables~\ref{tab:lstm-final-summary-ws10}--\ref{tab:lstm-final-summary-ws100}
+compare the aggregate metrics across training, validation, and test data. All
+three models obtain their lowest MSE, RMSE, and MAE on validation data, while
+their test $R^2$ values remain close to zero. Window size 10 provides the
+lowest test MSE and the largest test $R^2$, but the differences between window
+sizes are small. Red identifies the best split-level value in each metric
+column and blue the second best; larger $R^2$ is treated as better.
+
+\input{../model/checkpoints/returns_bs128_hs64_ws10_lr0.0001_epochs50_best/final_summary.tex}
+\clearpage
+\input{../model/checkpoints/returns_bs128_hs64_ws30_lr0.0001_epochs50_best/final_summary.tex}
+\clearpage
+\input{../model/checkpoints/returns_bs128_hs64_ws100_lr0.0001_epochs50_best/final_summary.tex}
+\clearpage
 
 \section{Conclusions}
 % Summarize the work and outline possible future developments.
