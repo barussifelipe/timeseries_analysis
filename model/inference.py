@@ -92,10 +92,12 @@ def save_summary_latex(columns, rows, path, window_size=None):
 
     lines = [
         r"% Requires \usepackage{xcolor}",
+        r"% Requires \usepackage{graphicx}",
         r"\begin{table}[htbp]",
         r"\centering",
         rf"\caption{{Final metrics from the best-validation LSTM checkpoint{window_label}. Red denotes the best value and blue the second best.}}",
         rf"\label{{tab:lstm-final-summary{label_suffix}}}",
+        r"\resizebox{\textwidth}{!}{%",
         rf"\begin{{tabular}}{{{alignments}}}",
         r"\hline",
         " & ".join(columns) + r" \\",
@@ -108,7 +110,9 @@ def save_summary_latex(columns, rows, path, window_size=None):
         ) + r" \\"
         for row_index, row in enumerate(rows)
     )
-    lines.extend([r"\hline", r"\end{tabular}", r"\end{table}", ""])
+    lines.extend([
+        r"\hline", r"\end{tabular}%", r"}", r"\end{table}", "",
+    ])
     path.write_text("\n".join(lines), encoding="utf-8")
 
 

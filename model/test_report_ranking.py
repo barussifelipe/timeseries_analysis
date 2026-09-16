@@ -18,6 +18,7 @@ def test_report_ranking():
         save_summary_latex(columns, rows, path, window_size=30)
         latex = path.read_text(encoding="utf-8")
         assert r"\usepackage{xcolor}" in latex
+        assert r"\resizebox{\textwidth}{!}" in latex
         assert "window size 30" in latex
         assert r"\label{tab:lstm-final-summary-ws30}" in latex
         assert r"\textcolor{red}{\textbf{0.1}}" in latex
