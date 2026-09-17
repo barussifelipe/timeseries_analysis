@@ -5,9 +5,9 @@
 \usepackage{graphicx}
 \usepackage{xcolor}
 
-\title{VVSI Project}
-\author{}
-\date{}
+\title{VVSI Project - LSTM for stock returns}
+\author{Felipe Sant Anna Barussi- 2109113}
+\date{17/09/2026}
 
 \begin{document}
 
@@ -54,9 +54,8 @@ with results that can equal or outperform those of statistical methods.
 In ML, data are central to building an effective model. However, data are not
 always examined in the same way as in statistics, where the focus is often on
 understanding their properties and designing a forecasting model for a single
-object of study (a local model). ML models instead learn characteristics from
-the data during training and can be extended across multiple subjects (a global
-model).
+object of study (a local model). ML models, instead, learn characteristics from
+the data during training, which can be extended across multiple subjects (a global model).
 
 This study investigates how well a baseline LSTM predicts the overnight returns
 of equities when trained on data from multiple tickers.
@@ -361,8 +360,7 @@ last epoch.
 \clearpage
 
 For $R^2$, removing the lowest and highest 0.5\% of ticker-level values makes
-the central 99\% easier to inspect
-(Figures~\ref{fig:test-r2-99-ws10}--\ref{fig:test-r2-99-ws100}). This view is
+the central 99\% easier to inspect (Figures~\ref{fig:test-r2-99-ws10}--\ref{fig:test-r2-99-ws100}). This view is
 used because tickers with very low return variance can produce extreme
 negative $R^2$ values that compress the central distribution. For every window
 size, most values are concentrated near zero and the distribution is
@@ -492,6 +490,7 @@ the arithmetic mean of each split-level metric across the window sizes.
 
 
 \section{Conclusions}
+\subsection{Results}
 We conclude that our LSTM is not a strong generalizer for overnight returns,
 which are concentrated around zero. Its predictions remain close to the mean,
 possibly because MSE as the objective function penalizes large errors
@@ -499,12 +498,11 @@ quadratically. Averaged across the three window sizes, $R^2$ falls from 0.233
 on the training split to 0.051 on validation and 0.012 on testing, supporting
 the conclusion that performance deteriorates out of sample. Among the 15 test
 tickers with the highest $R^2$, MFA achieves the largest value for every window
-size. Although all 15 return distributions are strongly concentrated around
-zero, MFA has the shortest tails, while the remaining tickers exhibit broader
-ones. This pattern supports the observation that the model prioritizes
-predictions near the zero return mean; however, MFA's positive $R^2$ also shows
-that its predictions improve upon a constant mean-return baseline. Future work
-could analyse daily returns, which cover a longer
+size. The distribution pattern supports the observation that the model prioritizes predictions near the zero return mean. 
+\subsection{Limitations}
+Our major limitation was computational power. Due to the lack of stronger computers, we weren't able to fully evaluate all the different combinations of hyperparameters. 
+\subsection{Future Work}
+As for improvements, we could analyse daily returns, which cover a longer
 price interval and could exhibit different behaviour. A comprehensive
 evaluation of different hyperparameters would also allow relationships beyond
 the historical window length to be investigated and determine whether a
