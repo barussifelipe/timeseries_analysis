@@ -482,7 +482,10 @@ the arithmetic mean of each split-level metric across the window sizes.
 We conclude that our LSTM is not a strong generalizer for overnight returns,
 which are concentrated around zero. Its predictions remain close to the mean,
 possibly because MSE as the objective function penalizes large errors
-quadratically. Future work could analyse daily returns, which cover a longer
+quadratically. Averaged across the three window sizes, $R^2$ falls from 0.233
+on the training split to 0.051 on validation and 0.012 on testing, supporting
+the conclusion that performance deteriorates out of sample. Future work could
+analyse daily returns, which cover a longer
 price interval and could exhibit different behaviour. A comprehensive
 evaluation of different hyperparameters would also allow relationships beyond
 the historical window length to be investigated and determine whether a
