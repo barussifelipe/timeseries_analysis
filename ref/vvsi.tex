@@ -14,7 +14,7 @@
 \maketitle
 
 \begin{abstract}
-% Maximum one page. Write this section last.
+Forecasting the prices in a equity is a hard task. Many different implementations were designed and tested based on Statistical or ML methods. Recently, using DNN (Deep Neural Networks) have been proven to be beneficial in predicting returns for a stock. Our objective with this paper is analyzing if this holds for the a global LSTM model for overnight returns from 1,834 tickets. By using tickets data from NYSE and NASDAQ, downloaded from YFinance, we define a base LSTM model and train it across three different window sizes: 10, 30, 100 days. Performance is evaluated with MSE and R2 primarly, but RMSE, MAE and sMAPE are used as complementary metrics. The results show that R2 is concentrated around 0 and MSE keeps a small error throughout all training and validation. We conclude, therefore, that global LSTMs are not strong for predicting linear data when it has to keep the generality throughout several objects of study. Given that the data is concentrated around zero-mean, our model assumed that, to ensure generality, it's optimal to predict the mean than to account for granularity. 
 \end{abstract}
 
 \section{Introduction}
@@ -324,7 +324,7 @@ the central 99\% easier to inspect
 used because tickers with very low return variance can produce extreme
 negative $R^2$ values that compress the central distribution. For every window
 size, most values are concentrated near zero and the distribution is
-left-skewed. The negative tail is particularly pronounced for window size 100,
+left-skewed. The negative tail is still pronounced for window size 100,
 even after trimming the extremes. Therefore, increasing the historical window
 did not produce a material improvement in out-of-sample explanatory power.
 
@@ -356,7 +356,7 @@ although their ordering and best values change. The ticker with the lowest MSE
 does not necessarily have the largest $R^2$, because MSE measures error size
 while $R^2$ measures improvement over the ticker's mean-return baseline. In
 each metric column, red identifies the best value and blue the second best;
-for $R^2$, the largest values are best.
+for $R^2$, the largest values are best. Overnight returns are generally close to zero. Consequently, a tiny absolute prediction error can produce a large sMAPE. That is why sMAPE should be interpreted together with MSE, RMSE and MAE.
 
 \begin{figure}[htbp]
     \centering
@@ -389,14 +389,14 @@ sizes are small. Red identifies the best split-level value in each metric
 column and blue the second best; larger $R^2$ is treated as better.
 
 \input{../model/checkpoints/returns_bs128_hs64_ws10_lr0.0001_epochs50_best/final_summary.tex}
-\clearpage
+
 \input{../model/checkpoints/returns_bs128_hs64_ws30_lr0.0001_epochs50_best/final_summary.tex}
-\clearpage
+
 \input{../model/checkpoints/returns_bs128_hs64_ws100_lr0.0001_epochs50_best/final_summary.tex}
-\clearpage
+
 
 \section{Conclusions}
-% Summarize the work and outline possible future developments.
+We conclude that our  are not well suited for a task where there is a small between values difference such as overnight returns. The model concludes that predicting values closer to the mean is better for generality in a global model. For further improvements, an analysis focused on daily returns could provide better results since it increases the span of time and provides a bigger variance per observation. Also, a comprehensive run of different hyperparameters would allow us to verify different relationships, not only chronological. 
 
 \begin{thebibliography}{99}
 \bibitem{bollerslev1986}
