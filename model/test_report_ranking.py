@@ -19,6 +19,7 @@ def test_report_ranking():
         latex = path.read_text(encoding="utf-8")
         assert r"\usepackage{xcolor}" in latex
         assert r"\resizebox{\textwidth}{!}" in latex
+        assert r"\vspace{0.5em}" in latex
         assert "window size 30" in latex
         assert r"\label{tab:lstm-final-summary-ws30}" in latex
         assert r"\textcolor{red}{\textbf{0.1}}" in latex
