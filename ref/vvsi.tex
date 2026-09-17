@@ -14,21 +14,51 @@
 \maketitle
 
 \begin{abstract}
-Forecasting the prices in a equity is a hard task. Many different implementations were designed and tested based on Statistical or ML methods. Recently, using DNN (Deep Neural Networks) have been proven to be beneficial in predicting returns for a stock. Our objective with this paper is analyzing if this holds for the a global LSTM model for overnight returns from 1,834 tickets. By using tickets data from NYSE and NASDAQ, downloaded from YFinance, we define a base LSTM model and train it across three different window sizes: 10, 30, 100 days. Performance is evaluated with MSE and R2 primarly, but RMSE, MAE and sMAPE are used as complementary metrics. The results show that R2 is concentrated around 0 and MSE keeps a small error throughout all training and validation. We conclude, therefore, that global LSTMs are not strong for predicting linear data when it has to keep the generality throughout several objects of study. Given that the data is concentrated around zero-mean, our model assumed that, to ensure generality, it's optimal to predict the mean than to account for granularity. 
+Forecasting equity prices and returns is a challenging task. Numerous
+statistical and machine-learning methods have been designed and tested for this
+purpose. More recently, deep neural networks (DNNs) have shown promising results
+in predicting equity returns. This paper investigates whether this also holds
+for a global Long Short-Term Memory (LSTM) model that predicts overnight returns
+across 1,834 tickers. Using data for NYSE and NASDAQ tickers obtained from Yahoo
+Finance, we define a baseline LSTM model and train it with three window sizes:
+10, 30, and 100 trading days. Performance is evaluated primarily using MSE and
+$R^2$, with RMSE, MAE, and sMAPE as complementary metrics. The results show that
+$R^2$ is concentrated around zero and that MSE remains low throughout training
+and validation. We therefore conclude that global LSTMs are not strong predictors
+of approximately linear data when required to generalize across many assets.
+Because the data are concentrated around zero, the model favours predictions
+near the mean rather than accounting for asset-specific variation.
 \end{abstract}
 
 \section{Introduction}
 % Write this section last.
 
 \subsection{Context}
-One of the biggest challenges in finance is to be able to accurately predict the prices of a asset, it being a stock paper, options, crypto currencies, commodities, any type of product offered in the market. The reason is simple: if you know the price of the next day, you are able to fully optimize your profit. The base idea on predicting the price is simple: we want to know the price in the future (one day, five days, ...) based on the historical data of that asset, which is characterized as a time-series. 
+One of the greatest challenges in finance is accurately predicting the future
+price of a financial asset, whether it is an equity, option, cryptocurrency,
+commodity, or another market product. The reason is simple: knowing the next
+day's price would allow an investor to optimize potential profit. The basic idea
+of price forecasting is to estimate an asset's future price---one day, five
+days, or another period ahead---from its historical time series.
 
-Time-series analysis is a complex type of investigation, since it involves many aspects such as stationarity, ergodicity, roughness, seasonality etc. Statistics have been tackling the problem of historical forecasting by analyzing these characteristics. However, with the rapid evolution of ML (Machine Learning) methods in the past 20 years, especially, DNN (Deep Neural Networks), with LSTMs and LLMs, there has been a risen on leveraging these models for performing such analysis, while delivering results that are better or even equal to statistical methods. 
+Time-series analysis is complex because it involves properties such as
+stationarity, ergodicity, roughness, and seasonality. Statistical methods have
+traditionally addressed forecasting by analysing these characteristics.
+However, the rapid development of machine-learning (ML) methods over the past
+20 years, especially deep neural networks such as LSTMs and large language
+models, has increased interest in applying these models to time-series analysis,
+with results that can equal or outperform those of statistical methods.
 
 \subsection{Motivations}
-In the context of ML, the data is the key for a good model. However, the data is not explored as it's in the Statistics field, where the main focus is understanding properties of the data and devising a model dependent on those for forecasting the future and focused on one object of study (local model). The models in ML are built to derive the characteristics from the data and consequently perform the forecasting after a training process, while still maintaing the capability of being expanded for more than one subject (global model). 
+In ML, data are central to building an effective model. However, data are not
+always examined in the same way as in statistics, where the focus is often on
+understanding their properties and designing a forecasting model for a single
+object of study (a local model). ML models instead learn characteristics from
+the data during training and can be extended across multiple subjects (a global
+model).
 
-In this study, we are interested in understading how well the base LSTM predicts the overnight return of stock papers, while being trained with data composed of multiple tickets. 
+This study investigates how well a baseline LSTM predicts the overnight returns
+of equities when trained on data from multiple tickers.
 
 \subsection{Contributions}
 In this project, we have two main contributions: 
@@ -39,9 +69,16 @@ In this project, we have two main contributions:
 \end{itemize}
 
 \subsection{Related Work}
-Legacy econometric models as GARCH \cite{bollerslev1986} and SARIMA \cite{box2015} have been extensive used for the purpose of predicting equities prices due to their instrinsic capacity of accounting for data-specific properties such as seasonality, stationarity, mean-reversal, etc. However, they lack the necessary tools for explaining non-linear behaviour.
+Traditional econometric models such as GARCH \cite{bollerslev1986} and SARIMA
+\cite{box2015} have been extensively used to predict equity prices because of
+their intrinsic ability to account for data-specific properties such as
+seasonality, stationarity, and mean reversion. However, they lack the tools
+required to explain nonlinear behaviour.
 
-LSTMs \cite{vennerod2021} have been widely used as an substitute of RNNs due to its architecture amenizing the gradient-vanishing problem, while still maintaing an accurate cronological representation. Nevertheless, great majority of its implementations are with local models .
+LSTMs \cite{vennerod2021} have been widely used as an alternative to
+conventional recurrent neural networks because their architecture mitigates the
+vanishing-gradient problem while retaining an accurate chronological
+representation. Nevertheless, most implementations use local models.
 
 \subsection{Outline}
  \begin{enumerate}
@@ -226,7 +263,7 @@ different share-class representations were filtered, deduplicated, and
 normalized to the hyphenated format expected by Yahoo Finance.
 
 The \textbf{second step} downloaded the maximum available daily OHLCV history
-through YFinance. A rate-aware scheduler checkpointed each request and retried
+from Yahoo Finance through the \texttt{yfinance} package. A rate-aware scheduler checkpointed each request and retried
 rate limits and transient failures, producing usable histories for 5,842
 tickers. Automatic price adjustment made historical OHLC prices consistent
 after splits and dividends, avoiding artificial jumps in the return series.
@@ -267,13 +304,17 @@ with the lowest MSE for a per-ticker comparison.
 % Describe the experimental results. This is the most important section.
 
 \subsection{Goals}
-The main goal of the experiment is the following:
+The main goal of the experiment is as follows:
 \begin{itemize}
-\item Verify the efficiency of global LSTM when predicting tickets overnight returns. 
+\item Verify the efficiency of a global LSTM when predicting tickers' overnight
+returns.
 \end{itemize}
 
 \subsection{Setting}
-In order to provide an accurate and comprehensive evaluation, as stated before, we've trained the model using three different window sizes to assess chronological effects in the prediction. The training was performed with a fixed epoch number of 50, batch size of 128 and hidden size of 64. 
+To provide an accurate and comprehensive evaluation, we trained the model using
+three window sizes to assess the effect of historical context on its
+predictions. Each model was trained for 50 epochs with a batch size of 128 and a
+hidden size of 64.
 
 \subsection{Technical Evaluation}
 The overnight returns of the 15 sampled tickers fluctuate around zero, with
@@ -292,9 +333,10 @@ individual observations.
 
 Figures~\ref{fig:test-mse-ws10}--\ref{fig:test-mse-ws100} show how training and
 validation MSE evolve over the 50 epochs. Training MSE decreases steadily in
-all three runs, whereas validation MSE keeps a constant value with a tiny fluctuation. This difference explains why the final evaluation reloads the checkpoint with the lowest validation
-MSE rather than automatically using the last epoch. Blue represents training
-MSE and red represents validation MSE.
+all three runs, whereas validation MSE remains nearly constant with only small
+fluctuations. This difference explains why the final evaluation reloads the
+checkpoint with the lowest validation MSE rather than automatically using the
+last epoch. Blue represents training MSE and red represents validation MSE.
 
 \begin{figure}[htbp]
     \centering
@@ -356,7 +398,9 @@ although their ordering and best values change. The ticker with the lowest MSE
 does not necessarily have the largest $R^2$, because MSE measures error size
 while $R^2$ measures improvement over the ticker's mean-return baseline. In
 each metric column, red identifies the best value and blue the second best;
-for $R^2$, the largest values are best. Overnight returns are generally close to zero. Consequently, a tiny absolute prediction error can produce a large sMAPE. That is why sMAPE should be interpreted together with MSE, RMSE and MAE.
+for $R^2$, the largest values are best. Overnight returns are generally close
+to zero. Consequently, a small absolute prediction error can produce a large
+sMAPE. Therefore, sMAPE should be interpreted together with MSE, RMSE, and MAE.
 
 \begin{figure}[htbp]
     \centering
@@ -396,7 +440,13 @@ column and blue the second best; larger $R^2$ is treated as better.
 
 
 \section{Conclusions}
-We conclude that our  are not well suited for a task where there is a small between values difference such as overnight returns. The model concludes that predicting values closer to the mean is better for generality in a global model. For further improvements, an analysis focused on daily returns could provide better results since it increases the span of time and provides a bigger variance per observation. Also, a comprehensive run of different hyperparameters would allow us to verify different relationships, not only chronological. 
+We conclude that global LSTMs are not well suited to tasks with small
+differences between values, such as predicting overnight returns. The model
+indicates that predictions closer to the mean provide better generalization in
+a global setting. Future work could analyse daily returns, which cover a longer
+price interval and exhibit greater variance per observation. A comprehensive
+evaluation of different hyperparameters would also allow relationships beyond
+the historical window length to be investigated.
 
 \begin{thebibliography}{99}
 \bibitem{bollerslev1986}
