@@ -318,39 +318,14 @@ MSE and red represents validation MSE.
 \end{figure}
 \clearpage
 
-The full-range test $R^2$ distributions
-(Figures~\ref{fig:test-r2-ws10}--\ref{fig:test-r2-ws100}) are concentrated
-around zero and include negative outliers. An $R^2$ near zero indicates that a
-model performs similarly to the mean-return baseline, while a negative value
-indicates worse performance for that ticker.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.9\textwidth]{../model/checkpoints/returns_bs128_hs64_ws10_lr0.0001_epochs50_best/test_r2_full.png}
-    \caption{Full-range test $R^2$ distribution for window size 10.}
-    \label{fig:test-r2-ws10}
-\end{figure}
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.9\textwidth]{../model/checkpoints/returns_bs128_hs64_ws30_lr0.0001_epochs50_best/test_r2_full.png}
-    \caption{Full-range test $R^2$ distribution for window size 30.}
-    \label{fig:test-r2-ws30}
-\end{figure}
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.9\textwidth]{../model/checkpoints/returns_bs128_hs64_ws100_lr0.0001_epochs50_best/test_r2_full.png}
-    \caption{Full-range test $R^2$ distribution for window size 100.}
-    \label{fig:test-r2-ws100}
-\end{figure}
-\clearpage
-
 Removing the lowest and highest 0.5\% of ticker-level values makes the central
 99\% easier to inspect (Figures~\ref{fig:test-r2-99-ws10}--\ref{fig:test-r2-99-ws100}).
-The concentration around zero remains for every window size and becomes
-narrower as the window grows. Therefore, increasing the historical window did
-not produce a material improvement in out-of-sample explanatory power.
+This view is used because the returns are concentrated near their means, so
+tickers with very small return variance can produce extreme negative $R^2$
+values that compress the central distribution. The concentration around zero
+remains for every window size and becomes narrower as the window grows.
+Therefore, increasing the historical window did not produce a material
+improvement in out-of-sample explanatory power.
 
 \begin{figure}[htbp]
     \centering
