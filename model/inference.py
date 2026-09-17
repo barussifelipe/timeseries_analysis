@@ -46,6 +46,12 @@ def ranked_cells(columns, rows):
     return ranked
 
 
+def best_rows(rows, metric, limit=15):
+    return sorted(
+        rows, key=lambda row: row[metric], reverse=METRIC_RANKING[metric],
+    )[:limit]
+
+
 def save_table_image(columns, rows, path, title):
     display_rows = [
         [f"{value:.6g}" if isinstance(value, float) else str(value) for value in row]
@@ -164,18 +170,23 @@ def build_final_report(
     ticker_columns = ["ticker", "observations", *metric_names]
     for split in ("val", "test"):
         rows = ticker_metrics[split]
-        best = sorted(rows, key=lambda row: row["mse"])[:15]
-        best_rows = [[row[column] for column in ticker_columns] for row in best]
-        final_logs[f"{split}_best_15_tickers"] = wandb.Table(
-            columns=ticker_columns,
-            data=best_rows,
-        )
-        table_path = report_dir / f"{split}_best_15_tickers.png"
-        save_table_image(
-            ticker_columns, best_rows, table_path,
-            f"Window size {window_size} — {split.title()} best 15 tickers by MSE",
-        )
-        final_logs[f"{split}_best_15_tickers_image"] = wandb.Image(str(table_path))
+        for ranking_metric in ("mse", "r2"):
+            table_rows = [
+                [row[column] for column in ticker_columns]
+                for row in best_rows(rows, ranking_metric)
+            ]
+            suffix = "" if ranking_metric == "mse" else "_by_r2"
+            log_name = f"{split}_best_15_tickers{suffix}"
+            final_logs[log_name] = wandb.Table(
+                columns=ticker_columns,
+                data=table_rows,
+            )
+            table_path = report_dir / f"{log_name}.png"
+            save_table_image(
+                ticker_columns, table_rows, table_path,
+                f"Window size {window_size} — {split.title()} best 15 tickers by {ranking_metric.upper()}",
+            )
+            final_logs[f"{log_name}_image"] = wandb.Image(str(table_path))
         for metric in metric_names:
             values = [row[metric] for row in rows if math.isfinite(row[metric])]
             ordered = sorted(values)

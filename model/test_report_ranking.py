@@ -1,7 +1,7 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from inference import ranked_cells, save_summary_latex
+from inference import best_rows, ranked_cells, save_summary_latex
 
 
 def test_report_ranking():
@@ -12,6 +12,9 @@ def test_report_ranking():
         (0, 1): "red", (1, 1): "blue",
         (1, 2): "red", (2, 2): "blue",
     }
+    ticker_rows = [{"mse": 2.0, "r2": 0.1}, {"mse": 1.0, "r2": 0.2}]
+    assert best_rows(ticker_rows, "mse")[0]["mse"] == 1.0
+    assert best_rows(ticker_rows, "r2")[0]["r2"] == 0.2
 
     with TemporaryDirectory() as directory:
         path = Path(directory) / "summary.tex"
