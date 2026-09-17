@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\caption{Average final metrics across window sizes 10, 30, and 100. Each value is the arithmetic mean of the corresponding split metric from the three best-validation checkpoints. Red denotes the best value and blue the second best.}
+\label{tab:lstm-average-summary}
+\vspace{0.5em}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrr}
+\hline
+split & mse & rmse & mae & smape & r2 \\
+\hline
+train & \textcolor{blue}{\textbf{0.000727426}} & \textcolor{blue}{\textbf{0.0269487}} & 0.0100691 & \textcolor{blue}{\textbf{162.005}} & \textcolor{red}{\textbf{0.233108}} \\
+val & \textcolor{red}{\textbf{0.000316452}} & \textcolor{red}{\textbf{0.0177841}} & \textcolor{red}{\textbf{0.00738722}} & \textcolor{red}{\textbf{160.99}} & \textcolor{blue}{\textbf{0.0512129}} \\
+test & 0.0029581 & 0.0543878 & \textcolor{blue}{\textbf{0.0100503}} & 164.626 & 0.0117532 \\
+\hline
+\end{tabular}%
+}
+\end{table}
