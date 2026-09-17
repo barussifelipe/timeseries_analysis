@@ -484,8 +484,14 @@ which are concentrated around zero. Its predictions remain close to the mean,
 possibly because MSE as the objective function penalizes large errors
 quadratically. Averaged across the three window sizes, $R^2$ falls from 0.233
 on the training split to 0.051 on validation and 0.012 on testing, supporting
-the conclusion that performance deteriorates out of sample. Future work could
-analyse daily returns, which cover a longer
+the conclusion that performance deteriorates out of sample. Among the 15 test
+tickers with the highest $R^2$, MFA achieves the largest value for every window
+size. Although all 15 return distributions are strongly concentrated around
+zero, MFA has the shortest tails, while the remaining tickers exhibit broader
+ones. This pattern supports the observation that the model prioritizes
+predictions near the zero return mean; however, MFA's positive $R^2$ also shows
+that its predictions improve upon a constant mean-return baseline. Future work
+could analyse daily returns, which cover a longer
 price interval and could exhibit different behaviour. A comprehensive
 evaluation of different hyperparameters would also allow relationships beyond
 the historical window length to be investigated and determine whether a
