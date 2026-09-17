@@ -318,14 +318,15 @@ MSE and red represents validation MSE.
 \end{figure}
 \clearpage
 
-Removing the lowest and highest 0.5\% of ticker-level values makes the central
-99\% easier to inspect (Figures~\ref{fig:test-r2-99-ws10}--\ref{fig:test-r2-99-ws100}).
-This view is used because the returns are concentrated near their means, so
-tickers with very small return variance can produce extreme negative $R^2$
-values that compress the central distribution. The concentration around zero
-remains for every window size and becomes narrower as the window grows.
-Therefore, increasing the historical window did not produce a material
-improvement in out-of-sample explanatory power.
+For $R^2$, removing the lowest and highest 0.5\% of ticker-level values makes
+the central 99\% easier to inspect
+(Figures~\ref{fig:test-r2-99-ws10}--\ref{fig:test-r2-99-ws100}). This view is
+used because tickers with very low return variance can produce extreme
+negative $R^2$ values that compress the central distribution. For every window
+size, most values are concentrated near zero and the distribution is
+left-skewed. The negative tail is particularly pronounced for window size 100,
+even after trimming the extremes. Therefore, increasing the historical window
+did not produce a material improvement in out-of-sample explanatory power.
 
 \begin{figure}[htbp]
     \centering
