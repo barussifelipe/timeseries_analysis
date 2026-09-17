@@ -422,6 +422,35 @@ sMAPE. Therefore, sMAPE should be interpreted together with MSE, RMSE, and MAE.
 \end{figure}
 \clearpage
 
+Figures~\ref{fig:test-top15-r2-ws10}--\ref{fig:test-top15-r2-ws100}
+instead rank the test tickers by descending $R^2$. This ranking identifies the
+tickers for which the model improves most over the ticker-specific mean-return
+baseline, rather than those with the smallest absolute errors. MFA obtains the
+highest $R^2$ for all three window sizes, while the maximum falls from 0.574 for
+window size 10 to 0.545 for window size 100.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../model/checkpoints/returns_bs128_hs64_ws10_lr0.0001_epochs50_best/test_best_15_tickers_by_r2.png}
+    \caption{Best 15 test tickers by $R^2$ for window size 10. Red denotes the best metric value and blue the second best; larger $R^2$ is better.}
+    \label{fig:test-top15-r2-ws10}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../model/checkpoints/returns_bs128_hs64_ws30_lr0.0001_epochs50_best/test_best_15_tickers_by_r2.png}
+    \caption{Best 15 test tickers by $R^2$ for window size 30. Red denotes the best metric value and blue the second best; larger $R^2$ is better.}
+    \label{fig:test-top15-r2-ws30}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../model/checkpoints/returns_bs128_hs64_ws100_lr0.0001_epochs50_best/test_best_15_tickers_by_r2.png}
+    \caption{Best 15 test tickers by $R^2$ for window size 100. Red denotes the best metric value and blue the second best; larger $R^2$ is better.}
+    \label{fig:test-top15-r2-ws100}
+\end{figure}
+\clearpage
+
 Tables~\ref{tab:lstm-final-summary-ws10}--\ref{tab:lstm-final-summary-ws100}
 compare the aggregate metrics across training, validation, and test data. All
 three models obtain their lowest MSE, RMSE, and MAE on validation data, while
