@@ -70,11 +70,12 @@ In this project, we have two main contributions:
 \end{itemize}
 
 \subsection{Related Work}
-Traditional econometric models such as GARCH \cite{bollerslev1986} and SARIMA
-\cite{box2015} have been extensively used to predict equity prices because of
-their intrinsic ability to account for data-specific properties such as
-seasonality, stationarity, and mean reversion. However, they lack the tools
-required to explain nonlinear behaviour.
+Traditional statistical models such as OLS \cite{gu2020} and SARIMA
+\cite{box2015} have been extensively used for financial forecasting. OLS fits
+linear relationships by minimizing the sum of squared residuals, while SARIMA
+models autoregressive, moving-average, differencing, and seasonal components.
+However, their predefined linear structures cannot directly represent nonlinear
+relationships.
 
 LSTMs \cite{vennerod2021} have been widely used as an alternative to
 conventional recurrent neural networks because their architecture mitigates the
@@ -514,10 +515,11 @@ using MAE as the loss function would reduce the influence of outliers on model
 updates, allowing the model to respond less aggressively to extreme errors.
 
 \begin{thebibliography}{99}
-\bibitem{bollerslev1986}
-T. Bollerslev,
-``Generalized autoregressive conditional heteroskedasticity,''
-\textit{Journal of Econometrics}, vol. 31, no. 3, pp. 307--327, 1986.
+\bibitem{gu2020}
+S. Gu, B. Kelly, and D. Xiu,
+``Empirical asset pricing via machine learning,''
+\textit{The Review of Financial Studies}, vol. 33, no. 5,
+pp. 2223--2273, 2020.
 
 \bibitem{box2015}
 G. E. P. Box, G. M. Jenkins, G. C. Reinsel, and G. M. Ljung,
