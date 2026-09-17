@@ -292,9 +292,7 @@ individual observations.
 
 Figures~\ref{fig:test-mse-ws10}--\ref{fig:test-mse-ws100} show how training and
 validation MSE evolve over the 50 epochs. Training MSE decreases steadily in
-all three runs, whereas validation MSE improves mainly during the earlier
-epochs and then fluctuates within a narrower range. This difference explains
-why the final evaluation reloads the checkpoint with the lowest validation
+all three runs, whereas validation MSE keeps a constant value with a tiny fluctuation. This difference explains why the final evaluation reloads the checkpoint with the lowest validation
 MSE rather than automatically using the last epoch. Blue represents training
 MSE and red represents validation MSE.
 
