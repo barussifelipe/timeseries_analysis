@@ -23,11 +23,12 @@ across 1,834 tickers. Using data for NYSE and NASDAQ tickers obtained from Yahoo
 Finance, we define a baseline LSTM model and train it with three window sizes:
 10, 30, and 100 trading days. Performance is evaluated primarily using MSE and
 $R^2$, with RMSE, MAE, and sMAPE as complementary metrics. The results show that
-$R^2$ is concentrated around zero and that MSE remains low throughout training
-and validation. We therefore conclude that global LSTMs are not strong predictors
-of approximately linear data when required to generalize across many assets.
-Because the data are concentrated around zero, the model favours predictions
-near the mean rather than accounting for asset-specific variation.
+$R^2$ is concentrated around zero and that performance is weaker on the test
+split than on the training and validation splits. The test period includes the
+COVID-19 market disruption, whose increased volatility may have affected these
+metrics. We therefore conclude that our LSTM is not a strong generalizer across
+market periods and assets when returns are concentrated around zero. Its
+predictions favour the mean rather than asset-specific variation.
 \end{abstract}
 
 \section{Introduction}
@@ -288,7 +289,7 @@ value from the final hidden state. Gate and output weights use Xavier uniform
 initialization, while the forget-gate bias is initialized to one to encourage
 the retention of earlier information at the start of training. Three otherwise
 identical models use window sizes of 10, 30, and 100 trading days to evaluate
-the effect of different historical horizons. We use ADAM as our optimizer and MSE as our objective loss.
+the effect of different historical horizons. We use Adam as our optimizer and MSE as our objective loss.
 
 \section{Implementation}
 The system trains the global LSTM on the aggregated multi-ticker dataset. At
@@ -298,7 +299,7 @@ the validation MSE improves, the current checkpoint replaces the previous one,
 so only the best model is retained. After training, this checkpoint is reloaded
 and evaluated on the training, validation, and test sets. The final metrics are
 presented in a summary table, together with the 15 test tickers
-with the lowest MSE and biggest $R^2$ for a per-ticker comparison.
+with the lowest MSE and highest $R^2$ for a per-ticker comparison.
 
 \section{Experimental Results}
 % Describe the experimental results. This is the most important section.
@@ -396,7 +397,8 @@ The sets of 15 test tickers with the lowest MSE are broadly similar across
 window sizes (Figures~\ref{fig:test-top15-ws10}--\ref{fig:test-top15-ws100}),
 although their ordering and best values change. The ticker with the lowest MSE
 does not necessarily have the largest $R^2$, because MSE measures error size
-while $R^2$ measures improvement over the ticker's mean-return baseline.Overnight returns are generally close
+while $R^2$ measures improvement over the ticker's mean-return baseline.
+Overnight returns are generally close
 to zero. Consequently, a small absolute prediction error can produce a large
 sMAPE. Therefore, sMAPE should be interpreted together with MSE, RMSE, and MAE.
 
@@ -427,7 +429,8 @@ instead rank the test tickers by descending $R^2$. This ranking identifies the
 tickers for which the model improves most over the ticker-specific mean-return
 baseline, rather than those with the smallest absolute errors. MFA obtains the
 highest $R^2$ for all three window sizes, while the maximum falls from 0.574 for
-window size 10 to 0.545 for window size 100. The comparison between this tables makes clear the non-correlation of lower MSE to higher $R^2$. 
+window size 10 to 0.545 for window size 100. Comparing these tables shows that
+lower MSE does not necessarily correspond to higher $R^2$.
 
 \begin{figure}[htbp]
     \centering
@@ -454,7 +457,11 @@ window size 10 to 0.545 for window size 100. The comparison between this tables 
 Tables~\ref{tab:lstm-final-summary-ws10}--\ref{tab:lstm-final-summary-ws100}
 compare the aggregate metrics across training, validation, and test data. All
 three models obtain their lowest MSE, RMSE, and MAE on validation data, while
-their test $R^2$ values remain close to zero. The difference between splits are mainly explained due to the model not being able to efficiently generalize out-of-sample data as good as in-sample. The window size 10 provides the
+their test $R^2$ values remain close to zero. The test split covers 2019--2025
+and therefore includes the COVID-19 market disruption, a period of elevated
+volatility that may have contributed to the weaker test metrics. Nevertheless,
+the results indicate that the model does not generalize to the test period as
+effectively as it fits the training data. Window size 10 provides the
 lowest test MSE and the largest test $R^2$, but the differences between window
 sizes are small. 
 
@@ -466,13 +473,16 @@ sizes are small.
 
 
 \section{Conclusions}
-We conclude that our LSTM is not well suited to tasks with small
-differences between values, such as predicting overnight returns. The model
-indicates that predictions closer to the mean provide better generalization in
-a global setting, possibly due to MSE being used as our objective function. Future work could analyse daily returns, which cover a longer
-price interval and could provide a different behaviour. A comprehensive
+We conclude that our LSTM is not a strong generalizer for overnight returns,
+which are concentrated around zero. Its predictions remain close to the mean,
+possibly because MSE as the objective function penalizes large errors
+quadratically. Future work could analyse daily returns, which cover a longer
+price interval and could exhibit different behaviour. A comprehensive
 evaluation of different hyperparameters would also allow relationships beyond
-the historical window length to be investigated and verify if a base LSTM with a different setting might be succesfull. Finally, using MAE as our loss function would allow us to explore more the outliers effect when updating our model weights. 
+the historical window length to be investigated and determine whether a
+baseline LSTM with a different configuration might be successful. Finally,
+using MAE as the loss function would reduce the influence of outliers on model
+updates, allowing the model to respond less aggressively to extreme errors.
 
 \begin{thebibliography}{99}
 \bibitem{bollerslev1986}
