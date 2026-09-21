@@ -4,7 +4,7 @@ from unittest.mock import patch
 import torch
 from torch.utils.data import TensorDataset
 
-import training
+from inference import training
 
 
 def test_learning_rate_retry_and_early_stop():
@@ -13,10 +13,10 @@ def test_learning_rate_retry_and_early_stop():
     dataset = TensorDataset(torch.zeros(1, 1), torch.zeros(1, 1))
     validation_losses = iter((1.0, 1.1, 1.1, 1.1, 1.1))
     logs = []
-    final_path = Path("model/checkpoints/patience_check_best_epoch1.pth")
-    temporary_path = Path("model/checkpoints/patience_check_best.pth")
-    previous_path = Path("model/checkpoints/patience_check_best_epoch9.pth")
-    unrelated_path = Path("model/checkpoints/other_run_best_epoch9.pth")
+    final_path = Path("inference/checkpoints/patience_check_best_epoch1.pth")
+    temporary_path = Path("inference/checkpoints/patience_check_best.pth")
+    previous_path = Path("inference/checkpoints/patience_check_best_epoch9.pth")
+    unrelated_path = Path("inference/checkpoints/other_run_best_epoch9.pth")
 
     try:
         previous_path.write_bytes(b"old checkpoint")

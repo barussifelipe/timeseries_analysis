@@ -1,7 +1,7 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from inference import best_rows, ranked_cells, save_summary_latex
+from inference.inference import best_rows, ranked_cells, save_summary_latex
 
 
 def test_report_ranking():

@@ -324,7 +324,7 @@ individual observations.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{../model/checkpoints/overnight_returns_by_split.png}
+    \includegraphics[width=\textwidth]{../../inference/checkpoints/base_lstm_returns/overnight_returns_by_split.png}
     \caption{Overnight returns for a deterministic sample of 15 tickers in the training, validation, and test periods.}
     \label{fig:overnight-returns}
 \end{figure}
@@ -339,21 +339,21 @@ last epoch.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\textwidth]{../model/checkpoints/returns_bs128_hs64_ws10_lr0.0001_epochs50_best/mse_evolution.png}
+    \includegraphics[width=0.9\textwidth]{../../inference/checkpoints/base_lstm_returns/returns_bs128_hs64_ws10_lr0.0001_epochs50_best/mse_evolution.png}
     \caption{MSE evolution for window size 10. Blue denotes training MSE and red validation MSE.}
     \label{fig:test-mse-ws10}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\textwidth]{../model/checkpoints/returns_bs128_hs64_ws30_lr0.0001_epochs50_best/mse_evolution.png}
+    \includegraphics[width=0.9\textwidth]{../../inference/checkpoints/base_lstm_returns/returns_bs128_hs64_ws30_lr0.0001_epochs50_best/mse_evolution.png}
     \caption{MSE evolution for window size 30. Blue denotes training MSE and red validation MSE.}
     \label{fig:test-mse-ws30}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\textwidth]{../model/checkpoints/returns_bs128_hs64_ws100_lr0.0001_epochs50_best/mse_evolution.png}
+    \includegraphics[width=0.9\textwidth]{../../inference/checkpoints/base_lstm_returns/returns_bs128_hs64_ws100_lr0.0001_epochs50_best/mse_evolution.png}
     \caption{MSE evolution for window size 100. Blue denotes training MSE and red validation MSE.}
     \label{fig:test-mse-ws100}
 \end{figure}
@@ -370,21 +370,21 @@ did not produce a material improvement in out-of-sample explanatory power.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\textwidth]{../model/checkpoints/returns_bs128_hs64_ws10_lr0.0001_epochs50_best/test_r2_central_99.png}
+    \includegraphics[width=0.9\textwidth]{../../inference/checkpoints/base_lstm_returns/returns_bs128_hs64_ws10_lr0.0001_epochs50_best/test_r2_central_99.png}
     \caption{Central 99\% of the test $R^2$ distribution for window size 10.}
     \label{fig:test-r2-99-ws10}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\textwidth]{../model/checkpoints/returns_bs128_hs64_ws30_lr0.0001_epochs50_best/test_r2_central_99.png}
+    \includegraphics[width=0.9\textwidth]{../../inference/checkpoints/base_lstm_returns/returns_bs128_hs64_ws30_lr0.0001_epochs50_best/test_r2_central_99.png}
     \caption{Central 99\% of the test $R^2$ distribution for window size 30.}
     \label{fig:test-r2-99-ws30}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\textwidth]{../model/checkpoints/returns_bs128_hs64_ws100_lr0.0001_epochs50_best/test_r2_central_99.png}
+    \includegraphics[width=0.9\textwidth]{../../inference/checkpoints/base_lstm_returns/returns_bs128_hs64_ws100_lr0.0001_epochs50_best/test_r2_central_99.png}
     \caption{Central 99\% of the test $R^2$ distribution for window size 100.}
     \label{fig:test-r2-99-ws100}
 \end{figure}
@@ -401,21 +401,21 @@ sMAPE. Therefore, sMAPE should be interpreted together with MSE, RMSE, and MAE.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{../model/checkpoints/returns_bs128_hs64_ws10_lr0.0001_epochs50_best/test_best_15_tickers.png}
+    \includegraphics[width=\textwidth]{../../inference/checkpoints/base_lstm_returns/returns_bs128_hs64_ws10_lr0.0001_epochs50_best/test_best_15_tickers.png}
     \caption{Best 15 test tickers by MSE for window size 10. Red denotes the best metric value and blue the second best; larger $R^2$ is better.}
     \label{fig:test-top15-ws10}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{../model/checkpoints/returns_bs128_hs64_ws30_lr0.0001_epochs50_best/test_best_15_tickers.png}
+    \includegraphics[width=\textwidth]{../../inference/checkpoints/base_lstm_returns/returns_bs128_hs64_ws30_lr0.0001_epochs50_best/test_best_15_tickers.png}
     \caption{Best 15 test tickers by MSE for window size 30. Red denotes the best metric value and blue the second best; larger $R^2$ is better.}
     \label{fig:test-top15-ws30}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{../model/checkpoints/returns_bs128_hs64_ws100_lr0.0001_epochs50_best/test_best_15_tickers.png}
+    \includegraphics[width=\textwidth]{../../inference/checkpoints/base_lstm_returns/returns_bs128_hs64_ws100_lr0.0001_epochs50_best/test_best_15_tickers.png}
     \caption{Best 15 test tickers by MSE for window size 100. Red denotes the best metric value and blue the second best; larger $R^2$ is better.}
     \label{fig:test-top15-ws100}
 \end{figure}
@@ -431,21 +431,21 @@ lower MSE does not necessarily correspond to higher $R^2$.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{../model/checkpoints/returns_bs128_hs64_ws10_lr0.0001_epochs50_best/test_best_15_tickers_by_r2.png}
+    \includegraphics[width=\textwidth]{../../inference/checkpoints/base_lstm_returns/returns_bs128_hs64_ws10_lr0.0001_epochs50_best/test_best_15_tickers_by_r2.png}
     \caption{Best 15 test tickers by $R^2$ for window size 10. Red denotes the best metric value and blue the second best; larger $R^2$ is better.}
     \label{fig:test-top15-r2-ws10}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{../model/checkpoints/returns_bs128_hs64_ws30_lr0.0001_epochs50_best/test_best_15_tickers_by_r2.png}
+    \includegraphics[width=\textwidth]{../../inference/checkpoints/base_lstm_returns/returns_bs128_hs64_ws30_lr0.0001_epochs50_best/test_best_15_tickers_by_r2.png}
     \caption{Best 15 test tickers by $R^2$ for window size 30. Red denotes the best metric value and blue the second best; larger $R^2$ is better.}
     \label{fig:test-top15-r2-ws30}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{../model/checkpoints/returns_bs128_hs64_ws100_lr0.0001_epochs50_best/test_best_15_tickers_by_r2.png}
+    \includegraphics[width=\textwidth]{../../inference/checkpoints/base_lstm_returns/returns_bs128_hs64_ws100_lr0.0001_epochs50_best/test_best_15_tickers_by_r2.png}
     \caption{Best 15 test tickers by $R^2$ for window size 100. Red denotes the best metric value and blue the second best; larger $R^2$ is better.}
     \label{fig:test-top15-r2-ws100}
 \end{figure}
@@ -459,7 +459,7 @@ distribution, while the remaining tickers have wider distributions.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{../model/checkpoints/top15_r2_ws10_return_histograms_by_split.png}
+    \includegraphics[width=\textwidth]{../../inference/checkpoints/base_lstm_returns/top15_r2_ws10_return_histograms_by_split.png}
     \caption{Return distributions across the training, validation, and test splits for the 15 test tickers with the highest $R^2$ at window size 10.}
     \label{fig:top15-r2-return-distributions}
 \end{figure}
@@ -476,11 +476,11 @@ effectively as it fits the training data. Window size 10 provides the
 lowest test MSE and the largest test $R^2$, but the differences between window
 sizes are small. 
 
-\input{../model/checkpoints/returns_bs128_hs64_ws10_lr0.0001_epochs50_best/final_summary.tex}
+\input{../../inference/checkpoints/base_lstm_returns/returns_bs128_hs64_ws10_lr0.0001_epochs50_best/final_summary.tex}
 
-\input{../model/checkpoints/returns_bs128_hs64_ws30_lr0.0001_epochs50_best/final_summary.tex}
+\input{../../inference/checkpoints/base_lstm_returns/returns_bs128_hs64_ws30_lr0.0001_epochs50_best/final_summary.tex}
 
-\input{../model/checkpoints/returns_bs128_hs64_ws100_lr0.0001_epochs50_best/final_summary.tex}
+\input{../../inference/checkpoints/base_lstm_returns/returns_bs128_hs64_ws100_lr0.0001_epochs50_best/final_summary.tex}
 
 Table~\ref{tab:lstm-average-summary} summarizes the three experiments by taking
 the arithmetic mean of each split-level metric across the window sizes.

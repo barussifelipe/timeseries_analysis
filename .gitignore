@@ -2,5 +2,5 @@
 *.db
 .env
 wandb/
-model/checkpoints/
+inference/checkpoints/
 __pycache__/

@@ -117,8 +117,10 @@ data/
   filtering_stock.py   # ticker universe: share-class dedup, instrument filtering
   data_fetching.py     # download, feature engineering, splits, z-scoring, Dataset
   src/                 # listing CSVs + SQLite feature store
-model/
-  model.py             # FEBCellLSTM + FEBLSTM (LSTM implemented from scratch)
+models/
+  base_lstm.py         # FEBCellLSTM + FEBLSTM (LSTM implemented from scratch)
+  *.py                 # one file per volatility model definition
+inference/
   training.py          # train/eval loops, metrics, checkpointing, VRAM instrumentation
   inference.py         # experiment entrypoint: config, W&B init, train, test
 ref/                   # project brief, references, progress report, research notes
@@ -128,13 +130,13 @@ ref/                   # project brief, references, progress report, research no
 
 ```bash
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install torch pandas numpy yfinance wandb matplotlib
+pip install -r requirements.txt
 
 python -m data.data_fetching   # build the SQLite feature store (one-off, slow)
-python model/inference.py      # train + evaluate, logging to W&B
+python -m inference.inference  # train + evaluate VVSI returns, logging to W&B
 ```
 
-Hyperparameters live at the top of `model/inference.py`. A W&B account is needed for logging
+Hyperparameters live at the top of `inference/inference.py`. A W&B account is needed for logging
 (`wandb login`).
 
 ---

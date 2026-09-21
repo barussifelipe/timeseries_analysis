@@ -1,6 +1,6 @@
 # Project context
 
-Last updated: 2026-09-20
+Last updated: 2026-09-21
 
 ## Goal
 
@@ -61,14 +61,9 @@ For **Part I / VVSI**, the return-prediction rerun infrastructure and the
 three production LSTM runs are complete. The next action is to compare and
 report the window-size results.
 
-For **Part II / the full thesis**, we are in **Step 1: Build the dataset**,
-with the revised volatility dataset incomplete.
+For **Part II / the full thesis**, the revised volatility dataset is still incomplete. Model definitions now exist in `models/`, ahead of target selection; no project-data model fitting or volatility evaluation has run.
 
-The existing LSTM still predicts `overnight_returns`; it has not yet been
-adapted to a volatility target. The volatility estimator datasets and initial
-roughness analysis now exist, but the canonical prediction target and horizon
-must be chosen before the project reaches the plan's **Define the models**
-implementation stage.
+The VVSI LSTM still predicts `overnight_returns`; it has not yet been trained for volatility. The volatility estimator datasets and initial roughness analysis exist, but the canonical prediction target and horizon must be chosen before fitting or evaluation. Classical model computations, neural architectures, and synthetic checks are implemented; the VVSI package moved to `inference/` with its old checkpoints.
 
 Completed or reusable parts of Step 1:
 
@@ -84,14 +79,11 @@ Still required to finish Step 1:
 3. Add VIX or volatility commonality only if the initial evidence shows they
    are needed.
 
-The next concrete task is to select the canonical variance estimator and
-forecast horizon from the completed analysis. Then implement a small
-statistical baseline—preferably HAR/OLS—before adapting the LSTM and adding
-more complex models.
+The next concrete task is to select the canonical variance estimator and forecast horizon, then wire within-ticker windows and fit the defined models on chronological equity data. Validation must select SARIMA orders, neural widths/windows, and an out-of-sample appropriate H.
 
 ## Planned later work
 
-- Models under consideration: SARIMA, HAR, HARNet, GARCH, OLS, MLP, LSTM variants, RFSV, TimesFM, and TinyTimeMixers. The small-language-model idea is explicitly low priority.
+- Models under consideration: SARIMA, HAR, HARNet, GARCH, AR(1), MLP, LSTM variants, RFSV, TimesFM, and TinyTimeMixers. The small-language-model idea is explicitly low priority.
 - Primary comparison metrics: QLIKE, MSE, and MASE, with bounded/winsorized losses where justified.
 - Compare local versus global training and the feature sets RV-only, RV + commonality, and RV + commonality + VIX.
 - Statistical comparison with a Model Confidence Set and forecast-efficiency checks with Mincer-Zarnowitz regressions.
@@ -103,9 +95,9 @@ more complex models.
 - `data/data_fetching.py`: download, feature creation, SQLite storage, splits, normalization, plotting, and window dataset.
 - `data/roughness_analysis.py`: variance-table construction, retained universe
   selection, top-volume samples, roughness/Hurst estimation, and figures.
-- `model/model.py`: custom LSTM cell and sequence model.
-- `model/training.py`: training/evaluation metrics, checkpointing, and diagnostics.
-- `model/inference.py`: current executable training and test pipeline.
+- `models/base_lstm.py`: custom LSTM cell and sequence model; other model definitions live beside it.
+- `inference/training.py`: VVSI training/evaluation metrics, checkpointing, and diagnostics.
+- `inference/inference.py`: current executable VVSI training and test pipeline (`python -m inference.inference`).
 - `ref/plan.md`: current research plan.
 - `ref/thesis_notes.md`: paper notes and rationale.
 - `ref/references.md`: bibliography/source list.

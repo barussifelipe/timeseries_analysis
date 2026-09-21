@@ -27,6 +27,7 @@
 - Using NIC and the way it simulated to check if our model is following the leverage effect. Could check for mean reversion and volatility clustering. 
 ---
 ## NOTES - 1.3 - *HARNet: A convolutional neural network for realized volatility forecasting* [https://arxiv.org/abs/2205.07719]
+- Implementation detail: nested (1,5,20) receptive fields use a 5-step averaging convolution followed by a 4-step convolution with dilation 5. Averaging-filter initialization and fitted HAR output coefficients reproduce HAR on nonnegative histories.
 - HARnet perform the same as HAR with its initialization and even better when optimized. 
 - Uses dilated convolution filters. Allows to expand the receptive field without increasing the parameters. Allows to increase exponentially the horizon, while linearly increasing the depth. 
 - Each layer of HARnet computes features with respect to different time horizons, like HAR. 
@@ -63,6 +64,7 @@
 - The benefits were low, however, were better than the LSTM itself. So good to know. 
 ---
 ## NOTES - 5.2 - *Forecasting volatility with machine learning and rough volatility: Example from the crypto-winter* [https://arxiv.org/abs/2311.04727]
+- Implementation detail: the SiLU-LSTM retains sigmoid gates and uses SiLU for the candidate and cell output. The RFSV forecast weights past log volatility with a supplied H; ν controls the optional multiplicative correction.
 - Bitcoin volatility is rought based on the Takaishi paper. Could implement the framework of testing roughness to the full stock market dataset. 
 - Join crypto and stocks in the same dataset to test universality of the model 
 - Using SiLU allows to pass the true volatility, without making the gradient become 0. Maybe using it on the vol-LSTM instead of TanH. Need to study more this approach. 

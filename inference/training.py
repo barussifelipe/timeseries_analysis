@@ -1,4 +1,3 @@
-from model import *
 import wandb
 import torch 
 from torch.utils.data import DataLoader, TensorDataset
@@ -185,8 +184,8 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
     best_epoch = None
     epochs_without_improvement = 0
     learning_rate_reduced = False
-    os.makedirs("model/checkpoints", exist_ok=True)
-    checkpoint_path = f"model/checkpoints/{name_run}_best.pth"
+    os.makedirs("inference/checkpoints", exist_ok=True)
+    checkpoint_path = f"inference/checkpoints/{name_run}_best.pth"
 
     for epoch in range(num_epochs): 
         print(f"Starting epoch {epoch + 1}/{num_epochs}")
@@ -236,13 +235,13 @@ def train(model, train_dataset, val_dataset, optimizer, criterion, num_epochs, b
 
     if best_epoch is None:
         raise RuntimeError("Training produced no finite validation checkpoint.")
-    final_checkpoint_path = f"model/checkpoints/{name_run}_best_epoch{best_epoch}.pth"
+    final_checkpoint_path = f"inference/checkpoints/{name_run}_best_epoch{best_epoch}.pth"
     os.replace(checkpoint_path, final_checkpoint_path)
     final_checkpoint_name = os.path.basename(final_checkpoint_path)
     checkpoint_prefix = f"{name_run}_best_epoch"
-    for filename in os.listdir("model/checkpoints"):
+    for filename in os.listdir("inference/checkpoints"):
         if filename.startswith(checkpoint_prefix) and filename.endswith(".pth") and filename != final_checkpoint_name:
-            os.remove(os.path.join("model/checkpoints", filename))
+            os.remove(os.path.join("inference/checkpoints", filename))
     print(f"Best checkpoint saved as {final_checkpoint_path}")
     wandb.save(final_checkpoint_path)
     return final_checkpoint_path

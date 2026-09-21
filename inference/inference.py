@@ -9,13 +9,15 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.append(str(PROJECT_ROOT))
 
 
-from training import * 
+import torch
+from torch.utils.data import DataLoader
+from inference.training import train, load_model, test_batch, parameters
 import wandb
 import sqlite3
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from model import FEBLSTM
+from models.base_lstm import FEBLSTM
 from data.data_fetching import (
     HISTORY_DB,
     TimeSeriesDataset,

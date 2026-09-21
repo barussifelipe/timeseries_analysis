@@ -74,11 +74,17 @@ https://arxiv.org/abs/2311.04727
 
 ### 6.1 ARIMA / SARIMA
 
+statsmodels developers. (2025). *SARIMAX: Model selection, missing data*.
+https://www.statsmodels.org/stable/examples/notebooks/generated/statespace_sarimax_internet.html
+
 Box, G. E. P., Jenkins, G. M., Reinsel, G. C., & Ljung, G. M. (2015). *Time
 series analysis: Forecasting and control* (5th ed.). John Wiley & Sons.
 ISBN 978-1-118-67502-1.
 
 ### 6.2 ARCH / GARCH family
+
+ARCH developers. (2024). *Forecasting: ARCH univariate volatility models*.
+https://arch.readthedocs.io/en/latest/univariate/forecasting.html
 
 Engle, R. F. (1982). Autoregressive conditional heteroscedasticity with estimates of the
 variance of United Kingdom inflation. *Econometrica, 50*(4), 987–1007.
