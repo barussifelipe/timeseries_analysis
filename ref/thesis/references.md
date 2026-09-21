@@ -174,3 +174,10 @@ published. One caveat: Engle (1982) is cited in the literature as both 987–100
 
 Section 7 was compiled from the bibliography of Kuinchtner & Madalozzo and is not
 independently verified; confirm the thesis year and publication details before submission.
+
+## Training implementation sources
+
+- NumPy, `numpy.linalg.lstsq` (pooled AR(1) and HAR ordinary least squares): https://numpy.org/doc/stable/reference/generated/numpy.linalg.lstsq.html
+- statsmodels, `SARIMAX.loglike` (sum per-ticker likelihoods for shared SARIMA parameters): https://www.statsmodels.org/stable/generated/statsmodels.tsa.statespace.sarimax.SARIMAX.loglike.html
+- `arch` documentation, *ARCH Modeling* (GARCH(1,1) likelihood and fixed-parameter forecasting): https://arch.readthedocs.io/en/stable/univariate/univariate_volatility_modeling.html
+- Gatheral, J., Jaisson, T., & Rosenbaum, M., *Volatility is rough* (RFSV roughness motivation): https://arxiv.org/abs/1410.3394

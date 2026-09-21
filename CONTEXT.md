@@ -2,6 +2,27 @@
 
 Last updated: 2026-09-21
 
+## Training framework update (2026-09-21)
+
+`models/training_blocks.py` now builds ticker-safe next-day daily variance windows for
+Parkinson or Garman–Klass. The nine active model modules expose global and local
+fits, forecasts, and commands. Models fit only pre-2016 equity histories;
+neural checkpoints select on 2016–2018 validation QLIKE; 2019–2025 equities
+and matching unseen crypto proxies are evaluation sets. The floor is the
+minimum positive fitting-history variance, saved with each fit. Statistical
+specifications are fixed at this stage. The return experiment remains a
+reference under `inference.inference`, with its old loop at
+`inference/returns_training.py`; no project-data training was run for this
+framework. The synthetic smoke is `python -m models.test_training_smoke`.
+Neural models now use raw outputs with only the saved floor before QLIKE;
+there is no median scaling or softplus. Outputs below the floor have zero
+gradient through the clamp, so check for stalled neural fits in small trials.
+The existing training-framework JSON is a same-context self-check; a fresh-context
+cold review remains required under `GUIDELINES.md`.
+Next: inspect real dataset eligibility and fit diagnostics in small authorized
+trials, then choose neural widths/windows and statistical specifications from
+the reserved validation period.
+
 ## Goal
 
 The work has two parts. **Part I is the VVSI project**, which predicts short-horizon stock returns with a global LSTM. **Part II is the full thesis project** described in `ref/plan.md`: a comparison of statistical/econometric and machine-learning models for realized-volatility forecasting, followed by portfolio-utility evaluation. The full thesis also covers volatility roughness (fBm/fOU and the Hurst exponent) and whether learned behavior generalizes across assets and datasets.
@@ -63,9 +84,9 @@ For **Part I / VVSI**, the return-prediction rerun infrastructure and the
 three production LSTM runs are complete. The next action is to compare and
 report the window-size results.
 
-For **Part II / the full thesis**, the revised volatility dataset is still incomplete. Model definitions now exist in `models/`, ahead of target selection; no project-data model fitting or volatility evaluation has run.
+For **Part II / the full thesis**, Parkinson and Garman–Klass are separate daily variance targets. The training framework and synthetic checks are implemented; no project-data model fitting or volatility evaluation has run.
 
-The VVSI LSTM still predicts `overnight_returns`; it has not yet been trained for volatility. The volatility estimator datasets and initial roughness analysis exist, but the canonical prediction target and horizon must be chosen before fitting or evaluation. Classical model computations, neural architectures, and synthetic checks are implemented; the VVSI package moved to `inference/` with its old checkpoints.
+The VVSI LSTM still predicts `overnight_returns`; its earlier checkpoints are retained. The new `base_lstm_vol` path is for next-day variance. Estimator tables and initial roughness analysis exist; Parkinson and Garman–Klass remain separate comparison tracks.
 
 Completed or reusable parts of Step 1:
 
@@ -73,15 +94,13 @@ Completed or reusable parts of Step 1:
 - daily OHLCV acquisition and adjusted prices;
 - chronological splitting, storage, normalization, plotting helper, and safe per-ticker windows.
 
-Still required to finish Step 1:
+Still required before substantive comparison:
 
-1. Review the generated roughness estimates and select the canonical
-   prediction target and horizon.
-2. Adapt the dataset windows to that target and add lagged realized variance.
-3. Add VIX or volatility commonality only if the initial evidence shows they
-   are needed.
+1. Review fit diagnostics and sample eligibility from small authorized trials.
+2. Select neural widths/windows and later statistical specifications using the reserved validation period.
+3. Add VIX or volatility commonality only if initial evidence shows they are needed.
 
-The next concrete task is to select the canonical variance estimator and forecast horizon, then wire within-ticker windows and fit the defined models on chronological equity data. Validation must select SARIMA orders, neural widths/windows, and an out-of-sample appropriate H.
+The next concrete task is a small project-data fitting trial after authorization, followed by diagnostic review. The current RFSV H is estimated on each fitting history; saved full-period H estimates remain descriptive.
 
 ## Planned later work
 
@@ -94,11 +113,12 @@ The next concrete task is to select the canonical variance estimator and forecas
 ## Repository map
 
 - `data/filtering_stock.py`: ticker-universe cleaning.
-- `data/data_fetching.py`: download, feature creation, SQLite storage, splits, normalization, plotting, and window dataset.
+- `data/data_fetching.py`: download, feature creation, SQLite storage, splits, normalization, and plotting.
+- `models/training_blocks.py`: ticker-safe variance windows, metrics, floors, and artifact helpers.
 - `data/roughness_analysis.py`: variance-table construction, retained universe
   selection, top-volume samples, roughness/Hurst estimation, and figures.
 - `models/base_lstm.py`: custom LSTM cell and sequence model; other model definitions live beside it.
-- `inference/training.py`: VVSI training/evaluation metrics, checkpointing, and diagnostics.
+- `inference/returns_training.py`: VVSI training/evaluation metrics, checkpointing, and diagnostics.
 - `inference/inference.py`: current executable VVSI training and test pipeline (`python -m inference.inference`).
 - `ref/plan.md`: current research plan.
 - `ref/thesis_notes.md`: paper notes and rationale.

@@ -77,5 +77,66 @@ class FEBLSTM(nn.Module):
         output = self.output_layer(h_t)  # (batch_size, output_size)
 
         return output
+
+
+def fit_variance_network(model, train_data, val_data, floor, path, settings,
+                         epochs=20, batch_size=128, patience=5, run=None):
+    """Mean window QLIKE, clipped gradients, one learning-rate retry."""
+    from torch.utils.data import DataLoader
+    from models.training_blocks import floor_prediction, qlike, save_fit
+
+    if not len(train_data) or not len(val_data):
+        raise ValueError('neural fitting needs train and validation windows')
+    if patience < 1:
+        raise ValueError('patience must be positive')
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+    train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(val_data, batch_size=batch_size)
+    best, stale, retried = float('inf'), 0, False
+    for epoch in range(1, epochs + 1):
+        model.train()
+        for x, y in train_loader:
+            optimizer.zero_grad()
+            loss = qlike(y, floor_prediction(model(x), floor))
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            optimizer.step()
+        model.eval()
+        with torch.no_grad():
+            score = sum(float(qlike(y, floor_prediction(model(x), floor))) * len(y)
+                        for x, y in val_loader) / len(val_data)
+        if run:
+            run.log({'epoch': epoch, 'val/qlike': score, 'learning_rate': optimizer.param_groups[0]['lr']})
+        if score < best:
+            best, stale = score, 0
+            save_fit(path, {'model_state_dict': model.state_dict(),
+                            'optimizer_state_dict': optimizer.state_dict(),
+                            'epoch': epoch, 'val_qlike': score, 'floor': floor,
+                            'settings': settings})
+        else:
+            stale += 1
+            if stale >= patience:
+                if retried:
+                    break
+                optimizer.param_groups[0]['lr'] *= .1
+                retried, stale = True, 0
+    if best == float('inf'):
+        raise RuntimeError('no finite validation checkpoint')
+    return path
+
+
+def train(args):
+    from models.variance_neural import neural_train
+    return neural_train('base_lstm_vol', args)
+
+
+def predict(fit, frame, split='test'):
+    from models.variance_neural import neural_predict
+    return neural_predict('base_lstm_vol', fit, frame, split)
+
+
+if __name__ == '__main__':
+    from models.variance_neural import main
+    main('base_lstm_vol')
     
 

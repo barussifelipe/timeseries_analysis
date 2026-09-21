@@ -20,3 +20,16 @@ class RFSV:
         weights = math.cos(math.pi * self.H) / math.pi / ((u + 1) * u ** (self.H + 0.5))
         correction = self.nu**2 * math.gamma(1.5 - self.H) / (2 * math.gamma(self.H + 0.5) * math.gamma(2 - 2 * self.H))
         return math.exp(correction + float(weights @ np.log(values[::-1])))
+
+
+def train(args):
+    from models.variance_fit import statistical_train
+    return statistical_train('rfsv', args)
+
+def predict(fit, frame, split='test', residuals=None):
+    from models.variance_fit import statistical_predict
+    return statistical_predict('rfsv', fit, frame, split, residuals)
+
+if __name__ == '__main__':
+    from models.variance_fit import main
+    main('rfsv')

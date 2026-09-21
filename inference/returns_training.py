@@ -3,7 +3,6 @@ import torch
 from torch.utils.data import DataLoader, TensorDataset
 import os 
 import math
-import numpy as np
 
 
 
@@ -63,6 +62,7 @@ def _metrics(total, prefix):
         ),
     }
     return {f"{prefix}/{name}": value for name, value in values.items()}
+
 
 def train_batch(model, optimizer, criterion, data_loader, device):
     """
@@ -299,43 +299,3 @@ def load_model(model, checkpoint_path):
         return model, checkpoint['epoch'], checkpoint['train_loss'], checkpoint['val_loss']
     else:
         print(f"Checkpoint file not found at {checkpoint_path}")
-
-
-def qlike(actual, prediction):
-    if torch.is_tensor(prediction):
-        ratio = actual / prediction
-        return (ratio - torch.log(ratio) - 1).mean()
-    actual, prediction = np.asarray(actual, dtype=float), np.asarray(prediction, dtype=float)
-    if not (np.isfinite(actual).all() and np.isfinite(prediction).all()
-            and (actual > 0).all() and (prediction > 0).all()):
-        raise ValueError('QLIKE requires finite positive variance')
-    log_ratio = np.log(actual) - np.log(prediction)
-    value = float(np.mean(np.expm1(log_ratio) - log_ratio))
-    if not math.isfinite(value):
-        raise ValueError('QLIKE must be finite')
-    return value
-
-
-def variance_metrics(actual, prediction, tickers, training):
-    actual, prediction, tickers = map(lambda x: np.asarray(x).reshape(-1),
-                                       (actual, prediction, tickers))
-    if not len(actual) or len(actual) != len(prediction) or len(actual) != len(tickers):
-        raise ValueError('metric arrays must have equal nonzero lengths')
-    scales = {}
-    for ticker in set(tickers):
-        if ticker not in training:
-            raise ValueError(f'{ticker}: missing training history')
-        history = np.asarray(training[ticker], dtype=float)
-        if len(history) < 2 or not np.isfinite(history).all() or (history <= 0).any():
-            raise ValueError('invalid MASE history')
-        scales[ticker] = np.abs(np.diff(history)).mean()
-        if scales[ticker] <= 0:
-            raise ValueError('zero MASE scale')
-    error = actual - prediction
-    mse = np.mean(error ** 2)
-    result = {'qlike': qlike(actual, prediction), 'mae': float(np.mean(np.abs(error))),
-            'mase': float(np.mean([abs(e) / scales[t] for e, t in zip(error, tickers)])),
-            'mse': float(mse), 'rmse': float(np.sqrt(mse))}
-    if not all(math.isfinite(value) for value in result.values()):
-        raise ValueError('variance metrics must be finite')
-    return result

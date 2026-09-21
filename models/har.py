@@ -29,3 +29,16 @@ class HAR:
         if params is None or params.shape != (4,) or not np.isfinite(params).all():
             raise ValueError("four finite HAR coefficients are required")
         return float(self.features(history) @ params)
+
+
+def train(args):
+    from models.variance_fit import statistical_train
+    return statistical_train('har', args)
+
+def predict(fit, frame, split='test', residuals=None):
+    from models.variance_fit import statistical_predict
+    return statistical_predict('har', fit, frame, split, residuals)
+
+if __name__ == '__main__':
+    from models.variance_fit import main
+    main('har')

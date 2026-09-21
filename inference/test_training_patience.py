@@ -4,7 +4,7 @@ from unittest.mock import patch
 import torch
 from torch.utils.data import TensorDataset
 
-from inference import training
+from inference import returns_training as training
 
 
 def test_learning_rate_retry_and_early_stop():

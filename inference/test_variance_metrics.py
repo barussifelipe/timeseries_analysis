@@ -1,6 +1,6 @@
 import math
 
-from inference.training import variance_metrics
+from models.training_blocks import variance_metrics
 
 
 def test_variance_metrics():

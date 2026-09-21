@@ -1,5 +1,31 @@
 # Stock Return Prediction — A From-Scratch LSTM on 20 Years of Market Data
 
+## Daily variance training framework
+
+The nine volatility models now have separate commands: `python -m models.ar1`,
+`models.har`, `models.sarima`, `models.garch`, `models.rfsv`, `models.mlp`,
+`models.harnet`, `models.silu_lstm`, and `models.base_lstm`. For example:
+
+```bash
+python -m models.har --database PATH_TO_HISTORY_DB --estimator parkinson --scope global --run-name trial --no-wandb
+python -m models.harnet --database PATH_TO_HISTORY_DB --estimator garman-klass --scope local --ticker AAPL --run-name trial --epochs 20 --crypto-test
+python -m models.test_training_smoke
+```
+
+Commands read the already-built daily variance tables; they do not download data.
+Use `--limit-tickers`, `--limit-rows`, `--window-size`, `--epochs`, and `--batch-size`
+for small trials. Daily unannualized variance at date *t+1* is predicted from one
+ticker's history through *t*. Equity targets before 2016 fit models, 2016–2018
+validate neural checkpoints, and 2019–2025 test. The commands print eligible
+window counts and percentages. Neural models use their raw output, floored at
+the saved training minimum before QLIKE; no median scale or softplus is applied.
+QLIKE is primary; equity evaluation also reports
+MAE, MASE, MSE, and RMSE. `--crypto-test` evaluates the matching unseen crypto
+proxy with equity-fitted parameters; crypto MASE is omitted because those tickers
+have no equity fitting history. Crypto realized variance remains a separate
+analysis target. Artifacts live under `inference/checkpoints/<model>/<estimator>/<scope>/`.
+The earlier returns experiment is still available through `inference.inference`.
+
 A deep learning pipeline that predicts short-horizon equity returns from daily OHLCV data
 across the full NASDAQ and NYSE universe. The LSTM is implemented **cell-by-cell in PyTorch**
 — no `nn.LSTM` — and trained as a single global model shared across all tickers.
@@ -115,13 +141,14 @@ Details that matter:
 ```
 data/
   filtering_stock.py   # ticker universe: share-class dedup, instrument filtering
-  data_fetching.py     # download, feature engineering, splits, z-scoring, Dataset
+  data_fetching.py     # download, feature engineering, splits, z-scoring
   src/                 # listing CSVs + SQLite feature store
 models/
   base_lstm.py         # FEBCellLSTM + FEBLSTM (LSTM implemented from scratch)
   *.py                 # one file per volatility model definition
+models/training_blocks.py  # variance windows, QLIKE, metrics, checkpoint helpers
 inference/
-  training.py          # train/eval loops, metrics, checkpointing, VRAM instrumentation
+  returns_training.py  # earlier returns train/eval loop and checkpoints
   inference.py         # experiment entrypoint: config, W&B init, train, test
 ref/                   # project brief, references, progress report, research notes
 ```

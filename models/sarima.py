@@ -24,3 +24,16 @@ class SARIMA:
         if params.shape != (len(model.param_names),) or not np.isfinite(params).all():
             raise ValueError("fitted_params must match this SARIMA specification")
         return float(model.filter(params).forecast(steps=1)[0])
+
+
+def train(args):
+    from models.variance_fit import statistical_train
+    return statistical_train('sarima', args)
+
+def predict(fit, frame, split='test', residuals=None):
+    from models.variance_fit import statistical_predict
+    return statistical_predict('sarima', fit, frame, split, residuals)
+
+if __name__ == '__main__':
+    from models.variance_fit import main
+    main('sarima')

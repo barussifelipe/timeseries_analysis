@@ -32,3 +32,16 @@ class HARNet(nn.Module):
         month = F.relu(self.month(week))
         features = torch.cat((x[:, :, -1], week[:, :, -1], month[:, :, -1]), dim=1)
         return self.output(features)
+
+
+def train(args):
+    from models.variance_neural import neural_train
+    return neural_train('harnet', args)
+
+def predict(fit, frame, split='test'):
+    from models.variance_neural import neural_predict
+    return neural_predict('harnet', fit, frame, split)
+
+if __name__ == '__main__':
+    from models.variance_neural import main
+    main('harnet')

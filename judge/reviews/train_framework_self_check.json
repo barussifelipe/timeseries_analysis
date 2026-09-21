@@ -1,0 +1,42 @@
+{
+  "task": "Volatility training framework same-context self-check",
+  "sources": [
+    "user-provided Volatility training framework plan",
+    "ref/implementation_plan/train_framework.md",
+    "GUIDELINES.md",
+    "CONTEXT.md",
+    "judge/prompt.md",
+    "models/training_blocks.py",
+    "models/variance_fit.py",
+    "models/variance_neural.py",
+    "models/base_lstm.py",
+    "models/test_training_smoke.py",
+    "models/ar1.py, models/har.py, models/sarima.py, models/garch.py, models/rfsv.py",
+    "models/mlp.py, models/harnet.py, models/silu_lstm.py",
+    "inference/inference.py, inference/returns_training.py",
+    "synthetic smoke and direct module check output from 2026-09-21"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 23,
+    "verification": 19,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "correctness",
+      "severity": "minor",
+      "evidence": "The user-requested raw neural output is clamped at the fitting-history floor before QLIKE. PyTorch gives zero gradient to raw outputs below that floor, so a run with every initial prediction below the floor can stall; the synthetic check confirms this derivative.",
+      "fix": "If actual fitting runs stall, revisit the requested raw-output constraint with the user and select an explicitly approved positive output parameterization or initialization."
+    },
+    {
+      "category": "verification",
+      "severity": "minor",
+      "evidence": "The synthetic smoke exercises train/predict for every module and invokes the full command line flow for HAR, but does not invoke the other eight command line entry points with synthetic data.",
+      "fix": "Run each remaining python -m models.<name> command on the synthetic database if entry point coverage is required beyond the tested module APIs."
+    }
+  ],
+  "total": 97,
+  "pass": true
+}

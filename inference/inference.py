@@ -11,7 +11,8 @@ if str(PROJECT_ROOT) not in sys.path:
 
 import torch
 from torch.utils.data import DataLoader
-from inference.training import train, load_model, test_batch, parameters
+from inference.returns_training import train, load_model, test_batch, parameters
+from models.training_blocks import TimeSeriesDataset
 import wandb
 import sqlite3
 import matplotlib
@@ -20,7 +21,6 @@ import matplotlib.pyplot as plt
 from models.base_lstm import FEBLSTM
 from data.data_fetching import (
     HISTORY_DB,
-    TimeSeriesDataset,
     load_return_split,
     prepare_return_tickers,
     fit_zscore_stats,
@@ -268,7 +268,7 @@ if __name__ == "__main__":
     volume_stats = fit_zscore_stats(df_train, column='log_volume')
     df_train = apply_zscore(df_train, volume_stats, column='log_volume')
     print(f"log_volume normalized. Train mean: {df_train['log_volume'].mean():.4f}, std: {df_train['log_volume'].std():.4f}")
-    train_dataset = TimeSeriesDataset(df_train, window_size=window_size, type_return=type_return)
+    train_dataset = TimeSeriesDataset(df_train, window_size=window_size, feature_columns=[c for c in df_train if c not in ("Date", "Ticker")], target_column=type_return, split="all", positive_target=False)
     del df_train
     gc.collect()
 
@@ -278,7 +278,7 @@ if __name__ == "__main__":
         volume_stats,
         column='log_volume',
     )
-    val_dataset = TimeSeriesDataset(df_val, window_size=window_size, type_return=type_return)
+    val_dataset = TimeSeriesDataset(df_val, window_size=window_size, feature_columns=[c for c in df_val if c not in ("Date", "Ticker")], target_column=type_return, split="all", positive_target=False)
     del df_val
     gc.collect()
 
@@ -288,7 +288,7 @@ if __name__ == "__main__":
         volume_stats,
         column='log_volume',
     )
-    test_dataset = TimeSeriesDataset(df_test, window_size=window_size, type_return=type_return)
+    test_dataset = TimeSeriesDataset(df_test, window_size=window_size, feature_columns=[c for c in df_test if c not in ("Date", "Ticker")], target_column=type_return, split="all", positive_target=False)
     del df_test
     gc.collect()
     conn.close()

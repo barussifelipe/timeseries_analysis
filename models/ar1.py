@@ -13,3 +13,16 @@ class AR1:
         if values.ndim != 1 or not len(values) or not np.isfinite(values).all():
             raise ValueError("history must be a nonempty finite one-dimensional series")
         return self.intercept + self.coefficient * values[-1]
+
+
+def train(args):
+    from models.variance_fit import statistical_train
+    return statistical_train('ar1', args)
+
+def predict(fit, frame, split='test', residuals=None):
+    from models.variance_fit import statistical_predict
+    return statistical_predict('ar1', fit, frame, split, residuals)
+
+if __name__ == '__main__':
+    from models.variance_fit import main
+    main('ar1')

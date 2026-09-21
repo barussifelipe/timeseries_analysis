@@ -19,3 +19,16 @@ class SiLULSTM(FEBLSTM):
     def __init__(self, input_size, hidden_size, output_size=1):
         super().__init__(input_size, hidden_size, output_size)
         self.cell = SiLUCellLSTM(input_size, hidden_size)
+
+
+def train(args):
+    from models.variance_neural import neural_train
+    return neural_train('silu_lstm', args)
+
+def predict(fit, frame, split='test'):
+    from models.variance_neural import neural_predict
+    return neural_predict('silu_lstm', fit, frame, split)
+
+if __name__ == '__main__':
+    from models.variance_neural import main
+    main('silu_lstm')
