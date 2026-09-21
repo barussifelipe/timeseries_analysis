@@ -1,6 +1,6 @@
 # Project context
 
-Last updated: 2026-09-15
+Last updated: 2026-09-20
 
 ## Goal
 
@@ -44,6 +44,16 @@ The work has two parts. **Part I is the VVSI project**, which predicts short-hor
   misses stop training early.
 - Several training runs and checkpoints exist locally. The earlier train/validation discrepancy led to fixes for mixed-ticker windows, inconsistent adjusted prices, and feature scaling.
 - Literature notes cover HAR/HARNet, GARCH, rough volatility, global versus local models, volatility commonality, TSFMs, evaluation losses, and economic utility.
+- The production roughness build retained all 1,525 complete-history equities
+  and 9,217,433 jointly valid positive-variance dates per equity estimator
+  after rejecting 370,241 rows. It retained 181 floating cryptocurrencies
+  with exactly 1,760 shared dates each (318,560 rows per crypto estimator).
+- Parkinson, reduced Garman-Klass, and existing 15-minute realized variance are
+  stored in five ticker-major `WITHOUT ROWID` tables. Global and top-ten local
+  roughness analysis uses log volatility, q={1, 1.5, 2, 3, 4}, exact calendar
+  lags 1--400, and only within-ticker displacement pairs. The completed run
+  wrote 64 figures plus moment, zeta, and Hurst summary CSVs under
+  `imgs/roughness_analysis/`.
 
 ## Current plan position
 
@@ -54,7 +64,11 @@ report the window-size results.
 For **Part II / the full thesis**, we are in **Step 1: Build the dataset**,
 with the revised volatility dataset incomplete.
 
-The current code predicts `overnight_returns`; it does not yet implement the realized-volatility target described in `ref/plan.md`. Therefore the project has not reached the plan's **Define the models** implementation stage, even though an LSTM prototype already exists and candidate models have been identified in the research notes.
+The existing LSTM still predicts `overnight_returns`; it has not yet been
+adapted to a volatility target. The volatility estimator datasets and initial
+roughness analysis now exist, but the canonical prediction target and horizon
+must be chosen before the project reaches the plan's **Define the models**
+implementation stage.
 
 Completed or reusable parts of Step 1:
 
@@ -64,20 +78,16 @@ Completed or reusable parts of Step 1:
 
 Still required to finish Step 1:
 
-1. Define and compute the daily realized-volatility proxy from OHLC data: Parkinson and reduced Garman-Klass estimators are planned.
-2. Decide the canonical prediction target and horizon, then adapt the dataset windows to that target.
-3. Add the planned predictors: lagged RV, market-volatility commonality, and VIX.
-4. Run local and global descriptive/statistical analysis, including roughness and Hurst-exponent analysis.
-5. Complete the running coverage scan and use its 20/25/30-year results to confirm the usable universe/data volume.
-6. Define the eligible crypto universe before using the completed altFINS data
-   as an unseen universality test.
+1. Review the generated roughness estimates and select the canonical
+   prediction target and horizon.
+2. Adapt the dataset windows to that target and add lagged realized variance.
+3. Add VIX or volatility commonality only if the initial evidence shows they
+   are needed.
 
-The next concrete data tasks are to define the crypto eligibility rules and
-implement the Parkinson and reduced Garman-Klass equity series. The crypto scan
-confirmed that its 2,055,008 aligned observations do not independently meet the
-9,587,674-point stock target. After the volatility dataset is fixed, implement
-a small statistical baseline—preferably HAR/OLS—before adapting the LSTM and
-adding more complex models.
+The next concrete task is to select the canonical variance estimator and
+forecast horizon from the completed analysis. Then implement a small
+statistical baseline—preferably HAR/OLS—before adapting the LSTM and adding
+more complex models.
 
 ## Planned later work
 
@@ -91,6 +101,8 @@ adding more complex models.
 
 - `data/filtering_stock.py`: ticker-universe cleaning.
 - `data/data_fetching.py`: download, feature creation, SQLite storage, splits, normalization, plotting, and window dataset.
+- `data/roughness_analysis.py`: variance-table construction, retained universe
+  selection, top-volume samples, roughness/Hurst estimation, and figures.
 - `model/model.py`: custom LSTM cell and sequence model.
 - `model/training.py`: training/evaluation metrics, checkpointing, and diagnostics.
 - `model/inference.py`: current executable training and test pipeline.

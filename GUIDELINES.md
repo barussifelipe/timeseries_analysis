@@ -62,3 +62,5 @@ Before committing, inspect the diff, run the narrowest relevant checks, and stag
 
 - Lead with the outcome and current plan position. Be concise and distinguish implemented, tested, planned, and speculative work.
 - When a request conflicts with the research plan or risks invalidating comparisons, explain the issue before changing direction.
+- Always write equations with Unicode mathematical notation (for example,
+  ζ(q) = Hq, Δ, Σ, and R²), not LaTeX commands or delimiters.
