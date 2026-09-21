@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cold implementation review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task", "sources", "scores", "findings", "total", "pass"],
+  "properties": {
+    "task": {"type": "string", "minLength": 1},
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "scores": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirements", "correctness", "verification", "grounding", "maintainability"],
+      "properties": {
+        "requirements": {"type": "integer", "minimum": 0, "maximum": 30, "description": "Task requirements and applicable plan; weight 30."},
+        "correctness": {"type": "integer", "minimum": 0, "maximum": 25, "description": "Behavior, edge cases, and safety; weight 25."},
+        "verification": {"type": "integer", "minimum": 0, "maximum": 20, "description": "Relevant checks and reproducible evidence; weight 20."},
+        "grounding": {"type": "integer", "minimum": 0, "maximum": 15, "description": "Explicit assumptions and supported claims; weight 15."},
+        "maintainability": {"type": "integer", "minimum": 0, "maximum": 10, "description": "Scope, simplicity, and consistency; weight 10."}
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["category", "severity", "evidence", "fix"],
+        "properties": {
+          "category": {"enum": ["requirements", "correctness", "verification", "grounding", "maintainability"]},
+          "severity": {"enum": ["minor", "major", "critical"]},
+          "evidence": {"type": "string", "minLength": 1},
+          "fix": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "total": {"type": "integer", "minimum": 0, "maximum": 100},
+    "pass": {"type": "boolean"}
+  }
+}
