@@ -36,6 +36,8 @@ The work has two parts. **Part I is the VVSI project**, which predicts short-hor
   logs exact observation-weighted MSE, RMSE, MAE, bounded sMAPE, and R-squared,
   and produces final split tables, top-15 ticker tables, and full per-ticker
   validation/test loss distributions in W&B.
+- Separate one-step variance metrics now define MAE, MASE, MSE, RMSE, and QLIKE in each estimator's variance units. MASE uses each ticker's training-history one-step naive scale; QLIKE requires finite positive variance and is the planned volatility LSTM objective. The signed-return pipeline remains separate.
+- The later volatility model will use an estimator-specific positive lower floor on variance forecasts, selected from training targets and held fixed for validation/test. Its numeric value awaits target selection; no upper forecast cap is planned. The metric function still rejects nonpositive inputs, so the forecast transform must be applied explicitly upstream.
 - The three 50-epoch VVSI production runs for window sizes 10, 30, and 100
   completed. Their best-validation epochs were 19, 37, and 18 respectively.
   Future runs use checkpoint filenames containing the best epoch and one
@@ -84,7 +86,7 @@ The next concrete task is to select the canonical variance estimator and forecas
 ## Planned later work
 
 - Models under consideration: SARIMA, HAR, HARNet, GARCH, AR(1), MLP, LSTM variants, RFSV, TimesFM, and TinyTimeMixers. The small-language-model idea is explicitly low priority.
-- Primary comparison metrics: QLIKE, MSE, and MASE, with bounded/winsorized losses where justified.
+- The defined comparison metrics are QLIKE, MSE, MASE, MAE, and RMSE. Winsorization and joint ES/VaR loss are deferred; Patton's proxy-robustness result requires its assumptions and does not automatically cover every estimator here.
 - Compare local versus global training and the feature sets RV-only, RV + commonality, and RV + commonality + VIX.
 - Statistical comparison with a Model Confidence Set and forecast-efficiency checks with Mincer-Zarnowitz regressions.
 - Economic comparison using Sharpe ratio and realized utility, followed by portfolio simulation.

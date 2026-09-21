@@ -1,4 +1,7 @@
 # THESIS NOTES 
+
+- Hyndman and Koehler (2006), [Another look at measures of forecast accuracy](https://robjhyndman.com/papers/mase.pdf): MASE divides each absolute forecast error by the training-history mean absolute one-step naive change for that series. Here, use each ticker's selected variance estimator history and reject a zero or undefined scale. MAE, MSE, and RMSE remain in that estimator's variance units.
+- Patton (2011), [Volatility forecast comparison using imperfect volatility proxies](https://public.econ.duke.edu/~ap172/Patton_vol_proxies_JoE_2011.pdf): QLIKE is a robust forecast comparison loss under the paper's assumptions, including conditional unbiasedness of the proxy for latent variance. This does not establish that every project estimator satisfies those assumptions.
 - What we are doing is trying to unveil the structure behind the pricing or volatility and predict longer term ranges. What HFT does is basically work on it as it is to pursue imbalances on physical queues in bid and asks. 
 - We don't really act. 
 - We are trying to find the best structural model, not play with the effects of the structure. 

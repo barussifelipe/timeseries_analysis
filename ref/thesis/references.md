@@ -120,6 +120,10 @@ Financial Econometrics, 7*(2), 174–196. https://doi.org/10.1093/jjfinec/nbp001
 
 ### 6.4 Estimators, evaluation, and ML in asset pricing
 
+Hyndman, R. J., & Koehler, A. B. (2006). Another look at measures of forecast accuracy.
+*International Journal of Forecasting, 22*(4), 679–688.
+https://doi.org/10.1016/j.ijforecast.2006.03.001
+
 Parkinson, M. (1980). The extreme value method for estimating the variance of the rate of
 return. *The Journal of Business, 53*(1), 61–65. https://doi.org/10.1086/296071
 

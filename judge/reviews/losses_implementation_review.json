@@ -1,0 +1,31 @@
+{
+  "task": "Define and source one-step variance forecast losses",
+  "sources": [
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "inference/training.py",
+    "inference/test_variance_metrics.py",
+    "ref/implementation_plan/losses.md",
+    "ref/implementation_plan/models.md",
+    "ref/thesis/plan.md",
+    "ref/thesis/references.md",
+    "ref/thesis/thesis_notes.md",
+    "GUIDELINES.md",
+    "CONTEXT.md",
+    "git diff --check",
+    "python -m pytest -q inference/test_variance_metrics.py inference/test_report_ranking.py: 2 passed",
+    "Direct QLIKE checks for extreme and near-equal positive inputs: both returned finite positive scores",
+    "https://robjhyndman.com/papers/mase.pdf",
+    "https://public.econ.duke.edu/~ap172/Patton_vol_proxies_JoE_2011.pdf"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -20,6 +20,8 @@ Before making changes, read `CONTEXT.md`, `ref/plan.md`, and the files involved 
 - Use adjusted OHLC values consistently. Validate positivity and finite values before logarithms, ratios, QLIKE, Parkinson, or Garman-Klass calculations.
 - Align market-wide variables such as VIX and commonality by date without forward-looking fills. Document how missing dates and unseen tickers are handled.
 - Compare models on identical observations, splits, horizons, feature sets, and metric definitions. Include a naive or simple statistical baseline before claiming improvement.
+- For one-step variance forecasts, use the [defined MAE, MASE, MSE, RMSE, and QLIKE](ref/implementation_plan/losses.md) in each estimator's variance units and compare estimators separately. Average over forecast observations; compute MASE with each ticker's finite positive training-history naive scale. Require finite positive actual and predicted variance for QLIKE. Use QLIKE as the later volatility LSTM training objective. These choices follow Hyndman and Koehler (2006) and Patton (2011) under the latter's proxy assumptions; winsorization and joint ES/VaR loss are deferred.
+- For the later volatility model, set an estimator-specific positive floor for predicted variance from training targets only, then apply it consistently before QLIKE and evaluation. Record the value and transform; it is a lower limit, not an upper cap. Leave actual targets unchanged and keep `variance_metrics` strict about zero or negative predictions.
 - Do not call a result state of the art, causal, universal, or economically useful without evidence that supports that exact claim.
 
 ## Research and reproducibility
