@@ -49,6 +49,7 @@ def sarima_fit(training):
 
 
 def residual_series(database, frame, asset):
+    """Causal return residuals, restarting the running mean for each ticker."""
     table = 'raw_history' if asset == 'equity' else 'crypto_daily_history'
     symbol = 'Ticker' if asset == 'equity' else 'symbol'
     date = 'Date' if asset == 'equity' else 'substr(time, 1, 10)'
@@ -65,7 +66,10 @@ def residual_series(database, frame, asset):
             values = np.array([[*prices[d]] for d in dates], dtype=float)
             if not np.isfinite(values).all() or (values <= 0).any():
                 raise ValueError('invalid OHLC')
-            output[ticker] = np.log(values[:, 1] / values[:, 0])
+            returns = np.log(values[:, 1] / values[:, 0])
+            past_sum = np.r_[0., np.cumsum(returns[:-1])]
+            past_count = np.maximum(np.arange(len(returns)), 1)
+            output[ticker] = returns - past_sum / past_count
     return output
 
 
@@ -76,7 +80,7 @@ def garch_fit(residuals):
         raise ValueError('GARCH residual scale must be positive')
     def nll(p):
         omega, alpha, beta = p
-        if omega <= 0 or alpha < 0 or beta < 0 or alpha + beta >= 0.999:
+        if omega <= 0 or alpha < 0 or beta < 0 or alpha + beta >= 1:
             return 1e100
         total = 0.
         for r in residuals.values():
@@ -86,7 +90,7 @@ def garch_fit(residuals):
                 variance = omega + alpha * e * e + beta * variance
         return total
     result = minimize(nll, [scale * .1, .1, .8], method='L-BFGS-B',
-                      bounds=[(scale * 1e-8, None), (0, .999), (0, .999)],
+                      bounds=[(scale * 1e-8, None), (0, 1), (0, 1)],
                       options={'maxiter': 100})
     if not result.success or sum(result.x[1:]) >= 1:
         raise RuntimeError(f'GARCH fit failed: {result.message}')

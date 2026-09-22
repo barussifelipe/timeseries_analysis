@@ -9,6 +9,7 @@ import numpy as np
 from data.crypto_data_fetching import _create_crypto_tables
 from data.roughness_analysis import (
     CRYPTO_LENGTH,
+    analyze_training_roughness,
     garman_klass_variance,
     parkinson_variance,
     plot_scaling,
@@ -183,6 +184,38 @@ class RoughnessAnalysisTest(unittest.TestCase):
         self.assertTrue(zeta.Intercept.isna().all())
         self.assertTrue(math.isnan(hurst))
         self.assertTrue(math.isnan(r2))
+
+    def test_training_moments_stop_before_2016(self):
+        self.conn.execute('CREATE TABLE sample (Ticker TEXT, Date TEXT, Variance REAL)')
+        self.conn.executemany('INSERT INTO sample VALUES (?, ?, ?)', [
+            ('A', '2015-12-30', 1.),
+            ('A', '2015-12-31', math.exp(2)),
+            ('A', '2016-01-01', math.exp(20)),
+        ])
+        train = roughness_moments(self.conn, 'sample', lags=[1], qs=[1],
+                                  end_date='2016-01-01')
+        full = roughness_moments(self.conn, 'sample', lags=[1], qs=[1])
+        self.assertEqual(train.Observations.item(), 1)
+        self.assertEqual(train.Moment.item(), 1.)
+        self.assertEqual(full.Observations.item(), 2)
+
+    def test_training_global_outputs(self):
+        for table in ('equity_parkinson_variance', 'equity_garman_klass_variance'):
+            self.conn.execute(f'CREATE TABLE {table} (Ticker TEXT, Date TEXT, Variance REAL)')
+            self.conn.executemany(f'INSERT INTO {table} VALUES (?, ?, ?)', [
+                ('A', f'2015-12-{day:02d}', math.exp((day - 25) ** 2))
+                for day in range(26, 31)
+            ] + [('A', '2016-01-01', math.exp(50))])
+        with tempfile.TemporaryDirectory() as directory:
+            summary = analyze_training_roughness(self.conn, directory, max_lag=3)
+            output = Path(directory) / 'global' / 'train'
+            self.assertEqual(len(summary), 2)
+            self.assertTrue(np.isfinite(summary.H).all())
+            for name in ('roughness_summary.csv', 'roughness_moments.csv',
+                         'roughness_zeta.csv', 'global_hurst.png',
+                         'equity_parkinson_variance_global_scaling.png',
+                         'equity_garman_klass_variance_global_scaling.png'):
+                self.assertTrue((output / name).is_file(), name)
 
     def test_scaling_figure_is_created(self):
         self.conn.execute(

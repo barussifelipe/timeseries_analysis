@@ -38,6 +38,9 @@ def neural_train(kind, args):
     val_data = TimeSeriesDataset(frame, args.window_size, split='val')
     torch.manual_seed(42)
     model = make_model(kind, args.window_size)
+    if kind == 'harnet':
+        from models.variance_fit import ols_fit
+        model.initialize_from_har(ols_fit(training, 'har', 20))
     run = wandb_run(args, kind)
     path = artifact_path(kind, args)
     fit_variance_network(model, train_data, val_data, floor, path,

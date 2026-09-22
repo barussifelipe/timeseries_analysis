@@ -221,10 +221,10 @@ def top_tickers(conn, asset, limit=10):
     return pd.read_sql_query(query, conn, params=(limit,))
 
 
-def _ticker_series(conn, table, ticker):
+def _ticker_series(conn, table, ticker, end_date=None):
     rows = conn.execute(
-        f'SELECT Date, Variance FROM {table} WHERE Ticker = ? ORDER BY Date',
-        (ticker,),
+        f'SELECT Date, Variance FROM {table} WHERE Ticker = ? AND (? IS NULL OR Date < ?) ORDER BY Date',
+        (ticker, end_date, end_date),
     ).fetchall()
     if not rows:
         return np.array([], dtype='datetime64[D]'), np.array([])
@@ -259,7 +259,7 @@ def _series_moments(dates, values, lags, qs):
     return sums, counts
 
 
-def roughness_moments(conn, table, tickers=None, lags=range(1, 401), qs=QS):
+def roughness_moments(conn, table, tickers=None, lags=range(1, 401), qs=QS, end_date=None):
     """Pool within-ticker absolute log-volatility displacements by observation."""
     lags = np.asarray(tuple(lags), dtype=int)
     qs = np.asarray(qs, dtype=float)
@@ -274,7 +274,7 @@ def roughness_moments(conn, table, tickers=None, lags=range(1, 401), qs=QS):
     with ThreadPoolExecutor(max_workers=workers) as executor:
         for start in range(0, len(tickers), workers):
             series = [
-                _ticker_series(conn, table, ticker)
+                _ticker_series(conn, table, ticker, end_date)
                 for ticker in tickers[start:start + workers]
             ]
             futures = [
@@ -436,7 +436,31 @@ def plot_global_hurst(summary, output):
     )
     axis.bar_label(bars, labels=[f'{value:.3f}' for value in global_rows['H']])
     axis.set(title='Global Hurst estimates', ylabel='H')
-    _save(figure, output / 'global', 'global_hurst.png')
+    _save(figure, output, 'global_hurst.png')
+
+
+def analyze_training_roughness(conn, output='imgs/roughness_analysis', max_lag=400):
+    """Save pre-2016 global equity roughness without changing full-period CSVs."""
+    output = Path(output) / 'global' / 'train'
+    summaries, moments_all, zeta_all = [], [], []
+    for table in ('equity_parkinson_variance', 'equity_garman_klass_variance'):
+        moments = roughness_moments(conn, table, lags=range(1, max_lag + 1),
+                                    end_date='2016-01-01')
+        zeta, hurst, r2 = scaling_estimates(moments)
+        observations = int(moments.groupby('Lag')['Observations'].first().sum())
+        summaries.append((table, 'global', observations, hurst, r2))
+        moments_all.append(moments.assign(Table=table, Population='global'))
+        zeta_all.append(zeta.assign(Table=table, Population='global'))
+        plot_scaling(moments, zeta, hurst, r2,
+                     f'Equity {TABLES[table][1]} (global, pre-2016)', output,
+                     f'{table}_global')
+    summary = pd.DataFrame(summaries, columns=['Table', 'Population', 'Observations', 'H', 'R2'])
+    output.mkdir(parents=True, exist_ok=True)
+    summary.to_csv(output / 'roughness_summary.csv', index=False)
+    pd.concat(moments_all, ignore_index=True).to_csv(output / 'roughness_moments.csv', index=False)
+    pd.concat(zeta_all, ignore_index=True).to_csv(output / 'roughness_zeta.csv', index=False)
+    plot_global_hurst(summary, output)
+    return summary
 
 
 def analyze_database(conn, output='imgs/roughness_analysis', max_lag=400):
@@ -473,7 +497,7 @@ def analyze_database(conn, output='imgs/roughness_analysis', max_lag=400):
                 zeta.assign(Table=table, Population=population)
             )
             plot_output = (
-                output / 'global'
+                output / 'global' / 'full'
                 if population == 'global'
                 else output / 'local' / asset
             )
@@ -493,7 +517,8 @@ def analyze_database(conn, output='imgs/roughness_analysis', max_lag=400):
     pd.concat(all_zeta, ignore_index=True).to_csv(
         csv_output / 'roughness_zeta.csv', index=False
     )
-    plot_global_hurst(summary, output)
+    plot_global_hurst(summary, output / 'global' / 'full')
+    analyze_training_roughness(conn, output, max_lag)
     for asset in ('equity', 'crypto'):
         subset = summary[
             summary['Table'].str.startswith(asset)
@@ -525,7 +550,7 @@ def replot_scaling_from_csv(output='imgs/roughness_analysis'):
         zetas.append(zeta.assign(Table=table, Population=population))
         asset, estimator = TABLES[table]
         plot_output = (
-            output / 'global'
+            output / 'global' / 'full'
             if population == 'global'
             else output / 'local' / asset
         )
