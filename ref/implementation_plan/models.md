@@ -10,14 +10,14 @@
 6. Define HAR with four coefficients: intercept, latest one-observation variance, mean of the latest 5 observations, and mean of the latest 20 observations. Fit coefficients by least squares on within-ticker history.
 7. Use statsmodels SARIMAX for SARIMA. Start with `order=(1,0,1)` and `seasonal_order=(1,0,1,5)`; fit coefficients on equity history and filter each prediction history with those fixed coefficients without refitting.
 8. Treat SARIMA orders as initial candidates. Select them later on chronological equity data using information criteria and residual checks.
-9. Define GARCH(1,1) from supplied ω, α, β, return residual history, and initial conditional variance. Return volatility as the square root of the next conditional variance; assess fitted parameters and residuals later.
+9. For GARCH, calculate each ticker's within-session log return as `r_t = log(C_t) - log(O_t) = log(C_t/O_t)`, using positive, finite, consistently adjusted open and close for equities. Obtain the residual as `ε_t = r_t - μ_t`, where `μ_t` is the fitted mean log return. Feed those residuals, supplied ω, α, β, and an initial conditional variance to GARCH(1,1); return volatility as the square root of the next conditional variance. Using close/open returns aligns the GARCH return interval with the interval used by the equity Parkinson and reduced Garman–Klass estimators. Crypto realized variance includes the first 15-minute return from the preceding day's 23:45 close, so check that boundary before claiming exact alignment in the transfer evaluation. Assess fitted parameters and residuals later.
 10. Require H as an RFSV input and forecast from past log volatility with the cited rough kernel. Use a midpoint approximation over observed history; optional ν controls the paper's multiplicative correction.
 11. Treat the existing full-period global equity Garman–Klass H estimate of about 0.03498 as descriptive. Select an H appropriate to the later out-of-sample claim before evaluation.
 12. Define the MLP with configurable width and two SiLU hidden layers. Preserve the existing base LSTM architecture and define SiLU-LSTM by replacing only its candidate and cell-output tanh operations with SiLU; its gates remain sigmoid.
 13. Implement separate HARNet-20 and HARNet-80 models with hierarchical causal 1/5/20 and 1/5/20/40/80-observation features. Initialize their averaging filters and output layers from matching fitted HAR coefficients so forecasts match those HAR fits on positive variance histories before optimization.
 14. Select neural widths and window lengths from later equity validation results; do not treat initial defaults as optimal.
 15. Verify model formulas and neural gradients on small synthetic histories, run the moved VVSI tests and entry-point import check, and load an old checkpoint. Do not fit or train on project datasets in this stage.
-16. Later compare models on identical valid observations in the selected positive variance units with common QLIKE, MSE, and MASE definitions; record failed fits and excluded observations.
+16. Later compare models on identical valid observations in each selected positive variance estimator's units using the [defined losses](losses.md); record failed fits and excluded observations.
 
 ## Scope and prerequisite
 
@@ -34,7 +34,7 @@ Implement the active models in [the thesis plan](../thesis/plan.md#model-definit
 ## 2. Establish a shared comparison
 
 1. Later, build target-specific, within-ticker lag windows from the selected variance series. Split chronologically; fit normalization and any clipping bounds on training data only. Preserve the VVSI return experiment as a separate runnable path.
-2. Define one forecast record with ticker, forecast date, target, prediction, estimator, horizon, and model name. Compare only common valid observations. Convert every prediction to the selected positive variance units before QLIKE/MSE/MASE; document any positivity transform and back-transformation.
+2. Define one forecast record with ticker, forecast date, target, prediction, estimator, horizon, and model name. Compare only common valid observations within each estimator. Convert every prediction to that estimator's positive variance units before applying the [defined losses](losses.md); document any positivity transform and back-transformation.
 3. Implement HAR fitting and AR(1) coefficient-based forecasting as simple benchmarks. Keep each in its own file under `models/`.
 
 ## 3. Add model files incrementally
@@ -44,7 +44,7 @@ Implement the active models in [the thesis plan](../thesis/plan.md#model-definit
 | `models/har.py` | Intercept plus latest variance, latest-five mean, and latest-twenty mean; least-squares `fit(history)`. |
 | `models/ar1.py` | AR(1): intercept plus supplied coefficient times latest variance. |
 | `models/sarima.py` | SARIMAX with initial orders (1,0,1) and seasonal (1,0,1,5); `fit(equity_history)` estimates parameters, while `forecast(ticker_history, fitted_params)` filters without refitting. |
-| `models/garch.py` | GARCH(1,1) from supplied ω, α, β, return residuals, and initial variance; output square-root volatility. |
+| `models/garch.py` | GARCH(1,1) from within-ticker log close/open return residuals, supplied ω, α, β, and initial variance; output square-root volatility. |
 | `models/rfsv.py` | Forecast from past log volatility with required H using the cited rough kernel; optional ν gives the multiplicative correction. |
 | `models/mlp.py` | PyTorch network with configurable width and two SiLU hidden layers. |
 | `models/silu_lstm.py` | Custom cell variant replacing candidate and cell-output tanh with SiLU; sigmoid gates remain. |
@@ -66,4 +66,4 @@ Retain `models/base_lstm.py` as the architectural control and its old return che
 
 ## 4. Verify and compare
 
-Check synthetic histories for HAR's separate 1/5/20 terms, SARIMA fit and frozen-parameter forecasting, GARCH constraints and volatility units, supplied-H RFSV, neural output shapes and backward passes, and HARNet equality with initialized HAR. Run the moved VVSI tests, entry-point import smoke check, and an old checkpoint load. Do not fit or train on project datasets in this stage. Later compare predictions on identical rows using QLIKE, MSE, and MASE; log failed fits and excluded observations.
+Check synthetic histories for HAR's separate 1/5/20 terms, SARIMA fit and frozen-parameter forecasting, GARCH constraints and volatility units, supplied-H RFSV, neural output shapes and backward passes, and HARNet equality with initialized HAR. Run the moved VVSI tests, entry-point import smoke check, and an old checkpoint load. Do not fit or train on project datasets in this stage. Later compare predictions on identical rows using the [defined losses](losses.md); log failed fits and excluded observations.

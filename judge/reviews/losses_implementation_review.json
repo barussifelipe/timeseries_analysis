@@ -10,7 +10,7 @@
     "ref/thesis/plan.md",
     "ref/thesis/references.md",
     "ref/thesis/thesis_notes.md",
-    "GUIDELINES.md",
+    "AGENTS.md",
     "CONTEXT.md",
     "git diff --check",
     "python -m pytest -q inference/test_variance_metrics.py inference/test_report_ranking.py: 2 passed",

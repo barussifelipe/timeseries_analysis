@@ -12,6 +12,30 @@ Before making changes, read `CONTEXT.md`, `ref/plan.md`, and the files involved 
 - Preserve unrelated user changes and local artifacts. Never commit `.env`, databases, checkpoints, W&B runs, virtual environments, caches, or `.claude/` unless explicitly requested.
 - Update `CONTEXT.md` after a substantive milestone or change in plan position. Record facts, decisions, remaining work, and the next concrete task; do not turn it into a diary.
 
+## Plan writing template
+
+For the next `/plan`, follow `ref/implementation_plan/roughness_analysis.md`. Keep every concrete choice and assumption visible as its own numbered decision or table row; do not compress a prior decision table into summary paragraphs. Separate agreed decisions from defaults that still need validation.
+
+```markdown
+# <Task> Implementation Plan
+
+## Implementation decisions
+
+1. <One concrete choice: population, target, units, horizon, or split.>
+2. <One concrete choice: method, defaults, validation rule, or artifact.>
+
+## <Dataset and implementation work>
+
+- <Specific file or component and the change to make.>
+
+## Verification
+
+- <Small runnable check and its acceptance condition.>
+- <Required review, prohibited runs, and remaining limits.>
+```
+
+Add focused sections such as formulas or analysis only when the task needs them. Record the exact values and tradeoffs that affect results, including assumptions introduced by the implementer.
+
 ## Data and statistical correctness
 
 - Prevent look-ahead bias. Keep splits chronological and fit every learned transform, threshold, winsorization bound, or statistic on training data only unless the method explicitly requires otherwise.
@@ -37,6 +61,7 @@ Before making changes, read `CONTEXT.md`, `ref/plan.md`, and the files involved 
 - Add the smallest runnable check for non-trivial logic. For data changes, verify formulas on a tiny known example and check schema, dates, ticker boundaries, missing values, infinities, and leakage.
 - Run the narrowest relevant checks before handing off. State exactly what ran and what could not be run.
 - After each implementation task, obtain a cold review using `judge/prompt.md`, validate its JSON with `python judge/validate.py REVIEW.json`, and fix findings until it passes (at least 95/100 and no critical findings). Report unresolved blockers without claiming a pass.
+- Run the JSON cold reviewer in a fresh, cleared context. Give it the task, plan, diff, relevant files, and check results to inspect directly; do not let an implementer review its own work or count a same-context self-check as a cold review.
 - Do not run downloads, long training jobs, destructive operations, commits, or pushes unless the user requests them.
 
 ## Commit structure

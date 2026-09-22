@@ -3,7 +3,7 @@
   "sources": [
     "user-provided Volatility training framework plan",
     "ref/implementation_plan/train_framework.md",
-    "GUIDELINES.md",
+    "AGENTS.md",
     "CONTEXT.md",
     "judge/prompt.md",
     "models/training_blocks.py",

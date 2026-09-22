@@ -46,7 +46,7 @@
 - TSFMs (Time Series Foundation Models: TimesFM (Time Series Foundation Model, Google) and TinyTimeMixers (TTM)) [4.1](thesis_notes.md#notes---41---forecasting-realized-volatility-with-time-series-foundation-models-a-comparison-with-econometric-benchmarks-httpsarxivorgabs260705291)
 - Fine-tuning a SLM (Small Language Model) (*Not priority, but can be interesting for checking purposes*) [4.1](thesis_notes.md#notes---41---forecasting-realized-volatility-with-time-series-foundation-models-a-comparison-with-econometric-benchmarks-httpsarxivorgabs260705291)
 
-#### Model definitions and scope
+#### Model definitions and scope. Ok 
 
 All active models forecast the next period using history from one ticker. In the crypto transfer test, equity-fitted parameters stay fixed while the input ticker history changes. The exact variance estimator, forecast horizon, units, and transformation must be fixed before fitting or comparing them. A model already trained on overnight returns is an architectural starting point, not a completed volatility forecast.
 
@@ -55,7 +55,7 @@ All active models forecast the next period using history from one ticker. In the
 | AR(1) | Intercept plus supplied coefficient times the latest variance; fit coefficients on equity data later. | Defined |
 | HAR | Intercept plus separate latest variance, latest-five mean, and latest-twenty mean terms; fit by least squares. | Defined |
 | SARIMA | SARIMAX with initial orders (1,0,1) and seasonal (1,0,1,5); fit coefficients on equity history, then filter a ticker's history and forecast with fixed coefficients. Choose orders later from chronological validation, information criteria, and residual checks. | Defined |
-| GARCH | GARCH(1,1) conditional variance from supplied ω, α, β, return residuals, and initial variance; return volatility as the square root. Assess fit and residuals later. | Defined |
+| GARCH | GARCH(1,1) conditional variance from supplied ω, α, β, within-session log close/open return residuals, and initial variance; return volatility as the square root. The close/open interval aligns with the equity Parkinson and reduced Garman–Klass estimator intervals. Check the crypto realized-variance day boundary before transfer evaluation. | Defined |
 | RFSV | Forecast from past log volatility using a supplied H and the cited rough kernel. The current full-period equity Garman–Klass H estimate is about 0.03498; select a valid out-of-sample H later. | Defined |
 | MLP | PyTorch network with configurable width and two SiLU hidden layers. | Defined |
 | LSTM | Existing custom `FEBLSTM` PyTorch cell and sequence architecture; retain old return checkpoints and retrain later for volatility. | Defined; volatility training pending |
@@ -67,7 +67,7 @@ All active models forecast the next period using history from one ticker. In the
 
 Each active model has one file in `models/`; VVSI training and experiment entry points live in `inference/`. HARNet-20 and HARNet-80 have separate commands and checkpoint paths; both use training-history HAR initialization before QLIKE optimization. Select neural widths and window lengths from later equity validation results. Project-data fitting runs and model comparisons remain pending. See [the implementation plan](../implementation_plan/models.md).
 
-### Define the losses 
+### Define the losses. Ok 
 Use MAE, MASE, MSE, RMSE, and QLIKE for one-step forecasts in the target estimator's variance units. Average losses over forecast observations. MASE uses each ticker's training-history mean absolute one-step naive variance change; QLIKE is mean(actual/prediction − log(actual/prediction) − 1). Require finite positive actual and predicted variance and a finite positive MASE scale. Compare estimators separately. [Hyndman and Koehler (2006)](https://robjhyndman.com/papers/mase.pdf) define the scale-dependent errors and MASE; [Patton (2011)](https://public.econ.duke.edu/~ap172/Patton_vol_proxies_JoE_2011.pdf) supports QLIKE for variance-forecast comparison under its proxy assumptions. Use QLIKE as the later volatility LSTM training objective. Winsorization and joint ES/VaR loss are deferred. See [loss implementation decisions](../implementation_plan/losses.md).
 
 The analysis focuses on forecasting higher volatility. A positive lower floor limits forecasts in very low volatility periods and is expected to have little practical effect on that focus; report how often the floor changes forecasts and whether it changes model rankings before treating the effect as negligible.

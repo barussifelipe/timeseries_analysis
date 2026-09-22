@@ -29,7 +29,7 @@ Neural models now use raw outputs with only the saved floor before QLIKE;
 there is no median scaling or softplus. Outputs below the floor have zero
 gradient through the clamp, so check for stalled neural fits in small trials.
 The existing training-framework JSON is a same-context self-check; a fresh-context
-cold review remains required under `GUIDELINES.md`.
+cold review remains required under `AGENTS.md`.
 Next: inspect real dataset eligibility and fit diagnostics in small authorized
 trials, then choose neural widths/windows and statistical specifications from
 the reserved validation period.
