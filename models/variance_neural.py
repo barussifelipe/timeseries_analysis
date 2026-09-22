@@ -14,13 +14,16 @@ from models.training_blocks import (Forecast, TimeSeriesDataset, add_common_args
 
 def make_model(kind, window, hidden=16):
     from models.base_lstm import FEBLSTM
-    from models.harnet import HARNet
+    from models.harnet_20 import HARNet as HARNet20
+    from models.harnet_80 import HARNet as HARNet80
     from models.mlp import MLP
     from models.silu_lstm import SiLULSTM
     if kind == 'mlp':
         return MLP(window, hidden)
-    if kind == 'harnet':
-        return HARNet()
+    if kind == 'harnet_20':
+        return HARNet20()
+    if kind == 'harnet_80':
+        return HARNet80()
     if kind == 'silu_lstm':
         return SiLULSTM(1, hidden)
     if kind == 'base_lstm_vol':
@@ -31,16 +34,17 @@ def make_model(kind, window, hidden=16):
 def neural_train(kind, args):
     from models.base_lstm import fit_variance_network
     frame, training, floor = prepare(args)
-    if kind == 'harnet' and args.window_size < 20:
-        raise ValueError('HARNet needs at least 20 lags')
+    minimum = {'harnet_20': 20, 'harnet_80': 80}.get(kind)
+    if minimum and args.window_size < minimum:
+        raise ValueError(f'{kind} needs at least {minimum} lags')
     counts = report_counts(frame, args.window_size)
     train_data = TimeSeriesDataset(frame, args.window_size, split='train')
     val_data = TimeSeriesDataset(frame, args.window_size, split='val')
     torch.manual_seed(42)
     model = make_model(kind, args.window_size)
-    if kind == 'harnet':
+    if minimum:
         from models.variance_fit import ols_fit
-        model.initialize_from_har(ols_fit(training, 'har', 20))
+        model.initialize_from_har(ols_fit(training, 'har' if minimum == 20 else kind, minimum))
     run = wandb_run(args, kind)
     path = artifact_path(kind, args)
     fit_variance_network(model, train_data, val_data, floor, path,
@@ -79,7 +83,7 @@ def neural_predict(kind, fit, frame, split='test'):
 
 def main(kind):
     parser = add_common_args(argparse.ArgumentParser(description=f'{kind} variance model'),
-                             window=20 if kind == 'harnet' else 30)
+                             window={'harnet_20': 20, 'harnet_80': 80}.get(kind, 30))
     args = parser.parse_args()
     path = neural_train(kind, args)
     fit = load_fit(path)

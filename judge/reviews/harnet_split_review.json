@@ -1,0 +1,34 @@
+{
+  "task": "Split HARNet into separate 20- and 80-observation models, initialize each from matching pre-2016 OLS HAR fits, and wire independent commands and checkpoints.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md (ref/plan.md is absent)",
+    "ref/implementation_plan/models.md",
+    "ref/implementation_plan/training_adjustments.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git status --short and git diff for relevant files",
+    "models/harnet_20.py",
+    "models/harnet_80.py",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/training_blocks.py",
+    "models/base_lstm.py",
+    "models/test_models.py",
+    "models/test_training_adjustments.py",
+    "models/test_training_smoke.py",
+    "README.md",
+    "Focused model, initialization, and training smoke commands run in this review"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

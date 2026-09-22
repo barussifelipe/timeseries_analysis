@@ -19,7 +19,13 @@ def ols_fit(training, kind, window):
     lag = window
     for values in training.values():
         for i in range(lag, len(values)):
-            x.append([1., values[i - 1]] if kind == 'ar1' else HAR.features(values[:i]))
+            if kind == 'ar1':
+                features = [1., values[i - 1]]
+            elif kind == 'harnet_80':
+                features = [1., *(values[i - n:i].mean() for n in (1, 5, 20, 40, 80))]
+            else:
+                features = HAR.features(values[:i])
+            x.append(features)
             y.append(values[i])
     if not x:
         raise ValueError('no fitting lag rows')

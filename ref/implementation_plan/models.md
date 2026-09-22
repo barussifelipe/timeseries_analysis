@@ -14,7 +14,7 @@
 10. Require H as an RFSV input and forecast from past log volatility with the cited rough kernel. Use a midpoint approximation over observed history; optional ν controls the paper's multiplicative correction.
 11. Treat the existing full-period global equity Garman–Klass H estimate of about 0.03498 as descriptive. Select an H appropriate to the later out-of-sample claim before evaluation.
 12. Define the MLP with configurable width and two SiLU hidden layers. Preserve the existing base LSTM architecture and define SiLU-LSTM by replacing only its candidate and cell-output tanh operations with SiLU; its gates remain sigmoid.
-13. Define HARNet with hierarchical causal 1-, 5-, and 20-observation features. Initialize its averaging filters and output layer from fitted HAR coefficients so forecasts match HAR on nonnegative variance histories before optimization.
+13. Implement separate HARNet-20 and HARNet-80 models with hierarchical causal 1/5/20 and 1/5/20/40/80-observation features. Initialize their averaging filters and output layers from matching fitted HAR coefficients so forecasts match those HAR fits on positive variance histories before optimization.
 14. Select neural widths and window lengths from later equity validation results; do not treat initial defaults as optimal.
 15. Verify model formulas and neural gradients on small synthetic histories, run the moved VVSI tests and entry-point import check, and load an old checkpoint. Do not fit or train on project datasets in this stage.
 16. Later compare models on identical valid observations in the selected positive variance units with common QLIKE, MSE, and MASE definitions; record failed fits and excluded observations.
@@ -48,7 +48,19 @@ Implement the active models in [the thesis plan](../thesis/plan.md#model-definit
 | `models/rfsv.py` | Forecast from past log volatility with required H using the cited rough kernel; optional ν gives the multiplicative correction. |
 | `models/mlp.py` | PyTorch network with configurable width and two SiLU hidden layers. |
 | `models/silu_lstm.py` | Custom cell variant replacing candidate and cell-output tanh with SiLU; sigmoid gates remain. |
-| `models/harnet.py` | Hierarchical causal 1/5/20-observation convolutions; initialize from fitted HAR coefficients to match HAR on nonnegative inputs. |
+| `models/harnet_20.py`, `models/harnet_80.py` | Implemented separately: hierarchical causal 1/5/20 and 1/5/20/40/80-observation convolutions, initialized from matching fitted HAR coefficients on positive inputs. |
+
+The two HARNet modules are callable as `python -m models.harnet_20` and
+`python -m models.harnet_80`. Training fits four or six HAR coefficients by
+ordinary least squares on the selected pre-2016 equity histories, then starts
+QLIKE optimization from those coefficients. The 80-observation model extends
+the 20-observation path with two trainable two-tap convolutions spaced 20 and
+40 observations apart; both start with weights of 1/2. Input windows must
+contain at least 20 or 80 observations respectively. Checkpoints use separate
+`inference/checkpoints/harnet_20/` and `harnet_80/` paths. Synthetic checks
+cover initialized HAR equality, short-window errors, checkpoint reload, and
+local/global fits for both variance estimators. Project-data fits and model
+comparisons remain pending.
 
 Retain `models/base_lstm.py` as the architectural control and its old return checkpoints. The existing full-period global equity Garman–Klass H estimate is about 0.03498; require H as RFSV input and select an out-of-sample appropriate value later. The SARIMA orders are starting choices, not fitted coefficients or proven optima. Compare candidate orders on chronological equity data using information criteria and residual checks per [statsmodels](https://www.statsmodels.org/stable/examples/notebooks/generated/statespace_sarimax_internet.html). Start GARCH with (1,1) and later assess fitted parameters and residuals per [ARCH](https://arch.readthedocs.io/en/latest/univariate/forecasting.html). Select neural widths and windows on equity validation results, rather than treating initial defaults as optimal.
 

@@ -1,6 +1,17 @@
 # Project context
 
-Last updated: 2026-09-21
+Last updated: 2026-09-22
+
+## HARNet split (2026-09-22)
+
+The volatility training framework now exposes `models.harnet_20` and
+`models.harnet_80` as separate commands and checkpoint paths. The first uses
+1/5/20-observation summaries; the second adds trainable 40/80-observation
+averaging stages. Each starts from an OLS fit of matching HAR terms on the
+selected pre-2016 equity histories, before QLIKE optimization. Both remain
+model definitions and synthetic checks; no project-data fitting or comparison
+was run. Next: inspect small authorized project-data fitting trials and
+validation diagnostics before any model comparison.
 
 ## Training framework update (2026-09-21)
 

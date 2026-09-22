@@ -8,7 +8,8 @@ from models.base_lstm import FEBLSTM
 from models.ar1 import AR1
 from models.garch import GARCH
 from models.har import HAR
-from models.harnet import HARNet
+from models.harnet_20 import HARNet as HARNet20
+from models.harnet_80 import HARNet as HARNet80
 from models.mlp import MLP
 from models.rfsv import RFSV
 from models.sarima import SARIMA
@@ -49,15 +50,33 @@ def test_model_definitions():
     assert RFSV(H=0.1).forecast(np.linspace(1, 2, 20)) != RFSV(H=0.2).forecast(np.linspace(1, 2, 20))
 
     x = torch.arange(1., 41.).reshape(2, 20, 1).requires_grad_()
-    for model in (MLP(20, hidden_size=8), FEBLSTM(1, 8, 1), SiLULSTM(1, 8), HARNet()):
+    for model in (MLP(20, hidden_size=8), FEBLSTM(1, 8, 1), SiLULSTM(1, 8), HARNet20()):
         output = model(x)
         assert output.shape == (2, 1)
         output.sum().backward(retain_graph=True)
         assert any(p.grad is not None for p in model.parameters())
 
-    harnet = HARNet()
+    harnet = HARNet20()
     harnet.initialize_from_har(coefficients)
     np.testing.assert_allclose(harnet(x).detach().flatten(), [expected, HAR(coefficients).forecast(np.arange(21., 41.))], rtol=1e-6)
+
+    long_history = torch.arange(1., 161.).reshape(2, 80, 1).requires_grad_()
+    extended = HARNet80()
+    extended.initialize_from_har(np.array([2., 3., 5., 7., 11., 13.]))
+    actual = extended(long_history)
+    expected_long = [2 + sum(c * np.arange(start, start + 80)[-n:].mean()
+                             for c, n in zip((3, 5, 7, 11, 13), (1, 5, 20, 40, 80)))
+                     for start in (1, 81)]
+    np.testing.assert_allclose(actual.detach().flatten(), expected_long, rtol=1e-6)
+    actual.sum().backward()
+    assert all(p.grad is not None for p in extended.parameters())
+    for model, width in ((harnet, 20), (extended, 80)):
+        try:
+            model(torch.ones(1, width - 1))
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f'{width}-observation model accepted short history')
 
 
 if __name__ == "__main__":

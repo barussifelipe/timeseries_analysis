@@ -31,7 +31,7 @@ def test_training_smoke():
                     conn.execute(f'CREATE TABLE {asset}_{estimator}_variance (Ticker TEXT, Date TEXT, Variance REAL)')
             conn.execute('CREATE TABLE raw_history (Ticker TEXT, Date TEXT, Open REAL, Close REAL)')
             conn.execute('CREATE TABLE crypto_daily_history (symbol TEXT, time TEXT, open REAL, close REAL)')
-            dates = list(pd.date_range('2015-09-01', periods=45, freq='D')) + list(pd.date_range('2016-01-01', periods=4, freq='D')) + list(pd.date_range('2019-01-01', periods=4, freq='D'))
+            dates = list(pd.date_range('2015-09-01', periods=85, freq='D')) + list(pd.date_range('2016-01-01', periods=4, freq='D')) + list(pd.date_range('2019-01-01', periods=4, freq='D'))
             for ticker, base in (('A', .02), ('B', .04)):
                 noise = rng.standard_normal(len(dates))
                 for i in range(1, len(noise)):
@@ -42,7 +42,7 @@ def test_training_smoke():
                     for estimator in ('parkinson', 'garman_klass'):
                         conn.execute(f'INSERT INTO equity_{estimator}_variance VALUES (?, ?, ?)', (ticker, d, float(value * (1.3 if estimator == 'garman_klass' else 1))))
                     conn.execute('INSERT INTO raw_history VALUES (?, ?, ?, ?)', (ticker, d, 100., 100. * np.exp(rng.normal(0, .1))))
-            for i, date in enumerate(pd.date_range('2020-01-01', periods=30, freq='D')):
+            for i, date in enumerate(pd.date_range('2020-01-01', periods=90, freq='D')):
                 d = str(date.date())
                 for estimator in ('parkinson', 'garman_klass'):
                     conn.execute(f'INSERT INTO crypto_{estimator}_variance VALUES (?, ?, ?)', ('COIN', d, .03 + i * .0001))
@@ -81,12 +81,12 @@ def test_training_smoke():
         try:
             os.chdir(directory)
             for kind, estimator, scope in product(
-                ('ar1', 'har', 'sarima', 'garch', 'rfsv', 'mlp', 'harnet', 'silu_lstm', 'base_lstm_vol'),
+                ('ar1', 'har', 'sarima', 'garch', 'rfsv', 'mlp', 'harnet_20', 'harnet_80', 'silu_lstm', 'base_lstm_vol'),
                 ('parkinson', 'garman-klass'), ('global', 'local')):
                     module = importlib.import_module('models.base_lstm' if kind == 'base_lstm_vol' else f'models.{kind}')
                     args = argparse.Namespace(database=str(database), estimator=estimator, scope=scope,
                                               ticker='A' if scope == 'local' else None,
-                                              run_name='smoke', window_size=20 if kind in ('har', 'harnet') else (1 if kind == 'ar1' else 5),
+                                              run_name='smoke', window_size=80 if kind == 'harnet_80' else (20 if kind in ('har', 'harnet_20') else (1 if kind == 'ar1' else 5)),
                                               limit_tickers=None, limit_rows=None, epochs=2, batch_size=16,
                                               no_wandb=True)
                     if kind in ('ar1', 'har', 'sarima', 'garch', 'rfsv'):
@@ -112,7 +112,7 @@ def test_training_smoke():
                     if kind == 'sarima':
                         from models.sarima import SARIMA
                         a = chosen[chosen.Ticker == 'A'].sort_values('Date')
-                        expected = SARIMA().forecast(a.Variance.to_numpy(dtype=float)[:45], fit['parameters'])
+                        expected = SARIMA().forecast(a.Variance.to_numpy(dtype=float)[:85], fit['parameters'])
                         assert abs(predictions[0][3] - max(expected, fit['floor'])) < 1e-8
                     crypto = load_variance(database, estimator, asset='crypto')
                     if kind in ('ar1', 'har', 'sarima', 'garch', 'rfsv'):

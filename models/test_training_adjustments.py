@@ -51,27 +51,39 @@ def test_garch_causal_residuals_and_forecasts():
 
 
 def test_harnet_starts_from_fitted_har():
-    dates = pd.date_range('2015-11-01', periods=50).strftime('%Y-%m-%d').tolist()
+    dates = pd.date_range('2015-09-01', periods=100).strftime('%Y-%m-%d').tolist()
     dates += pd.date_range('2016-01-01', periods=3).strftime('%Y-%m-%d').tolist()
     rows = [(ticker, date, float(base + .01 * i + .03 * math.sin(i / 3)))
             for ticker, base in (('A', 1.), ('B', 2.)) for i, date in enumerate(dates)]
     frame = pd.DataFrame(rows, columns=['Ticker', 'Date', 'Variance'])
     training = {ticker: group[group.Date < '2016-01-01'].Variance.to_numpy()
                 for ticker, group in frame.groupby('Ticker')}
-    fitted = ols_fit(training, 'har', 20)
-    args = argparse.Namespace(window_size=20, epochs=1, batch_size=16)
-    captured = {}
+    for kind, window, terms in (('harnet_20', 20, (1, 5, 20)),
+                                ('harnet_80', 80, (1, 5, 20, 40, 80))):
+        fitted = ols_fit(training, 'har' if window == 20 else kind, window)
+        args = argparse.Namespace(window_size=window, epochs=1, batch_size=16)
+        captured = {}
 
-    def inspect(model, *_args, **_kwargs):
-        histories = torch.tensor(np.stack([values[-20:] for values in training.values()]), dtype=torch.float32)
-        captured['actual'] = model(histories).detach().numpy().ravel()
+        with patch('models.variance_neural.prepare', return_value=(frame, training, .01)):
+            args.window_size = window - 1
+            try:
+                neural_train(kind, args)
+            except ValueError:
+                pass
+            else:
+                raise AssertionError(f'{kind} accepted short training window')
+            args.window_size = window
 
-    with patch('models.variance_neural.prepare', return_value=(frame, training, .01)), \
-         patch('models.variance_neural.report_counts', return_value={'train': 1, 'val': 1, 'test': 0}), \
-         patch('models.variance_neural.artifact_path', return_value=Path('unused.pth')), \
-         patch('models.variance_neural.wandb_run', return_value=None), \
-         patch('models.base_lstm.fit_variance_network', side_effect=inspect):
-        neural_train('harnet', args)
-    expected = [np.dot([1., values[-1], values[-5:].mean(), values[-20:].mean()], fitted)
-                for values in training.values()]
-    np.testing.assert_allclose(captured['actual'], expected, rtol=1e-5, atol=1e-6)
+        def inspect(model, *_args, **_kwargs):
+            histories = torch.tensor(np.stack([values[-window:] for values in training.values()]), dtype=torch.float32)
+            captured['actual'] = model(histories).detach().numpy().ravel()
+
+        with patch('models.variance_neural.prepare', return_value=(frame, training, .01)), \
+             patch('models.variance_neural.report_counts', return_value={'train': 1, 'val': 1, 'test': 0}), \
+             patch('models.variance_neural.artifact_path', return_value=Path('unused.pth')), \
+             patch('models.variance_neural.wandb_run', return_value=None), \
+             patch('models.base_lstm.fit_variance_network', side_effect=inspect):
+            neural_train(kind, args)
+        expected = [np.dot([1., *(values[-n:].mean() for n in terms)], fitted)
+                    for values in training.values()]
+        np.testing.assert_allclose(captured['actual'], expected, rtol=1e-5, atol=1e-6)

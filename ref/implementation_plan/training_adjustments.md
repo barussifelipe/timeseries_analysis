@@ -10,7 +10,7 @@ Fit one `(omega, alpha, beta)` per local or global model using only pre-2016 equ
 
 ## HARNet
 
-Fit pooled HAR coefficients by ordinary least squares on the selected pre-2016 equity histories (or one selected ticker for a local fit), using at least 20 prior variance observations per target. Initialize HARNet through its existing HAR initializer before neural optimization. Positive input histories make the initialized network's output equal the fitted HAR forecast.
+Fit pooled HAR coefficients by ordinary least squares on the selected pre-2016 equity histories (or one selected ticker for a local fit). HARNet-20 uses 1/5/20 terms and at least 20 prior observations; HARNet-80 uses 1/5/20/40/80 terms and at least 80 prior observations. Initialize each network from its matching coefficients before neural optimization. Positive input histories make each initialized network's output equal its fitted HAR forecast.
 
 ## Global roughness
 

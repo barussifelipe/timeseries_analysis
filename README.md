@@ -2,13 +2,14 @@
 
 ## Daily variance training framework
 
-The nine volatility models now have separate commands: `python -m models.ar1`,
+The volatility models now have separate commands: `python -m models.ar1`,
 `models.har`, `models.sarima`, `models.garch`, `models.rfsv`, `models.mlp`,
-`models.harnet`, `models.silu_lstm`, and `models.base_lstm`. For example:
+`models.harnet_20`, `models.harnet_80`, `models.silu_lstm`, and `models.base_lstm`. For example:
 
 ```bash
 python -m models.har --database PATH_TO_HISTORY_DB --estimator parkinson --scope global --run-name trial --no-wandb
-python -m models.harnet --database PATH_TO_HISTORY_DB --estimator garman-klass --scope local --ticker AAPL --run-name trial --epochs 20 --crypto-test
+python -m models.harnet_20 --database PATH_TO_HISTORY_DB --estimator garman-klass --scope local --ticker AAPL --run-name trial --epochs 20 --crypto-test
+python -m models.harnet_80 --database PATH_TO_HISTORY_DB --estimator garman-klass --scope global --run-name trial --epochs 20 --crypto-test
 python -m models.test_training_smoke
 ```
 
