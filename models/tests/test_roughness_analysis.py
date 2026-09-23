@@ -199,6 +199,21 @@ class RoughnessAnalysisTest(unittest.TestCase):
         self.assertEqual(train.Moment.item(), 1.)
         self.assertEqual(full.Observations.item(), 2)
 
+    def test_observation_lags_respect_tickers_cutoff_and_intercept(self):
+        self.conn.execute('CREATE TABLE sample (Ticker TEXT, Date TEXT, Variance REAL)')
+        self.conn.executemany('INSERT INTO sample VALUES (?, ?, ?)', [
+            ('A', '2015-12-28', 1.), ('A', '2015-12-30', math.exp(2)),
+            ('A', '2015-12-31', math.exp(6)), ('A', '2016-01-01', math.exp(100)),
+            ('B', '2015-12-28', math.exp(20)), ('B', '2015-12-31', math.exp(24)),
+        ])
+        moments = roughness_moments(self.conn, 'sample', lags=[1, 2], qs=[2],
+                                    end_date='2016-01-01', lag_type='observation')
+        self.assertEqual(moments.Observations.tolist(), [3, 1])
+        self.assertAlmostEqual(moments.Moment.iloc[0], (1 + 4 + 4) / 3)
+        self.assertAlmostEqual(moments.Moment.iloc[1], 9)
+        zeta, _, _ = scaling_estimates(moments)
+        self.assertAlmostEqual(zeta.Intercept.item(), math.log(3))
+
     def test_training_global_outputs(self):
         for table in ('equity_parkinson_variance', 'equity_garman_klass_variance'):
             self.conn.execute(f'CREATE TABLE {table} (Ticker TEXT, Date TEXT, Variance REAL)')

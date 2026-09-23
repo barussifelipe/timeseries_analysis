@@ -1,3 +1,3 @@
-Table,Population,Observations,H,R2
-equity_parkinson_variance,global,1409045621,0.037471076884163956,0.9631636079743999
-equity_garman_klass_variance,global,1409045621,0.034440244698646864,0.9471526451950579
+Table,Population,Observations,H,R2,LagType,TrainEnd,MaxLag
+equity_parkinson_variance,global,2056597000,0.03638938783830348,0.941069875447173,observation,2016-01-01,400
+equity_garman_klass_variance,global,2056597000,0.03246302891466224,0.9155695224306343,observation,2016-01-01,400

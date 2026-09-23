@@ -1,0 +1,38 @@
+{
+  "task": "Cold review of the RFSV observation-lag training outputs and Section 5 forecast implementation",
+  "sources": [
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/rfsv_equation_review.md",
+    "https://arxiv.org/pdf/1410.3394",
+    "git diff -- data/roughness_analysis.py data/test_roughness_analysis.py models/rfsv.py models/variance_fit.py models/test_training_smoke.py imgs/roughness_analysis/global/train",
+    "data/roughness_analysis.py",
+    "data/test_roughness_analysis.py",
+    "models/rfsv.py",
+    "models/variance_fit.py",
+    "models/test_rfsv_observation.py",
+    "models/test_training_smoke.py",
+    "imgs/roughness_analysis/global/train/roughness_summary.csv",
+    "imgs/roughness_analysis/global/train/roughness_moments.csv",
+    "imgs/roughness_analysis/global/train/roughness_zeta.csv",
+    "imgs/roughness_analysis/global/train/equity_parkinson_variance_global_scaling.png",
+    "imgs/roughness_analysis/global/train/equity_garman_klass_variance_global_scaling.png",
+    "imgs/roughness_analysis/global/train/global_hurst.png",
+    ".venv\\Scripts\\python.exe -m data.test_roughness_analysis (9 tests passed)",
+    ".venv\\Scripts\\python.exe -m models.test_rfsv_observation (passed)",
+    ".venv\\Scripts\\python.exe -m models.test_training_smoke (passed)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

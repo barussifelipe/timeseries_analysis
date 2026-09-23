@@ -1,5 +1,23 @@
 # Project context
 
+## RFSV observation-lag implementation (2026-09-23)
+
+The six pre-2016 global equity roughness outputs now use within-ticker
+observation lags 1--400; full-period calendar-lag outputs were unchanged.
+Parkinson H = 0.03638939 and ν² = 0.41077821; Garman–Klass H = 0.03246303
+and ν² = 0.44473011. ν² is exp(the q = 2 free-intercept regression intercept)
+from log-volatility moments. Both global and local RFSV fits load the matching
+estimator's saved training results, reject incompatible lag metadata, and save
+the parameters and source. Each forecast uses the latest 20 observations,
+exact Section 5 kernel bin masses, oldest-value tail extension, and the
+unnumbered Section 5.2 `2*c*nu^2` log-variance correction before the existing
+training-derived variance floor. This is the paper's Section 5 approximation,
+not a fit of the full stationary fOU model. Synthetic tests passed, and the
+fresh-context cold review in `judge/reviews/rfsv_observation_review.json`
+validated at 100/100 with no findings. No project-data RFSV fit or model comparison was run. See
+`ref/implementation_plan/rfsv_equation_review.md`. Next: run small authorized
+project-data fitting trials and inspect diagnostics before comparison.
+
 Last updated: 2026-09-22
 
 ## HARNet split (2026-09-22)

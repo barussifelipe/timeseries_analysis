@@ -104,32 +104,57 @@ def garch_fit(residuals):
     return result.x
 
 
-def rfsv_fit(frame, training):
+def rfsv_fit(estimator, source='imgs/roughness_analysis/global/train'):
     import pandas as pd
-    from data.roughness_analysis import QS, _series_moments, scaling_estimates
-    lags = np.arange(1, min(21, min(map(len, training.values()))), dtype=int)
-    sums = np.zeros((len(lags), len(QS)))
-    counts = np.zeros(len(lags), dtype=int)
-    for ticker, values in training.items():
-        dates = frame[(frame.Ticker == ticker) & (frame.Date < '2016-01-01')].Date.to_numpy(dtype='datetime64[D]')
-        s, c = _series_moments(dates, .5 * np.log(values), lags, QS)
-        sums += s
-        counts += c
-    rows = [(int(lag), float(q), sums[i, j] / counts[i] if counts[i] else np.nan, int(counts[i]))
-            for i, lag in enumerate(lags) for j, q in enumerate(QS)]
-    _, h, _ = scaling_estimates(pd.DataFrame(rows, columns=['Lag', 'q', 'Moment', 'Observations']))
-    if not np.isfinite(h) or not 0 < h < .5:
-        raise ValueError('training-only roughness estimate outside (0, 0.5)')
-    return float(h)
+    from pathlib import Path
+    from data.roughness_analysis import QS, scaling_estimates
+    source = Path(source).resolve()
+    try:
+        summary = pd.read_csv(source / 'roughness_summary.csv')
+        moments = pd.read_csv(source / 'roughness_moments.csv')
+        saved_zeta = pd.read_csv(source / 'roughness_zeta.csv')
+    except (FileNotFoundError, pd.errors.EmptyDataError) as error:
+        raise ValueError('missing RFSV observation-lag training results') from error
+    table = f"equity_{estimator.replace('-', '_')}_variance"
+    selected = []
+    for frame in (summary, moments, saved_zeta):
+        required = {'Table', 'Population', 'LagType', 'TrainEnd', 'MaxLag'}
+        if not required.issubset(frame.columns):
+            raise ValueError('incompatible RFSV training results')
+        rows = frame[(frame.Table == table) & (frame.Population == 'global')]
+        if rows.empty or not (rows.LagType.eq('observation').all()
+                              and rows.TrainEnd.eq('2016-01-01').all()
+                              and rows.MaxLag.eq(400).all()):
+            raise ValueError('incompatible RFSV training results')
+        selected.append(rows)
+    summary, moments, saved_zeta = selected
+    if (len(summary) != 1 or len(moments) != 400 * len(QS)
+            or set(moments.Lag) != set(range(1, 401))
+            or not moments.groupby('Lag').size().eq(len(QS)).all()
+            or moments.duplicated(['Lag', 'q']).any()
+            or set(moments.q) != set(QS)):
+        raise ValueError('incomplete RFSV training moments')
+    zeta, h, _ = scaling_estimates(moments)
+    intercept = zeta.loc[zeta.q == 2, 'Intercept'].item()
+    saved_intercept = saved_zeta.loc[saved_zeta.q == 2, 'Intercept'].item()
+    if (not np.isfinite(h) or not 0 < h < .5 or not np.isfinite(intercept)
+            or not np.isclose(h, summary.H.item())
+            or not np.isclose(intercept, saved_intercept)):
+        raise ValueError('invalid RFSV training estimates')
+    return {'H': float(h), 'nu_squared': float(np.exp(intercept)),
+            'lag_type': 'observation', 'max_lag': 400,
+            'forecast_window': 20, 'source': str(source)}
 
 
 def statistical_train(kind, args):
     frame, training, floor = prepare(args)
-    minimum = {'ar1': 1, 'har': 20, 'sarima': 1, 'garch': 1, 'rfsv': 1}[kind]
+    minimum = {'ar1': 1, 'har': 20, 'sarima': 1, 'garch': 1, 'rfsv': 20}[kind]
     if args.window_size < minimum:
         raise ValueError(f'{kind} needs at least {minimum} lags')
     if kind == 'ar1' and args.window_size != 1:
         raise ValueError('AR(1) requires exactly one lag')
+    if kind == 'rfsv' and args.window_size != 20:
+        raise ValueError('RFSV requires exactly 20 observations')
     counts = report_counts(frame, args.window_size)
     diagnostics = {}
     if kind in ('ar1', 'har'):
@@ -137,7 +162,7 @@ def statistical_train(kind, args):
     elif kind == 'sarima':
         params, diagnostics['converged'] = sarima_fit(training)
     elif kind == 'rfsv':
-        params = rfsv_fit(frame, training)
+        params = rfsv_fit(args.estimator)
     else:
         all_residuals = residual_series(args.database, frame, 'equity')
         params = garch_fit({t: r[:len(training[t])] for t, r in all_residuals.items() if t in training})
@@ -170,6 +195,10 @@ def statistical_predict(kind, fit, frame, split='test', residuals=None):
     params = fit['parameters']
     records = []
     window = fit['settings']['window_size']
+    if kind == 'rfsv' and (not isinstance(params, dict)
+            or params.get('lag_type') != 'observation' or params.get('max_lag') != 400
+            or params.get('forecast_window') != 20 or window != 20):
+        raise ValueError('incompatible RFSV fit')
     start, end = SPLITS[split]
     for ticker, group in frame.groupby('Ticker'):
         group = group.sort_values('Date')
@@ -199,7 +228,7 @@ def statistical_predict(kind, fit, frame, split='test', residuals=None):
             elif kind == 'har':
                 prediction = HAR(params).forecast(history)
             elif kind == 'rfsv':
-                prediction = RFSV(params).forecast(np.sqrt(history)) ** 2
+                prediction = RFSV(params['H'], params['nu_squared']).forecast(np.sqrt(history)) ** 2
             else:
                 prediction = predictions[i]
             records.append(Forecast(ticker, str(date), float(values[i]),
@@ -209,7 +238,7 @@ def statistical_predict(kind, fit, frame, split='test', residuals=None):
 
 def main(kind):
     parser = add_common_args(argparse.ArgumentParser(description=f'{kind} variance model'),
-                             window=20 if kind == 'har' else 1)
+                             window=20 if kind in ('har', 'rfsv') else 1)
     args = parser.parse_args()
     path = statistical_train(kind, args)
     fit = load_fit(path)

@@ -1,0 +1,38 @@
+{
+  "task": "Independent cold review of the RFSV observation-lag implementation and saved pre-2016 training outputs",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/rfsv_equation_review.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git status --short and git diff -- data/roughness_analysis.py data/test_roughness_analysis.py models/rfsv.py models/variance_fit.py models/test_training_smoke.py models/training_blocks.py",
+    "data/roughness_analysis.py",
+    "data/test_roughness_analysis.py",
+    "models/rfsv.py",
+    "models/variance_fit.py",
+    "models/training_blocks.py",
+    "models/test_rfsv_observation.py",
+    "models/test_training_smoke.py",
+    "imgs/roughness_analysis/global/train/roughness_summary.csv",
+    "imgs/roughness_analysis/global/train/roughness_moments.csv",
+    "imgs/roughness_analysis/global/train/roughness_zeta.csv",
+    "imgs/roughness_analysis/global/train/global_hurst.png",
+    "https://arxiv.org/pdf/1410.3394",
+    "python -m data.test_roughness_analysis: 9 tests passed",
+    ".venv/Scripts/python.exe -m models.test_rfsv_observation: passed",
+    ".venv/Scripts/python.exe -m models.test_training_smoke: passed with unrelated SARIMAX convergence warnings",
+    ".venv/Scripts/python.exe independent CSV and rfsv_fit inspection: 4000 finite positive moment rows, 2 summary rows, 10 zeta rows, expected 1525-count decrease per observation lag, and H/nu_squared consistent with saved outputs"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

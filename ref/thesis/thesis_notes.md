@@ -67,7 +67,7 @@
 - The benefits were low, however, were better than the LSTM itself. So good to know. 
 ---
 ## NOTES - 5.2 - *Forecasting volatility with machine learning and rough volatility: Example from the crypto-winter* [https://arxiv.org/abs/2311.04727]
-- Implementation detail: the SiLU-LSTM retains sigmoid gates and uses SiLU for the candidate and cell output. The RFSV forecast weights past log volatility with a supplied H; ν controls the optional multiplicative correction.
+- Implementation detail: the SiLU-LSTM retains sigmoid gates and uses SiLU for the candidate and cell output. In [Gatheral, Jaisson, and Rosenbaum, Sections 3.1 and 5](https://arxiv.org/pdf/1410.3394), Equations (3.3)-(3.4) define stationary fOU log volatility and `sigma_t = exp(X_t)`. Under small mean reversion, Section 5 derives the simpler Equation (5.1) log-variance forecast, whose equivalent `u` form is unnumbered and starts at zero. The unnumbered Section 5.2 variance equation adds `2*c*nu^2*Delta^(2*H)` before exponentiation. The repository uses the Section 5 approximation with estimator-specific pre-2016 observation-lag H and ν², 20 observed forecast values, and oldest-value tail extension. It does not fit the full stationary model; see [the equation review](../implementation_plan/rfsv_equation_review.md).
 - Bitcoin volatility is rought based on the Takaishi paper. Could implement the framework of testing roughness to the full stock market dataset. 
 - Join crypto and stocks in the same dataset to test universality of the model 
 - Using SiLU allows to pass the true volatility, without making the gradient become 0. Maybe using it on the vol-LSTM instead of TanH. Need to study more this approach. 

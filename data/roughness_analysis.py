@@ -259,8 +259,21 @@ def _series_moments(dates, values, lags, qs):
     return sums, counts
 
 
-def roughness_moments(conn, table, tickers=None, lags=range(1, 401), qs=QS, end_date=None):
-    """Pool within-ticker absolute log-volatility displacements by observation."""
+def _observation_moments(values, lags, qs):
+    sums = np.zeros((len(lags), len(qs)))
+    counts = np.maximum(len(values) - lags, 0)
+    for i, lag in enumerate(lags):
+        if counts[i]:
+            differences = np.abs(values[lag:] - values[:-lag])
+            sums[i] = np.power(differences[:, None], qs).sum(axis=0)
+    return sums, counts
+
+
+def roughness_moments(conn, table, tickers=None, lags=range(1, 401), qs=QS,
+                      end_date=None, lag_type='calendar'):
+    """Pool within-ticker absolute log-volatility displacements."""
+    if lag_type not in ('calendar', 'observation'):
+        raise ValueError('unknown lag type')
     lags = np.asarray(tuple(lags), dtype=int)
     qs = np.asarray(qs, dtype=float)
     sums = np.zeros((len(lags), len(qs)))
@@ -279,6 +292,8 @@ def roughness_moments(conn, table, tickers=None, lags=range(1, 401), qs=QS, end_
             ]
             futures = [
                 executor.submit(_series_moments, dates, values, lags, qs)
+                if lag_type == 'calendar' else
+                executor.submit(_observation_moments, values, lags, qs)
                 for dates, values in series
             ]
             for future in futures:
@@ -445,16 +460,16 @@ def analyze_training_roughness(conn, output='imgs/roughness_analysis', max_lag=4
     summaries, moments_all, zeta_all = [], [], []
     for table in ('equity_parkinson_variance', 'equity_garman_klass_variance'):
         moments = roughness_moments(conn, table, lags=range(1, max_lag + 1),
-                                    end_date='2016-01-01')
+                                    end_date='2016-01-01', lag_type='observation')
         zeta, hurst, r2 = scaling_estimates(moments)
         observations = int(moments.groupby('Lag')['Observations'].first().sum())
-        summaries.append((table, 'global', observations, hurst, r2))
-        moments_all.append(moments.assign(Table=table, Population='global'))
-        zeta_all.append(zeta.assign(Table=table, Population='global'))
+        summaries.append((table, 'global', observations, hurst, r2, 'observation', '2016-01-01', max_lag))
+        moments_all.append(moments.assign(Table=table, Population='global', LagType='observation', TrainEnd='2016-01-01', MaxLag=max_lag))
+        zeta_all.append(zeta.assign(Table=table, Population='global', LagType='observation', TrainEnd='2016-01-01', MaxLag=max_lag))
         plot_scaling(moments, zeta, hurst, r2,
-                     f'Equity {TABLES[table][1]} (global, pre-2016)', output,
+                     f'Equity {TABLES[table][1]} (global, pre-2016, observation lags)', output,
                      f'{table}_global')
-    summary = pd.DataFrame(summaries, columns=['Table', 'Population', 'Observations', 'H', 'R2'])
+    summary = pd.DataFrame(summaries, columns=['Table', 'Population', 'Observations', 'H', 'R2', 'LagType', 'TrainEnd', 'MaxLag'])
     output.mkdir(parents=True, exist_ok=True)
     summary.to_csv(output / 'roughness_summary.csv', index=False)
     pd.concat(moments_all, ignore_index=True).to_csv(output / 'roughness_moments.csv', index=False)

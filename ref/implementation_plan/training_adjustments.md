@@ -16,11 +16,11 @@ Fit pooled HAR coefficients by ordinary least squares on the selected pre-2016 e
 
 Analyze `log(sqrt(Variance))` for Parkinson and Garman–Klass equity series. For each `q` in `{1, 1.5, 2, 3, 4}` and exact calendar lag `Delta` from 1 through 400 days, pool within-ticker absolute displacements `|log sigma[k,t+Delta] - log sigma[k,t]|^q`, requiring both dates before 2016-01-01. Regress `log(moment)` on `log(Delta)` for each `q` to get an intercept and slope `zeta(q)`, then estimate `H` through the origin-constrained fit `zeta(q) = H*q`.
 
-Existing full-period global figures are under `imgs/roughness_analysis/global/full`; full-period moments, slopes, and H summaries stay under `imgs/roughness_analysis/csv`. Pre-2016 global equity scaling figures, H comparison, moments, per-`q` regressions, and H summaries are under `imgs/roughness_analysis/global/train`. Full-period H values describe the complete dataset; the training-only H values describe data available before model fitting and must be used for training comparisons.
+Existing full-period global figures are under `imgs/roughness_analysis/global/full`; full-period moments, slopes, and H summaries stay under `imgs/roughness_analysis/csv` and use calendar lags. Pre-2016 global equity scaling figures, H comparison, moments, per-`q` regressions, and H summaries are under `imgs/roughness_analysis/global/train` and use within-ticker observation lags 1–400. RFSV reads H and ν² from these training outputs; ν² is exp(the q = 2 log-moment regression intercept).
 
-The rebuilt pre-2016 results use 5,447,255 variance observations per equity estimator, ending on 2015-12-31. The global training H estimates are 0.037471 for Parkinson and 0.034440 for Garman–Klass (1,409,045,621 valid calendar-lag displacements per estimator).
+The rebuilt pre-2016 calendar-lag results use 5,447,255 variance observations per equity estimator, ending on 2015-12-31. The global pre-2016 calendar-lag H estimates are 0.037471 for Parkinson and 0.034440 for Garman–Klass (1,409,045,621 valid calendar-lag displacements per estimator). The pre-2016 observation-lag RFSV fits give Parkinson H = 0.03638939 and ν² = 0.41077821, and Garman–Klass H = 0.03246303 and ν² = 0.44473011.
 
-| Equity estimator | Full-period H | Training H | Full-period H / training H |
+| Equity estimator | Full-period calendar H | Pre-2016 calendar H | Full-period H / pre-2016 H |
 | --- | ---: | ---: | ---: |
 | Parkinson | 0.037454 | 0.037471 | 0.99954135 |
 | Garman–Klass | 0.034976 | 0.034440 | 1.01554162 |

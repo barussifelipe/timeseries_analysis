@@ -80,18 +80,46 @@ def test_training_smoke():
         original = Path.cwd()
         try:
             os.chdir(directory)
+            from data.roughness_analysis import analyze_training_roughness
+            with closing(sqlite3.connect(':memory:')) as conn:
+                rough = np.zeros(600)
+                innovations = np.random.default_rng(42).normal(size=600)
+                for i in range(1, 600):
+                    rough[i] = .95 * rough[i - 1] + innovations[i]
+                dates_rough = pd.date_range('2012-01-01', periods=600, freq='D')
+                for estimator in ('parkinson', 'garman_klass'):
+                    conn.execute(f'CREATE TABLE equity_{estimator}_variance (Ticker TEXT, Date TEXT, Variance REAL)')
+                    conn.executemany(f'INSERT INTO equity_{estimator}_variance VALUES (?, ?, ?)',
+                                     [('A', str(date.date()), float(np.exp(.02 * value)))
+                                      for date, value in zip(dates_rough, rough)])
+                analyze_training_roughness(conn)
+            from models.variance_fit import rfsv_fit
+            source = Path('imgs/roughness_analysis/global/train')
+            assert rfsv_fit('parkinson')['nu_squared'] > 0
+            summary_path = source / 'roughness_summary.csv'
+            saved_summary = summary_path.read_text()
+            summary_path.write_text(saved_summary.replace('observation', 'calendar'))
+            try:
+                rfsv_fit('parkinson')
+            except ValueError:
+                pass
+            else:
+                raise AssertionError('calendar-lag training result accepted')
+            summary_path.write_text(saved_summary)
             for kind, estimator, scope in product(
                 ('ar1', 'har', 'sarima', 'garch', 'rfsv', 'mlp', 'harnet_20', 'harnet_80', 'silu_lstm', 'base_lstm_vol'),
                 ('parkinson', 'garman-klass'), ('global', 'local')):
                     module = importlib.import_module('models.base_lstm' if kind == 'base_lstm_vol' else f'models.{kind}')
                     args = argparse.Namespace(database=str(database), estimator=estimator, scope=scope,
                                               ticker='A' if scope == 'local' else None,
-                                              run_name='smoke', window_size=80 if kind == 'harnet_80' else (20 if kind in ('har', 'harnet_20') else (1 if kind == 'ar1' else 5)),
+                                              run_name='smoke', window_size=80 if kind == 'harnet_80' else (20 if kind in ('har', 'harnet_20', 'rfsv') else (1 if kind == 'ar1' else 5)),
                                               limit_tickers=None, limit_rows=None, epochs=2, batch_size=16,
                                               no_wandb=True)
                     if kind in ('ar1', 'har', 'sarima', 'garch', 'rfsv'):
                         path = module.train(args)
                         fit = load_fit(path)
+                        if kind == 'rfsv':
+                            assert fit['parameters'] == rfsv_fit(estimator)
                         chosen = load_variance(database, estimator, ticker=args.ticker)
                         residuals = residual_series(database, chosen, 'equity') if kind == 'garch' else None
                         predictions = module.predict(fit, chosen, 'val', residuals)
@@ -100,6 +128,8 @@ def test_training_smoke():
                     else:
                         path = module.train(args)
                         fit = load_fit(path)
+                        if kind == 'rfsv':
+                            assert fit['parameters'] == rfsv_fit(estimator)
                         assert 'output_scale' not in fit
                         chosen = load_variance(database, estimator, ticker=args.ticker)
                         predictions = module.predict(fit, chosen, 'val')

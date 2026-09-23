@@ -1,0 +1,26 @@
+{
+  "task": "Correct the stale observation-lag RFSV statement in training_adjustments.md",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/training_adjustments.md",
+    "ref/implementation_plan/rfsv_equation_review.md",
+    "imgs/roughness_analysis/global/train/roughness_summary.csv",
+    "imgs/roughness_analysis/global/train/roughness_zeta.csv",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- ref/implementation_plan/training_adjustments.md",
+    "Python check of exp(q=2 intercept) for both estimators"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}
