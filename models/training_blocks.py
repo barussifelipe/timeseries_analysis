@@ -159,8 +159,14 @@ def floor_prediction(prediction, floor):
 
 def qlike(actual, prediction):
     if torch.is_tensor(prediction):
-        ratio = actual / prediction
-        return (ratio - torch.log(ratio) - 1).mean()
+        if not (torch.isfinite(actual).all() and torch.isfinite(prediction).all()
+                and (actual > 0).all() and (prediction > 0).all()):
+            raise ValueError('QLIKE requires finite positive variance')
+        log_ratio = torch.log(actual) - torch.log(prediction)
+        value = (torch.expm1(log_ratio) - log_ratio).mean()
+        if not torch.isfinite(value):
+            raise ValueError('QLIKE must be finite')
+        return value
     actual, prediction = np.asarray(actual, dtype=float), np.asarray(prediction, dtype=float)
     if not (np.isfinite(actual).all() and np.isfinite(prediction).all()
             and (actual > 0).all() and (prediction > 0).all()):
@@ -267,4 +273,6 @@ def wandb_run(args, model):
         return None
     import wandb
     return wandb.init(project='timeseries-volatility', name=args.run_name,
-                      config={**vars(args), 'model': model})
+                      config={**vars(args), 'model': model},
+                      **({'id': args.wandb_id, 'resume': 'must'}
+                         if getattr(args, 'wandb_id', None) else {}))

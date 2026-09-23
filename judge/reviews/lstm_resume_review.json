@@ -1,0 +1,48 @@
+{
+  "task": "Resume the interrupted full-panel base volatility LSTM from its best epoch to a maximum of 50 epochs, retain the W&B run and live curves, optionally compile, then run SiLU with matching settings; relocate project tests to models/tests. Review implementation and preflight before the production restart.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md (ref/plan.md is absent)",
+    "ref/implementation_plan/lstm_val_training.md",
+    "ref/implementation_plan/train_framework.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "models/variance_fit.py",
+    "models/variance_neural.py",
+    "models/training_blocks.py",
+    "models/base_lstm.py",
+    "models/silu_lstm.py",
+    "models/tests/test_lstm_resume.py",
+    "wandb/lstm_val_training/results.json",
+    "wandb/lstm_val_training/logs/base_lstm_vol_gk_w20_h16_lr0.0001_noclip_progress.log",
+    "inference/checkpoints/base_lstm_vol/garman-klass/global/base_lstm_vol_gk_w20_h16_lr0.0001_noclip_progress/fit.pth",
+    ".venv/Scripts/python.exe -m models.tests.test_lstm_resume (passed)",
+    ".venv/Scripts/python.exe -m unittest discover -s models/tests -p test_*.py (14 tests discovered; one import error because this venv lacks declared jsonschema)",
+    "rg --files -g test_*.py (15 files, all under models/tests)",
+    "git diff --check (passed)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 23,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 9
+  },
+  "findings": [
+    {
+      "category": "correctness",
+      "severity": "minor",
+      "evidence": "models/variance_fit.py validates selected hyperparameters before resume but does not compare the newly prepared training floor or split counts with the checkpoint. A database changed at the same path could silently resume weights and optimizer against a different panel; the current run's results.json records a database size and modification time, but this is not enforced by the resume path.",
+      "fix": "Check the checkpoint floor and training/validation counts against the freshly prepared data before loading the optimizer, and verify the recorded database version before the production restart."
+    },
+    {
+      "category": "maintainability",
+      "severity": "minor",
+      "evidence": "After all 15 test_*.py files moved under models/tests, README.md:13 and CONTEXT.md:138 still instruct running python -m models.test_training_smoke, which no longer exists.",
+      "fix": "Change both examples to python -m models.tests.test_training_smoke."
+    }
+  ],
+  "total": 97,
+  "pass": true
+}

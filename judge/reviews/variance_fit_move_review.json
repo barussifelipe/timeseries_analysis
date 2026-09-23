@@ -1,0 +1,33 @@
+{
+  "task": "Move fit_variance_network from models/base_lstm.py to models/variance_fit.py",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/train_framework.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/validate.py",
+    "git diff -- models/base_lstm.py models/variance_fit.py models/variance_neural.py models/test_training_adjustments.py models/test_training_smoke.py ref/implementation_plan/train_framework.md",
+    "models/base_lstm.py",
+    "models/variance_fit.py",
+    "models/variance_neural.py",
+    "models/test_training_adjustments.py",
+    "models/test_training_smoke.py",
+    "rg -n fit_variance_network . --glob !.claude/**",
+    ".venv/Scripts/python.exe -c direct test_harnet_starts_from_fitted_har",
+    ".venv/Scripts/python.exe -m models.test_training_smoke",
+    ".venv/Scripts/python.exe -c import models.base_lstm, models.variance_fit, models.variance_neural",
+    "git diff --check"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

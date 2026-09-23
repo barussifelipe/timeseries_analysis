@@ -82,7 +82,7 @@ def test_harnet_starts_from_fitted_har():
              patch('models.variance_neural.report_counts', return_value={'train': 1, 'val': 1, 'test': 0}), \
              patch('models.variance_neural.artifact_path', return_value=Path('unused.pth')), \
              patch('models.variance_neural.wandb_run', return_value=None), \
-             patch('models.base_lstm.fit_variance_network', side_effect=inspect):
+             patch('models.variance_fit.fit_variance_network', side_effect=inspect):
             neural_train(kind, args)
         expected = [np.dot([1., *(values[-n:].mean() for n in terms)], fitted)
                     for values in training.values()]

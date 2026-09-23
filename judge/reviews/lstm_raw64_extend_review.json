@@ -1,0 +1,38 @@
+{
+  "task": "Cold prelaunch review of the queued raw-variance hidden-64 LSTM continuation from 10 to at most 20 total epochs",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/lstm_val_training.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "wandb/lstm_val_training/run_raw64.py",
+    "wandb/lstm_val_training/extend_raw64.py",
+    "wandb/lstm_val_training/results.json",
+    "wandb/lstm_val_training/logs/base_lstm_vol_gk_raw_w20_h64_lr0.0001_noclip_progress_10epochs.log",
+    "models/variance_fit.py",
+    "models/variance_neural.py",
+    "models/training_blocks.py",
+    "models/lstm_val_sweep.py",
+    "models/tests/test_lstm_resume.py",
+    "git diff --stat and git status --short"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 19,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "verification",
+      "severity": "minor",
+      "evidence": "The focused resume test exercises Adam-state restoration, epoch numbering, compilation, and W&B resume arguments, but does not exercise extend_raw64.py's completion gate. At review time the original run was still in epoch 10, so a live continuation result was unavailable.",
+      "fix": "After epoch 10 completes, inspect its checkpoint and ten epoch rows and verify the continuation log reports the best-epoch restart and the expected W&B ID before treating the extension as running successfully."
+    }
+  ],
+  "total": 99,
+  "pass": true
+}

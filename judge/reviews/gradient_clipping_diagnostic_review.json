@@ -1,0 +1,32 @@
+{
+  "task": "Log the percentage of training batches with gradient norm clipping each epoch alongside validation QLIKE",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/train_framework.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/validate.py",
+    "git status --short",
+    "git diff -- models/base_lstm.py models/test_training_adjustments.py models/test_training_smoke.py models/variance_fit.py models/variance_neural.py ref/implementation_plan/train_framework.md",
+    "models/variance_fit.py",
+    "models/variance_neural.py",
+    "models/test_training_smoke.py",
+    "models/test_training_adjustments.py",
+    "rg -n fit_variance_network models",
+    ".venv/Scripts/python.exe -m models.test_training_smoke",
+    ".venv/Scripts/python.exe -m models.test_training_adjustments",
+    "git diff --check"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

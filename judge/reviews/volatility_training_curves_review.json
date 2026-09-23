@@ -1,0 +1,33 @@
+{
+  "task": "Volatility training curves: log train and validation variance metrics each epoch, plot five overlaid W&B curves, and select checkpoints on validation QLIKE",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/train_framework.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- models/base_lstm.py models/variance_fit.py models/variance_neural.py models/training_blocks.py CONTEXT.md",
+    "models/base_lstm.py",
+    "models/variance_fit.py",
+    "models/variance_neural.py",
+    "models/training_blocks.py",
+    "models/test_training_curves.py",
+    "models/test_neural_forecast_floor.py",
+    "models/test_training_smoke.py",
+    ".venv/Scripts/python.exe -m models.test_training_curves (passed)",
+    ".venv/Scripts/python.exe -m models.test_neural_forecast_floor (passed)",
+    ".venv/Scripts/python.exe -m models.test_training_smoke (passed)",
+    "installed wandb.plot.line_series signature"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

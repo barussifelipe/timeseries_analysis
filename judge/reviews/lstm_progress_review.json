@@ -1,0 +1,31 @@
+{
+  "task": "Review full-panel no-clip Garman-Klass LSTM rerun progress logging before launch",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/lstm_val_training.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "models/variance_fit.py",
+    "models/variance_neural.py",
+    "models/lstm_val_sweep.py",
+    "models/test_training_curves.py",
+    "models/test_lstm_val_sweep.py",
+    "wandb/lstm_val_training/logs/base_lstm_vol_gk_w20_h16_lr0.0001_noclip_progress_preflight.log",
+    "wandb/lstm_val_training/results.json",
+    "git diff and git status --short",
+    ".venv\\Scripts\\python.exe -m models.test_training_curves (passed)",
+    ".venv\\Scripts\\python.exe -m models.test_lstm_val_sweep (passed)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

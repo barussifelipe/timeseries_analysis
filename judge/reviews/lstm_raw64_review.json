@@ -1,0 +1,37 @@
+{
+  "task": "Prelaunch cold review of the stopped log-volatility run and proposed 10-epoch raw-variance base LSTM at hidden width 64",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "wandb/lstm_val_training/run_raw64.py",
+    "wandb/lstm_val_training/results.json",
+    "wandb/lstm_val_training/logs/base_lstm_vol_gk_logvol_w20_h16_lr0.0001_noclip_progress.log",
+    "inference/checkpoints/base_lstm_vol/garman-klass/global/base_lstm_vol_gk_logvol_w20_h16_lr0.0001_noclip_progress/fit.pth",
+    "inference/checkpoints/base_lstm_vol/garman-klass/global/base_lstm_raw64_preflight/fit.pth",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/training_blocks.py",
+    "models/lstm_val_sweep.py",
+    "ref/implementation_plan/lstm_val_training.md"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 14,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "grounding",
+      "severity": "minor",
+      "evidence": "The run launcher specifies --epochs 10, but the generated results record still states that later selected runs have up to 50 total epochs. The 10-epoch run is an explicit exception that is not yet documented there.",
+      "fix": "Update the results-record header to state that this new raw-variance width-64 run is capped at 10 epochs."
+    }
+  ],
+  "total": 99,
+  "pass": true
+}

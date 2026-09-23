@@ -128,15 +128,15 @@ def test_training_smoke():
                     else:
                         path = module.train(args)
                         fit = load_fit(path)
-                        if kind == 'rfsv':
-                            assert fit['parameters'] == rfsv_fit(estimator)
                         assert 'output_scale' not in fit
                         chosen = load_variance(database, estimator, ticker=args.ticker)
                         predictions = module.predict(fit, chosen, 'val')
                         assert fit['epoch'] <= args.epochs
                     assert Path(path).exists() and kind in str(path) and estimator in str(path)
                     assert len(predictions) == (8 if scope == 'global' else 4)
-                    assert all(p[1].startswith('2016') and p[3] >= fit['floor'] for p in predictions)
+                    assert all(p[1].startswith('2016') and np.isfinite(p[3]) and p[3] > 0
+                               and (kind not in ('ar1', 'har', 'sarima', 'garch', 'rfsv', 'harnet_20', 'harnet_80')
+                                    or p[3] >= fit['floor']) for p in predictions)
                     if kind in ('ar1', 'har', 'sarima', 'garch', 'rfsv'):
                         np.testing.assert_array_equal(fit['parameters'], fixed)
                     if kind == 'sarima':
@@ -150,7 +150,9 @@ def test_training_smoke():
                         transfer = module.predict(fit, crypto, 'crypto', crypto_residuals)
                     else:
                         transfer = module.predict(fit, crypto, 'crypto')
-                    assert transfer and all(row[0] == 'COIN' and row[3] >= fit['floor'] for row in transfer)
+                    assert transfer and all(row[0] == 'COIN' and np.isfinite(row[3]) and row[3] > 0
+                                            and (kind not in ('ar1', 'har', 'sarima', 'garch', 'rfsv', 'harnet_20', 'harnet_80')
+                                                 or row[3] >= fit['floor']) for row in transfer)
                     if kind in ('ar1', 'har', 'sarima', 'garch', 'rfsv'):
                         np.testing.assert_array_equal(fit['parameters'], fixed)
                     assert fit['floor'] == min(min(v) for v in fit.get('training_history', fit['settings'].get('training_history')).values())
@@ -164,7 +166,7 @@ def test_training_smoke():
                                 env={**os.environ, 'PYTHONPATH': str(original)}, check=True)
         assert '"split": "crypto"' in result.stdout and '"qlike"' in result.stdout
 
-        from models.base_lstm import fit_variance_network
+        from models.variance_fit import fit_variance_network
         class Log:
             def __init__(self):
                 self.rows = []
@@ -173,11 +175,26 @@ def test_training_smoke():
         log = Log()
         model = torch.nn.Linear(1, 1, bias=False)
         dataset = TensorDataset(torch.zeros(2, 1), torch.ones(2, 1))
+        dataset.ticker_names, dataset.ticker_ids = ['A', 'B'], torch.tensor([0, 1])
         retry_path = Path(directory) / 'retry.pth'
-        fit_variance_network(model, dataset, dataset, .1, retry_path, {}, epochs=8,
+        fit_variance_network(model, dataset, dataset, .1, retry_path, {'output_convention': 'floored_variance',
+                             'training_history': {'A': [1., 2.], 'B': [2., 4.]}}, epochs=8,
                              batch_size=2, patience=1, run=log)
         assert load_fit(retry_path)['epoch'] == 1
-        assert len(log.rows) == 3 and log.rows[-1]['learning_rate'] < log.rows[0]['learning_rate']
+        assert len(log.rows) == 3 and log.rows[2]['learning_rate'] < log.rows[0]['learning_rate']
+        assert all(row['train/clipped_batches_pct'] == 0 for row in log.rows[:3])
+
+        clipped_log = Log()
+        clipped_model = torch.nn.Linear(1, 1, bias=False)
+        clipped_model.weight.data.fill_(1.)
+        clipped_data = TensorDataset(torch.tensor([[0.], [1.]]), torch.tensor([[1.], [100.]]))
+        clipped_data.ticker_names, clipped_data.ticker_ids = ['A', 'B'], torch.tensor([0, 1])
+        fit_variance_network(clipped_model, clipped_data, clipped_data, .1,
+                             Path(directory) / 'clipped.pth', {'output_convention': 'floored_variance',
+                             'training_history': {'A': [1., 2.], 'B': [2., 4.]}}, epochs=1,
+                             batch_size=1, run=clipped_log)
+        assert clipped_log.rows[0]['train/clipped_batches_pct'] == 50
+        assert 'val/qlike' in clipped_log.rows[0]
 
 
 if __name__ == '__main__':

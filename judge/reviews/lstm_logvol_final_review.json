@@ -1,0 +1,32 @@
+{
+  "task": "Cold review of the log-volatility Garman-Klass LSTM implementation: log-volatility inputs and targets, variance-unit QLIKE and metrics, prediction and resume compatibility, and the RFSV correction decision.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/losses.md",
+    "ref/implementation_plan/lstm_val_training.md",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/training_blocks.py",
+    "models/rfsv.py",
+    "models/lstm_val_sweep.py",
+    "models/tests/test_log_volatility_inputs.py",
+    "models/tests/test_training_curves.py",
+    "inference/checkpoints/base_lstm_vol/garman-klass/global/base_lstm_logvol_preflight/fit.pth",
+    ".venv/Scripts/python.exe -m models.tests.test_log_volatility_inputs (passed)",
+    "git diff --check (passed)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

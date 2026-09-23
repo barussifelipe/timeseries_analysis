@@ -3,14 +3,182 @@
 import argparse
 import json
 import sqlite3
+import time
 from contextlib import closing
 
 import numpy as np
+import torch
 from scipy.optimize import minimize
 
 from models.training_blocks import (Forecast, add_common_args, artifact_path,
                              floor_prediction, load_fit, load_variance, prepare, qlike, report_counts,
                              save_fit, variance_metrics, wandb_run)
+
+
+def neural_log_variance(output, floor, output_convention):
+    if output_convention == 'log_variance':
+        z = output
+    elif output_convention == 'floored_variance':
+        z = floor_prediction(output, floor).log()
+    else:
+        raise ValueError('unknown neural output convention')
+    prediction = z.exp()
+    if not (torch.isfinite(z).all() and torch.isfinite(prediction).all()
+            and (prediction > 0).all()):
+        raise ValueError('neural forecast must be finite positive variance')
+    return z
+
+
+def log_variance_qlike(actual, z, actual_log_volatility=False):
+    if not torch.isfinite(actual).all() or (not actual_log_volatility and not (actual > 0).all()):
+        raise ValueError('QLIKE requires finite actual log volatility or positive variance')
+    log_ratio = (2 * actual if actual_log_volatility else actual.log()) - z
+    loss = (torch.expm1(log_ratio) - log_ratio).mean()
+    if not torch.isfinite(loss):
+        raise ValueError('QLIKE must be finite')
+    return loss
+
+
+def fit_variance_network(model, train_data, val_data, floor, path, settings,
+                         epochs=20, batch_size=128, patience=5, run=None):
+    """Mean window QLIKE, epoch variance metrics, one learning-rate retry."""
+    from torch.utils.data import DataLoader
+
+    if not len(train_data) or not len(val_data):
+        raise ValueError('neural fitting needs train and validation windows')
+    if patience < 1:
+        raise ValueError('patience must be positive')
+    output_convention = settings['output_convention']
+    log_volatility_target = settings.get('data_transform', 'variance') == 'log-volatility'
+    clip_norm = settings.get('clip_norm', 1.)
+    log_every = settings.get('log_every_batches', 0)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(json.dumps({'training_device': str(device)}), flush=True)
+    model.to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=settings.get('learning_rate', 1e-3))
+    resume = settings.get('resume')
+    histories = list(settings.get('resume_history', []))
+    best, best_epoch, stale, retried, start_epoch = float('inf'), 0, 0, False, 1
+    if resume:
+        fit = load_fit(resume)
+        for key in ('model', 'window_size', 'hidden_width', 'estimator', 'scope',
+                    'run_name', 'batch_size', 'learning_rate', 'output_convention',
+                    'clip_norm', 'counts', 'seed', 'data_transform'):
+            if fit['settings'].get(key) != settings.get(key):
+                raise ValueError(f'resume checkpoint differs in {key}')
+        if fit['floor'] != floor:
+            raise ValueError('resume checkpoint differs in training variance floor')
+        if len(histories) != fit['epoch'] or any(row['epoch'] != i for i, row in enumerate(histories, 1)):
+            raise ValueError('resume history must end at the best checkpoint epoch')
+        model.load_state_dict(fit['model_state_dict'])
+        optimizer.load_state_dict(fit['optimizer_state_dict'])
+        best, best_epoch, start_epoch = fit['val_qlike'], fit['epoch'], fit['epoch'] + 1
+        stale, retried = fit.get('stale', 0), fit.get('retried', False)
+        if 'torch_rng_state' in fit:
+            torch.set_rng_state(fit['torch_rng_state'])
+        if device.type == 'cuda' and 'cuda_rng_state' in fit:
+            torch.cuda.set_rng_state(fit['cuda_rng_state'])
+    if epochs < start_epoch:
+        raise ValueError('maximum epochs precedes the resume checkpoint')
+    active_model = torch.compile(model) if settings.get('compile') else model
+    print(json.dumps({'training_mode': 'compiled' if settings.get('compile') else 'eager',
+                      'start_epoch': start_epoch}), flush=True)
+    train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(val_data, batch_size=batch_size)
+    training = settings['training_history']
+    for epoch in range(start_epoch, epochs + 1):
+        started = time.monotonic()
+        active_model.train()
+        clipped_batches = 0
+        floor_hits = 0
+        train_count = 0
+        for batch_index, (x, y) in enumerate(train_loader, 1):
+            x, y = x.to(device), y.to(device)
+            optimizer.zero_grad()
+            output = active_model(x)
+            if output_convention == 'floored_variance':
+                floor_hits += int((output < floor).sum())
+                train_count += output.numel()
+            loss = log_variance_qlike(y, neural_log_variance(output, floor, output_convention),
+                                      log_volatility_target)
+            loss.backward()
+            norm = torch.nn.utils.clip_grad_norm_(model.parameters(),
+                                                   float('inf') if clip_norm is None else clip_norm)
+            if not torch.isfinite(norm):
+                raise ValueError('neural gradient must be finite')
+            clipped_batches += int(clip_norm is not None and norm > clip_norm)
+            optimizer.step()
+            if log_every and (batch_index == 1 or batch_index % log_every == 0
+                              or batch_index == len(train_loader)):
+                print(json.dumps({'progress': 'batch', 'epoch': epoch,
+                                  'batch': batch_index, 'batches': len(train_loader),
+                                  'train_qlike_batch': float(loss.detach()),
+                                  'gradient_norm': float(norm),
+                                  'learning_rate': optimizer.param_groups[0]['lr'],
+                                  'elapsed_sec': round(time.monotonic() - started, 1)}), flush=True)
+        active_model.eval()
+        with torch.no_grad():
+            scores = {}
+            for split, data, loader in (('train', train_data, DataLoader(train_data, batch_size=batch_size)),
+                                        ('val', val_data, val_loader)):
+                actual, prediction = [], []
+                for x, y in loader:
+                    x, y = x.to(device), y.to(device)
+                    z = neural_log_variance(active_model(x), floor, output_convention)
+                    actual.extend(((2 * y).exp() if log_volatility_target else y).flatten().cpu().tolist())
+                    prediction.extend(z.exp().flatten().cpu().tolist())
+                tickers = [data.ticker_names[i] for i in data.ticker_ids.tolist()]
+                scores.update({f'{split}/{key}': value for key, value in
+                               variance_metrics(actual, prediction, tickers, training).items()})
+            score = scores['val/qlike']
+        if run or log_every:
+            row = {'epoch': epoch, **scores,
+                     'best_epoch': epoch if score < best else best_epoch,
+                     'best_val_qlike': min(score, best),
+                     'train/clipped_batches_pct': 100 * clipped_batches / len(train_loader),
+                     **({'train/floor_hits_pct': 100 * floor_hits / train_count}
+                        if output_convention == 'floored_variance' else {}),
+                     'learning_rate': optimizer.param_groups[0]['lr']}
+        if log_every:
+            print(json.dumps({'progress': 'epoch', **row,
+                              'elapsed_sec': round(time.monotonic() - started, 1)}), flush=True)
+        if run:
+            histories.append(row)
+            import wandb
+            epochs_run = [item['epoch'] for item in histories]
+            run.log({**row, **{f'curves/{metric}': wandb.plot.line_series(
+                epochs_run, [[item[f'{split}/{metric}'] for item in histories]
+                             for split in ('train', 'val')],
+                keys=['train', 'val'], title=metric.upper(), xname='epoch')
+                for metric in ('qlike', 'mse', 'rmse', 'mase', 'mae')}})
+        if score < best:
+            best, best_epoch, stale = score, epoch, 0
+            save_fit(path, {'model_state_dict': model.state_dict(),
+                            'optimizer_state_dict': optimizer.state_dict(),
+                            'epoch': epoch, 'val_qlike': score, 'floor': floor,
+                            'stale': stale, 'retried': retried,
+                            'torch_rng_state': torch.get_rng_state(),
+                            **({'cuda_rng_state': torch.cuda.get_rng_state()} if device.type == 'cuda' else {}),
+                            'output_convention': output_convention,
+                            'best_metrics': {key: scores[f'val/{key}'] for key in
+                                             ('qlike', 'mse', 'rmse', 'mase', 'mae')},
+                            'settings': settings})
+        else:
+            stale += 1
+            if stale >= patience:
+                if retried:
+                    break
+                optimizer.param_groups[0]['lr'] *= .1
+                retried, stale = True, 0
+    if best == float('inf'):
+        raise RuntimeError('no finite validation checkpoint')
+    fit = load_fit(path)
+    fit['completed_epochs'] = epoch
+    fit['settings'] = settings
+    save_fit(path, fit)
+    print(json.dumps({'progress': 'complete', 'completed_epoch': epoch,
+                      'best_epoch': fit['epoch'], 'best_val_qlike': fit['val_qlike']}), flush=True)
+    return path
 
 
 def ols_fit(training, kind, window):

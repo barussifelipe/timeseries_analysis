@@ -1,0 +1,29 @@
+{
+  "task": "Cold review of using the compiled wrapper for training and validation scoring during variance-network fitting.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/lstm_val_training.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "models/variance_fit.py",
+    "models/variance_neural.py",
+    "models/base_lstm.py",
+    "models/silu_lstm.py",
+    "models/tests/test_lstm_resume.py",
+    "git diff -- models/variance_fit.py models/tests/test_lstm_resume.py",
+    ".venv/Scripts/python.exe -m models.tests.test_lstm_resume (passed)",
+    "git diff --check -- models/variance_fit.py models/tests/test_lstm_resume.py (passed; line-ending warning only)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -1,0 +1,34 @@
+{
+  "task": "Independent review of the sequential 36-configuration Garman-Klass LSTM validation sweep and online GPU preflight",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/train_framework.md",
+    "ref/implementation_plan/losses.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "models/lstm_val_sweep.py",
+    "models/test_lstm_val_sweep.py",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/training_blocks.py",
+    "models/base_lstm.py",
+    "models/silu_lstm.py",
+    "models/test_training_curves.py",
+    "wandb/lstm_val_training/results.json",
+    "wandb/lstm_val_training/logs/silu_lstm_gk_w80_h64_lr0.001_preflight.log",
+    "git diff -- models/variance_fit.py models/variance_neural.py models/base_lstm.py models/training_blocks.py",
+    ".venv/Scripts/python.exe -m models.test_lstm_val_sweep"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

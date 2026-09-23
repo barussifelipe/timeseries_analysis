@@ -1,0 +1,37 @@
+{
+  "task": "Cold review of the 50-epoch base Garman-Klass LSTM continuation preflight, patience 10, optional compilation, live curves, W&B run reuse, and relocation of project tests to models/tests.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "ref/thesis/plan.md (ref/plan.md is absent)",
+    "ref/implementation_plan/lstm_val_training.md",
+    "models/variance_fit.py",
+    "models/variance_neural.py",
+    "models/training_blocks.py",
+    "models/lstm_val_sweep.py",
+    "models/tests/test_lstm_resume.py",
+    "models/tests/test_training_curves.py",
+    "models/tests/test_training_smoke.py",
+    "wandb/lstm_val_training/results.json",
+    "wandb/lstm_val_training/logs/base_lstm_vol_gk_w20_h16_lr0.0001_noclip_progress.log",
+    "inference/checkpoints/base_lstm_vol/garman-klass/global/base_lstm_vol_gk_w20_h16_lr0.0001_noclip_progress/fit.pth",
+    ".venv/Scripts/python.exe -m models.tests.test_lstm_resume (passed after correcting best-only checkpoint assertion)",
+    ".venv/Scripts/python.exe -m models.tests.test_training_curves (passed)",
+    ".venv/Scripts/python.exe -m models.tests.test_training_smoke (passed)",
+    ".venv/Scripts/python.exe -m unittest discover -s models/tests -p test_*.py (14 discovered; one jsonschema import error)",
+    "rg --files -g test_*.py (15 files, all under models/tests)",
+    "git diff --check (passed)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}
