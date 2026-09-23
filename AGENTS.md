@@ -2,7 +2,7 @@
 
 ## Start here
 
-Before making changes, read `CONTEXT.md`, `ref/plan.md`, and the files involved in the request. Treat `ref/plan.md` as the research roadmap and `CONTEXT.md` as the current handoff state. If they disagree with the code, report the discrepancy and verify the code rather than guessing.
+Before making changes, read `CONTEXT.md`, `ref/thesis/plan.md`, and the files involved in the request. Treat `ref/thesis/plan.md` as the research roadmap and `CONTEXT.md` as the current handoff state. If they disagree with the code, report the discrepancy and verify the code rather than guessing.
 
 ## Scope and implementation
 
@@ -90,5 +90,9 @@ Before committing, inspect the diff, run the narrowest relevant checks, and stag
 
 - Lead with the outcome and current plan position. Be concise and distinguish implemented, tested, planned, and speculative work.
 - When a request conflicts with the research plan or risks invalidating comparisons, explain the issue before changing direction.
-- Always write equations with Unicode mathematical notation (for example,
-  ζ(q) = Hq, Δ, Σ, and R²), not LaTeX commands or delimiters.
+- In prose, write equations with Unicode mathematical notation (for example,
+  ζ(q) = Hq, Δ, Σ, and R²), not LaTeX commands or delimiters. For equations
+  shown in PowerShell, terminal output, or shell commands, use ASCII-only
+  notation so they display without encoding changes. When checking a paper,
+  keep its variable names and identify each equation by its printed number;
+  explicitly say when the paper leaves an equation unnumbered.

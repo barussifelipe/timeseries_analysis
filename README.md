@@ -10,7 +10,7 @@ The volatility models now have separate commands: `python -m models.ar1`,
 python -m models.har --database PATH_TO_HISTORY_DB --estimator parkinson --scope global --run-name trial --no-wandb
 python -m models.harnet_20 --database PATH_TO_HISTORY_DB --estimator garman-klass --scope local --ticker AAPL --run-name trial --epochs 20 --crypto-test
 python -m models.harnet_80 --database PATH_TO_HISTORY_DB --estimator garman-klass --scope global --run-name trial --epochs 20 --crypto-test
-python -m models.test_training_smoke
+python -m models.tests.test_training_smoke
 ```
 
 Commands read the already-built daily variance tables; they do not download data.
