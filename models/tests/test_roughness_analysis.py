@@ -7,6 +7,7 @@ from pathlib import Path
 import numpy as np
 
 from data.crypto_data_fetching import _create_crypto_tables
+from data.gk_histograms import distributions
 from data.roughness_analysis import (
     CRYPTO_LENGTH,
     analyze_training_roughness,
@@ -90,6 +91,21 @@ class RoughnessAnalysisTest(unittest.TestCase):
         self.assertAlmostEqual(
             garman_klass_variance(10, 12, 9, 11), expected
         )
+
+    def test_gk_histogram_pairs_use_calendar_lags_within_tickers(self):
+        self.conn.execute('CREATE TABLE equity_garman_klass_variance '
+                          '(Ticker TEXT, Date TEXT, Variance REAL)')
+        self.conn.executemany('INSERT INTO equity_garman_klass_variance VALUES (?, ?, ?)', [
+            ('A', '2020-01-01', 1.), ('A', '2020-01-02', math.exp(2)),
+            ('A', '2020-01-06', math.exp(6)),
+            ('B', '2020-01-01', math.exp(20)),
+            ('B', '2020-01-02', math.exp(24)),
+        ])
+        variance, increments = distributions(self.conn)
+        self.assertEqual(len(variance), 5)
+        np.testing.assert_allclose(increments[1], [1, 2])
+        np.testing.assert_allclose(increments[5], [3])
+        self.assertEqual(len(increments[25]), 0)
 
     def test_rebuild_filters_and_is_idempotent(self):
         self._equity(

@@ -1,5 +1,16 @@
 # Project context
 
+## Global Garman–Klass histograms (2026-09-23)
+
+Three descriptive full-period equity figures were generated from the saved
+Garman–Klass variance table under `imgs/roughness_analysis/global/full`:
+within-ticker log-volatility increments at exact calendar lags 1, 5, 25, and
+125 days, untransformed daily variance, and log daily variance. Each overlays a full-sample normal
+maximum-likelihood fit; the displayed histogram ranges are cropped and labeled,
+while fitting uses all 9,217,433 variance rows or all eligible lag pairs.
+These descriptive plots do not change the pre-2016 observation-lag H estimate
+used by RFSV. Next model step remains the small authorized fitting trial.
+
 ## RFSV observation-lag implementation (2026-09-23)
 
 The six pre-2016 global equity roughness outputs now use within-ticker

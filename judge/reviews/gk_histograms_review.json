@@ -1,0 +1,29 @@
+{
+  "task": "Global Garman-Klass log-volatility increment and raw-variance histograms",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/roughness_analysis.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "data/roughness_analysis.py",
+    "data/gk_histograms.py",
+    "models/tests/test_roughness_analysis.py",
+    "git status --short and git diff -- CONTEXT.md data/gk_histograms.py models/tests/test_roughness_analysis.py",
+    "imgs/roughness_analysis/global/full/equity_garman_klass_log_vol_increments.png",
+    "imgs/roughness_analysis/global/full/equity_garman_klass_raw_variance.png",
+    "python -m unittest models.tests.test_roughness_analysis (10 tests passed)",
+    "read-only SQLite count, date, and variance range query on equity_garman_klass_variance"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}
