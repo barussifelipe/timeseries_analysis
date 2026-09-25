@@ -1,0 +1,34 @@
+{
+  "task": "Cold prelaunch review of raw Garman-Klass variance LSTM consecutive-session filtering",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/lstm_val_training.md",
+    "ref/implementation_plan/equity_volatility_data_review_2026-09-24.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- AGENTS.md CONTEXT.md ref/implementation_plan/lstm_val_training.md models/training_blocks.py models/variance_neural.py models/variance_fit.py models/lstm_val_sweep.py models/tests/test_log_volatility_inputs.py models/tests/test_neural_forecast_floor.py models/tests/test_training_curves.py",
+    "models/tests/test_consecutive_sessions.py",
+    "D:/DBs/timeseries_analysis/history_coverage.db read-only distinct-date queries",
+    ".venv/Scripts/python.exe -m models.tests.test_consecutive_sessions",
+    ".venv/Scripts/python.exe -m models.tests.test_log_volatility_inputs"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 24,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "correctness",
+      "severity": "minor",
+      "evidence": "TimeSeriesDataset validates calendar membership with np.any(ranks == len(calendar)) or np.any(calendar[ranks] != observed). If a supplied calendar ends before an observed frame date, calendar[ranks] indexes one past the end and raises IndexError instead of the intended ValueError. The current training and saved-calendar inference paths use a full-panel calendar and are unaffected.",
+      "fix": "Check out-of-range ranks before indexing calendar, or compare only ranks known to be in bounds; add a small invalid-calendar assertion."
+    }
+  ],
+  "total": 99,
+  "pass": true
+}

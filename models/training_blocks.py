@@ -19,7 +19,7 @@ ESTIMATORS = {'parkinson': 'parkinson', 'garman-klass': 'garman_klass'}
 
 
 class Forecast(NamedTuple):
-    """One target date; actual is unchanged, prediction is in variance units and floored."""
+    """One target date; actual is the scoring target, prediction is daily variance."""
 
     ticker: str
     target_date: str
@@ -33,11 +33,14 @@ class TimeSeriesDataset(Dataset):
     For target row i, input rows are [i - window_size, i) from the same ticker.
     The split filters target dates only, so validation and test windows can use
     earlier observed history. Variance targets must be finite and positive.
+    ``consecutive_sessions`` requires all input-to-target steps to be
+    adjacent in the panel's observed market-date calendar.
     ``positive_target=False`` preserves the older returns reference behavior.
     """
 
     def __init__(self, dataframe, window_size=30, feature_columns=('Variance',),
-                 target_column='Variance', split='train', positive_target=True):
+                 target_column='Variance', split='train', positive_target=True,
+                 consecutive_sessions=False, session_calendar=None, valid_column=None):
         if window_size < 1 or split not in SPLITS:
             raise ValueError('invalid window size or split')
         self.window_size = window_size
@@ -54,22 +57,41 @@ class TimeSeriesDataset(Dataset):
         frame = frame.sort_values(['Ticker', 'Date'])
         if frame.duplicated(['Ticker', 'Date']).any():
             raise ValueError('duplicate ticker date')
+        valid = frame[valid_column].to_numpy(dtype=bool) if valid_column else np.ones(len(frame), dtype=bool)
         numbers = frame[list(set(self.feature_columns) | {target_column})].to_numpy(dtype=float)
-        if not np.isfinite(numbers).all() or (positive_target and (frame[target_column].to_numpy(dtype=float) <= 0).any()):
+        if not np.isfinite(numbers[valid]).all() or (positive_target and (frame.loc[valid, target_column].to_numpy(dtype=float) <= 0).any()):
             raise ValueError('variance data must be finite and targets positive')
+        if valid_column:
+            frame.loc[~valid, list(set(self.feature_columns) | {target_column})] = 0.
         self.data = torch.tensor(frame[list(self.feature_columns)].to_numpy(dtype=np.float32))
         self.targets = torch.tensor(frame[target_column].to_numpy(dtype=np.float32)).unsqueeze(1)
         if (not torch.isfinite(self.data).all() or not torch.isfinite(self.targets).all()
-                or (positive_target and (self.targets <= 0).any())):
+                or (positive_target and (self.targets[torch.tensor(valid.copy())] <= 0).any())):
             raise ValueError('values cannot be represented as finite positive float32 variance')
         self.ticker_names = list(frame['Ticker'].drop_duplicates())
         indices, ids, dates = [], [], []
         start, end = SPLITS[split]
+        calendar = None
+        if consecutive_sessions:
+            calendar = np.sort(pd.to_datetime(session_calendar).to_numpy()) if session_calendar is not None else np.sort(frame['Date'].unique())
+            observed = frame['Date'].unique()
+            ranks = np.searchsorted(calendar, observed)
+            if (not len(calendar) or np.any(ranks == len(calendar))
+                    or np.any(calendar[ranks] != observed)):
+                raise ValueError('session calendar must contain every observed date')
         offset = 0
         for ticker_id, (ticker, group) in enumerate(frame.groupby('Ticker', sort=False)):
             positions = np.arange(window_size, len(group))
-            group_dates = group['Date'].to_numpy()[positions]
+            all_dates = group['Date'].to_numpy()
+            group_dates = all_dates[positions]
             mask = np.ones(len(positions), dtype=bool)
+            if valid_column:
+                good_input = valid[offset:offset + len(group)] & (group['RawVariance'].to_numpy(dtype=float) > 0)
+                bad = np.r_[0, np.cumsum(~good_input)]
+                mask &= (bad[positions] == bad[positions - window_size]) & valid[offset + positions]
+            if consecutive_sessions:
+                ranks = np.searchsorted(calendar, all_dates)
+                mask &= ranks[window_size:] - ranks[:-window_size] == window_size
             if start is not None:
                 mask &= group_dates >= np.datetime64(start)
             if end is not None:
@@ -94,12 +116,21 @@ class TimeSeriesDataset(Dataset):
 
 
 def load_variance(database, estimator, asset='equity', ticker=None, limit_tickers=None,
-                  limit_rows=None):
+                  limit_rows=None, include_intraday_log_return=False):
     if estimator not in ESTIMATORS or asset not in ('equity', 'crypto'):
         raise ValueError('invalid estimator or asset')
     if (limit_rows is not None and limit_rows < 1) or (limit_tickers is not None and limit_tickers < 1):
         raise ValueError('limits must be positive')
     table = f'{asset}_{ESTIMATORS[estimator]}_variance'
+    if include_intraday_log_return:
+        history = 'raw_history' if asset == 'equity' else 'crypto_daily_history'
+        key = ('r.Ticker = v.Ticker AND r.Date = v.Date' if asset == 'equity'
+               else 'r.symbol = v.Ticker AND substr(r.time, 1, 10) = v.Date')
+        source = f'{table} v LEFT JOIN {history} r ON {key}'
+        columns = 'v.Ticker, v.Date, v.Variance, r.Open AS Open, r.Close AS Close'
+        ticker_column, date_column = 'v.Ticker', 'v.Date'
+    else:
+        source, columns, ticker_column, date_column = table, 'Ticker, Date, Variance', 'Ticker', 'Date'
     with closing(sqlite3.connect(database)) as conn:
         names = [row[0] for row in conn.execute(f'SELECT DISTINCT Ticker FROM {table} ORDER BY Ticker')]
         if ticker is not None:
@@ -110,25 +141,33 @@ def load_variance(database, estimator, asset='equity', ticker=None, limit_ticker
         for name in names:
             if limit_rows is None:
                 frames.append(pd.read_sql_query(
-                    f'SELECT Ticker, Date, Variance FROM {table} WHERE Ticker = ? ORDER BY Date',
+                    f'SELECT {columns} FROM {source} WHERE {ticker_column} = ? ORDER BY {date_column}',
                     conn, params=(name,)))
             else:
                 periods = ((None, None),) if asset == 'crypto' else (
                     (None, '2016-01-01'), ('2016-01-01', '2019-01-01'),
                     ('2019-01-01', '2026-01-01'))
                 for start, end in periods:
-                    clause = ' AND Date >= ?' if start else ''
-                    clause += ' AND Date < ?' if end else ''
+                    clause = f' AND {date_column} >= ?' if start else ''
+                    clause += f' AND {date_column} < ?' if end else ''
                     order = 'DESC' if asset == 'equity' and start is None else 'ASC'
                     params = (name, *((start,) if start else ()), *((end,) if end else ()), limit_rows)
-                    query = (f'SELECT Ticker, Date, Variance FROM {table} WHERE Ticker = ?'
-                             f'{clause} ORDER BY Date {order} LIMIT ?')
+                    query = (f'SELECT {columns} FROM {source} WHERE {ticker_column} = ?'
+                             f'{clause} ORDER BY {date_column} {order} LIMIT ?')
                     frames.append(pd.read_sql_query(query, conn, params=params))
     if not frames:
         raise ValueError(f'no data in {table} for selected tickers')
     frame = pd.concat(frames, ignore_index=True).sort_values(['Ticker', 'Date']).reset_index(drop=True)
     if not np.isfinite(frame.Variance).all() or (frame.Variance <= 0).any():
         raise ValueError('invalid variance in source table')
+    if include_intraday_log_return:
+        prices = frame[['Open', 'Close']].to_numpy(dtype=float)
+        if not np.isfinite(prices).all() or (prices <= 0).any():
+            raise ValueError('intraday log return needs matched finite positive Open and Close')
+        frame['IntradayLogReturn'] = np.log(prices[:, 1] / prices[:, 0])
+        if not np.isfinite(frame.IntradayLogReturn).all():
+            raise ValueError('intraday log return must be finite')
+        frame = frame.drop(columns=['Open', 'Close'])
     return frame
 
 
@@ -219,13 +258,14 @@ def add_common_args(parser, window=20):
     return parser
 
 
-def prepare(args):
+def prepare(args, include_intraday_log_return=False):
     if args.scope == 'local' and not args.ticker:
         raise ValueError('--ticker is required for local runs')
     if args.scope == 'global' and args.ticker:
         raise ValueError('--ticker applies only to local runs')
     frame = load_variance(args.database, args.estimator, ticker=args.ticker,
-                          limit_tickers=args.limit_tickers, limit_rows=args.limit_rows)
+                          limit_tickers=args.limit_tickers, limit_rows=args.limit_rows,
+                          include_intraday_log_return=include_intraday_log_return)
     training = series_by_ticker(frame)
     if not training:
         raise ValueError('no pre-2016 fitting history')
@@ -253,10 +293,16 @@ def load_fit(path):
     return torch.load(path, map_location='cpu', weights_only=False)
 
 
-def report_counts(frame, window_size):
+def report_counts(frame, window_size, consecutive_sessions=False, session_calendar=None):
     counts = {split: 0 for split in ('train', 'val', 'test')}
+    calendar = (np.sort(pd.to_datetime(session_calendar).to_numpy()) if session_calendar is not None
+                else np.sort(pd.to_datetime(frame.Date).unique())) if consecutive_sessions else None
     for _, group in frame.groupby('Ticker'):
-        dates = pd.to_datetime(group.sort_values('Date').Date).to_numpy()[window_size:]
+        all_dates = pd.to_datetime(group.sort_values('Date').Date).to_numpy()
+        dates = all_dates[window_size:]
+        if consecutive_sessions:
+            ranks = np.searchsorted(calendar, all_dates)
+            dates = dates[ranks[window_size:] - ranks[:-window_size] == window_size]
         counts['train'] += int(np.sum(dates < np.datetime64('2016-01-01')))
         counts['val'] += int(np.sum((dates >= np.datetime64('2016-01-01')) &
                                     (dates < np.datetime64('2019-01-01'))))

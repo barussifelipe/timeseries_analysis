@@ -1,0 +1,32 @@
+{
+  "task": "Cold review of raw-history neural window coverage for base LSTM, SiLU-LSTM, HARNet-20, and HARNet-80, without training",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/data_fixes.md",
+    "ref/implementation_plan/models.md",
+    "ref/coverage/history_coverage.md",
+    "ref/coverage/raw_neural_coverage_2026-09-24.json",
+    "models/raw_neural_data.py",
+    "models/raw_neural_coverage.py",
+    "models/training_blocks.py",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/tests/test_raw_neural_data.py",
+    "models/harnet_20.py",
+    "models/harnet_80.py",
+    "judge/prompt.md",
+    "judge/score.schema.json"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -40,6 +40,7 @@ Add focused sections such as formulas or analysis only when the task needs them.
 
 - Prevent look-ahead bias. Keep splits chronological and fit every learned transform, threshold, winsorization bound, or statistic on training data only unless the method explicitly requires otherwise.
 - Keep all time-series operations within ticker boundaries and sort by `(Ticker, Date)` before creating lags or windows.
+- Before changing data selection, cleaning, features, targets, transformations, or forecast horizons, warn the user what observations or values will change, quantify train/validation/test effects when feasible, and state any comparison or leakage implications. Do not assume that changing a target transform repairs gaps or other source-data exclusions.
 - State the exact target, units, horizon, estimator formula, annualization convention, and any transformation such as log variance before training or comparing models.
 - Use adjusted OHLC values consistently. Validate positivity and finite values before logarithms, ratios, QLIKE, Parkinson, or Garman-Klass calculations.
 - Align market-wide variables such as VIX and commonality by date without forward-looking fills. Document how missing dates and unseen tickers are handled.

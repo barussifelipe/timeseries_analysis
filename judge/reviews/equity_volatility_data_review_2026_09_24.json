@@ -1,0 +1,34 @@
+{
+  "task": "Cold review of the read-only equity volatility data audit and its explanation of SiLU training instability and panel differences",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/equity_volatility_data_review_2026-09-24.md",
+    "data/data_fetching.py",
+    "data/roughness_analysis.py",
+    "models/training_blocks.py",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "wandb/lstm_val_training/logs/silu_lstm_gk_logvol_intradayret_w20_h128_lr0.0001_noclip_progress_50epochs_resume_float64_from15_to50.log",
+    "wandb/lstm_val_training/logs/silu_lstm_gk_logvol_intradayret_w20_h128_lr0.0001_noclip_progress_50epochs_resume_float64_from15_to50.err",
+    "inference/checkpoints/silu_lstm/garman-klass/global/silu_lstm_gk_logvol_intradayret_w20_h128_lr0.0001_noclip_progress_50epochs/fit.pth",
+    "inference/checkpoints/base_lstm_vol/garman-klass/global/base_lstm_vol_gk_logvol_intradayret_w20_h128_lr0.0001_noclip_progress_20epochs_rerun/fit.pth",
+    "D:/DBs/timeseries_analysis/history_coverage.db (read-only SQLite queries)",
+    "https://arxiv.org/pdf/2202.08962",
+    "https://arxiv.org/pdf/2309.02072",
+    "https://www.spglobal.com/spdji/en/methodology/article/sp-us-indices-methodology/",
+    "judge/prompt.md",
+    "judge/score.schema.json"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}
