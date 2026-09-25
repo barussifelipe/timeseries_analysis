@@ -1,11 +1,5 @@
 # NAME: Volatility Forecasting: A statistical and Deep Learning approach 
 
-## QUESTIONS
-1. What are the changes you'd do to this plan? Is this good enough for a thesis? Is there any paper you'd like me to read? 
-2. Can we define the cronogram in the following way: I finish this implementation in a week or week and a half. I write it it in a week? And then final revision? I need to deliver by 09 of October and send the request of laurea on the 20th of September, where you'd need to sign it. 
-3. Is the name ok or do you have a suggestion? 
-4. How will the VVSI project be graded? I'd need it graded and registered until the 20th of September since I need to send my request. 
-
 ## NOTES 
 1. Adjust the MAPE. 
 2. Table of losses. 
