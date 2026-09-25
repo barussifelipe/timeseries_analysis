@@ -90,9 +90,10 @@ Each metric below comes from the best validation-QLIKE epoch. Lower is better.
 
 ## Validation residual histogram
 
-For the two-input hidden-128 best checkpoint (epoch 19), AAPL has 754
-validation forecasts in 2016-2018. Residual is actual Garman-Klass
-variance minus predicted variance. The [histogram](../../imgs/lstm_validation/aapl_h128_intradayret_validation_residual_histogram.png)
+For the raw-history two-input hidden-128 base LSTM trained through epoch 20,
+the best checkpoint is epoch 7. AAPL has 754 validation forecasts in 2016-2018.
+Residual is actual adjusted daily, unannualized Garman-Klass variance minus
+predicted variance. The [histogram](../../imgs/lstm_validation/aapl_h128_intradayret_validation_residual_histogram.png)
 shows all residuals and a labeled central-98% zoom; the dated
 [CSV](../../imgs/lstm_validation/aapl_h128_intradayret_validation_residuals.csv)
 contains actual variance, predicted variance, and residual. This is a

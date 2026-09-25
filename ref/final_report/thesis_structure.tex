@@ -28,7 +28,15 @@ As competition for information increases, the opportunity to profit from that sa
 
 A historical data is known as a time series. Time series analysis has been a widely explored field in statistics and ML (Machine Learning). Statistical analysis is focused on understanding the properties of the data (stationarity, mean reversion, seasonality, trend, cycles, etc.) and creating a model, based on such characteristics that sucessfully explains the movements observed in such data. ML, in the meanwhile, is interested in creating a model that efficiently explains the data without effectively needing its traits. 
 
-An early landmark of time series statistical modelling is with Yule's work in 1927 where he introduced the AR (Autoregressive) model, where current value depends on its past values. 
+An early landmark of time series statistical modelling is with Yule's work in 1927 where he introduced the AR (Autoregressive) model, where current value depends on its past values. In 1927, Slutsky demonstrated that summing random values can produce smooth, apparently cyclical movements, and in 1938, Wold extended this by showing that a stationary (constant mean, constant variance and covariance depending only on time lag) time series can be split into a predictable component and another represented by current and past shocks. Both contributions served as the foundation for the MA (Moving average) model. 
+
+In 1970, Box and Jenkins combined AR and MA terms with differencing to model a series, originating the ARIMA (Autoregressive Integrated Moving Average) model. In ARIMA(p, d, q), p and q corresponds to the order of AR and MA, respectively, while d corresponds to the number of times the series is differenced in order to remove certain kinds of non-stationarity, especially, the one caused by a stochastic trend. In the same year, the authors extended the model to account for seasonal patterns, SARIMA (Seasonal Autoregressive Integrated Moving Average) model. SARIMA(p, d, q)(P, D, Q)s where (p, d, q) corresponds to the base ARIMA model. Seasonality is a pattern that tends to recur every s observation, e.g in a monthly data with a yearly pattern, s = 12. P and Q represent the order of the seasonal AR and MA parts, respectively, where D is the number of seasonal differences. 
+
+Box and Jenkins's models addresses the serie's expected value over time. The unexplained data is treated as White Noise ($\varepsilon_t \sim \mathrm{WN}(0, \sigma^2)$), assuming homosckedasticity (the variance of the errors remains constant across observations). Robert Engle, twelve years later, in 1982, was motivated to measure uncertainty across the time. He was interested in studying the uncertainty about future inflation and how it impacted in the financial market. Engle was interested in studying the conditional variance, how the variance changes based on the past information present. It can be that a shock is unconditionally homosckedastic, but conditionally heterosckedastic. In order to calculate the conditional variance, Engel estimated the ARCH (Autoregressive Conditional Heterosckedastic). Autoregressive since the current variance depends on past squared shocks, in order to capture the size of a shock, regardless of direction as well. Conditional, the variance is forecast based on information available before the forecast. Heterosckedastic, the variance changes over time. 
+
+Engel's ARCH model was revolutionary, but had a problem. The uncertainty of a market is called volatility, which represents the standard deviation of variance, volatility = $\sqrt{\sigma^2}$. Volatility often stays elevated for many periods and in order to ARCH address this behaviour it was needed many past squared schocks and conseqeuently many parameters. Tim Bollerslev, in 1986, addresseed this limitation by creating GARCH (Generalized Autoregressive Conditional Heterosckedastic), where he added past variance values in order to let the shock effect persist without adding a long list of past squared shocks. 
+
+In 2009, Fulvio Corsi presented the HAR (Heterogeneous Autoregressive) model. His idea was simple yet elegant: market participants act over different time horizons, so volatility measured over a day, a week, and a month may help to predict future volatility. Corsi based his idea over the Heteregeneous Market hypothesis, attributed to Ulrich A. Müller et al. (1993) in his work Fractals and Intrinsic Time: A Challenge to Econometricians. 
 
 
 
@@ -50,7 +58,7 @@ An early landmark of time series statistical modelling is with Yule's work in 19
 
 \section{Background}
 % Present all background knowledge required to understand the work.
-
+Unconditional variance measure how the erros vary overall: $\mathrm{Var}(\varepsilon_t)=\sigma^2=\mathrm{E}[(\varepsilon_t-\mathrm{E}[\varepsilon_t])^2]$. For the sample unconditional variance: $s^2=\frac{1}{n-1}\sum_{t=0}^{n-1}(\varepsilon_t-\bar{\varepsilon})^2 $, where $\bar{\varepsilon}$ is the sample mean, equal to $\frac{1}{n}\sum_{t=0}^{n-1}\varepsilon_t$.
 \section{Methods}
 % Describe the system design and methodology. Do not include source code here.
 

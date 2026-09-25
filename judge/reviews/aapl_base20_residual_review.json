@@ -1,0 +1,31 @@
+{
+  "task": "Refresh the existing AAPL validation residual histogram and dated CSV for the raw-history two-input base LSTM trained through 20 epochs, using its best checkpoint, without creating a new figure.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/lstm_val_training.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- CONTEXT.md ref/implementation_plan/lstm_val_training.md imgs/lstm_validation/aapl_h128_intradayret_validation_residuals.csv imgs/lstm_validation/aapl_h128_intradayret_validation_residual_histogram.png",
+    "models/raw_neural_data.py",
+    "models/training_blocks.py",
+    "models/variance_neural.py",
+    "inference/run_raw_logvol_pair_wandb.py",
+    "inference/checkpoints/base_lstm_vol/garman-klass/global/raw_gk_logvol_return_w20_h128_lr0p001_30e/fit.pth",
+    "D:/DBs/timeseries_analysis/history_coverage.db: raw_history AAPL rows",
+    "wandb/lstm_val_training/logs/base_lstm_vol_raw_gk_logvol_return_w20_h128_lr0p001_30e_resume_epoch3_wandb.log",
+    "imgs/lstm_validation/aapl_h128_intradayret_validation_residuals.csv",
+    "imgs/lstm_validation/aapl_h128_intradayret_validation_residual_histogram.png"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -1,3 +1,67 @@
+## HARNet-80 raw-variance validation trial (2026-09-25)
+
+At the user's request, HARNet-80 started in a visible PowerShell terminal with
+the HARNet-20 trial's settings: global raw adjusted daily unannualized
+Garman-Klass variance, next recorded observation target, QLIKE objective,
+initial Adam rate 0.001, batch 128, patience 10 with one tenfold-rate retry,
+20 epochs max, seed 42, gradient clipping norm 1, compiled CUDA, and
+validation-only scoring. Its 80-observation window changes the eligible
+forecast counts to 7,004,011 / 1,692,154 / 4,295,773 for train / validation /
+test, so direct model comparison requires a common observation set. It starts
+from a pooled pre-2016 HAR(1,5,20,40,80) fit on its eligible training windows.
+The online run ID is `tm2fiz6y`; the live log is
+`wandb/harnet_val_training/logs/harnet_80_raw_gk_variance_w80_lr0p001_20e_qlike_online.log`.
+The reported window counts were verified and one training process remains
+active. Next: monitor training and record its best validation QLIKE and five
+metrics; test scoring remains deferred.
+
+## HARNet-20 raw-variance validation trial (2026-09-25)
+
+The raw-variance SiLU-LSTM MSE run completed epoch 20 and selected epoch 16
+by validation MSE 2.208466703535898e-05. Its independent best-checkpoint
+validation score on 1,806,548 windows was MSE 2.2084667117207434e-05,
+QLIKE 491809.2414945714, MAE 0.0006713999301386554, MASE
+1.1684035882870252, and RMSE 0.0046994326377986775. This result has
+12.57% training-batch floor hits in epoch 20 and should not be presented as
+an improvement by QLIKE.
+
+After epoch 20, the global HARNet-20 raw-history run started with adjusted,
+daily, unannualized Garman-Klass variance as its sole input and next recorded
+observation target. It uses the existing 2,714-ticker cohort and positive-input
+window rule, with 8,664,516 / 1,806,548 / 4,479,681 train / validation /
+test windows. Zero source targets receive the pre-2016 positive floor
+3.396062419686545e-13; actual targets are otherwise unchanged. Forecasts
+are floored at that value before QLIKE, with no upper cap. HARNet starts from
+a pooled pre-2016 HAR(1,5,20) fit on eligible training windows. Settings are
+Adam 0.001, batch 128, patience 10 with one tenfold learning-rate retry,
+20 epochs max, seed 42, gradient clipping norm 1, compiled CUDA, QLIKE
+training and validation checkpoint selection, and validation-only scoring.
+The first launch, `harnet_20_raw_gk_variance_w20_lr0p001_20e_qlike_offline`,
+logged epoch 1 validation QLIKE 0.5463413274 but stalled before saving a
+checkpoint; it was stopped. Its local W&B ID is `kb3cqo84` and its log is
+preserved in `wandb/harnet_val_training/logs/`. Online W&B access was verified
+outside the sandbox. A fresh run with the same settings is active under
+`harnet_20_raw_gk_variance_w20_lr0p001_20e_qlike_online` in a visible
+PowerShell terminal. Its live console log is in the same logs directory;
+online W&B run `u7ia0lvh` is at
+`https://wandb.ai/personalfeb/timeseries-volatility/runs/u7ia0lvh`.
+It completed epoch 20 after the configured retry at learning rate 0.0001;
+its best checkpoint is epoch 20 with validation QLIKE 0.4714980945508361
+on 1,806,548 windows. No test scoring was requested. HARNet's
+variance-only feature and QLIKE objective differ from the SiLU MSE trial;
+their results are not a controlled architecture comparison. HARNet-80 is
+the current training task.
+
+## AAPL validation residual diagnostic (2026-09-25)
+
+The existing AAPL residual histogram and dated CSV in `imgs/lstm_validation/`
+were refreshed from the raw-history two-input base LSTM trained through epoch
+20. Its saved best checkpoint is epoch 7. The 2016-2018 validation set has 754
+AAPL forecasts; residual is adjusted daily, unannualized Garman-Klass variance
+minus predicted variance. This is a single-ticker validation diagnostic; no
+test scoring or new training was run. The next model task remains monitoring
+the raw-variance SiLU MSE trial.
+
 ## Raw-variance SiLU MSE trial (2026-09-25)
 
 The first raw-variance SiLU run mistakenly used QLIKE from the prior trials.
