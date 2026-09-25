@@ -1,0 +1,36 @@
+{
+  "task": "Cold prelaunch review of the fresh hidden-64 log-volatility base LSTM rerun after cancellation during epoch 1",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/lstm_val_training.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- models/variance_neural.py ref/implementation_plan/lstm_val_training.md CONTEXT.md",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/training_blocks.py",
+    "models/base_lstm.py",
+    "models/lstm_val_sweep.py",
+    "models/tests/test_log_volatility_inputs.py",
+    "models/tests/test_run_elapsed.py",
+    "wandb/lstm_val_training/run_logvol64_retry.py",
+    "wandb/lstm_val_training/results.json",
+    "wandb/lstm_val_training/logs/base_lstm_vol_gk_logvol_w20_h64_lr0.0001_noclip_progress_20epochs.log",
+    "wandb/lstm_val_training/logs/base_lstm_vol_gk_raw_w20_h64_lr0.0001_noclip_progress_10epochs_resume_to20.log",
+    "inference/checkpoints/base_lstm_vol/garman-klass/global/base_lstm_vol_gk_raw_w20_h64_lr0.0001_noclip_progress_10epochs/fit.pth",
+    "inference/checkpoints/base_lstm_vol/garman-klass/global/base_lstm_logvol64_preflight/fit.pth",
+    "focused test and checkpoint metadata commands run during this review"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

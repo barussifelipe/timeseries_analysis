@@ -41,6 +41,18 @@ def test_neural_forecast_floor():
     predicted = torch.tensor([[1.00001e-8], [1e-8]], dtype=torch.float64)
     np.testing.assert_allclose(float(qlike(actual, predicted)),
                                qlike(actual.numpy(), predicted.numpy()), rtol=1e-10, atol=1e-15)
+    extreme_z = torch.tensor([[100.]], requires_grad=True)
+    z = neural_log_variance(extreme_z, 1e-10, 'log_variance')
+    loss = log_variance_qlike(torch.ones_like(z), z)
+    assert torch.isfinite(loss) and loss.item() == 99
+    loss.backward()
+    assert torch.isfinite(extreme_z.grad).all()
+    try:
+        neural_log_variance(torch.tensor([[float('nan')]]), 1e-10, 'log_variance')
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('nonfinite log-variance accepted')
     for kind in ('mlp', 'silu_lstm', 'base_lstm_vol'):
         model = make_model(kind, 20, 8)
         output_layer = model.network[-1] if kind == 'mlp' else model.output_layer
@@ -104,6 +116,20 @@ def test_neural_forecast_floor():
                              columns=['Ticker', 'Date', 'Variance'])
         result = neural_predict('mlp', load_fit(path), frame)
         np.testing.assert_allclose(result[0].predicted_variance, 1e-8, rtol=1e-6)
+        with torch.no_grad():
+            model.network[-1].bias.fill_(100.)
+        fit['model_state_dict'] = model.state_dict()
+        result = neural_predict('mlp', fit, frame)
+        np.testing.assert_allclose(result[0].predicted_variance, np.exp(100), rtol=1e-6)
+        with torch.no_grad():
+            model.network[-1].bias.fill_(800.)
+        fit['model_state_dict'] = model.state_dict()
+        try:
+            neural_predict('mlp', fit, frame)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('nonfinite converted variance accepted at inference')
         fit['output_convention'] = 'floored_variance'
         try:
             neural_predict('mlp', fit, frame)

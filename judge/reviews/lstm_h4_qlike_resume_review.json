@@ -1,0 +1,23 @@
+{
+  "task": "Cold prelaunch review of the hidden-4 two-input Garman-Klass LSTM continuation to at most 30 total epochs",
+  "sources": [
+    "AGENTS.md", "CONTEXT.md", "ref/thesis/plan.md",
+    "ref/implementation_plan/lstm_val_training.md", "judge/prompt.md",
+    "judge/score.schema.json", "models/base_lstm.py",
+    "models/variance_neural.py", "models/variance_fit.py",
+    "models/training_blocks.py", "models/tests/test_lstm_resume.py",
+    "wandb/lstm_val_training/logs/base_lstm_vol_gk_logvol_intradayret_w20_h4_lr0.0001_noclip_progress_20epochs.log",
+    "inference/checkpoints/base_lstm_vol/garman-klass/global/base_lstm_vol_gk_logvol_intradayret_w20_h4_lr0.0001_noclip_progress_20epochs/fit.pth",
+    "git status --short"
+  ],
+  "scores": {
+    "requirements": 30, "correctness": 25, "verification": 19,
+    "grounding": 15, "maintainability": 10
+  },
+  "findings": [{
+    "category": "verification", "severity": "minor",
+    "evidence": "The original log has 20 epoch rows; epoch-19 QLIKE matches the checkpoint best value and epoch 20 is worse. Focused tests cover resume mechanics, but the full-panel continuation has not yet run.",
+    "fix": "After launch verify start_epoch 20, superseded epoch 20, W&B ID fx8nhaho, and checkpoint/history consistency."
+  }],
+  "total": 99, "pass": true
+}

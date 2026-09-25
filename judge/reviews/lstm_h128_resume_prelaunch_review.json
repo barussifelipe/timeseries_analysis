@@ -1,0 +1,27 @@
+{
+  "task": "Cold prelaunch review of continuing the two-input hidden-128 base volatility LSTM from its completed 20-epoch run to at most epoch 30, validation only, using the saved epoch-19 checkpoint and original W&B identity",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/lstm_val_training.md",
+    "judge/prompt.md",
+    "models/base_lstm.py",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/training_blocks.py",
+    "models/tests/test_lstm_resume.py",
+    "wandb/lstm_val_training/logs/base_lstm_vol_gk_logvol_intradayret_w20_h128_lr0.0001_noclip_progress_20epochs_rerun.log",
+    "inference/checkpoints/base_lstm_vol/garman-klass/global/base_lstm_vol_gk_logvol_intradayret_w20_h128_lr0.0001_noclip_progress_20epochs_rerun/fit.pth"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

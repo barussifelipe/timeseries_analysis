@@ -1,0 +1,34 @@
+{
+  "task": "Cold prelaunch review of the raw-history SiLU-LSTM variance-MSE correction",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/lstm_val_training.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- models/variance_neural.py models/variance_fit.py models/tests/test_training_curves.py models/tests/test_raw_neural_data.py CONTEXT.md ref/implementation_plan/lstm_val_training.md",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/training_blocks.py",
+    "models/raw_neural_data.py",
+    "models/tests/test_training_curves.py",
+    "models/tests/test_raw_neural_data.py",
+    "models/tests/test_lstm_resume.py",
+    ".venv/Scripts/python.exe -m models.tests.test_training_curves",
+    ".venv/Scripts/python.exe -m models.tests.test_lstm_resume",
+    ".venv/Scripts/python.exe -m models.tests.test_neural_forecast_floor",
+    ".venv/Scripts/python.exe -c \"from models.tests.test_raw_neural_data import test_raw_windows; test_raw_windows()\"",
+    "git diff --check"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -1,0 +1,38 @@
+{
+  "task": "Cold review of online W&B backfill for raw-history base LSTM epochs 1-2, epoch-3 checkpoint continuation, and sequential fresh SiLU-LSTM",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/lstm_val_training.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "inference/run_raw_logvol_pair_wandb.py",
+    "inference/run_raw_logvol_pair_to20.py",
+    "models/base_lstm.py",
+    "models/silu_lstm.py",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/training_blocks.py",
+    "models/raw_neural_data.py",
+    "models/tests/test_lstm_resume.py",
+    "wandb/lstm_val_training/logs/base_lstm_vol_raw_gk_logvol_return_w20_h128_lr0p001_30e.log",
+    "wandb/lstm_val_training/logs/base_lstm_vol_raw_gk_logvol_return_w20_h128_lr0p001_30e_resume_to20.log",
+    "wandb/lstm_val_training/logs/base_lstm_vol_raw_gk_logvol_return_w20_h128_lr0p001_30e_epochs1_2_resume.jsonl",
+    "wandb/lstm_val_training/logs/base_lstm_vol_raw_gk_logvol_return_w20_h128_lr0p001_30e_resume_epoch3_wandb.log",
+    "wandb/lstm_val_training/logs/raw_gk_logvol_pair_wandb_queue.log",
+    "wandb/lstm_val_training/logs/raw_gk_logvol_pair_wandb_state.json",
+    "inference/checkpoints/base_lstm_vol/garman-klass/global/raw_gk_logvol_return_w20_h128_lr0p001_30e/fit.pth (read-only metadata inspection)",
+    "Read-only path-existence and Python syntax checks; implementer-reported py_compile result"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -1,0 +1,36 @@
+{
+  "task": "Review float64 variance reconstruction for SiLU-LSTM epoch scoring and neural inference after the epoch-17 scoring failure",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/lstm_val_training.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- models/variance_fit.py models/variance_neural.py models/tests/test_training_curves.py models/tests/test_neural_forecast_floor.py CONTEXT.md",
+    "models/variance_fit.py",
+    "models/variance_neural.py",
+    "models/training_blocks.py",
+    "models/tests/test_training_curves.py",
+    "models/tests/test_neural_forecast_floor.py",
+    "models/tests/test_lstm_resume.py",
+    "wandb/lstm_val_training/logs/silu_lstm_gk_logvol_intradayret_w20_h128_lr0.0001_noclip_progress_50epochs_resume_from15_to50_online.log",
+    "wandb/lstm_val_training/logs/silu_lstm_gk_logvol_intradayret_w20_h128_lr0.0001_noclip_progress_50epochs_resume_from15_to50_online.err",
+    "wandb/lstm_val_training/results.json",
+    "inference/checkpoints/silu_lstm/garman-klass/global/silu_lstm_gk_logvol_intradayret_w20_h128_lr0.0001_noclip_progress_50epochs/fit.pth",
+    ".venv/Scripts/python.exe -m models.tests.test_training_curves",
+    ".venv/Scripts/python.exe -m models.tests.test_neural_forecast_floor",
+    ".venv/Scripts/python.exe -m models.tests.test_lstm_resume",
+    "git diff --check"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

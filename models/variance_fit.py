@@ -22,10 +22,8 @@ def neural_log_variance(output, floor, output_convention):
         z = floor_prediction(output, floor).log()
     else:
         raise ValueError('unknown neural output convention')
-    prediction = z.exp()
-    if not (torch.isfinite(z).all() and torch.isfinite(prediction).all()
-            and (prediction > 0).all()):
-        raise ValueError('neural forecast must be finite positive variance')
+    if not torch.isfinite(z).all():
+        raise ValueError('neural log-variance forecast must be finite')
     return z
 
 
@@ -41,7 +39,7 @@ def log_variance_qlike(actual, z, actual_log_volatility=False):
 
 def fit_variance_network(model, train_data, val_data, floor, path, settings,
                          epochs=20, batch_size=128, patience=5, run=None):
-    """Mean window QLIKE, epoch variance metrics, one learning-rate retry."""
+    """Mean window training loss, epoch variance metrics, one learning-rate retry."""
     from torch.utils.data import DataLoader
 
     if not len(train_data) or not len(val_data):
@@ -49,6 +47,9 @@ def fit_variance_network(model, train_data, val_data, floor, path, settings,
     if patience < 1:
         raise ValueError('patience must be positive')
     output_convention = settings['output_convention']
+    training_loss = settings.get('training_loss', 'qlike')
+    if training_loss not in ('qlike', 'mse'):
+        raise ValueError('unknown neural training loss')
     log_volatility_target = settings.get('data_transform', 'variance') == 'log-volatility'
     clip_norm = settings.get('clip_norm', 1.)
     log_every = settings.get('log_every_batches', 0)
@@ -63,16 +64,20 @@ def fit_variance_network(model, train_data, val_data, floor, path, settings,
         fit = load_fit(resume)
         for key in ('model', 'window_size', 'hidden_width', 'estimator', 'scope',
                     'run_name', 'batch_size', 'learning_rate', 'output_convention',
-                    'clip_norm', 'counts', 'seed', 'data_transform'):
+                    'clip_norm', 'counts', 'seed', 'data_transform',
+                    'consecutive_sessions', 'session_calendar', 'raw_history',
+                    'cohort_tickers', 'cohort_rule', 'window_rule', 'target_floor_policy'):
             if fit['settings'].get(key) != settings.get(key):
                 raise ValueError(f'resume checkpoint differs in {key}')
+        if fit['settings'].get('training_loss', 'qlike') != training_loss:
+            raise ValueError('resume checkpoint differs in training_loss')
         if fit['floor'] != floor:
             raise ValueError('resume checkpoint differs in training variance floor')
         if len(histories) != fit['epoch'] or any(row['epoch'] != i for i, row in enumerate(histories, 1)):
             raise ValueError('resume history must end at the best checkpoint epoch')
         model.load_state_dict(fit['model_state_dict'])
         optimizer.load_state_dict(fit['optimizer_state_dict'])
-        best, best_epoch, start_epoch = fit['val_qlike'], fit['epoch'], fit['epoch'] + 1
+        best, best_epoch, start_epoch = fit[f'val_{training_loss}'], fit['epoch'], fit['epoch'] + 1
         stale, retried = fit.get('stale', 0), fit.get('retried', False)
         if 'torch_rng_state' in fit:
             torch.set_rng_state(fit['torch_rng_state'])
@@ -96,15 +101,30 @@ def fit_variance_network(model, train_data, val_data, floor, path, settings,
             x, y = x.to(device), y.to(device)
             optimizer.zero_grad()
             output = active_model(x)
-            if output_convention == 'floored_variance':
+            if output_convention in ('floored_variance', 'raw_variance'):
                 floor_hits += int((output < floor).sum())
                 train_count += output.numel()
-            loss = log_variance_qlike(y, neural_log_variance(output, floor, output_convention),
-                                      log_volatility_target)
+            if training_loss == 'mse':
+                loss = ((output.double() - y.double()) ** 2).mean()
+                if not torch.isfinite(loss):
+                    raise ValueError('MSE training loss must be finite')
+            else:
+                z = neural_log_variance(output, floor, output_convention)
+                if settings.get('raw_history'):
+                    z = z.clamp_min(np.log(floor))
+                loss = log_variance_qlike(y, z, log_volatility_target)
             loss.backward()
             norm = torch.nn.utils.clip_grad_norm_(model.parameters(),
                                                    float('inf') if clip_norm is None else clip_norm)
             if not torch.isfinite(norm):
+                print(json.dumps({'progress': 'invalid_gradient', 'epoch': epoch,
+                                  'batch': batch_index, 'training_loss': training_loss,
+                                  'loss': float(loss.detach()),
+                                  'max_model_output': float(output.detach().max()),
+                                  'max_actual_variance': float(y.detach().max()),
+                                  'nonfinite_parameters': [name for name, parameter in model.named_parameters()
+                                                           if parameter.grad is not None
+                                                           and not torch.isfinite(parameter.grad).all()]}), flush=True)
                 raise ValueError('neural gradient must be finite')
             clipped_batches += int(clip_norm is not None and norm > clip_norm)
             optimizer.step()
@@ -112,7 +132,7 @@ def fit_variance_network(model, train_data, val_data, floor, path, settings,
                               or batch_index == len(train_loader)):
                 print(json.dumps({'progress': 'batch', 'epoch': epoch,
                                   'batch': batch_index, 'batches': len(train_loader),
-                                  'train_qlike_batch': float(loss.detach()),
+                                  f'train_{training_loss}_batch': float(loss.detach()),
                                   'gradient_norm': float(norm),
                                   'learning_rate': optimizer.param_groups[0]['lr'],
                                   'elapsed_sec': round(time.monotonic() - started, 1)}), flush=True)
@@ -122,22 +142,47 @@ def fit_variance_network(model, train_data, val_data, floor, path, settings,
             for split, data, loader in (('train', train_data, DataLoader(train_data, batch_size=batch_size)),
                                         ('val', val_data, val_loader)):
                 actual, prediction = [], []
-                for x, y in loader:
+                for batch_index, (x, y) in enumerate(loader, 1):
                     x, y = x.to(device), y.to(device)
-                    z = neural_log_variance(active_model(x), floor, output_convention)
-                    actual.extend(((2 * y).exp() if log_volatility_target else y).flatten().cpu().tolist())
-                    prediction.extend(z.exp().flatten().cpu().tolist())
+                    output = active_model(x)
+                    actual_batch = ((2 * y).double().exp() if log_volatility_target else y).flatten()
+                    if output_convention == 'raw_variance':
+                        prediction_batch = floor_prediction(output.double(), floor).flatten()
+                    else:
+                        z = neural_log_variance(output, floor, output_convention)
+                        if settings.get('raw_history'):
+                            z = z.clamp_min(np.log(floor))
+                        prediction_batch = z.double().exp().flatten()
+                    invalid = (~torch.isfinite(actual_batch) | (actual_batch <= 0)
+                               | ~torch.isfinite(prediction_batch) | (prediction_batch <= 0))
+                    if invalid.any():
+                        position = int(invalid.nonzero()[0, 0])
+                        index = len(actual) + position
+                        forecast = float(prediction_batch[position])
+                        target = float(actual_batch[position])
+                        print(json.dumps({'progress': 'invalid_forecast', 'epoch': epoch,
+                                          'split': split, 'batch': batch_index, 'index': index,
+                                          'ticker': data.ticker_names[int(data.ticker_ids[index])],
+                                          'target_date': str(data.target_dates[index].date())
+                                          if hasattr(data, 'target_dates') else None,
+                                          'model_output': float(output.flatten()[position]),
+                                          'variance_forecast': forecast if np.isfinite(forecast) else str(forecast),
+                                          'actual_variance': target if np.isfinite(target) else str(target),
+                                          'invalid_in_batch': int(invalid.sum())}), flush=True)
+                        raise ValueError('QLIKE requires finite positive variance')
+                    actual.extend(actual_batch.cpu().tolist())
+                    prediction.extend(prediction_batch.cpu().tolist())
                 tickers = [data.ticker_names[i] for i in data.ticker_ids.tolist()]
                 scores.update({f'{split}/{key}': value for key, value in
                                variance_metrics(actual, prediction, tickers, training).items()})
-            score = scores['val/qlike']
+            score = scores[f'val/{training_loss}']
         if run or log_every:
             row = {'epoch': epoch, **scores,
                      'best_epoch': epoch if score < best else best_epoch,
-                     'best_val_qlike': min(score, best),
+                     f'best_val_{training_loss}': min(score, best),
                      'train/clipped_batches_pct': 100 * clipped_batches / len(train_loader),
                      **({'train/floor_hits_pct': 100 * floor_hits / train_count}
-                        if output_convention == 'floored_variance' else {}),
+                        if output_convention in ('floored_variance', 'raw_variance') else {}),
                      'learning_rate': optimizer.param_groups[0]['lr']}
         if log_every:
             print(json.dumps({'progress': 'epoch', **row,
@@ -155,7 +200,8 @@ def fit_variance_network(model, train_data, val_data, floor, path, settings,
             best, best_epoch, stale = score, epoch, 0
             save_fit(path, {'model_state_dict': model.state_dict(),
                             'optimizer_state_dict': optimizer.state_dict(),
-                            'epoch': epoch, 'val_qlike': score, 'floor': floor,
+                            'epoch': epoch, 'val_qlike': scores['val/qlike'],
+                            'val_mse': scores['val/mse'], 'floor': floor,
                             'stale': stale, 'retried': retried,
                             'torch_rng_state': torch.get_rng_state(),
                             **({'cuda_rng_state': torch.cuda.get_rng_state()} if device.type == 'cuda' else {}),
@@ -177,7 +223,8 @@ def fit_variance_network(model, train_data, val_data, floor, path, settings,
     fit['settings'] = settings
     save_fit(path, fit)
     print(json.dumps({'progress': 'complete', 'completed_epoch': epoch,
-                      'best_epoch': fit['epoch'], 'best_val_qlike': fit['val_qlike']}), flush=True)
+                      'best_epoch': fit['epoch'],
+                      f'best_val_{training_loss}': fit[f'val_{training_loss}']}), flush=True)
     return path
 
 

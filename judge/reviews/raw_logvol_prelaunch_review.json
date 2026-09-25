@@ -1,0 +1,35 @@
+{
+  "task": "Cold prelaunch review of raw-history log-volatility base LSTM and SiLU-LSTM runs, including negative-target window fix and sequential launcher",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/data_fixes.md",
+    "ref/coverage/history_coverage.md",
+    "ref/coverage/raw_neural_coverage_2026-09-24.json",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/training_blocks.py",
+    "models/raw_neural_data.py",
+    "models/tests/test_raw_neural_data.py",
+    "models/tests/test_log_volatility_inputs.py",
+    "models/tests/test_neural_forecast_floor.py",
+    "models/tests/test_training_curves.py",
+    "inference/run_raw_logvol_pair.py",
+    "models/base_lstm.py",
+    "models/silu_lstm.py",
+    "git diff -- models/variance_neural.py models/variance_fit.py models/training_blocks.py models/raw_neural_data.py models/tests/test_raw_neural_data.py ref/implementation_plan/data_fixes.md",
+    ".venv/Scripts/python.exe focused raw-window, log-volatility, and forecast-floor checks",
+    "Test-Path D:/DBs/timeseries_analysis/history_coverage.db and .venv torch.cuda.is_available()"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -1,0 +1,29 @@
+{
+  "task": "Cold review of the interrupted raw-history base LSTM and queued SiLU-LSTM change from a 30-epoch cap to a 20-epoch cap",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "inference/run_raw_logvol_pair.py",
+    "inference/run_raw_logvol_pair_to20.py",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/training_blocks.py: artifact_path, save_fit, load_fit",
+    "wandb/lstm_val_training/logs/base_lstm_vol_raw_gk_logvol_return_w20_h128_lr0p001_30e.log",
+    "wandb/lstm_val_training/logs/raw_gk_logvol_pair_queue.log",
+    "inference/checkpoints/base_lstm_vol/garman-klass/global/raw_gk_logvol_return_w20_h128_lr0p001_30e/fit.pth (read-only torch.load metadata)",
+    "Read-only checks for continuation log and SiLU checkpoint path existence"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

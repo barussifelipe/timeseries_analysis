@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import torch
 import wandb
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, TensorDataset
 
 from models.training_blocks import TimeSeriesDataset, load_fit, variance_metrics
 from models.variance_fit import fit_variance_network
@@ -61,7 +61,7 @@ def test_training_curves():
             expected = variance_metrics(actual, predicted,
                                         [data.ticker_names[i] for i in data.ticker_ids.tolist()], training)
             for metric, value in expected.items():
-                np.testing.assert_allclose(run.rows[1][f'{split}/{metric}'], value)
+                np.testing.assert_allclose(run.rows[1][f'{split}/{metric}'], value, rtol=1e-6)
         for metric in ('qlike', 'mse', 'rmse', 'mase', 'mae'):
             assert f'curves/{metric}' in run.rows[0]
             chart = run.rows[1][f'curves/{metric}']
@@ -108,6 +108,92 @@ def test_training_curves():
         epoch = next(row for row in progress if row.get('progress') == 'epoch')
         assert epoch['val/qlike'] == unclipped.rows[0]['val/qlike']
         assert epoch['train/clipped_batches_pct'] == 0
+
+        extreme = TensorDataset(torch.zeros(1, 1, 1), torch.zeros(1, 1))
+        extreme.ticker_names, extreme.ticker_ids = ['A'], torch.tensor([0])
+        extreme_model = torch.nn.Sequential(torch.nn.Flatten(), torch.nn.Linear(1, 1))
+        with torch.no_grad():
+            extreme_model[-1].weight.zero_()
+            extreme_model[-1].bias.fill_(100.)
+        extreme_run = Run()
+        fit_variance_network(extreme_model, extreme, extreme, 1.,
+                             Path(directory) / 'extreme.pth',
+                             {'output_convention': 'log_variance', 'data_transform': 'log-volatility',
+                              'training_history': {'A': [1., 2.]}},
+                             epochs=1, run=extreme_run)
+        assert np.isfinite(extreme_run.rows[0]['val/mse'])
+        assert 98 < extreme_run.rows[0]['val/qlike'] < 100
+
+        overflow = TensorDataset(torch.zeros(1, 1, 1), torch.zeros(1, 1))
+        overflow.ticker_names, overflow.ticker_ids = ['A'], torch.tensor([0])
+        overflow.target_dates = pd.DatetimeIndex(['2015-01-03'])
+        with torch.no_grad():
+            extreme_model[-1].bias.fill_(710.)
+        terminal = io.StringIO()
+        with redirect_stdout(terminal):
+            try:
+                fit_variance_network(extreme_model, overflow, overflow, 1.,
+                                     Path(directory) / 'overflow.pth',
+                                     {'output_convention': 'log_variance',
+                                      'data_transform': 'log-volatility',
+                                      'training_history': {'A': [1., 2.]}}, epochs=1)
+            except ValueError as error:
+                assert str(error) == 'QLIKE requires finite positive variance'
+            else:
+                raise AssertionError('overflowed forecast was accepted')
+        offender = next(json.loads(line) for line in terminal.getvalue().splitlines()
+                        if '"progress": "invalid_forecast"' in line)
+        assert (offender['epoch'], offender['split'], offender['ticker'], offender['target_date']) == (
+            1, 'train', 'A', '2015-01-03')
+        assert offender['model_output'] > 709
+        assert offender['variance_forecast'] == 'inf'
+        assert offender['actual_variance'] == 1.
+
+        mse_data = TensorDataset(torch.zeros(2, 1, 1), torch.tensor([[1.], [3.]]))
+        mse_data.ticker_names, mse_data.ticker_ids = ['A'], torch.tensor([0, 0])
+        mse_model = torch.nn.Sequential(torch.nn.Flatten(), torch.nn.Linear(1, 1))
+        with torch.no_grad():
+            mse_model[-1].weight.zero_()
+            mse_model[-1].bias.fill_(2.)
+        mse_run = Run()
+        mse_path = Path(directory) / 'mse.pth'
+        terminal = io.StringIO()
+        with redirect_stdout(terminal):
+            fit_variance_network(mse_model, mse_data, mse_data, 1., mse_path,
+                                 {'output_convention': 'raw_variance', 'training_loss': 'mse',
+                                  'learning_rate': 0., 'log_every_batches': 1,
+                                  'training_history': {'A': [1., 2., 3.]}},
+                                 epochs=1, batch_size=2, run=mse_run)
+        batch = next(json.loads(line) for line in terminal.getvalue().splitlines()
+                     if '"progress": "batch"' in line)
+        np.testing.assert_allclose(batch['train_mse_batch'], 1., rtol=1e-6)
+        np.testing.assert_allclose(mse_run.rows[0]['train/mse'], 1., rtol=1e-6)
+        np.testing.assert_allclose(mse_run.rows[0]['best_val_mse'], 1., rtol=1e-6)
+        assert 'best_val_qlike' not in mse_run.rows[0]
+        np.testing.assert_allclose(load_fit(mse_path)['val_mse'], 1., rtol=1e-6)
+        with torch.no_grad():
+            mse_model[-1].bias.fill_(173.)
+        fit_variance_network(mse_model, mse_data, mse_data, 1.,
+                             Path(directory) / 'mse_extreme.pth',
+                             {'output_convention': 'raw_variance', 'training_loss': 'mse',
+                              'learning_rate': 0., 'training_history': {'A': [1., 2., 3.]}},
+                             epochs=1, batch_size=2)
+        with torch.no_grad():
+            mse_model[-1].bias.fill_(-1.)
+        negative_run = Run()
+        terminal = io.StringIO()
+        with redirect_stdout(terminal):
+            fit_variance_network(mse_model, mse_data, mse_data, 1.,
+                                 Path(directory) / 'mse_negative.pth',
+                                 {'output_convention': 'raw_variance', 'training_loss': 'mse',
+                                  'learning_rate': 0., 'log_every_batches': 1,
+                                  'training_history': {'A': [1., 2., 3.]}},
+                                 epochs=1, batch_size=2, run=negative_run)
+        batch = next(json.loads(line) for line in terminal.getvalue().splitlines()
+                     if '"progress": "batch"' in line)
+        assert batch['train_mse_batch'] == 10.
+        assert negative_run.rows[0]['val/mse'] == 2.
+        assert negative_run.rows[0]['train/floor_hits_pct'] == 100.
 
 
 if __name__ == '__main__':

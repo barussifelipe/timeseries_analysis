@@ -1,0 +1,18 @@
+{
+  "task": "Cold review of the AAPL validation residual histogram and CSV",
+  "sources": [
+    "AGENTS.md", "CONTEXT.md", "ref/thesis/plan.md",
+    "ref/implementation_plan/lstm_val_training.md",
+    "judge/prompt.md", "judge/score.schema.json",
+    "models/base_lstm.py", "models/variance_neural.py",
+    "models/training_blocks.py", "wandb/lstm_val_training/results.json",
+    "inference/checkpoints/base_lstm_vol/garman-klass/global/base_lstm_vol_gk_logvol_intradayret_w20_h128_lr0.0001_noclip_progress_20epochs_rerun/fit.pth",
+    "imgs/lstm_validation/aapl_h128_intradayret_validation_residuals.csv",
+    "imgs/lstm_validation/aapl_h128_intradayret_validation_residual_histogram.png"
+  ],
+  "scores": {
+    "requirements": 30, "correctness": 25, "verification": 20,
+    "grounding": 15, "maintainability": 10
+  },
+  "findings": [], "total": 100, "pass": true
+}

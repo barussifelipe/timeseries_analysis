@@ -1,0 +1,27 @@
+{
+  "task": "Log the offending variance forecast on scoring failure and verify the SiLU LSTM paper comparison",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/lstm_val_training.md",
+    "judge/prompt.md",
+    "git diff -- models/variance_fit.py models/tests/test_training_curves.py ref/thesis/thesis_notes.md CONTEXT.md",
+    "models/variance_fit.py",
+    "models/training_blocks.py",
+    "models/tests/test_training_curves.py",
+    "models/silu_lstm.py",
+    "wandb/lstm_val_training/logs/silu_lstm_raw_gk_logvol_return_w20_h128_lr0p001_20e_wandb.log",
+    "https://arxiv.org/html/2311.04727"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

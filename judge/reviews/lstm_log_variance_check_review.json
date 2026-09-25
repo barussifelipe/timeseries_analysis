@@ -1,0 +1,29 @@
+{
+  "task": "Cold review of removing premature variance conversion from log-variance training after the SiLU-LSTM epoch-20 failure",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/lstm_val_training.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "models/variance_fit.py",
+    "models/variance_neural.py",
+    "models/training_blocks.py",
+    "models/tests/test_neural_forecast_floor.py",
+    "wandb/lstm_val_training/results.json",
+    "wandb/lstm_val_training/logs/silu_lstm_gk_logvol_intradayret_w20_h128_lr0.0001_noclip_progress_50epochs.log",
+    "git diff of the reviewed files and git diff --check",
+    "direct runs of models.tests.test_neural_forecast_floor, models.tests.test_log_volatility_inputs, and models.tests.test_training_smoke"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}
