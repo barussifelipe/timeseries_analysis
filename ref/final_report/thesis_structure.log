@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.16)  25 SEP 2026 17:45
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.16)  26 SEP 2026 15:40
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -56,27 +56,27 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 
 {C:/Users/benga/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 35.
+(Font)              <12> on input line 36.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 35.
+(Font)              <8> on input line 36.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 35.
- [2]
+(Font)              <6> on input line 36.
+ [2] [3] [4]
 
-LaTeX Warning: Empty `thebibliography' environment on input line 101.
+LaTeX Warning: Empty `thebibliography' environment on input line 117.
 
-[3] [4] (thesis_structure.aux)
+[5] (thesis_structure.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 471 strings out of 467870
- 9387 string characters out of 5418355
+ 472 strings out of 467870
+ 9402 string characters out of 5418355
  442733 words of memory out of 5000000
- 29420 multiletter control sequences out of 15000+600000
- 633190 words of font info for 58 fonts, out of 8000000 for 9000
+ 29421 multiletter control sequences out of 15000+600000
+ 633497 words of font info for 59 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  35i,5n,38p,1258b,197s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/
@@ -91,9 +91,9 @@ ppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/
 benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><
 C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cms
 y8.pfb>
-Output written on thesis_structure.pdf (4 pages, 125991 bytes).
+Output written on thesis_structure.pdf (5 pages, 131724 bytes).
 PDF statistics:
- 65 PDF objects out of 1000 (max. 8388607)
+ 68 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -1,3 +1,29 @@
+## Window-80 LSTM queue (2026-09-25)
+
+After HARNet-80 completed, the user requested two sequential online W&B
+validation trials. Base LSTM starts first with its previous two inputs
+[0.5 ln(adjusted GK variance), ln(adjusted Close/Open)], log-volatility
+target, QLIKE loss, width 128, Adam 0.001, batch 128, patience 10, 20 epochs,
+seed 42, gradient clipping norm 1, and compiled CUDA. SiLU-LSTM is queued
+after a successful Base run with its previous two inputs [raw adjusted GK
+variance, ln(adjusted Close/Open)], raw-variance target and direct head, MSE
+loss, and the same other parameters. Both use window 80, global raw history,
+next recorded observation target, and validation-only scoring. The 2,714
+tickers and split dates are unchanged; eligible train / validation / test
+windows are 7,004,011 / 1,692,154 / 4,295,773 rather than 8,664,516 /
+1,806,548 / 4,479,681 at window 20. Window lengths need a common scoring
+set for direct comparison; Base QLIKE and SiLU MSE also differ in objective.
+The raw-history window guard now admits 80 for the two LSTMs. Focused raw
+window checks passed, and the fresh-context cold review passed 100/100 in
+`judge/reviews/lstm_w80_prelaunch_review.json`. The visible queue launcher is
+`wandb/lstm_val_training/logs/start_lstm_w80_queue.ps1`; Base began under
+`base_lstm_raw_gk_logvol_return_w80_h128_lr0p001_20e_wandb`, and SiLU is
+queued as `silu_lstm_raw_gk_variance_return_direct_mse_w80_h128_lr0p001_20e_wandb`.
+Base W&B run `n8v4m22f` is online at
+`https://wandb.ai/personalfeb/timeseries-volatility/runs/n8v4m22f`; compiled
+CUDA epoch 1 has started. Next: monitor Base progress, then automatic SiLU
+start and record validation metrics. No test scoring was requested.
+
 ## HARNet-80 raw-variance validation trial (2026-09-25)
 
 At the user's request, HARNet-80 started in a visible PowerShell terminal with
@@ -9,11 +35,18 @@ validation-only scoring. Its 80-observation window changes the eligible
 forecast counts to 7,004,011 / 1,692,154 / 4,295,773 for train / validation /
 test, so direct model comparison requires a common observation set. It starts
 from a pooled pre-2016 HAR(1,5,20,40,80) fit on its eligible training windows.
-The online run ID is `tm2fiz6y`; the live log is
+The online run ID is `vyp9im9l` at
+`https://wandb.ai/personalfeb/timeseries-volatility/runs/vyp9im9l`;
+the live log is
 `wandb/harnet_val_training/logs/harnet_80_raw_gk_variance_w80_lr0p001_20e_qlike_online.log`.
-The reported window counts were verified and one training process remains
-active. Next: monitor training and record its best validation QLIKE and five
-metrics; test scoring remains deferred.
+It completed all 20 epochs, selecting epoch 18 by validation QLIKE
+0.4307484029432806; independent best-checkpoint validation scoring on
+1,692,154 windows gave QLIKE 0.43074840161835937, MAE
+0.0005985247307848403, MASE 0.8254054735876607, MSE
+1.8522101377075283e-05, and RMSE 0.004303731099531577. Earlier launch
+attempts stopped before
+training because `--wandb-id` requires an existing run for resume; no
+checkpoint or epoch score came from them. Test scoring remains deferred.
 
 ## HARNet-20 raw-variance validation trial (2026-09-25)
 

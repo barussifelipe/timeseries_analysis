@@ -1,0 +1,32 @@
+{
+  "task": "Prelaunch review of sequential window-80 raw-history Base LSTM log-volatility/QLIKE and SiLU-LSTM raw-variance/MSE trials",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/data_fixes.md",
+    "ref/implementation_plan/lstm_val_training.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- models/variance_neural.py models/tests/test_raw_neural_data.py",
+    "models/variance_neural.py",
+    "models/tests/test_raw_neural_data.py",
+    "models/raw_neural_data.py",
+    "models/training_blocks.py",
+    "models/variance_fit.py",
+    "wandb/lstm_val_training/logs/start_lstm_w80_queue.ps1",
+    ".venv/Scripts/python.exe -c from models.tests.test_raw_neural_data import test_raw_windows; test_raw_windows() (passed)",
+    "PowerShell Parser.ParseFile on start_lstm_w80_queue.ps1 (passed)",
+    "git diff --check -- models/variance_neural.py models/tests/test_raw_neural_data.py (passed)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

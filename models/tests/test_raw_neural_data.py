@@ -84,7 +84,7 @@ def test_raw_windows():
         captured = {}
         def inspect(_model, train_data, val_data, _floor, _path, settings, **_kwargs):
             captured.update(settings)
-            assert len(train_data) == len(TimeSeriesDataset(frame, 20, split='train', valid_column='Valid'))
+            assert len(train_data) == len(TimeSeriesDataset(frame, args.window_size, split='train', valid_column='Valid'))
             assert len(val_data) == 2
         with patch('models.variance_neural.artifact_path', return_value=Path('unused.pth')), \
              patch('models.variance_neural.wandb_run', return_value=None), \
@@ -102,6 +102,17 @@ def test_raw_windows():
         assert captured['output_convention'] == 'raw_variance'
         assert captured['feature_columns'] == ('Variance', 'IntradayLogReturn')
         assert captured['counts']['train'] == len(TimeSeriesDataset(frame, 20, split='train', valid_column='Valid'))
+        args.window_size = 80
+        with patch('models.variance_neural.artifact_path', return_value=Path('unused.pth')), \
+             patch('models.variance_neural.wandb_run', return_value=None), \
+             patch('models.variance_fit.fit_variance_network', side_effect=inspect):
+            neural_train('silu_lstm', args)
+            assert captured['counts']['train'] == len(TimeSeriesDataset(frame, 80, split='train', valid_column='Valid'))
+            assert captured['training_loss'] == 'mse'
+            args.data_transform, args.training_loss = 'log-volatility', 'qlike'
+            neural_train('base_lstm_vol', args)
+        assert captured['counts']['train'] == len(TimeSeriesDataset(frame, 80, split='train', valid_column='Valid'))
+        assert captured['feature_columns'] == ('LogVolatility', 'IntradayLogReturn')
         mse_model = make_model('silu_lstm', 20, 4, input_size=2)
         mse_fit = {'model_state_dict': mse_model.state_dict(), 'floor': floor,
                    'output_convention': 'raw_variance',

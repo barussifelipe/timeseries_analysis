@@ -92,8 +92,9 @@ def neural_train(kind, args):
         raise ValueError(f'{kind} needs at least {minimum} lags')
     if raw and (args.estimator != 'garman-klass' or getattr(args, 'consecutive_sessions', False)):
         raise ValueError('raw-history runs require Garman-Klass and next recorded observation')
-    if raw and args.window_size != (80 if kind == 'harnet_80' else 20):
-        raise ValueError('raw-history window must be 20, or 80 for HARNet-80')
+    allowed_windows = {'harnet_20': (20,), 'harnet_80': (80,)}.get(kind, (20, 80))
+    if raw and args.window_size not in allowed_windows:
+        raise ValueError('raw-history window must be 20 or 80 for LSTMs, 20 for HARNet-20, or 80 for HARNet-80')
     consecutive = getattr(args, 'consecutive_sessions', False)
     calendar = tuple(sorted(str(date)[:10] for date in frame.Date.unique())) if consecutive else None
     valid_column = 'Valid' if raw else None
