@@ -92,6 +92,14 @@ def test_raw_windows():
             neural_train('base_lstm_vol', args)
         assert captured['counts']['val'] == 2
         assert captured['feature_columns'] == ('LogVolatility', 'IntradayLogReturn')
+        args.limit_tickers = 2
+        with patch('models.variance_neural.artifact_path', return_value=Path('unused.pth')), \
+             patch('models.variance_neural.wandb_run', return_value=None), \
+             patch('models.variance_fit.fit_variance_network', side_effect=inspect):
+            neural_train('sigma_lstm', args)
+        assert captured['clip_norm'] is None
+        assert captured['feature_columns'] == ('LogVolatility',)
+        args.limit_tickers = None
         args.data_transform = 'variance'
         args.training_loss = 'mse'
         with patch('models.variance_neural.artifact_path', return_value=Path('unused.pth')), \
@@ -113,6 +121,25 @@ def test_raw_windows():
             neural_train('base_lstm_vol', args)
         assert captured['counts']['train'] == len(TimeSeriesDataset(frame, 80, split='train', valid_column='Valid'))
         assert captured['feature_columns'] == ('LogVolatility', 'IntradayLogReturn')
+        args.window_size = 20
+        with patch('models.variance_neural.artifact_path', return_value=Path('unused.pth')), \
+             patch('models.variance_neural.wandb_run', return_value=None), \
+             patch('models.variance_fit.fit_variance_network', side_effect=inspect):
+            neural_train('mlp', args)
+        assert captured['counts']['val'] == 2
+        assert captured['feature_columns'] == ('LogVolatility', 'IntradayLogReturn')
+        mlp = make_model('mlp', 20, 128, input_size=2)
+        assert mlp.network[1].in_features == 40
+        assert mlp.network[-3].out_features == 2
+        assert mlp(torch.ones(3, 20, 2)).shape == (3, 1)
+        mlp_fit = {'model_state_dict': mlp.state_dict(), 'floor': floor,
+                   'output_convention': 'log_variance',
+                   'settings': {'model': 'mlp', 'output_convention': 'log_variance',
+                                'data_transform': 'log-volatility',
+                                'feature_columns': ('LogVolatility', 'IntradayLogReturn'),
+                                'window_size': 20, 'hidden_width': 128, 'raw_history': True,
+                                'cohort_tickers': tuple(frame.Ticker.unique())}}
+        assert len(neural_predict('mlp', mlp_fit, frame, 'val')) == 2
         mse_model = make_model('silu_lstm', 20, 4, input_size=2)
         mse_fit = {'model_state_dict': mse_model.state_dict(), 'floor': floor,
                    'output_convention': 'raw_variance',

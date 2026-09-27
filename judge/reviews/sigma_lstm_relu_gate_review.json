@@ -1,0 +1,42 @@
+{
+  "task": "Cold review of the requested sigma-LSTM ReLU output-gate variance, no-clipping training contract, and prelaunch documentation.",
+  "sources": [
+    "User-provided AGENTS.md instructions",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/sigma-LSTM.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "models/sigma-lstm.py",
+    "models/tests/test_sigma_lstm.py",
+    "models/variance_fit.py",
+    "models/variance_neural.py",
+    "wandb/sigma_lstm_val_training/run_queue.py",
+    "git status --short and relevant git diffs",
+    ".venv/Scripts/python.exe models/tests/test_sigma_lstm.py",
+    "eager CPU/CUDA and compiled CUDA sqrt(ReLU(x)) gradient probes"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 18,
+    "grounding": 14,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "verification",
+      "severity": "minor",
+      "evidence": "models/tests/test_sigma_lstm.py checks negative and ordinary positive gate scores, but not a small positive score. Independent eager CPU/CUDA and compiled CUDA probes of sqrt(ReLU(x)) gave gradient 5e9 at x=1e-20 and 5e5 at x=1e-12; gradients at x<=0 were zero. With clipping disabled and three previous sigma-LSTM failures, the focused test does not characterize this new near-zero stability risk. No full ReLU-gate run has started.",
+      "fix": "Add a small positive-score gradient regression check and document the unbounded derivative as a prelaunch risk. Keep the requested exact gate unless the user authorizes a different numerical rule; assess actual training stability from the window-20 run before starting window 80."
+    },
+    {
+      "category": "grounding",
+      "severity": "minor",
+      "evidence": "CONTEXT.md appends the current ReLU-gate experiment at the end, but its opening sequential-queue section still says the next task is to settle the gate rule and its earlier model-definition section says the gate variance is exp(W_o[C(t)^2]). These older statements conflict with the current code and appended update.",
+      "fix": "Update the older handoff statements or explicitly mark them historical so the current gate rule and next task are unambiguous."
+    }
+  ],
+  "total": 97,
+  "pass": true
+}

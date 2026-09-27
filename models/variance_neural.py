@@ -21,7 +21,7 @@ def make_model(kind, window, hidden=16, input_size=1):
     from models.mlp import MLP
     from models.silu_lstm import SiLULSTM
     if kind == 'mlp':
-        return MLP(window, hidden)
+        return MLP(window * input_size, hidden)
     if kind == 'harnet_20':
         return HARNet20()
     if kind == 'harnet_80':
@@ -30,6 +30,11 @@ def make_model(kind, window, hidden=16, input_size=1):
         return SiLULSTM(input_size, hidden)
     if kind == 'base_lstm_vol':
         return FEBLSTM(input_size, hidden, 1)
+    if kind == 'sigma_lstm':
+        from importlib import import_module
+        if input_size != 1:
+            raise ValueError('sigma-LSTM accepts only GK log volatility')
+        return import_module('models.sigma-lstm').SigmaLSTM(hidden)
     raise ValueError('unknown neural model')
 
 
@@ -69,9 +74,9 @@ def model_data(frame, transform):
 def neural_train(kind, args):
     from models.variance_fit import fit_variance_network
     raw = getattr(args, 'raw_history', False)
-    if raw and kind not in ('base_lstm_vol', 'silu_lstm', 'harnet_20', 'harnet_80'):
-        raise ValueError('raw-history path is defined for the four requested models')
-    use_return = kind in ('base_lstm_vol', 'silu_lstm') and (raw or getattr(args, 'intraday_return', False))
+    if raw and kind not in ('base_lstm_vol', 'silu_lstm', 'mlp', 'harnet_20', 'harnet_80', 'sigma_lstm'):
+        raise ValueError('raw-history path is defined for the neural models')
+    use_return = kind in ('base_lstm_vol', 'silu_lstm', 'mlp') and (raw or getattr(args, 'intraday_return', False))
     if raw:
         if args.scope == 'local' and not args.ticker or args.scope == 'global' and args.ticker:
             raise ValueError('local raw-history runs need a ticker; global runs cannot select one')
@@ -83,8 +88,10 @@ def neural_train(kind, args):
     training_loss = getattr(args, 'training_loss', 'qlike')
     if training_loss == 'mse' and (kind not in ('base_lstm_vol', 'silu_lstm') or transform != 'variance' or not raw):
         raise ValueError('MSE training is defined here for raw-variance LSTMs')
-    if transform == 'log-volatility' and kind not in ('base_lstm_vol', 'silu_lstm'):
-        raise ValueError('log-volatility data are available only for LSTMs')
+    if transform == 'log-volatility' and kind not in ('base_lstm_vol', 'silu_lstm', 'mlp', 'sigma_lstm'):
+        raise ValueError('log-volatility data are available only for LSTMs and MLP')
+    if kind == 'sigma_lstm' and (not raw or transform != 'log-volatility' or training_loss != 'qlike'):
+        raise ValueError('sigma-LSTM requires raw GK log volatility and QLIKE')
     frame, column = model_data(frame, transform)
     features = (column, 'IntradayLogReturn') if use_return else (column,)
     minimum = {'harnet_20': 20, 'harnet_80': 80}.get(kind)
@@ -112,12 +119,22 @@ def neural_train(kind, args):
                   valid_column='Valid'))
                   for split in ('train', 'val', 'test')}
         print(json.dumps({'forecast_windows': counts}))
+        if kind == 'sigma_lstm' and args.scope == 'global' and args.limit_tickers is None:
+            expected_counts = {
+                20: {'train': 8664516, 'val': 1806548, 'test': 4479681},
+                80: {'train': 7004011, 'val': 1692154, 'test': 4295773},
+            }[args.window_size]
+            if counts != expected_counts:
+                raise ValueError(f'sigma-LSTM raw cohort counts changed: {counts}')
     torch.manual_seed(42)
     hidden = getattr(args, 'hidden_size', 16)
     learning_rate = getattr(args, 'learning_rate', 1e-3)
     patience = getattr(args, 'patience', 5)
     model = make_model(kind, args.window_size, hidden, input_size=len(features))
-    output_convention = ('floored_variance' if minimum else
+    if kind == 'sigma_lstm' and getattr(args, 'memory_diagnostic', False):
+        model.capture_memory = True
+    output_convention = ('log_volatility' if kind == 'sigma_lstm' else
+                         'floored_variance' if minimum else
                          'raw_variance' if training_loss == 'mse' else 'log_variance')
     if minimum:
         from models.variance_fit import ols_fit
@@ -130,7 +147,8 @@ def neural_train(kind, args):
             if kind == 'mlp':
                 torch.nn.init.xavier_uniform_(output_layer.weight)
             output_layer.weight.mul_(.01)
-            output_layer.bias.fill_(median if training_loss == 'mse' else np.log(median))
+            output_layer.bias.fill_(median if training_loss == 'mse' else
+                                    0.5 * np.log(median) if kind == 'sigma_lstm' else np.log(median))
     path = artifact_path(kind, args)
     history = []
     if getattr(args, 'resume', False):
@@ -159,11 +177,12 @@ def neural_train(kind, args):
                           'raw_history': raw, 'cohort_tickers': tuple(frame.Ticker.unique()) if raw else None, 'cohort_rule': '>80 pre-2016 raw rows and 2025-12-31 row' if raw else None,
                           'window_rule': 'positive valid inputs; valid target; next recorded observation' if raw else None,
                           'target_floor_policy': 'zero target plus minimum positive pre-2016 variance' if raw else None,
-                          'clip_norm': None if getattr(args, 'no_grad_clip', False) else 1.,
+                          'clip_norm': None if kind == 'sigma_lstm' or getattr(args, 'no_grad_clip', False) else 1.,
                           'log_every_batches': getattr(args, 'log_every_batches', 0),
                           'resume': str(path) if getattr(args, 'resume', False) else None,
                           'resume_history': history, 'compile': getattr(args, 'compile', False),
                           'initialization': ('fitted_har' if minimum else
+                                             'half_log_median_xavier_0.01' if kind == 'sigma_lstm' else
                                              'raw_median_xavier_0.01' if training_loss == 'mse' else
                                              'log_median_xavier_0.01'),
                           'dates': {'train_end': '2016-01-01', 'val_end': '2019-01-01',
@@ -183,7 +202,8 @@ def neural_predict(kind, fit, frame, split='test'):
     In raw mode actual variance is the adjusted target; RawVariance retains the original.
     """
     settings = fit['settings']
-    expected = ('floored_variance' if kind.startswith('harnet_') else
+    expected = ('log_volatility' if kind == 'sigma_lstm' else
+                'floored_variance' if kind.startswith('harnet_') else
                 'raw_variance' if settings.get('training_loss') == 'mse' else 'log_variance')
     if fit.get('output_convention') != expected or settings.get('output_convention') != expected or settings.get('model') != kind:
         raise ValueError('incompatible neural checkpoint output convention or model')
@@ -207,19 +227,30 @@ def neural_predict(kind, fit, frame, split='test'):
                        input_size=len(features))
     model.load_state_dict(fit['model_state_dict'])
     model.eval()
+    if kind == 'sigma_lstm':
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        model.to(device)
+        active_model = torch.compile(model) if settings.get('compile') else model
+    else:
+        device, active_model = torch.device('cpu'), model
     predictions = []
     from models.variance_fit import neural_log_variance
+    if kind == 'sigma_lstm':
+        torch.manual_seed(settings['seed'])
     with torch.no_grad():
-        for x, _ in DataLoader(data, batch_size=256):
-            output = model(x)
+        for x, _ in DataLoader(data, batch_size=settings['batch_size'] if kind == 'sigma_lstm' else 256):
+            output = active_model(x.to(device))
+            if kind == 'sigma_lstm':
+                output = output[0]
             variance = (floor_prediction(output.double(), fit['floor']) if expected == 'raw_variance' else
                         floor_prediction(output, fit['floor']) if expected == 'floored_variance' else
+                        (2 * output.double()).exp() if expected == 'log_volatility' else
                         output.double().exp())
             if expected != 'raw_variance':
                 neural_log_variance(output, fit['floor'], expected)
             if not torch.isfinite(variance).all() or not (variance > 0).all():
                 raise ValueError('neural forecast must be finite positive variance')
-            predictions.extend(variance.flatten().tolist())
+            predictions.extend(variance.flatten().cpu().tolist())
     return [Forecast(data.ticker_names[data.ticker_ids[i]], str(data.target_dates[i].date()),
                      float(actual_values[int(data.target_indices[i])]),
                      max(predictions[i], fit['floor']) if expected == 'floored_variance' or settings.get('raw_history') else predictions[i])
@@ -251,6 +282,7 @@ def _main(kind):
     parser.add_argument('--patience', type=int, default=5)
     parser.add_argument('--validation-only', action='store_true')
     parser.add_argument('--no-grad-clip', action='store_true')
+    parser.add_argument('--memory-diagnostic', action='store_true')
     parser.add_argument('--log-every-batches', type=int, default=0)
     parser.add_argument('--resume', action='store_true')
     parser.add_argument('--resume-log')
@@ -259,8 +291,8 @@ def _main(kind):
     args = parser.parse_args()
     if args.raw_history and args.crypto_test:
         parser.error('--raw-history is limited to equity inference')
-    if args.intraday_return and kind not in ('base_lstm_vol', 'silu_lstm'):
-        parser.error('--intraday-return applies only to LSTMs')
+    if args.intraday_return and kind not in ('base_lstm_vol', 'silu_lstm', 'mlp'):
+        parser.error('--intraday-return applies only to LSTMs and MLP')
     if args.hidden_size < 1 or not 0 < args.learning_rate < float('inf') or args.patience < 1 or args.log_every_batches < 0:
         parser.error('hidden size, learning rate, and patience must be positive; log interval must be nonnegative')
     path = neural_train(kind, args)

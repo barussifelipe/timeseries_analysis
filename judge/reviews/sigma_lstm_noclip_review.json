@@ -1,0 +1,29 @@
+{
+  "task": "Identify gradient clipping in the earlier return-prediction trainer and disable gradient clipping for sigma-LSTM training and its sequential validation queue.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/sigma-LSTM.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/tests/test_raw_neural_data.py",
+    "models/tests/test_sigma_lstm.py",
+    "wandb/sigma_lstm_val_training/run_queue.py",
+    "wandb/lstm_val_training/logs/start_lstm_w80_queue.ps1",
+    "inference/returns_training.py",
+    "git diff -- models/variance_neural.py models/variance_fit.py models/tests/test_raw_neural_data.py CONTEXT.md"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

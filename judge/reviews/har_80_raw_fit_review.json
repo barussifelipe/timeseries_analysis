@@ -1,0 +1,35 @@
+{
+  "task": "Cold review of the global raw-history HAR-80 fit after converged SARIMA",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/har_80_raw_fit.md",
+    "ref/implementation_plan/global_statistical_raw_fit.md",
+    "judge/prompt.md",
+    "git status --short and git diff -- models/variance_fit.py CONTEXT.md",
+    "models/har_80.py",
+    "models/har.py",
+    "models/raw_statistical_fit.py",
+    "models/raw_neural_data.py",
+    "models/training_blocks.py",
+    "models/variance_fit.py",
+    "models/tests/test_har_80.py",
+    "models/tests/test_raw_statistical_fit.py",
+    "inference/checkpoints/har_80/garman-klass/global/raw_history_w80/fit.json",
+    "Direct .venv Python execution of test_har_80 and test_raw_statistical_fit: passed with statsmodels start warning",
+    "Direct .venv Python artifact reload and finite parameter/count/convergence assertions: passed",
+    "Direct .venv Python models.har_80 --help: passed",
+    "git diff --check -- models/variance_fit.py: passed"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

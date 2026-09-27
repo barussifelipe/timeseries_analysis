@@ -1,0 +1,34 @@
+{
+  "task": "Cold prelaunch review of the raw GK log-volatility sigma-LSTM window-20 then window-80 validation training queue",
+  "sources": [
+    "AGENTS.md instructions supplied in the user message",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/sigma-LSTM.md",
+    "https://arxiv.org/pdf/2205.07022",
+    "models/base_lstm.py",
+    "models/sigma-lstm.py",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/training_blocks.py",
+    "models/raw_neural_data.py",
+    "models/tests/test_sigma_lstm.py",
+    "models/tests/test_raw_neural_data.py",
+    "wandb/sigma_lstm_val_training/run_queue.py",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git status --short and git diff -- models/variance_fit.py models/variance_neural.py",
+    ".venv/Scripts/python.exe -m models.sigma-lstm --help (passed, exit code 0)",
+    "Implementer-reported checks: models/tests/test_sigma_lstm.py and py_compile passed; tiny two-ticker one-epoch eager CUDA fit, checkpoint reload, six-row final validation, and compiled CUDA width-128/window-20 forward-backward passed; not independently rerun in this review"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

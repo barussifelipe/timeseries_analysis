@@ -1,0 +1,29 @@
+{
+  "task": "Refactor the standalone sigma-LSTM cell and sequence model to inherit the existing FEBLSTM family without training",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md (Sigma-LSTM model definition section)",
+    "ref/thesis/plan.md (Model definitions and scope)",
+    "ref/implementation_plan/models.md",
+    "ref/thesis/thesis_notes.md (Notes 4.2)",
+    "models/base_lstm.py",
+    "models/silu_lstm.py",
+    "models/sigma-lstm.py",
+    "models/tests/test_sigma_lstm.py",
+    "judge/prompt.md",
+    "https://arxiv.org/pdf/2205.07022 (Section II, Equations (4)-(11))",
+    ".venv/Scripts/python.exe -m models.tests.test_sigma_lstm (passed, exit code 0)",
+    ".venv/Scripts/python.exe models/tests/test_sigma_lstm.py (passed, exit code 0)",
+    "git status --short and git diff -- models/sigma-lstm.py models/tests/test_sigma_lstm.py CONTEXT.md"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

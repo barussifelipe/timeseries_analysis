@@ -1,0 +1,38 @@
+{
+  "task": "Cold review of the sigma-LSTM softplus gate change before sequential window-20 and window-80 online W&B restart",
+  "sources": [
+    "User-provided AGENTS.md instructions",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/sigma-LSTM.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "models/base_lstm.py",
+    "models/sigma-lstm.py",
+    "models/variance_fit.py",
+    "models/variance_neural.py",
+    "models/tests/test_sigma_lstm.py",
+    "models/tests/test_raw_neural_data.py",
+    "wandb/sigma_lstm_val_training/run_queue.py",
+    "git status --short and targeted git diff",
+    ".venv/Scripts/python.exe models/tests/test_sigma_lstm.py (exit 0)",
+    ".venv/Scripts/python.exe -c \"from models.tests.test_raw_neural_data import test_raw_windows; test_raw_windows()\" (exit 0)"
+  ],
+  "scores": {
+    "requirements": 29,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "requirements",
+      "severity": "minor",
+      "evidence": "ref/implementation_plan/sigma-LSTM.md names wandb/sigma_lstm_val_training/logs/start_sigma_lstm_queue.ps1 as the queue launcher, but that file is absent; the inspected sequential launcher is wandb/sigma_lstm_val_training/run_queue.py. The Python launcher does stop if window 20 exits nonzero and uses distinct softplus run names.",
+      "fix": "Update the plan's launcher path to wandb/sigma_lstm_val_training/run_queue.py when documenting the restart."
+    }
+  ],
+  "total": 99,
+  "pass": true
+}

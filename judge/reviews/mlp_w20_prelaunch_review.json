@@ -1,0 +1,32 @@
+{
+  "task": "Prelaunch cold review of the raw-history two-input MLP variance trial with the requested 20-observation, 128-128-2-1 architecture, QLIKE objective, and Base LSTM training settings",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/models.md",
+    "ref/implementation_plan/losses.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- models/mlp.py models/variance_neural.py models/tests/test_raw_neural_data.py",
+    "models/mlp.py",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/raw_neural_data.py",
+    "models/training_blocks.py",
+    "models/tests/test_raw_neural_data.py",
+    "models/tests/test_models.py",
+    "wandb/mlp_val_training/logs/start_mlp_raw_logvol_w20.ps1",
+    ".venv Python direct test_raw_windows() and test_model_definitions(): passed"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

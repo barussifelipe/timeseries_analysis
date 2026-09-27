@@ -18,6 +18,8 @@ from models.training_blocks import (Forecast, add_common_args, artifact_path,
 def neural_log_variance(output, floor, output_convention):
     if output_convention == 'log_variance':
         z = output
+    elif output_convention == 'log_volatility':
+        z = 2 * output
     elif output_convention == 'floored_variance':
         z = floor_prediction(output, floor).log()
     else:
@@ -88,6 +90,18 @@ def fit_variance_network(model, train_data, val_data, floor, path, settings,
     active_model = torch.compile(model) if settings.get('compile') else model
     print(json.dumps({'training_mode': 'compiled' if settings.get('compile') else 'eager',
                       'start_epoch': start_epoch}), flush=True)
+    def memory_trace_stats(trace):
+        if trace is None:
+            return {}
+        finite = torch.isfinite(trace)
+        values = trace[finite]
+        bad_steps = (~finite).flatten(1).any(dim=1).nonzero()
+        return {'memory_t_min': float(values.min()) if values.numel() else None,
+                'memory_t_max': float(values.max()) if values.numel() else None,
+                'memory_t_mean': float(values.mean()) if values.numel() else None,
+                'memory_t_finite_count': int(finite.sum()),
+                'memory_t_nonfinite_count': int((~finite).sum()),
+                'memory_t_first_nonfinite_step': int(bad_steps[0, 0]) + 1 if bad_steps.numel() else None}
     train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_data, batch_size=batch_size)
     training = settings['training_history']
@@ -101,6 +115,31 @@ def fit_variance_network(model, train_data, val_data, floor, path, settings,
             x, y = x.to(device), y.to(device)
             optimizer.zero_grad()
             output = active_model(x)
+            memory_trace = output[2].detach() if settings['model'] == 'sigma_lstm' and len(output) == 3 else None
+            if settings['model'] == 'sigma_lstm':
+                output = output[0]
+                if not torch.isfinite(output).all():
+                    gate_ranges = []
+                    def record_gate(_layer, _inputs, values):
+                        gate_ranges.append((float(values.detach().min()),
+                                            float(values.detach().max())))
+                    hook = model.cell.output_gate.register_forward_hook(record_gate)
+                    try:
+                        with torch.no_grad():
+                            replay = model(x)[0]
+                    finally:
+                        hook.remove()
+                    print(json.dumps({'progress': 'nonfinite_sigma_output', 'epoch': epoch,
+                                      'batch': batch_index,
+                                      'input_min': float(x.min()), 'input_max': float(x.max()),
+                                      'output_finite': int(torch.isfinite(output).sum()),
+                                      'output_count': output.numel(),
+                                      **memory_trace_stats(memory_trace),
+                                      'parameters_finite': all(torch.isfinite(p).all() for p in model.parameters()),
+                                      'eager_replay_finite': bool(torch.isfinite(replay).all()),
+                                      'raw_gate_variance_min': min(v[0] for v in gate_ranges),
+                                      'raw_gate_variance_max': max(v[1] for v in gate_ranges)}), flush=True)
+                    raise ValueError('sigma-LSTM produced nonfinite log volatility')
             if output_convention in ('floored_variance', 'raw_variance'):
                 floor_hits += int((output < floor).sum())
                 train_count += output.numel()
@@ -122,6 +161,7 @@ def fit_variance_network(model, train_data, val_data, floor, path, settings,
                                   'loss': float(loss.detach()),
                                   'max_model_output': float(output.detach().max()),
                                   'max_actual_variance': float(y.detach().max()),
+                                  **memory_trace_stats(memory_trace),
                                   'nonfinite_parameters': [name for name, parameter in model.named_parameters()
                                                            if parameter.grad is not None
                                                            and not torch.isfinite(parameter.grad).all()]}), flush=True)
@@ -137,14 +177,22 @@ def fit_variance_network(model, train_data, val_data, floor, path, settings,
                                   'learning_rate': optimizer.param_groups[0]['lr'],
                                   'elapsed_sec': round(time.monotonic() - started, 1)}), flush=True)
         active_model.eval()
+        if settings['model'] == 'sigma_lstm':
+            training_cpu_rng = torch.get_rng_state()
+            training_cuda_rng = torch.cuda.get_rng_state() if device.type == 'cuda' else None
+            torch.manual_seed(42)
         with torch.no_grad():
             scores = {}
             for split, data, loader in (('train', train_data, DataLoader(train_data, batch_size=batch_size)),
                                         ('val', val_data, val_loader)):
+                if settings['model'] == 'sigma_lstm':
+                    torch.manual_seed(settings['seed'])
                 actual, prediction = [], []
                 for batch_index, (x, y) in enumerate(loader, 1):
                     x, y = x.to(device), y.to(device)
                     output = active_model(x)
+                    if settings['model'] == 'sigma_lstm':
+                        output = output[0]
                     actual_batch = ((2 * y).double().exp() if log_volatility_target else y).flatten()
                     if output_convention == 'raw_variance':
                         prediction_batch = floor_prediction(output.double(), floor).flatten()
@@ -176,6 +224,10 @@ def fit_variance_network(model, train_data, val_data, floor, path, settings,
                 scores.update({f'{split}/{key}': value for key, value in
                                variance_metrics(actual, prediction, tickers, training).items()})
             score = scores[f'val/{training_loss}']
+        if settings['model'] == 'sigma_lstm':
+            torch.set_rng_state(training_cpu_rng)
+            if training_cuda_rng is not None:
+                torch.cuda.set_rng_state(training_cuda_rng)
         if run or log_every:
             row = {'epoch': epoch, **scores,
                      'best_epoch': epoch if score < best else best_epoch,
@@ -236,7 +288,7 @@ def ols_fit(training, kind, window):
         for i in range(lag, len(values)):
             if kind == 'ar1':
                 features = [1., values[i - 1]]
-            elif kind == 'harnet_80':
+            elif kind in ('harnet_80', 'har_80'):
                 features = [1., *(values[i - n:i].mean() for n in (1, 5, 20, 40, 80))]
             else:
                 features = HAR.features(values[:i])
@@ -363,7 +415,7 @@ def rfsv_fit(estimator, source='imgs/roughness_analysis/global/train'):
 
 def statistical_train(kind, args):
     frame, training, floor = prepare(args)
-    minimum = {'ar1': 1, 'har': 20, 'sarima': 1, 'garch': 1, 'rfsv': 20}[kind]
+    minimum = {'ar1': 1, 'har': 20, 'har_80': 80, 'sarima': 1, 'garch': 1, 'rfsv': 20}[kind]
     if args.window_size < minimum:
         raise ValueError(f'{kind} needs at least {minimum} lags')
     if kind == 'ar1' and args.window_size != 1:
@@ -372,7 +424,7 @@ def statistical_train(kind, args):
         raise ValueError('RFSV requires exactly 20 observations')
     counts = report_counts(frame, args.window_size)
     diagnostics = {}
-    if kind in ('ar1', 'har'):
+    if kind in ('ar1', 'har', 'har_80'):
         params = ols_fit(training, kind, args.window_size)
     elif kind == 'sarima':
         params, diagnostics['converged'] = sarima_fit(training)
@@ -383,7 +435,7 @@ def statistical_train(kind, args):
         params = garch_fit({t: r[:len(training[t])] for t, r in all_residuals.items() if t in training})
     fit = {'model': kind, 'parameters': params, 'floor': floor, 'settings': vars(args),
            'dates': {'train_end': '2016-01-01', 'val_end': '2019-01-01', 'test_end': '2026-01-01'},
-           'counts': counts, 'fit_observations': (counts['train'] if kind in ('ar1', 'har')
+           'counts': counts, 'fit_observations': (counts['train'] if kind in ('ar1', 'har', 'har_80')
                                                   else sum(map(len, training.values()))),
            'training_history': training, 'diagnostics': diagnostics}
     print(json.dumps({'fit_observations': fit['fit_observations'], 'forecast_windows': counts}))
@@ -403,6 +455,7 @@ def statistical_predict(kind, fit, frame, split='test', residuals=None):
     """Return Forecast rows with unchanged actual and floored daily variance."""
     from models.ar1 import AR1
     from models.har import HAR
+    from models.har_80 import HAR80
     from models.sarima import SARIMA
     from models.garch import GARCH
     from models.rfsv import RFSV
@@ -442,6 +495,8 @@ def statistical_predict(kind, fit, frame, split='test', residuals=None):
                 prediction = AR1(*params).forecast(history)
             elif kind == 'har':
                 prediction = HAR(params).forecast(history)
+            elif kind == 'har_80':
+                prediction = HAR80(params).forecast(history)
             elif kind == 'rfsv':
                 prediction = RFSV(params['H'], params['nu_squared']).forecast(np.sqrt(history)) ** 2
             else:
@@ -453,8 +508,15 @@ def statistical_predict(kind, fit, frame, split='test', residuals=None):
 
 def main(kind):
     parser = add_common_args(argparse.ArgumentParser(description=f'{kind} variance model'),
-                             window=20 if kind in ('har', 'rfsv') else 1)
+                             window=80 if kind == 'har_80' else (20 if kind in ('har', 'rfsv') else 1))
+    if kind != 'rfsv':
+        parser.add_argument('--raw-fit-only', action='store_true',
+                            help='fit global raw-history window cohort without scoring or W&B')
     args = parser.parse_args()
+    if getattr(args, 'raw_fit_only', False):
+        from models.raw_statistical_fit import fit_raw
+        fit_raw(kind, args)
+        return
     path = statistical_train(kind, args)
     fit = load_fit(path)
     frame, _, _ = prepare(args)

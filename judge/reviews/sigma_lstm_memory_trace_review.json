@@ -1,0 +1,32 @@
+{
+  "task": "Cold review of opt-in sigma-LSTM memory_t trace for the no-clipping failure run",
+  "sources": [
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/sigma-LSTM.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "models/sigma-lstm.py",
+    "models/variance_fit.py",
+    "models/variance_neural.py",
+    "models/tests/test_sigma_lstm.py",
+    "git diff -- models/variance_fit.py models/variance_neural.py"
+  ],
+  "scores": {
+    "requirements": 20,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "requirements",
+      "severity": "critical",
+      "evidence": "With --memory-diagnostic, SigmaLSTM.forward returns three values (head, auxiliary, memory trace), but the nonfinite-output branch in models/variance_fit.py unpacks `replay, _ = model(x)`. That raises ValueError before the JSON containing memory_t_min, memory_t_max, and memory_t_mean is printed. The reported shape/gradient checks do not execute this branch.",
+      "fix": "Accept all three replay outputs or take model(x)[0], then run a focused nonfinite-output check with capture_memory enabled and confirm the original forward trace statistics are printed."
+    }
+  ],
+  "total": 90,
+  "pass": false
+}

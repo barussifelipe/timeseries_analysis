@@ -1,0 +1,36 @@
+{
+  "task": "Cold review of the sigma-LSTM Gaussian gate numerical fix before the sequential window-20 then window-80 online W&B relaunch",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md (Sigma-LSTM sequential validation queue)",
+    "ref/thesis/plan.md (Model definitions and losses)",
+    "ref/implementation_plan/sigma-LSTM.md",
+    "https://arxiv.org/pdf/2205.07022 (Section II, Equation (8))",
+    "models/base_lstm.py",
+    "models/sigma-lstm.py",
+    "models/tests/test_sigma_lstm.py",
+    "models/variance_fit.py",
+    "models/variance_neural.py",
+    "models/training_blocks.py",
+    "wandb/sigma_lstm_val_training/run_queue.py",
+    "wandb/sigma_lstm_val_training/logs/sigma_lstm_raw_gk_logvol_w20_h128_lr0p001_20e_qlike_online.log",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/reviews/sigma_lstm_training_prelaunch_review.json",
+    "git status --short and git diff -- CONTEXT.md models/variance_fit.py models/variance_neural.py",
+    ".venv/Scripts/python.exe models/tests/test_sigma_lstm.py (passed, exit code 0)",
+    ".venv/Scripts/python.exe -m py_compile models/sigma-lstm.py models/tests/test_sigma_lstm.py wandb/sigma_lstm_val_training/run_queue.py (passed, exit code 0)",
+    "Float32 extreme-negative exponent comparison: sqrt(exp(z)) returned NaN gradients; exp(0.5*z) returned finite gradients",
+    "Compiled CUDA extreme-negative gate forward/backward check (finite output and all gradients, exit code 0)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

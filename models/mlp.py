@@ -7,7 +7,8 @@ class MLP(nn.Module):
         self.network = nn.Sequential(
             nn.Flatten(), nn.Linear(input_size, hidden_size), nn.SiLU(),
             nn.Linear(hidden_size, hidden_size), nn.SiLU(),
-            nn.Linear(hidden_size, output_size),
+            nn.Linear(hidden_size, 2), nn.SiLU(),
+            nn.Linear(2, output_size),
         )
 
     def forward(self, x):

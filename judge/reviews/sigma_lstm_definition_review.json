@@ -1,0 +1,26 @@
+{
+  "task": "Define the Rodikov and Antulov-Fantulin sigma-LSTM model from arXiv:2205.07022 in models/sigma-lstm.py without training",
+  "sources": [
+    "https://arxiv.org/pdf/2205.07022 (Section II, Equations (4)-(11))",
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/models.md",
+    "ref/thesis/thesis_notes.md",
+    "models/base_lstm.py",
+    "models/sigma-lstm.py",
+    "models/tests/test_sigma_lstm.py",
+    "git status --short and git diff -- ref/thesis/thesis_notes.md",
+    ".venv/Scripts/python.exe models/tests/test_sigma_lstm.py (passed, exit code 0)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

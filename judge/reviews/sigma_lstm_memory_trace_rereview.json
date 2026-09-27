@@ -1,0 +1,31 @@
+{
+  "task": "Cold re-review of the online no-clipping sigma-LSTM failing-forward memory diagnostic",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/sigma-LSTM.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "models/sigma-lstm.py",
+    "models/variance_fit.py",
+    "models/variance_neural.py",
+    "models/tests/test_sigma_lstm.py",
+    "wandb/sigma_lstm_val_training/run_queue.py",
+    "wandb/sigma_lstm_val_training/logs/sigma_lstm_memorytrace_noclip_v3_online.log",
+    "wandb/sigma_lstm_val_training/logs/sigma_lstm_memorytrace_noclip_v3_online.stderr.log",
+    "wandb/run-20260927_192750-9fuxbbhy/files/wandb-metadata.json",
+    ".venv/Scripts/python.exe models/tests/test_sigma_lstm.py (passed, exit code 0)",
+    "python -c parse v3 nonfinite_sigma_output JSON and assert finite/nonfinite counts total 20*128*128 and ordered finite summary (passed)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

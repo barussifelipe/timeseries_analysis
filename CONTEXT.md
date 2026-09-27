@@ -1,3 +1,217 @@
+## Sigma-LSTM softplus gate restart (2026-09-27)
+
+The user stopped the active ReLU-gate window-20 queue at epoch 12 batch 6,000;
+11 epochs had completed, with best validation QLIKE 1.2217863924241605 at
+epoch 10. The process tree was terminated and window 80 had not started. This
+run was online W&B yfyyab8y and remains an interrupted trial, not a completed
+20-epoch result.
+
+The current cell now sets gate_variance =
+softplus(output_gate(memory_t.square())). Its Gaussian draw uses
+sqrt(gate_variance + torch.finfo(dtype).tiny) to avoid sqrt(0) NaN gradients
+when float32 softplus underflows at extreme negative scores. Moderate negative
+scores still pass gradients. All earlier GK log-volatility, QLIKE, no-clipping,
+width-128, seed-42, and sequential window-20/window-80 choices remain.
+New run names include softplus so prior runs and checkpoints are preserved.
+The user explicitly requested restarting both sequential online W&B runs
+after this change. Focused eager and compiled CUDA checks passed; cold review
+`judge/reviews/sigma_lstm_softplus_review.json` passed 99/100, and its sole
+stale launcher-path finding was corrected afterward. The new queue is active
+under PID 25148. Window-20 online W&B run `ste59xtc` is at
+`https://wandb.ai/personalfeb/timeseries-volatility/runs/ste59xtc` and had
+logged epoch-1 batch 6,000 at last check, beyond the no-clipping exponential
+gate's batch-2,002 failure. The queue starts window 80 only if window 20 exits
+successfully. Next: monitor both runs and record best validation results.
+
+## Sigma-LSTM ReLU gate experiment (2026-09-27)
+
+At the user's request, the current sigma-LSTM gate variance is
+`ReLU(output_gate(memory_t.square()))`, sampled with a standard-normal draw
+times its square root. Negative raw gate scores have zero gradient through
+ReLU; shared weights or upstream memory changes can still move a score across
+zero. Positive scores close to zero have a large square-root derivative and
+remain a stability risk without gradient clipping. The prior exponential gate produced nonfinite memory in the window-20
+no-clipping diagnostic at batch 2,002. The raw GK log-volatility input,
+next-observation QLIKE target, no-clipping setting, width 128, and sequential
+window-20 then window-80 plan remain. The new W&B run names include `relu` so
+they do not overwrite the failed exponential-gate logs or checkpoints.
+Focused eager and compiled CUDA gate-gradient checks passed. Cold review
+`judge/reviews/sigma_lstm_relu_gate_review.json` passed 97/100 with the
+near-zero positive-gradient risk documented above. The sequential online
+W&B queue is active under PID 6584. Window-20 run `yfyyab8y` is at
+`https://wandb.ai/personalfeb/timeseries-volatility/runs/yfyyab8y`. It
+completed epoch 1 without nonfinite values: train QLIKE 1.25549937,
+validation QLIKE 1.22201225, validation MASE 2.14319817, and best epoch 1.
+This is only an early validation result, not a baseline win. Epoch 2 had
+logged batch 19,000 at last check. The queue starts window 80 only after
+window 20 exits successfully.
+
+## Sigma-LSTM sequential validation queue (2026-09-27)
+
+Historical exponential-gate trials; the current ReLU gate is recorded above.
+
+The sigma-LSTM uses only adjusted GK log volatility, with window sizes 20 and
+80, hidden width 128, QLIKE, Adam 0.001, batch 128, up to 20 epochs, patience
+10, seed 42, and one stochastic evaluation pass per split. The full cohort
+window-20 count gate passed: 8,664,516 train / 1,806,548 validation /
+4,479,681 test windows. The window-80 run has not started.
+
+Online W&B window-20 run 887clrnx failed at epoch 1 batch 5,282 with finite
+loss and nonfinite gradients. The gate standard deviation was changed from
+sqrt(exp(z)) to the equivalent exp(0.5 z), which removed a float32 underflow
+gradient path; cold review sigma_lstm_stablegate_review.json passed 100/100.
+Online W&B window-20 run eo7w4ov6 then failed at epoch 1 batch 12,301 before
+validation. An offline replay found finite parameters, 127/128 finite model
+outputs, and output-gate log-variance ranging from -606 to +350. The positive
+extreme makes exp(0.5 z) overflow float32 in the forward pass.
+
+The user has now removed sigma-LSTM gradient clipping; both failed runs used
+norm-1 clipping, while the earlier Base LSTM validation scripts disabled it.
+The sigma-LSTM entry point now records clip_norm=None, and the sequential
+queue passes --no-grad-clip explicitly. Online W&B run m1fbr9n8 failed at
+epoch 1 batch 2,187 with finite loss about 1.29e28 and nonfinite gradients;
+the pre-update gradient norm was 79.53 at batch 2,000. The queue stopped and
+window 80 did not start. Removing clipping worsened stability and did not
+resolve the gate issue. Cold review sigma_lstm_noclip_review.json passed
+100/100. Next: settle the gate's numerical rule before another full run;
+preserve the failed runs and their logs. The
+Base LSTM also used an intraday-return input, so its scores do not isolate
+architecture effects.
+
+A requested no-clipping memory diagnostic used the same window-20 cohort,
+compiled CUDA, and online W&B. The successful diagnostic log is
+`wandb/sigma_lstm_val_training/logs/sigma_lstm_memorytrace_noclip_v3_online.log`
+(W&B run `9fuxbbhy`). It failed at epoch 1 batch 2,002: across all 20 steps,
+128 observations, and 128 hidden components, finite `memory_t` entries had
+minimum -10.5705366, maximum 12.8468399, and mean 0.1658676. There were
+327,053 finite and 627 nonfinite entries; the first nonfinite entries appeared
+at step 16. Model parameters remained finite. The earlier two diagnostic
+attempts `qoef6455` and `aulh7zvq` failed before a usable finite-value
+summary; their logs are retained. No validation epoch completed.
+
+## Global linear HAR-80 fit (2026-09-27)
+
+After the pooled SARIMA fit converged, a separate `models/har_80.py` was added
+for an intercept plus 1-, 5-, 20-, 40-, and 80-observation means of adjusted
+daily unannualized Garman-Klass variance. Global OLS used the same 2,714 raw
+equity tickers, pre-2016 targets, and positive-input window rule as the ML
+path, now with window 80. Eligibility matched 7,004,011 train / 1,692,154
+validation / 4,295,773 test target dates, and the pre-2016 floor remained
+3.396062419686545e-13. The six coefficients were saved at
+`inference/checkpoints/har_80/garman-klass/global/raw_history_w80/fit.json`;
+reload confirmed finite parameters and convergence (normal-matrix condition
+1495.5121024582847). No W&B run or validation/test scoring was performed.
+The direct coefficient fixture and full cohort count check passed. See
+`ref/implementation_plan/har_80_raw_fit.md`. This 80-window fit excludes
+1,660,505 train, 114,394 validation, and 183,908 test target dates relative
+to window 20; compare forecasts only on shared dates. Next: complete the
+fresh-context cold review, then estimate H and nu-squared from this cohort
+before fitting RFSV.
+
+## Sigma-LSTM model definition (2026-09-27)
+
+Historical original definition; the current ReLU gate is recorded above.
+
+`models/sigma-lstm.py` defines the project-adapted GK log-volatility cell.
+`SigmaLSTMCell` inherits `FEBCellLSTM`; `SigmaLSTM` inherits `FEBLSTM`. The
+paper's additive cell update remains, with h(0) = 0 and C(0) = 1. The Gaussian
+output-gate variance is exp(W_o[C(t)^2]) rather than the earlier softplus
+mapping, while its draw still uses the square root of variance. The main head
+is interpreted as next-observation log volatility; its future QLIKE path must
+convert this to GK variance with exp(2 * head output). The auxiliary squared
+mean memory is interpreted as log-volatility variance but is not calibrated.
+Window 20 and 80, width 128, seed 42, the target/floor policy, and remaining
+evaluation choices are listed separately in `ref/implementation_plan/sigma-LSTM.md`.
+This definition was later connected to the raw-history trainer for the queue
+described above. The user confirmed no auxiliary loss or calibration.
+
+## Global raw-history statistical fits (2026-09-27)
+
+The fit-only statistical path now uses the 2,714-ticker adjusted raw-history
+Garman-Klass cohort and the ML window-20 target keys. Full-data eligibility
+matched 8,664,516 train / 1,806,548 validation / 4,479,681 test windows;
+the pre-2016 positive floor is 3.396062419686545e-13. The fitted target is
+next-recorded-observation daily unannualized variance, with zero valid targets
+floored. AR(1) and HAR pooled OLS fits and GARCH(1,1) pooled return-residual
+conditional-variance fit completed in separate compact JSON checkpoints under
+`inference/checkpoints/<model>/garman-klass/global/raw_history_w20/`. Each
+artifact was reloaded and checked for finite parameters and convergence;
+GARCH also satisfies alpha + beta < 1. GARCH estimates conditional variance
+of adjusted ln(Close/Open) residuals, not Garman-Klass forecast errors.
+SARIMA pooled fitting completed and its reloaded artifact has five finite
+parameters; Powell reported convergence after 6 iterations with summed
+negative log likelihood -35304345.05181905. Its first-series seed had issued
+a convergence warning, but the pooled optimizer subsequently converged.
+No W&B run or validation/test
+scoring was performed. The two-ticker fixture passed, and fresh-context cold
+review `judge/reviews/global_statistical_raw_fit_review.json` passed 100/100.
+The implementation choices are in
+`ref/implementation_plan/global_statistical_raw_fit.md`. The subsequent
+linear HAR(1,5,20,40,80) fit is recorded above. Estimate H and nu-squared
+from this cohort before any RFSV fit. The interrupted derived-table RFSV
+artifact was not changed.
+
+## Window-80 MLP log-volatility validation trial (2026-09-27)
+
+At the user's request, the completed window-20 MLP was rerun with only the
+window changed to 80. The same 2,714-ticker raw adjusted daily unannualized
+Garman-Klass variance cohort, input features [0.5 ln(adjusted GK variance),
+ln(adjusted Close/Open)], next recorded observation target, QLIKE objective,
+Adam 0.001, hidden width 128, batch 128, patience 10 with one tenfold-rate
+retry, 20 epochs, seed 42, gradient clipping norm 1, compiled CUDA, online
+W&B, and validation-only scoring apply. The flattened network input is 160
+values and the architecture is 160 -> 128 -> 128 -> 2 -> 1. Its reported
+train / validation / test window counts are 7,004,011 / 1,692,154 /
+4,295,773, versus 8,664,516 / 1,806,548 / 4,479,681 at window 20;
+direct window-length comparison needs a common scoring set. A direct shape
+check passed. The visible launcher is
+`wandb/mlp_val_training/logs/start_mlp_raw_logvol_w80.ps1`; online W&B run
+`lhzx2v36` is at
+`https://wandb.ai/personalfeb/timeseries-volatility/runs/lhzx2v36`.
+The original run completed epochs 1-11 and was stopped during epoch 12. Its
+only saved best checkpoint is epoch 1 (validation QLIKE 0.43494748140134837,
+optimizer rate 0.001); epochs 2-11 and partial epoch 12 have no recoverable
+model state. At the user's request, training resumed from checkpoint epoch 1
+in the same W&B run, so epochs 2-11 are being retrained and their old W&B
+history remains visible as superseded. The original PowerShell UTF-16 log is
+preserved; the eleven completed epoch rows were copied to UTF-8 JSONL for the
+resume reader. An initial resume attempt exited before training because it
+read the UTF-16 log as UTF-8. The successful launcher is
+`wandb/mlp_val_training/logs/resume_mlp_raw_logvol_w80.ps1` and its live log
+ends in `_resume_from_epoch1_retry.log`. It verified the same window counts,
+W&B run ID, and compiled CUDA `start_epoch` 2. Next: monitor the resumed run
+and record its best validation metrics. No test scoring was requested.
+
+## Window-20 MLP log-volatility validation trial (2026-09-26)
+
+At the user's request, the MLP launched after both window-80 LSTMs finished.
+It uses the existing 2,714-ticker global raw-history adjusted daily,
+unannualized Garman-Klass variance cohort, 20 valid input observations,
+features [0.5 ln(adjusted GK variance), ln(adjusted Close/Open)], and the next
+recorded observation target. The network flattens 20 x 2 inputs and follows
+40 -> 128 -> 128 -> 2 -> 1 with SiLU between layers, as requested; the
+user's intermediate-layer edit was retained and its `nn.linear` typo fixed.
+QLIKE is the objective and checkpoint criterion; log-variance output is
+exponentiated and floored from training data for positive variance scoring.
+Other Base LSTM settings are Adam 0.001, batch 128, patience 10 with one
+tenfold-rate retry, 20 epochs max, seed 42, gradient clipping norm 1,
+compiled CUDA, online W&B, and validation-only scoring. Its window-20
+forecast counts should match 8,664,516 / 1,806,548 / 4,479,681 train /
+validation / test; the run log must verify them. Raw-history MLP wiring and
+shape/inference checks passed. A fresh-context cold review passed 100/100 in
+`judge/reviews/mlp_w20_prelaunch_review.json`. The visible launch script is
+`wandb/mlp_val_training/logs/start_mlp_raw_logvol_w20.ps1`; run name is
+`mlp_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike_online`. The process
+reported the expected 8,664,516 / 1,806,548 / 4,479,681 windows, connected
+to online W&B run `jaj5mioo` at
+`https://wandb.ai/personalfeb/timeseries-volatility/runs/jaj5mioo`, and
+completed all 20 epochs. It selected epoch 2 by validation QLIKE
+0.4601829778717594; independent best-checkpoint validation scoring on
+1,806,548 windows gave QLIKE 0.460182977375786, MAE
+0.0006497323079140628, MASE 1.019471213974424, MSE
+2.6333397513918494e-05, and RMSE 0.005131607692908578. Its exit code was
+zero. No test scoring was requested.
+
 ## Window-80 LSTM queue (2026-09-25)
 
 After HARNet-80 completed, the user requested two sequential online W&B
@@ -21,8 +235,14 @@ window checks passed, and the fresh-context cold review passed 100/100 in
 queued as `silu_lstm_raw_gk_variance_return_direct_mse_w80_h128_lr0p001_20e_wandb`.
 Base W&B run `n8v4m22f` is online at
 `https://wandb.ai/personalfeb/timeseries-volatility/runs/n8v4m22f`; compiled
-CUDA epoch 1 has started. Next: monitor Base progress, then automatic SiLU
-start and record validation metrics. No test scoring was requested.
+CUDA training completed 20 epochs and selected epoch 20 by validation QLIKE
+0.4131435726971332. Independent best-checkpoint validation QLIKE on
+1,692,154 windows was 0.4131435717333512. SiLU online W&B run `h5ux74yq`
+at `https://wandb.ai/personalfeb/timeseries-volatility/runs/h5ux74yq`
+completed 20 epochs and selected epoch 4 by validation MSE
+1.7940556133998083e-05. Its independent best-checkpoint validation MSE was
+1.7940556328516154e-05 and QLIKE 24894.404243868754 on the same window
+count. Both exits were zero. No test scoring was requested.
 
 ## HARNet-80 raw-variance validation trial (2026-09-25)
 

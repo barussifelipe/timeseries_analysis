@@ -1,0 +1,31 @@
+{
+  "task": "Implement a fit-only global raw-history statistical path for AR(1), HAR, SARIMA, and GARCH on the shared window-20 Garman-Klass cohort",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/global_statistical_raw_fit.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "models/raw_neural_data.py",
+    "models/training_blocks.py",
+    "models/variance_fit.py",
+    "models/raw_statistical_fit.py",
+    "models/tests/test_raw_statistical_fit.py",
+    "models/sarima.py",
+    "models/garch.py",
+    "models/har.py",
+    "git diff -- models/variance_fit.py",
+    ".venv/Scripts/python.exe -c direct test_raw_statistical_fit invocation (passed)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}
