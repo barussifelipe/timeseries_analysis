@@ -1,0 +1,37 @@
+{
+  "task": "Fit global RFSV on the current raw-history Garman-Klass cohort using the newly estimated H and nu-squared, without scoring validation or test data",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/rfsv_raw_fit.md",
+    "ref/implementation_plan/raw_gk_roughness.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "models/raw_statistical_fit.py",
+    "models/variance_fit.py",
+    "models/raw_neural_data.py",
+    "models/training_blocks.py",
+    "models/rfsv.py",
+    "models/tests/test_rfsv_raw_fit.py",
+    "models/tests/test_rfsv_observation.py",
+    "models/tests/test_raw_statistical_fit.py",
+    "data/roughness_analysis.py",
+    "imgs/roughness_analysis/global/train/roughness_summary.csv",
+    "imgs/roughness_analysis/global/train/roughness_moments.csv",
+    "imgs/roughness_analysis/global/train/roughness_zeta.csv",
+    "inference/checkpoints/rfsv/garman-klass/global/raw_history_w20/fit.json",
+    "inference/checkpoints/rfsv/garman-klass/global/derived_gk_pre2016_20260927/fit.pth",
+    "focused check outputs and independent full-cohort count output from this review"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

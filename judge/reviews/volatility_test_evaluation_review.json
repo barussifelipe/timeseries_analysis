@@ -1,0 +1,56 @@
+{
+  "task": "Evaluate 14 saved raw-history Garman-Klass volatility models on their full eligible 2019-2025 test dates without retraining",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/evals.md",
+    "ref/implementation_plan/losses.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "inference/evaluate_volatility_test.py",
+    "models/tests/test_volatility_test_evaluation.py",
+    "models/raw_neural_data.py",
+    "models/raw_statistical_fit.py",
+    "models/training_blocks.py",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/sarima.py",
+    "imgs/eval/volatility_test_metrics.log"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 10,
+    "verification": 13,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "correctness",
+      "severity": "critical",
+      "evidence": "The full evaluation log stops at MLP-20 with KeyError 'CBIO' from score_neural's scale_by_ticker lookup. load_raw_neural selects tickers by raw pre-2016 row count but builds history only from valid pre-2016 rows; an eligible test ticker can therefore lack a finite positive training-history MASE scale. No CSV or PNG was produced.",
+      "fix": "Define and report an explicit scoring policy for test windows whose ticker lacks a valid pre-2016 MASE scale. Apply the same eligible observation set to all model rows sharing a window, quantify excluded observations and tickers, and verify row counts against that policy. Do not synthesize a scale from test data."
+    },
+    {
+      "category": "correctness",
+      "severity": "critical",
+      "evidence": "statistical_predictions('har'/'har_80') computes np.cumsum(group.Variance) across every row. raw_frame leaves invalid source rows with NaN RawVariance, and load_raw_neural carries that NaN into Variance. One invalid row makes all later cumulative values NaN, including eligible test windows after the gap.",
+      "fix": "Compute HAR lag means from each eligible target's finite preceding input window, or use a cumulative array with invalid rows replaced by a neutral value while retaining the eligibility gate. Check a fixture with a gap followed by an eligible window."
+    },
+    {
+      "category": "correctness",
+      "severity": "critical",
+      "evidence": "statistical_predictions('sarima') replaces invalid rows with NaN and passes the array to SARIMA()._model; models/sarima.py::_model rejects every nonfinite history before statsmodels can filter it. The cohort contains invalid source rows, so this row will fail on an affected ticker.",
+      "fix": "Use a causal missing-observation filter that accepts NaNs, or split at gaps and forecast from each valid segment. Add a gap fixture and preserve one-step alignment."
+    },
+    {
+      "category": "verification",
+      "severity": "major",
+      "evidence": "The only focused fixture has two tickers with 24 entirely valid rows and calls HAR/RFSV but not score_neural or SARIMA. It cannot detect the missing training-history scale or either invalid-row path. The production run failed before the first model row, so the 14-row artifact requirement has no successful end-to-end check.",
+      "fix": "Extend the smallest fixture to cover a ticker without a scale and an invalid row before later eligible windows, then rerun the full evaluator and inspect all 14 rows and saved outputs."
+    }
+  ],
+  "total": 78,
+  "pass": false
+}

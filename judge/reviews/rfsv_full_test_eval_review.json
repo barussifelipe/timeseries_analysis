@@ -1,0 +1,31 @@
+{
+  "task": "Score the saved full-history RFSV once per ticker, refresh the 14-row volatility test metrics and figure, omit N and Excluded columns, and color the lowest two values in each metric column.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/evals.md",
+    "ref/implementation_plan/losses.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "inference/evaluate_volatility_test.py",
+    "models/rfsv.py",
+    "models/raw_statistical_fit.py",
+    "models/tests/test_volatility_test_evaluation.py",
+    "imgs/eval/volatility_test_metrics.csv",
+    "imgs/eval/volatility_test_metrics.png",
+    "imgs/eval/volatility_test_metrics_full_history.log",
+    "git status --short and git diff for relevant tracked files",
+    "direct invocation of two focused evaluation checks in .venv"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

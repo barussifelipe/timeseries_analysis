@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.16)  27 SEP 2026 14:24
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.16)  28 SEP 2026 13:22
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -68,54 +68,60 @@ RIMA(1,0,1)(1,0,1,5),
  []
 
 [5] [6] [7] [8]
-Underfull \hbox (badness 1867) in paragraph at lines 142--143
+Overfull \hbox (2.38065pt too wide) in paragraph at lines 112--113
+[]\OT1/cmr/m/n/12 To com-bine rough lo-cal be-hav-ior with mean re-ver-sion, fr
+ac-tional Ornstein--
+ []
+
+[9] [10]
+Underfull \hbox (badness 1867) in paragraph at lines 164--165
 []\OT1/cmr/m/n/12 Bollerslev, T. (1986). Gen-er-al-ized au-tore-gres-sive con-d
 i-tional het-
  []
 
-[9]
-Underfull \hbox (badness 1917) in paragraph at lines 156--157
+[11]
+Underfull \hbox (badness 1917) in paragraph at lines 180--181
 []\OT1/cmr/m/n/12 Reisenhofer, R., Bayer, X., and Hautsch, N. (2022). HAR-Net:
  []
 
 
-Underfull \hbox (badness 1178) in paragraph at lines 156--157
+Underfull \hbox (badness 1178) in paragraph at lines 180--181
 \OT1/cmr/m/n/12 A con-vo-lu-tional neu-ral net-work for re-al-ized volatil-ity 
 fore-cast-ing.
  []
 
-[10]
-Underfull \hbox (badness 1460) in paragraph at lines 169--170
+[12]
+Underfull \hbox (badness 1460) in paragraph at lines 193--194
 \OT1/cmr/m/n/12 ity fore-cast-ing with ma-chine learn-ing and in-tra-day com-mo
 n-al-ity.
  []
 
 
-Underfull \hbox (badness 1616) in paragraph at lines 172--173
+Underfull \hbox (badness 1616) in paragraph at lines 196--197
 []\OT1/cmr/m/n/12 Brini, A. (2026). Fore-cast-ing re-al-ized volatil-ity with t
 ime se-ries
  []
 
 
-Underfull \hbox (badness 1205) in paragraph at lines 172--173
+Underfull \hbox (badness 1205) in paragraph at lines 196--197
 \OT1/cmr/m/n/12 foun-da-tion mod-els: A com-par-i-son with econo-met-ric bench-
 marks.
  []
 
-[11] (thesis_structure.aux)
+[13] (thesis_structure.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 519 strings out of 467870
- 10001 string characters out of 5418355
- 443733 words of memory out of 5000000
- 29467 multiletter control sequences out of 15000+600000
+ 522 strings out of 467870
+ 10040 string characters out of 5418355
+ 444733 words of memory out of 5000000
+ 29470 multiletter control sequences out of 15000+600000
  633844 words of font info for 60 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 35i,6n,38p,2123b,233s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 35i,5n,38p,2123b,231s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/
 cmbx10.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
 fonts/cm/cmbx12.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/p
@@ -129,9 +135,9 @@ benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><
 C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cms
 y8.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfont
 s/cm/cmti12.pfb>
-Output written on thesis_structure.pdf (11 pages, 166968 bytes).
+Output written on thesis_structure.pdf (13 pages, 185911 bytes).
 PDF statistics:
- 93 PDF objects out of 1000 (max. 8388607)
+ 100 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

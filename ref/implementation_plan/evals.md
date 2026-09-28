@@ -1,0 +1,26 @@
+# Volatility Model Test Evaluation Implementation Plan
+
+## Implementation decisions
+
+1. Score one next-recorded-observation forecast per eligible 20- or 80-observation raw-history window; use the 2019-01-01 through 2025-12-31 test targets and do not retrain.
+2. Include MLP-20/80, Base LSTM-20/80, direct-variance SiLU-LSTM-20/80, HARNet-20/80, and AR(1), HAR-20/80, GARCH(1,1), SARIMA, RFSV-full. Replace the historical RFSV-20 table row with the new full-history fit; preserve its old artifact and run log. Exclude the red-marked SiLU log-volatility trial.
+3. For each window length, calculate the one-step naive forecast error on every eligible test target date using that ticker's immediately preceding recorded variance. A ticker's test scale is the mean absolute naive error over precisely those target dates. Remove a ticker from **all five** metrics if its scale is nonfinite or zero. Also remove from all rows any ticker that cannot receive the single final-date RFSV forecast or its one-date MASE scale. Keep scored and excluded counts in the run log, but omit the N and Excluded columns from the delivered CSV and figure. The full eligible window counts remain a preflight check. This supersedes the earlier exclusion of 2,134 window-20 and 1,912 window-80 forecasts based on unavailable pre-2016 scales.
+4. Report MAE, MASE, MSE, RMSE, and QLIKE from daily unannualized adjusted Garman-Klass variance. MAE and RMSE have variance units, MSE has squared variance units, and MASE and QLIKE are dimensionless. Average each loss over scored forecast observations. Here MASE is mean absolute model error divided by that ticker's **test-date** naive MAE, then averaged over scored forecasts. This is a test-relative comparison, not the conventional training-scaled MASE defined in `losses.md`; it uses realized test targets only after forecasting, never to fit a model or make a forecast.
+5. Apply the saved pre-2016 variance forecast floor, 3.396062419686545e-13, to raw-history neural and statistical predictions. Report the share changed; leave test targets at their saved zero-target floor only. This matches current code but differs from `losses.md`, which specifies no forecast floor for MLP and LSTM log-variance outputs.
+6. Save `imgs/eval/volatility_test_metrics.png` and a CSV beside it with metric values and artifact identifiers, without N or Excluded columns. In each of the five loss columns, mark the numerically lowest value red and the second lowest blue. State prominently that the colors compare different test-date sets and are descriptive, not a matched-date model ranking. Label model windows, dates, and units.
+7. AR(1) and HAR read only the preceding saved window. SARIMA filters each ticker's dated raw history once with invalid source rows treated as missing observations; GARCH updates from each ticker's causal within-session return residuals and restarts its state and running mean after an invalid or zero-variance row. These five score the shared eligible target indices for their window length. RFSV-full uses all earlier valid positive variance observations in a ticker to forecast that ticker's 2025-12-31 observation once, through `RFSV.forward()`. It excludes a ticker if the final target or immediately preceding naive observation is invalid, the naive error is zero, or no positive history exists. Gaps and zero rows are compressed in the RFSV input; this is an observation-time approximation.
+8. Use the saved fit parameters and best neural weights without refitting; a failed row stops evaluation and is reported explicitly.
+9. Previously excluded tickers such as CBIO can re-enter if their scored test targets have a finite positive naive scale. Do not substitute a scale for constant test targets. Document new exclusion counts and the changed MASE definition with the results.
+10. RFSV-full's one-date MASE denominator is the absolute latest-versus-previous variance change for that ticker. Windowed rows retain their means over all eligible test dates. The forecast populations and MASE denominators therefore differ, so color tags cannot establish superiority. A matched-date comparison would require rescoring every model at 2025-12-31.
+11. The completed rerun excluded nine tickers from every row because their 2025-12-31 and preceding raw GK variances were both zero, making the one-date RFSV MASE denominator zero. The final scored counts, retained only in the run log, are 2,705 RFSV forecasts, 4,479,204 for each window-20 row, and 4,295,635 for each window-80 row.
+
+## Evaluation work
+
+- Add one entry point to load the raw-history cohort and saved artifacts, verify source and cohort metadata, then score in bounded batches.
+- Reuse saved neural transforms and output conventions. Use causal, within-ticker statistical predictions on eligible raw-history windows.
+
+## Verification
+
+- Check ticker and window boundaries, one-step alignment, causality, floor-hit counts, metric aggregation, and PNG/CSV output on a small fixture.
+- Verify all 14 artifacts and expected test counts before full scoring; identify a failed row without substituting a validation metric. Check shared ticker exclusions and the one-date RFSV alignment.
+- Run the focused check and full evaluation, obtain a fresh-context cold review, and update `CONTEXT.md` with results and limitations.

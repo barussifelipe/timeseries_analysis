@@ -1,4 +1,160 @@
+## Full-history RFSV fit-only revision (2026-09-28)
+
+`RFSV.forward()` now accepts a ticker's positive adjusted GK variance history,
+computes the paper's equation (5.1) log-variance prediction with exact
+observation-bin weights and oldest-value tail extension, then applies the
+unnumbered Section 5.2 +2c(H)ν² correction and returns one variance forecast.
+The older volatility-unit `forecast()` shares the same log-space kernel so tiny
+positive volatility inputs do not underflow while squaring. The global
+parameters are still read from pre-2016 pooled observation-lag roughness:
+H=0.03375577838376565 and ν²=0.49527452891226625; no optimizer, new target,
+or test outcome was used. The raw RFSV fit-only command now checks `forward()`
+on every ticker's complete positive valid pre-2016 history, rather than a
+20-observation cap, and saves a distinct artifact at
+`inference/checkpoints/rfsv/garman-klass/global/raw_history_full/fit.json`.
+The run checked 11,153,536 positive training rows across 2,712 of the 2,714
+cohort tickers; two had no positive pre-2016 history. The source DB version,
+floor 3.396062419686545e-13, parameters, history rule, and counts were
+verified after reload. The prior `raw_history_w20/fit.json` SHA-256 remained
+7701F144F059323B5C34AAD4C6C681A71F752F02EF9623DEA013088BE1157FEC.
+No validation/test forecast or metric was produced. The existing RFSV-20 row
+in `imgs/eval/volatility_test_metrics.csv` is historical and does not represent
+the new full-history fit. Positive observations across invalid or zero rows
+are compressed into observation time; this is a project approximation.
+Focused equation, cohort-guard, fit-route, and tiny-volatility checks passed by
+direct `.venv` invocation. Fresh-context cold rereview
+`judge/reviews/rfsv_full_history_fit_rereview.json` passed 100/100 with no
+findings and its JSON validated. See
+`ref/implementation_plan/rfsv_full_history_fit.md`. Next: define the single
+forecast cutoff/target per ticker before any full-history evaluation.
+
+## Thesis Background: Statistics Concepts (2026-09-28)
+
+The Background section in `ref/final_report/thesis_structure.tex` now covers
+conditional moments, white noise, Brownian and fractional Brownian motion,
+roughness, and mean-reverting fractional OU log volatility with citations. The
+ML Concepts heading is reserved for a later writing pass. This documentation
+change did not alter data, model fits, or forecast comparisons. The thesis
+compiled in a temporary directory, and a fresh-context cold review passed
+100/100 with no findings. Next thesis-writing task: develop ML Concepts;
+the model-comparison task remains matched-date RFSV and baseline scoring.
+
+## Raw-history Garman-Klass RFSV fit (2026-09-28)
+
+The global, fit-only RFSV calibration for the 2,714-ticker raw-history cohort
+completed without scoring validation/test or starting W&B. The full raw loader
+matched 8,664,516 / 1,806,548 / 4,479,681 eligible window-20 train /
+validation / test target dates. It saved a separate compact JSON artifact at
+`inference/checkpoints/rfsv/garman-klass/global/raw_history_w20/fit.json`.
+The artifact records H=0.03375577838376565, ν²=0.49527452891226625,
+observation lags 1–400, forecast window 20, and the pre-2016 adjusted GK
+variance floor 3.396062419686545e-13, plus source database version and
+cohort/count metadata. These parameters were read from the preceding pre-2016
+roughness outputs; RFSV has no separate iterative optimizer. The loader found
+176,432 invalid source rows and 1,254,289 valid zero-variance rows across the
+loaded period; no raw data or target policy was changed. The JSON was reloaded,
+its parameters matched `rfsv_fit`, and a positive 20-value forecast fixture
+was finite. The prior derived-table `.pth` checkpoint was preserved; the
+derived-table fitting path now rejects a raw-cohort GK parameter source.
+Focused raw-fit, forecast-equation, and cohort-guard checks passed. See
+`ref/implementation_plan/rfsv_raw_fit.md`. Fresh-context cold review
+`judge/reviews/rfsv_raw_fit_review.json` passed 100/100 with no findings.
+Next: score RFSV and matched baselines on identical forecast dates.
+
+## Raw-history Garman-Klass H and nu-squared re-estimation (2026-09-28)
+
+The pre-2016 GK roughness and RFSV inputs were recomputed in place from the
+current raw-history cohort rather than the earlier 1,525-ticker derived table.
+The source database was `D:/DBs/timeseries_analysis/history_coverage.db`
+(23,995,736,064 bytes, last modified 2026-09-20 11:33:39 UTC). The cohort rule
+selected 2,714 tickers with >80 pre-2016 raw rows and a 2025-12-31 row;
+12,397,872 raw pre-2016 rows were scanned, 11,153,536 valid positive adjusted
+GK variance rows were retained, and 2,710 tickers contributed displacement
+pairs. Within-ticker observation lags 1–400 supplied 4,250,253,253 pooled
+displacement pairs across lags. With q={1,1.5,2,3,4}, the origin-constrained
+ζ(q)=Hq fit gave H=0.03375577838376565 (uncentered R²=0.9612926244466938).
+The q=2 free-intercept log-moment fit gave ν²=0.49527452891226625.
+These replace the old GK H=0.03246302891466224 and ν²≈0.44473011 for RFSV
+parameter reading; they are different-population estimates, not forecast
+improvements. The three pre-2016 training CSVs and GK/global H plots under
+`imgs/roughness_analysis/global/train/` were updated. The Parkinson row and
+plot retain the earlier derived cohort, labeled on the shared H plot. Full-
+period plots, raw data, target floor, and validation/test window sets were not
+changed. The old derived-table RFSV checkpoint remains tied to its old cohort.
+The focused 11-test roughness suite and saved-artifact/RFSV-reader checks
+passed. Fresh-context cold review `judge/reviews/raw_gk_roughness_review.json`
+passed 100/100 with no findings. See `ref/implementation_plan/raw_gk_roughness.md`.
+Next: fit RFSV on the raw cohort using these parameters before a shared-date
+forecast comparison.
+
+## Sigma-LSTM z-scored GK log-volatility input (2026-09-28)
+
+At the user's request, the raw-volatility min-max window-20 online W&B run
+`ocpgynhd` was stopped during epoch 2 after epoch 1 validation QLIKE
+1.2234348299824669. Window 80 did not start. This interrupted run is an
+experiment record, not a completed result. The current sigma-LSTM input is
+GK log volatility z-scored using the global mean and population standard
+deviation of positive valid pre-2016 rows only;
+the next-observation log-volatility target and variance-unit QLIKE are
+unchanged. The target and model output are not scaled. Training QLIKE uses
+`r = 2 * target - max(2 * output, log(floor))` and averages
+`expm1(r) - r`. The focused synthetic training/inference checks passed in `.venv`,
+and cold review `judge/reviews/sigma_lstm_zscore_input_review.json` passed 100/100.
+The full-cohort preflight found 2,714 tickers, 11,153,536 eligible pre-2016
+input rows, mean -4.17238373979845, population standard deviation
+0.8209776735142315, and GK variance floor 3.396062419686545e-13. The
+window-20 loader reproduced 8,664,516 / 1,806,548 / 4,479,681 train /
+validation / test windows. The online W&B run `aqezti5x` completed all 20
+epochs at `https://wandb.ai/personalfeb/timeseries-volatility/runs/aqezti5x`.
+Its log is `wandb/sigma_lstm_val_training/logs/sigma_lstm_raw_gk_zscorelogvol_w20_h128_lr0p001_20e_qlike_softplus_noclip_online.log`.
+The best checkpoint was epoch 10; the final 1,806,548-observation validation
+pass scored QLIKE 1.2217863932196134 and MASE 2.116889268968172. This is
+weak validation performance for the current configuration, but no matched
+naive forecast has yet been scored on the same observations. No window-80
+run was started and test data were not scored. An initial
+sandboxed launch could not connect to W&B and was terminated before training;
+its log is retained with `.sandbox_blocked.log`. Next: compare against a
+matched simple baseline before judging the architecture; assess return inputs
+only as a separate experiment if requested.
+
+## Historical sigma-LSTM min-max GK log-volatility input (2026-09-28)
+
+The preceding implementation scaled log-volatility input with train-only
+min-max bounds inferred from raw-volatility extrema. The user corrected this
+to z-score standardization before any training with that input variant.
+
+## Historical sigma-LSTM min-max GK volatility input (2026-09-28)
+
+The user canceled the softplus-gate, unscaled-log-volatility-input queue. Its
+window-20 process tree was stopped in epoch 7 after batch 17,000; six epochs
+completed, with best validation QLIKE 1.2220036443261122 at epoch 1. The last
+logged gradient norm was 36,508.10, and window 80 never started. W&B run
+ste59xtc and its logs remain an interrupted trial.
+
+The current sigma-LSTM input is one daily unannualized raw GK volatility
+sqrt(RawVariance), scaled by one global training-only min-max transform.
+Positive valid pre-2016 source rows supply the minimum and maximum; the
+output and target remain next-observation GK log volatility, with the same
+variance-unit QLIKE and prediction floor. No clipping is applied to
+validation/test inputs outside the training range. The full cohort has
+11,153,536 eligible training rows, volatility minimum 5.827574469439704e-7
+and maximum 3.863512528781642. The scaled training median is 0.00393596239,
+and 87.8041% of training values are below 0.01, so the global maximum
+compresses most inputs. Exact train/validation/test window counts remain
+8,664,516 / 1,806,548 / 4,479,681 for window 20 and
+7,004,011 / 1,692,154 / 4,295,773 for window 80. The transform and
+statistics are saved for checkpoint inference. Synthetic training and
+inference checks passed, and cold review
+`judge/reviews/sigma_lstm_minmax_input_review.json` passed 100/100. At the
+user's request, a standalone window-20 online W&B run started under PID 7768
+at `https://wandb.ai/personalfeb/timeseries-volatility/runs/ocpgynhd`.
+It passed the exact cohort count gate and logged epoch-1 batch 1,000 on
+compiled CUDA. Window 80 was not started or scheduled in this run. Next:
+monitor window-20 validation and numerical stability.
+
 ## Sigma-LSTM softplus gate restart (2026-09-27)
+
+Historical unscaled-input trial; the current input decision is recorded above.
 
 The user stopped the active ReLU-gate window-20 queue at epoch 12 batch 6,000;
 11 epochs had completed, with best validation QLIKE 1.2217863924241605 at
@@ -24,6 +180,8 @@ gate's batch-2,002 failure. The queue starts window 80 only if window 20 exits
 successfully. Next: monitor both runs and record best validation results.
 
 ## Sigma-LSTM ReLU gate experiment (2026-09-27)
+
+Historical ReLU-gate trial; the current softplus gate and input are recorded above.
 
 At the user's request, the current sigma-LSTM gate variance is
 `ReLU(output_gate(memory_t.square()))`, sampled with a standard-normal draw
@@ -936,3 +1094,72 @@ After the RFSV equation and observation-lag H changes above are reviewed, the ne
 ## Working-tree note
 
 At the time of this update, `main` matches `origin/main`. `.claude/` is an existing untracked user directory and must not be modified or committed incidentally.
+## Raw-history volatility test evaluation (2026-09-28)
+
+Saved raw-history adjusted Garman-Klass models were scored without retraining on
+2019-01-01 through 2025-12-31 next-recorded-observation targets. The evaluator
+`inference/evaluate_volatility_test.py` verified all 14 checkpoint identities,
+source/cohort metadata, training-only floor 3.396062419686545e-13, and full
+window counts before scoring. The eight neural rows were MLP, Base LSTM,
+direct-variance SiLU-LSTM, and HARNet at windows 20 and 80; the six statistical
+rows were AR(1), HAR-20/80, GARCH(1,1), SARIMA, and RFSV-20. The red-marked
+SiLU log-volatility trial was excluded. The complete MAE, MASE, MSE, RMSE,
+QLIKE, floor-hit share, observation count, excluded count, and artifact paths
+are in `imgs/eval/volatility_test_metrics.csv`; the labeled table image is
+`imgs/eval/volatility_test_metrics.png`.
+
+The user subsequently replaced the training-history MASE scale with a naive
+forecast scale calculated on the exact scored test targets for each ticker and
+window. The naive forecast uses the immediately preceding recorded variance;
+the ticker scale is its mean absolute test error. MASE averages each model's
+absolute test error divided by that ticker's test naive scale, so the naive
+forecast scores 1 on the same dates. This is a test-relative evaluation metric,
+not the conventional training-scaled MASE in `ref/implementation_plan/losses.md`.
+The test outcomes set the scale only after forecasts; they are not used for
+fitting or prediction. The earlier pre-2016-scale exclusion of 2,134 window-20
+and 1,912 window-80 observations was reversed. Every ticker has a positive
+finite test scale: all 4,479,681 window-20 and 4,295,773 window-80 eligible
+forecasts enter **all five** metrics, with zero exclusions. This changes MASE
+and restores those observations to MAE, MSE, RMSE, and QLIKE as well.
+
+The target and forecasts remain daily unannualized adjusted GK variance, with
+the saved training-only forecast floor and no extra test-target flooring.
+MAE and RMSE have variance units; MSE has squared variance units; MASE and
+QLIKE are dimensionless. SiLU direct-variance models and SARIMA still have
+very large QLIKE when some forecasts hit the tiny positive floor; these are
+reported negative results. Different window lengths have different target
+dates, so they are not ranked against each other. Raw-history neural forecasts
+are floored by current code, although `ref/implementation_plan/losses.md`
+says MLP/LSTM log-variance outputs should have no forecast floor; this test
+matches prior raw-history scoring. The focused synthetic fixture passed by
+direct invocation in `.venv`; `pytest` is absent. The earlier 97/100 cold
+review applies to the superseded training-scale version. Fresh-context review
+`judge/reviews/volatility_test_mase_review.json` passed 97/100 with no critical
+findings; its only minor finding is the absence of a known-answer neural/GARCH
+fixture. `python judge/validate.py` validated the JSON. Next: assess
+matched-date or high-volatility sensitivity before comparative claims.
+## Full-history RFSV test row and refreshed metric figure (2026-09-28)
+
+The saved pre-2016 full-history RFSV fit was source- and cohort-verified and
+scored through `RFSV.forward()` once per ticker, forecasting the 2025-12-31
+adjusted GK variance from all earlier valid positive observations. Its one-date
+MASE scale is that ticker's absolute 2025-12-31 versus preceding-recorded-row
+variance change. Nine tickers (CMTV, FORTY, GYRO, JBK, KELYB, LBTYB, MGYR,
+PYT, SENEB) had zero raw GK variance on both dates and hence zero scale; all
+nine were removed from every model's scored dates. The RFSV row has 2,705
+forecasts: MAE 0.000691016259044611, MASE 10.292698148970693, MSE
+1.1216008087402747e-05, RMSE 0.003349030917654053, QLIKE
+0.5644500996145306, and 0% forecast-floor hits. Full rerun counts were
+4,479,204 for each window-20 row (477 excluded forecasts) and 4,295,635
+for each window-80 row (138 excluded forecasts). The old RFSV-20 artifact and
+prior run log remain historical; the delivered table contains RFSV-full in its
+place. `imgs/eval/volatility_test_metrics.png` and its CSV omit N and Excluded
+columns; red and blue mark the two lowest values in each of the five losses.
+These color tags are descriptive only: RFSV has one final-date forecast per
+ticker, whereas the other rows average over eligible 2019-2025 dates, and
+their test-date MASE scales differ. The full run log records counts and row
+values. Focused checks and the full 14-row reevaluation passed. Next:
+compare all models on matched 2025-12-31 targets before inferring model
+superiority from the RFSV row. Fresh-context cold review
+`judge/reviews/rfsv_full_test_eval_review.json` passed 100/100 with no
+findings, and its JSON validated.

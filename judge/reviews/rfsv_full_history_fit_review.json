@@ -1,0 +1,40 @@
+{
+  "task": "Cold review of full-history RFSV fit-only revision",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/rfsv_full_history_fit.md",
+    "ref/implementation_plan/rfsv_equation_review.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "models/rfsv.py",
+    "models/variance_fit.py",
+    "models/raw_statistical_fit.py",
+    "models/raw_neural_data.py",
+    "models/tests/test_rfsv_observation.py",
+    "models/tests/test_rfsv_raw_fit.py",
+    "inference/checkpoints/rfsv/garman-klass/global/raw_history_full/fit.json",
+    "inference/checkpoints/rfsv/garman-klass/global/raw_history_w20/fit.json",
+    "imgs/roughness_analysis/global/train/roughness_summary.csv",
+    "https://arxiv.org/pdf/1410.3394",
+    "git diff -- models/rfsv.py models/variance_fit.py models/raw_statistical_fit.py models/tests/test_rfsv_observation.py models/tests/test_rfsv_raw_fit.py CONTEXT.md"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 24,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "correctness",
+      "severity": "minor",
+      "evidence": "models/rfsv.py forecast() squares every finite positive volatility before calling forward(). For RFSV(.1).forecast([1e-200]), the square underflows to zero and forward() raises ValueError, although the previous log-volatility calculation accepted this input. This is outside the observed GK scale but narrows the retained public interface.",
+      "fix": "Keep the compatibility wrapper in log space, or guard the conversion so finite positive volatility inputs retain their former behavior; add one extreme-magnitude check."
+    }
+  ],
+  "total": 99,
+  "pass": true
+}

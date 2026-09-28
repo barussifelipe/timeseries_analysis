@@ -82,13 +82,29 @@ def fit_sarima(segments):
     models = [SARIMA()._model(values) for values, _ in segments]
     if not models:
         raise ValueError('no eligible SARIMA segments')
+    started = time.monotonic()
+    print(json.dumps({'sarima_stage': 'seed_fit', 'segments': len(models)}), flush=True)
     seed = models[0].fit(disp=False, maxiter=200)
     initial = models[0].untransform_params(seed.params)
-    result = minimize(lambda p: sarima_objective(models, p), initial,
+    print(json.dumps({'sarima_stage': 'pooled_fit', 'seed_converged': bool(seed.mle_retvals.get('converged')),
+                      'elapsed_seconds': round(time.monotonic() - started, 1)}), flush=True)
+    evaluations = 0
+
+    def objective(parameters):
+        nonlocal evaluations
+        value = sarima_objective(models, parameters)
+        evaluations += 1
+        print(json.dumps({'sarima_stage': 'pooled_evaluation', 'evaluation': evaluations,
+                          'negative_log_likelihood': float(value),
+                          'elapsed_seconds': round(time.monotonic() - started, 1)}), flush=True)
+        return value
+
+    result = minimize(objective, initial,
                       method='Powell', options={'maxiter': 100})
     parameters = models[0].transform_params(result.x)
     return parameters, {'converged': bool(result.success), 'message': str(result.message),
-                        'iterations': int(result.nit), 'objective': float(result.fun)}
+                        'iterations': int(result.nit), 'evaluations': evaluations,
+                        'objective': float(result.fun)}
 
 
 def garch_objective(residuals, parameters, scale):
@@ -131,9 +147,64 @@ def fit_garch(segments):
                       'iterations': int(result.nit), 'objective': float(result.fun)}
 
 
+def fit_rfsv_full(args):
+    """Calibrate global RFSV once and check its forward pass on full train histories."""
+    if args.window_size != 20:
+        raise ValueError('--window-size is unused for full-history RFSV; omit it')
+    if (args.estimator != 'garman-klass' or args.scope != 'global' or args.ticker
+            or args.limit_rows or args.limit_tickers):
+        raise ValueError('full-history RFSV fit requires global Garman-Klass and no sample limits')
+    from models.rfsv import RFSV
+    from models.variance_fit import rfsv_fit
+
+    started = time.monotonic()
+    frame, _, floor = load_raw_neural(args.database)
+    frame = frame.sort_values(['Ticker', 'Date'])
+    cohort_tickers = int(frame.Ticker.nunique())
+    parameters = rfsv_fit('garman-klass', expected_cohort=f'raw_history_{cohort_tickers}',
+                          forecast_window='full_positive_history')
+    model = RFSV(parameters['H'], parameters['nu_squared'])
+    train = frame[(frame.Date < '2016-01-01') & frame.Valid & (frame.RawVariance > 0)]
+    checked = 0
+    for _, group in train.groupby('Ticker', observed=True):
+        predicted = model.forward(group.Variance.to_numpy(dtype=float))
+        if not np.isfinite(predicted) or predicted <= 0:
+            raise ValueError('RFSV full-history forward check returned invalid variance')
+        checked += 1
+    if not checked:
+        raise ValueError('no valid pre-2016 RFSV histories')
+    database = Path(args.database).resolve()
+    path = Path('inference/checkpoints/rfsv/garman-klass/global/raw_history_full/fit.json')
+    artifact = {'model': 'rfsv', 'specification': 'RFSV Section 5, full positive observation history',
+                'source': str(database), 'source_bytes': database.stat().st_size,
+                'source_mtime_ns': database.stat().st_mtime_ns,
+                'cohort_rule': '>80 pre-2016 raw rows and 2025-12-31 row',
+                'train_end_exclusive': '2016-01-01',
+                'target': 'adjusted daily unannualized Garman-Klass variance',
+                'forecast_history_rule': 'all preceding valid positive observations within ticker',
+                'forecast_horizon': 'next recorded observation',
+                'cohort_tickers': cohort_tickers, 'train_tickers_with_history': checked,
+                'train_tickers_without_history': cohort_tickers - checked,
+                'training_history_rows': len(train), 'floor': floor,
+                'parameters': parameters,
+                'diagnostics': {'converged': True, 'method': 'pre-2016 pooled roughness moments',
+                                'forward_checked_training_tickers': checked},
+                'elapsed_seconds': round(time.monotonic() - started, 1)}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(artifact, indent=2), encoding='utf-8')
+    reloaded = json.loads(path.read_text(encoding='utf-8'))
+    if reloaded['parameters'] != parameters or reloaded['diagnostics']['forward_checked_training_tickers'] != checked:
+        raise RuntimeError('saved full-history RFSV fit failed reload verification')
+    print(json.dumps({'completed_fit': str(path), 'train_tickers_with_history': checked,
+                      'training_history_rows': len(train)}), flush=True)
+    return path
+
+
 def fit_raw(kind, args):
-    if kind not in ('ar1', 'har', 'har_80', 'sarima', 'garch'):
+    if kind not in ('ar1', 'har', 'har_80', 'sarima', 'garch', 'rfsv'):
         raise ValueError('unsupported raw statistical fit')
+    if kind == 'rfsv':
+        return fit_rfsv_full(args)
     window = 80 if kind == 'har_80' else 20
     if args.estimator != 'garman-klass' or args.scope != 'global' or args.ticker or args.limit_rows or args.limit_tickers or args.window_size != window:
         raise ValueError(f'raw fit requires global Garman-Klass, window {window}, and no ticker or row limit')
@@ -153,7 +224,8 @@ def fit_raw(kind, args):
                 'garch_quantity': 'conditional variance of adjusted log(Close/Open) residuals' if kind == 'garch' else None,
                 'train_end_exclusive': '2016-01-01', 'window': window, 'floor': floor,
                 'cohort_tickers': int(frame.Ticker.nunique()), 'counts': counts,
-                'valid_segments': len(segments), 'segment_observations': sum(len(s[0]) for s in segments),
+                'valid_segments': len(segments),
+                'segment_observations': sum(len(s[0]) for s in segments),
                 'eligible_training_windows': counts['train'], 'invalid_source_rows': int((~frame.Valid).sum()),
                 'zero_variance_rows': int((frame.Valid & frame.RawVariance.eq(0)).sum())}
     print(json.dumps({'pre_fit': metadata}), flush=True)

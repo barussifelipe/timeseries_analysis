@@ -63,6 +63,7 @@
 ---
 ## NOTES - 4.2 - *Volatility-inspired σ-LSTM cell* [https://arxiv.org/abs/2205.07022]
 - Checked the paper itself: Equations (4)-(7) use return input, sigmoid forget/input gates, and a tanh candidate; Equation (8) draws a zero-mean Gaussian output gate whose variance depends on squared cell memory; Equation (9) multiplies that draw by an unspecified φ(C); Equations (10)-(11) output a linear return estimate and variance equal to squared mean cell memory. `models/sigma-lstm.py` inherits the existing `FEBCellLSTM` and `FEBLSTM` classes but adapts their input/head to GK log volatility. Its current softplus gate-variance map, tanh φ, and C(0) = 1 are project choices, not specified by the paper. The auxiliary squared-mean cell-state output is only interpreted as log-volatility variance here; this does not establish calibration. The paper's Equation (12) return likelihood is not implemented because the project trains with GK-variance QLIKE. See [sigma-LSTM decisions](../implementation_plan/sigma-LSTM.md).
+- The paper recommends min-max input scaling, but the user chose a global training-only z-score of GK log-volatility inputs for this project. The log-volatility target remains unscaled and QLIKE remains in variance units. This is a project adaptation, not the paper's return-prediction target.
 - Could use directly the vol-LSTM. Or use both. 
 - Standardization before training RNNs 
 - The benefits were low, however, were better than the LSTM itself. So good to know. 

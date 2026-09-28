@@ -23,6 +23,15 @@ def test_rfsv_observation_forecast():
     c = math.gamma(1.5 - h) / (math.gamma(h + .5) * math.gamma(2 - 2 * h))
     corrected = RFSV(h, nu_squared).forecast(history) ** 2
     assert math.isclose(math.log(corrected / actual), 2 * c * nu_squared, abs_tol=1e-12)
+    assert math.isclose(RFSV(h, nu_squared).forward(history ** 2), corrected, rel_tol=1e-12)
+    full_history = np.linspace(.01, .03, 37)
+    expected_full_log = sum(
+        2 * math.log(full_history[-1 - i]) * quad(kernel, i, i + 1)[0]
+        for i in range(len(full_history))
+    ) + 2 * math.log(full_history[0]) * quad(kernel, len(full_history), np.inf)[0]
+    assert math.isclose(math.log(RFSV(h, nu_squared).forward(full_history ** 2)),
+                        expected_full_log + 2 * c * nu_squared, abs_tol=1e-9)
+    assert math.isclose(RFSV(h).forecast(np.full(37, 1e-200)), 1e-200, rel_tol=1e-12)
 
 
 if __name__ == '__main__':

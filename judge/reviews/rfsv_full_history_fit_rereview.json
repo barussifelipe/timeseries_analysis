@@ -1,0 +1,37 @@
+{
+  "task": "Fresh cold rereview of the full-history RFSV fit-only revision after the log-space volatility correction",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/rfsv_full_history_fit.md",
+    "ref/implementation_plan/rfsv_equation_review.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "models/rfsv.py",
+    "models/raw_statistical_fit.py",
+    "models/variance_fit.py",
+    "models/raw_neural_data.py",
+    "models/tests/test_rfsv_observation.py",
+    "models/tests/test_rfsv_raw_fit.py",
+    "inference/evaluate_volatility_test.py",
+    "inference/checkpoints/rfsv/garman-klass/global/raw_history_full/fit.json",
+    "inference/checkpoints/rfsv/garman-klass/global/raw_history_w20/fit.json",
+    "imgs/roughness_analysis/global/train/roughness_summary.csv",
+    "https://arxiv.org/pdf/1410.3394",
+    "git diff -- models/rfsv.py models/raw_statistical_fit.py models/variance_fit.py models/tests/test_rfsv_observation.py models/tests/test_rfsv_raw_fit.py",
+    "direct .venv execution of test_rfsv_observation_forecast, test_rfsv_raw_cohort_guard, and test_full_history_fit_calls_forward",
+    "direct .venv artifact, source-stat, 10000-observation, and 1e-200-volatility checks",
+    "SHA-256 of inference/checkpoints/rfsv/garman-klass/global/raw_history_w20/fit.json"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

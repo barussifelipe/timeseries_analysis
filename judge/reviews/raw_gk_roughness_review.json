@@ -1,0 +1,33 @@
+{
+  "task": "Recompute pre-2016 Garman-Klass H and nu-squared in place for the current raw-history cohort and update the relevant plots",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/raw_gk_roughness.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff and status for task files",
+    "data/roughness_analysis.py",
+    "models/raw_neural_data.py",
+    "models/variance_fit.py",
+    "models/tests/test_roughness_analysis.py",
+    "imgs/roughness_analysis/global/train/roughness_summary.csv",
+    "imgs/roughness_analysis/global/train/roughness_moments.csv",
+    "imgs/roughness_analysis/global/train/roughness_zeta.csv",
+    "imgs/roughness_analysis/global/train/equity_garman_klass_variance_global_scaling.png",
+    "imgs/roughness_analysis/global/train/global_hurst.png",
+    "D:/DBs/timeseries_analysis/history_coverage.db file metadata",
+    "independent 11-test unittest run and saved-artifact recomputation"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

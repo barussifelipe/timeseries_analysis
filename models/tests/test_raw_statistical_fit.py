@@ -9,8 +9,39 @@ import numpy as np
 import pandas as pd
 
 from models.raw_statistical_fit import (eligible_data, garch_objective, sarima_objective,
-                                        streamed_ols, training_segments)
+                                        fit_sarima, streamed_ols, training_segments)
 from models.sarima import SARIMA
+
+
+def test_sarima_training_logs_objective(monkeypatch, capsys):
+    import json
+    from types import SimpleNamespace
+
+    class Model:
+        def fit(self, **kwargs):
+            return SimpleNamespace(params=np.array([1.]), mle_retvals={'converged': True})
+
+        def untransform_params(self, params):
+            return params
+
+        def transform_params(self, params):
+            return params
+
+        def loglike(self, params, transformed=False):
+            return -float(params[0] ** 2)
+
+    monkeypatch.setattr(SARIMA, '_model', lambda self, values: Model())
+
+    def minimize(objective, initial, **kwargs):
+        value = objective(initial)
+        return SimpleNamespace(x=initial, success=True, message='done', nit=1, fun=value)
+
+    monkeypatch.setattr('models.raw_statistical_fit.minimize', minimize)
+    _, diagnostics = fit_sarima([(np.array([1.]), None), (np.array([2.]), None)])
+    rows = [json.loads(line) for line in capsys.readouterr().out.splitlines()]
+    assert [row['sarima_stage'] for row in rows] == ['seed_fit', 'pooled_fit', 'pooled_evaluation']
+    assert rows[-1]['negative_log_likelihood'] == 2.
+    assert diagnostics['evaluations'] == 1
 
 
 def test_raw_statistical_fit():

@@ -33,7 +33,7 @@ def make_model(kind, window, hidden=16, input_size=1):
     if kind == 'sigma_lstm':
         from importlib import import_module
         if input_size != 1:
-            raise ValueError('sigma-LSTM accepts only GK log volatility')
+            raise ValueError('sigma-LSTM accepts one GK volatility input')
         return import_module('models.sigma-lstm').SigmaLSTM(hidden)
     raise ValueError('unknown neural model')
 
@@ -71,6 +71,29 @@ def model_data(frame, transform):
     return frame, 'LogVolatility'
 
 
+def sigma_zscore_log_volatility(frame, mean=None, std=None):
+    """Z-score GK log volatility using positive pre-2016 observations only."""
+    variance = frame.RawVariance.to_numpy(dtype=float)
+    eligible = frame.Valid.to_numpy(dtype=bool) & np.isfinite(variance) & (variance > 0)
+    training = eligible & (frame.Date.to_numpy() < np.datetime64('2016-01-01'))
+    if not training.any():
+        raise ValueError('sigma-LSTM needs positive training variance')
+    log_volatility = frame.LogVolatility.to_numpy(dtype=float)
+    if mean is None and std is None:
+        mean = float(log_volatility[training].mean())
+        std = float(log_volatility[training].std())
+    if (mean is None or std is None or not np.isfinite([mean, std]).all() or std <= 0):
+        raise ValueError('sigma-LSTM training log-volatility mean and standard deviation must be finite and nonconstant')
+    frame = frame.copy()
+    scaled = np.full(len(frame), np.nan)
+    scaled[eligible] = (log_volatility[eligible] - mean) / std
+    if not np.isfinite(scaled[eligible]).all():
+        raise ValueError('sigma-LSTM scaled log volatility must be finite')
+    frame['StandardizedLogVolatility'] = scaled
+    return frame, {'mean': float(mean), 'std': float(std),
+                   'training_rows': int(training.sum())}
+
+
 def neural_train(kind, args):
     from models.variance_fit import fit_variance_network
     raw = getattr(args, 'raw_history', False)
@@ -93,7 +116,11 @@ def neural_train(kind, args):
     if kind == 'sigma_lstm' and (not raw or transform != 'log-volatility' or training_loss != 'qlike'):
         raise ValueError('sigma-LSTM requires raw GK log volatility and QLIKE')
     frame, column = model_data(frame, transform)
-    features = (column, 'IntradayLogReturn') if use_return else (column,)
+    input_scale = None
+    if kind == 'sigma_lstm':
+        frame, input_scale = sigma_zscore_log_volatility(frame)
+    features = ('StandardizedLogVolatility',) if kind == 'sigma_lstm' else (
+        (column, 'IntradayLogReturn') if use_return else (column,))
     minimum = {'harnet_20': 20, 'harnet_80': 80}.get(kind)
     if minimum and args.window_size < minimum:
         raise ValueError(f'{kind} needs at least {minimum} lags')
@@ -162,6 +189,8 @@ def neural_train(kind, args):
         print(json.dumps({'resume_best_epoch': best_epoch,
                           'superseded_epochs': superseded}), flush=True)
     run = wandb_run(args, kind)
+    if run and input_scale:
+        run.config.update({'input_transform': 'log_gk_volatility_zscore', **input_scale})
     if run and getattr(args, 'resume', False):
         run.log({'restart/from_best_epoch': best_epoch,
                  'restart/superseded_epochs': len(superseded),
@@ -173,6 +202,8 @@ def neural_train(kind, args):
                           'hidden_width': hidden, 'learning_rate': learning_rate, 'patience': patience,
                           'data_transform': transform, 'training_loss': training_loss,
                           'feature_columns': features,
+                          'input_transform': 'log_gk_volatility_zscore' if input_scale else None,
+                          'input_scale': input_scale,
                           'consecutive_sessions': consecutive, 'session_calendar': calendar,
                           'raw_history': raw, 'cohort_tickers': tuple(frame.Ticker.unique()) if raw else None, 'cohort_rule': '>80 pre-2016 raw rows and 2025-12-31 row' if raw else None,
                           'window_rule': 'positive valid inputs; valid target; next recorded observation' if raw else None,
@@ -210,6 +241,11 @@ def neural_predict(kind, fit, frame, split='test'):
     transform = settings.get('data_transform', 'variance')
     frame, column = model_data(frame, transform)
     features = tuple(settings.get('feature_columns', (column,)))
+    if kind == 'sigma_lstm':
+        if features != ('StandardizedLogVolatility',) or settings.get('input_transform') != 'log_gk_volatility_zscore':
+            raise ValueError('sigma-LSTM checkpoint needs z-scored GK log-volatility input')
+        scale = settings['input_scale']
+        frame, _ = sigma_zscore_log_volatility(frame, scale['mean'], scale['std'])
     if settings.get('raw_history'):
         if ('Valid' not in frame or 'RawVariance' not in frame
                 or tuple(frame.Ticker.unique()) != tuple(settings['cohort_tickers'])):
@@ -281,6 +317,7 @@ def _main(kind):
                         help='require every input and target date to be consecutive observed market sessions')
     parser.add_argument('--patience', type=int, default=5)
     parser.add_argument('--validation-only', action='store_true')
+    parser.add_argument('--fit-only', action='store_true', help='save the fitted checkpoint without post-fit scoring')
     parser.add_argument('--no-grad-clip', action='store_true')
     parser.add_argument('--memory-diagnostic', action='store_true')
     parser.add_argument('--log-every-batches', type=int, default=0)
@@ -296,6 +333,8 @@ def _main(kind):
     if args.hidden_size < 1 or not 0 < args.learning_rate < float('inf') or args.patience < 1 or args.log_every_batches < 0:
         parser.error('hidden size, learning rate, and patience must be positive; log interval must be nonnegative')
     path = neural_train(kind, args)
+    if args.fit_only:
+        return
     fit = load_fit(path)
     if args.raw_history:
         from models.raw_neural_data import load_raw_neural

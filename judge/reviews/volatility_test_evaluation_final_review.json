@@ -1,0 +1,42 @@
+{
+  "task": "Cold review of the completed raw-history Garman-Klass volatility test evaluation and user-directed MASE-scale exclusion",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/evals.md",
+    "ref/implementation_plan/losses.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "inference/evaluate_volatility_test.py",
+    "models/tests/test_volatility_test_evaluation.py",
+    "models/raw_neural_data.py",
+    "models/raw_statistical_fit.py",
+    "models/training_blocks.py",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/garch.py",
+    "models/sarima.py",
+    "imgs/eval/volatility_test_metrics.csv",
+    "imgs/eval/volatility_test_metrics.png",
+    "imgs/eval/volatility_test_metrics.log",
+    "Direct .venv invocation of test_one_step_statistical_and_output: passed"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 17,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "verification",
+      "severity": "minor",
+      "evidence": "The focused fixture exercises HAR, SARIMA, RFSV, metric aggregation, exclusion, and PNG/CSV output, but never calls score_neural or the GARCH branch. Thus the eight neural output transforms and the GARCH state/reset rule have only full-run completion as evidence, without a small known-answer causality and alignment check. The direct fixture invocation passed.",
+      "fix": "Add one tiny fixture that scores a deterministic neural model through score_neural and checks a two-segment GARCH sequence, including the forecast immediately after a zero or invalid row."
+    }
+  ],
+  "total": 97,
+  "pass": true
+}

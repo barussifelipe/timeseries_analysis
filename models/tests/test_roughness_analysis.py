@@ -5,12 +5,14 @@ import unittest
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 
 from data.crypto_data_fetching import _create_crypto_tables
 from data.gk_histograms import distributions
 from data.roughness_analysis import (
     CRYPTO_LENGTH,
     analyze_training_roughness,
+    analyze_raw_gk_training_roughness,
     garman_klass_variance,
     parkinson_variance,
     plot_scaling,
@@ -247,6 +249,46 @@ class RoughnessAnalysisTest(unittest.TestCase):
                          'equity_parkinson_variance_global_scaling.png',
                          'equity_garman_klass_variance_global_scaling.png'):
                 self.assertTrue((output / name).is_file(), name)
+
+    def test_raw_gk_replaces_only_gk_training_outputs(self):
+        for table in ('equity_parkinson_variance', 'equity_garman_klass_variance'):
+            self.conn.execute(f'CREATE TABLE {table} (Ticker TEXT, Date TEXT, Variance REAL)')
+            self.conn.executemany(f'INSERT INTO {table} VALUES (?, ?, ?)', [
+                ('OLD', f'2015-12-{day:02d}', math.exp((day - 25) ** 2))
+                for day in range(26, 31)
+            ])
+        dates = [str(np.datetime64('2015-01-01') + np.timedelta64(i, 'D'))
+                 for i in range(85)] + ['2025-12-31']
+        highs = 1.2 * np.exp(np.cumsum(np.random.default_rng(3).normal(0, .02, 85)))
+        prices = [(1., float(high), 1., 1., 1.) for high in highs] + [(1., 1.2, 1., 1., 1.)]
+        prices[10] = (1., 1., 1., 1., 1.)  # Valid zero GK variance.
+        prices[20] = (1., .9, 1., 1., 1.)  # Invalid OHLC.
+        self._equity('NEW', dates, prices)
+        other_highs = 1.2 * np.exp(np.cumsum(np.random.default_rng(4).normal(0, .02, 85)))
+        other_prices = [(1., float(high), 1., 1., 1.) for high in other_highs]
+        self._equity('OTHER', dates, other_prices + [(1., 1.2, 1., 1., 1.)])
+        self._equity('NO_END', dates[:-1], prices[:-1])
+        with tempfile.TemporaryDirectory() as directory:
+            analyze_training_roughness(self.conn, directory, max_lag=3)
+            output = Path(directory) / 'global' / 'train'
+            before = pd.read_csv(output / 'roughness_summary.csv')
+            result = analyze_raw_gk_training_roughness(self.conn, directory, max_lag=3)
+            after = pd.read_csv(output / 'roughness_summary.csv')
+            moments = pd.read_csv(output / 'roughness_moments.csv')
+            zeta = pd.read_csv(output / 'roughness_zeta.csv')
+            self.assertEqual(result['cohort_tickers'], 2)
+            self.assertEqual(result['positive_rows'], 168)
+            self.assertEqual(after.loc[after.Table.eq('equity_parkinson_variance'), 'H'].item(),
+                             before.loc[before.Table.eq('equity_parkinson_variance'), 'H'].item())
+            self.assertEqual(after.loc[after.Table.eq('equity_garman_klass_variance'), 'Cohort'].item(),
+                             'raw_history_2')
+            self.assertEqual(moments.loc[moments.Table.eq('equity_garman_klass_variance')
+                                         & moments.Lag.eq(1), 'Observations'].iloc[0], 166)
+            self.assertGreater(result['nu_squared'], 0)
+            self.assertAlmostEqual(result['nu_squared'], math.exp(zeta.loc[
+                zeta.Table.eq('equity_garman_klass_variance') & zeta.q.eq(2),
+                'Intercept'].item()))
+            self.assertTrue((output / 'equity_garman_klass_variance_global_scaling.png').is_file())
 
     def test_scaling_figure_is_created(self):
         self.conn.execute(

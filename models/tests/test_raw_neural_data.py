@@ -6,6 +6,7 @@ from contextlib import closing
 import pandas as pd
 import torch
 from pathlib import Path
+import sys
 from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -14,7 +15,19 @@ import numpy as np
 
 from models.raw_neural_data import load_raw_neural
 from models.training_blocks import TimeSeriesDataset
-from models.variance_neural import make_model, model_data, neural_predict, neural_train, score_neural_records
+from models.variance_neural import (make_model, model_data, neural_predict, neural_train,
+                                    score_neural_records, sigma_zscore_log_volatility)
+
+
+def test_fit_only_skips_postfit_scoring():
+    from models.variance_neural import _main
+    args = ['base_lstm', '--database', 'unused.db', '--estimator', 'garman-klass',
+            '--scope', 'local', '--ticker', 'NVDA', '--fit-only']
+    with patch.object(sys, 'argv', args), patch('models.variance_neural.neural_train', return_value='fit.pth') as train, \
+            patch('models.variance_neural.load_fit', side_effect=AssertionError('post-fit load')):
+        _main('base_lstm_vol')
+    assert train.call_args.args[0] == 'base_lstm_vol'
+    assert train.call_args.args[1].fit_only
 
 
 def test_raw_windows():
@@ -98,7 +111,24 @@ def test_raw_windows():
              patch('models.variance_fit.fit_variance_network', side_effect=inspect):
             neural_train('sigma_lstm', args)
         assert captured['clip_norm'] is None
-        assert captured['feature_columns'] == ('LogVolatility',)
+        assert captured['feature_columns'] == ('StandardizedLogVolatility',)
+        assert captured['output_convention'] == 'log_volatility'
+        assert captured['input_transform'] == 'log_gk_volatility_zscore'
+        assert captured['input_scale']['training_rows'] > 0
+        sigma = make_model('sigma_lstm', 20, 4, input_size=1)
+        sigma_fit = {'model_state_dict': sigma.state_dict(), 'floor': floor,
+                     'output_convention': 'log_volatility',
+                     'settings': {'model': 'sigma_lstm', 'output_convention': 'log_volatility',
+                                  'data_transform': 'log-volatility',
+                                  'feature_columns': ('StandardizedLogVolatility',),
+                                  'input_transform': captured['input_transform'],
+                                  'input_scale': captured['input_scale'],
+                                  'window_size': 20, 'hidden_width': 4, 'batch_size': 128,
+                                  'seed': 42, 'raw_history': True,
+                                  'cohort_tickers': tuple(frame.Ticker.unique())}}
+        sigma_forecasts = neural_predict('sigma_lstm', sigma_fit, frame, 'val')
+        assert len(sigma_forecasts) == 2
+        assert all(row.predicted_variance >= floor for row in sigma_forecasts)
         args.limit_tickers = None
         args.data_transform = 'variance'
         args.training_loss = 'mse'
@@ -154,3 +184,19 @@ def test_raw_windows():
             mse_model.output_layer.bias.fill_(-1.)
         mse_fit['model_state_dict'] = mse_model.state_dict()
         assert all(row.predicted_variance == floor for row in neural_predict('silu_lstm', mse_fit, frame, 'val'))
+
+
+def test_sigma_zscore_input_only():
+    example = pd.DataFrame({'Date': pd.to_datetime(['2015-01-01', '2015-01-02',
+                                                   '2016-01-01', '2019-01-01']),
+                            'Valid': [True] * 4, 'RawVariance': [1., 4., 9., 16.]})
+    example, target = model_data(example.assign(Variance=example.RawVariance), 'log-volatility')
+    scaled, stats = sigma_zscore_log_volatility(example)
+    assert stats == {'mean': np.log(2.) / 2, 'std': np.log(2.) / 2, 'training_rows': 2}
+    assert target == 'LogVolatility'
+    np.testing.assert_allclose(scaled.LogVolatility, np.log([1., 2., 3., 4.]))
+    np.testing.assert_allclose(scaled.StandardizedLogVolatility,
+                               (np.log([1., 2., 3., 4.]) - stats['mean']) / stats['std'])
+    np.testing.assert_allclose(scaled.StandardizedLogVolatility[:2], [-1., 1.])
+    replay, _ = sigma_zscore_log_volatility(example, stats['mean'], stats['std'])
+    np.testing.assert_allclose(replay.StandardizedLogVolatility, scaled.StandardizedLogVolatility)

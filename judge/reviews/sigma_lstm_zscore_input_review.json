@@ -1,0 +1,34 @@
+{
+  "task": "Cold review of sigma-LSTM training-only z-score of GK log-volatility input with unchanged target and QLIKE",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/sigma-LSTM.md",
+    "ref/thesis/thesis_notes.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "models/raw_neural_data.py",
+    "models/training_blocks.py",
+    "models/sigma-lstm.py",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/tests/test_raw_neural_data.py",
+    "models/tests/test_sigma_lstm.py",
+    "models/tests/test_log_volatility_inputs.py",
+    "wandb/sigma_lstm_val_training/run_queue.py",
+    "git status --short and targeted git diff",
+    "git diff --check (exit 0; line-ending warnings only)",
+    ".venv/Scripts/python.exe -c focused raw-window, z-score, and sigma training-contract tests (exit 0)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

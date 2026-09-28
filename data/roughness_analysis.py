@@ -425,14 +425,15 @@ def _draw_scaling_panels(axes, moments, zeta, hurst):
     axes[1].legend(fontsize=8)
 
 
-def plot_scaling(moments, zeta, hurst, _hurst_r2, title, output, stem):
+def plot_scaling(moments, zeta, hurst, _hurst_r2, title, output, stem, nu_squared=None):
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
     _draw_scaling_panels(axes, moments, zeta, hurst)
     observations = int(moments.groupby('Lag')['Observations'].first().sum())
-    fig.suptitle(
-        f'{title} | pooled displacements={observations:,} | '
-        f'H={hurst:.3f}'
-    )
+    detail = f'pooled displacements={observations:,} | H={hurst:.3f}'
+    if nu_squared is not None:
+        detail += f' | ν²={nu_squared:.6f}'
+    separator = '\n' if nu_squared is not None else ' | '
+    fig.suptitle(f'{title}{separator}{detail}')
     _save(fig, output, f'{stem}_scaling.png')
 
 
@@ -441,6 +442,8 @@ def plot_global_hurst(summary, output):
     global_rows['Label'] = global_rows['Table'].map(
         lambda table: f'{TABLES[table][0].title()}\n{TABLES[table][1]}'
     )
+    if 'Cohort' in global_rows:
+        global_rows['Label'] += '\n' + global_rows['Cohort'].fillna('derived_25y')
     figure, axis = plt.subplots(figsize=(9, 4))
     bars = axis.bar(
         global_rows['Label'], global_rows['H'],
@@ -476,6 +479,87 @@ def analyze_training_roughness(conn, output='imgs/roughness_analysis', max_lag=4
     pd.concat(zeta_all, ignore_index=True).to_csv(output / 'roughness_zeta.csv', index=False)
     plot_global_hurst(summary, output)
     return summary
+
+
+def analyze_raw_gk_training_roughness(conn, output='imgs/roughness_analysis', max_lag=400):
+    """Replace pre-2016 GK roughness outputs using the raw-history model cohort."""
+    from models.raw_neural_data import raw_frame
+
+    table = 'equity_garman_klass_variance'
+    output = Path(output) / 'global' / 'train'
+    tickers = [row[0] for row in conn.execute('''
+        SELECT Ticker FROM raw_history GROUP BY Ticker
+        HAVING SUM(Date < '2016-01-01') > 80
+           AND SUM(Date = '2025-12-31') > 0 ORDER BY Ticker
+    ''')]
+    if not tickers:
+        raise ValueError('empty raw-history cohort')
+    lags = np.arange(1, max_lag + 1)
+    sums = np.zeros((max_lag, len(QS)))
+    counts = np.zeros(max_lag, dtype=np.int64)
+    positive_rows = contributing_tickers = 0
+    workers = min(4, os.cpu_count() or 1)
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        for start in range(0, len(tickers), workers):
+            values = []
+            for ticker in tickers[start:start + workers]:
+                frame = pd.read_sql_query('''
+                    SELECT Ticker, Date, Open, High, Low, Close, Volume
+                    FROM raw_history WHERE Ticker = ? AND Date < '2016-01-01'
+                    ORDER BY Date
+                ''', conn, params=(ticker,))
+                clean = raw_frame(frame)
+                variance = clean.loc[clean.Valid & clean.RawVariance.gt(0), 'RawVariance'].to_numpy()
+                values.append(0.5 * np.log(variance))
+                positive_rows += len(variance)
+                contributing_tickers += bool(len(variance) > 1)
+            futures = [executor.submit(_observation_moments, value, lags, QS)
+                       for value in values]
+            for future in futures:
+                ticker_sums, ticker_counts = future.result()
+                sums += ticker_sums
+                counts += ticker_counts
+    if not counts[-1]:
+        raise ValueError('no maximum-lag GK displacement pairs')
+    moments = pd.DataFrame(
+        [(int(lag), float(q), float(sums[i, j] / counts[i]), int(counts[i]))
+         for i, lag in enumerate(lags) for j, q in enumerate(QS)],
+        columns=['Lag', 'q', 'Moment', 'Observations'],
+    )
+    zeta, hurst, r2 = scaling_estimates(moments)
+    nu_squared = float(np.exp(zeta.loc[zeta.q == 2, 'Intercept'].item()))
+    if not (np.isfinite(hurst) and 0 < hurst < 0.5 and np.isfinite(nu_squared) and nu_squared > 0):
+        raise ValueError('invalid GK roughness estimate')
+    summary_path = output / 'roughness_summary.csv'
+    summary = pd.read_csv(summary_path)
+    saved_moments = pd.read_csv(output / 'roughness_moments.csv')
+    saved_zeta = pd.read_csv(output / 'roughness_zeta.csv')
+    if not (summary.Table.eq(table).sum() == 1
+            and saved_moments.Table.eq(table).sum() == len(moments)
+            and saved_zeta.Table.eq(table).sum() == len(zeta)):
+        raise ValueError('unexpected existing GK output shape')
+    row = summary.Table.eq(table)
+    summary.loc[row, ['Observations', 'H', 'R2']] = [int(counts.sum()), hurst, r2]
+    summary['Cohort'] = summary.get('Cohort', pd.Series('derived_25y', index=summary.index))
+    summary.loc[row, 'Cohort'] = f'raw_history_{len(tickers)}'
+    summary['NuSquared'] = summary.get('NuSquared', np.nan)
+    summary.loc[row, 'NuSquared'] = nu_squared
+    metadata = dict(Table=table, Population='global', LagType='observation',
+                    TrainEnd='2016-01-01', MaxLag=max_lag, Cohort=f'raw_history_{len(tickers)}')
+    moments = moments.assign(**metadata)
+    zeta = zeta.assign(**metadata)
+    saved_moments = pd.concat([saved_moments.loc[saved_moments.Table.ne(table)], moments], ignore_index=True)
+    saved_zeta = pd.concat([saved_zeta.loc[saved_zeta.Table.ne(table)], zeta], ignore_index=True)
+    summary.to_csv(summary_path, index=False)
+    saved_moments.to_csv(output / 'roughness_moments.csv', index=False)
+    saved_zeta.to_csv(output / 'roughness_zeta.csv', index=False)
+    plot_scaling(moments, zeta, hurst, r2,
+                 f'Equity Garman-Klass (raw cohort {len(tickers):,}, pre-2016, observation lags)',
+                 output, f'{table}_global', nu_squared=nu_squared)
+    plot_global_hurst(summary, output)
+    return dict(cohort_tickers=len(tickers), contributing_tickers=contributing_tickers,
+                positive_rows=positive_rows, displacements=int(counts.sum()),
+                H=hurst, R2=r2, nu_squared=nu_squared)
 
 
 def analyze_database(conn, output='imgs/roughness_analysis', max_lag=400):
@@ -587,8 +671,12 @@ def main():
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument('--rebuild-only', action='store_true')
     mode.add_argument('--analysis-only', action='store_true')
+    mode.add_argument('--raw-gk-train-only', action='store_true')
     args = parser.parse_args()
     with closing(sqlite3.connect(args.database)) as conn:
+        if args.raw_gk_train_only:
+            print(analyze_raw_gk_training_roughness(conn, args.output))
+            return
         if not args.analysis_only:
             rebuild_variance_tables(conn)
         if not args.rebuild_only:

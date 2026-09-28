@@ -1,0 +1,27 @@
+{
+  "task": "Cold review of the documented sigma-LSTM window-20 validation result",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/sigma-LSTM.md",
+    "ref/implementation_plan/losses.md",
+    "models/training_blocks.py",
+    "models/variance_neural.py",
+    "wandb/sigma_lstm_val_training/logs/sigma_lstm_raw_gk_zscorelogvol_w20_h128_lr0p001_20e_qlike_softplus_noclip_online.log",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git status --short and targeted git diff",
+    "git diff --check -- ref/implementation_plan/sigma-LSTM.md CONTEXT.md (exit 0)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -1,0 +1,35 @@
+{
+  "task": "Cold review of sigma-LSTM train-only min-max GK log-volatility input with unchanged log-volatility target and QLIKE",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/sigma-LSTM.md",
+    "ref/thesis/thesis_notes.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "models/raw_neural_data.py",
+    "models/training_blocks.py",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/sigma-lstm.py",
+    "models/tests/test_raw_neural_data.py",
+    "models/tests/test_sigma_lstm.py",
+    "wandb/sigma_lstm_val_training/run_queue.py",
+    "wandb/sigma_lstm_val_training/logs/sigma_lstm_raw_gk_minmaxvol_w20_h128_lr0p001_20e_qlike_softplus_noclip_online.log",
+    "git status --short and targeted git diff",
+    "git diff --check (exit 0; line-ending warnings only)",
+    ".venv/Scripts/python.exe -c focused raw-window and min-max checks (exit 0)",
+    "Get-Process -Id 7768 (no process returned)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

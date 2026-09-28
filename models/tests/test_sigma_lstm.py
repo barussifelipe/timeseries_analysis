@@ -96,7 +96,7 @@ def test_sigma_training_contract():
 
     torch.manual_seed(42)
     model = make_model('sigma_lstm', 20, 4, input_size=1)
-    log_volatility, auxiliary = model(torch.full((2, 20, 1), -3.0))
+    log_volatility, auxiliary = model(torch.full((2, 20, 1), 0.5))
     assert log_volatility.shape == auxiliary.shape == (2, 1)
     log_variance = neural_log_variance(log_volatility, 1e-12, 'log_volatility')
     torch.testing.assert_close(log_variance, 2 * log_volatility)

@@ -1,0 +1,35 @@
+{
+  "task": "Cold review of sigma-LSTM training-only min-max raw GK volatility input, with unchanged log-volatility target and QLIKE",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/sigma-LSTM.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "models/raw_neural_data.py",
+    "models/training_blocks.py",
+    "models/sigma-lstm.py",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/tests/test_raw_neural_data.py",
+    "models/tests/test_sigma_lstm.py",
+    "models/tests/test_lstm_resume.py",
+    "wandb/sigma_lstm_val_training/run_queue.py",
+    "git status --short and targeted git diff",
+    "git diff --check (exit 0; line-ending warnings only)",
+    ".venv/Scripts/python.exe -c \"from models.tests.test_raw_neural_data import test_raw_windows, test_sigma_minmax_input_only; test_raw_windows(); test_sigma_minmax_input_only()\" (exit 0)",
+    ".venv/Scripts/python.exe models/tests/test_sigma_lstm.py (exit 0)",
+    ".venv/Scripts/python.exe -m models.tests.test_lstm_resume (exit 0)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

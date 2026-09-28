@@ -67,6 +67,7 @@ def fit_variance_network(model, train_data, val_data, floor, path, settings,
         for key in ('model', 'window_size', 'hidden_width', 'estimator', 'scope',
                     'run_name', 'batch_size', 'learning_rate', 'output_convention',
                     'clip_norm', 'counts', 'seed', 'data_transform',
+                    'input_transform', 'input_scale',
                     'consecutive_sessions', 'session_calendar', 'raw_history',
                     'cohort_tickers', 'cohort_rule', 'window_rule', 'target_floor_policy'):
             if fit['settings'].get(key) != settings.get(key):
@@ -371,7 +372,8 @@ def garch_fit(residuals):
     return result.x
 
 
-def rfsv_fit(estimator, source='imgs/roughness_analysis/global/train'):
+def rfsv_fit(estimator, source='imgs/roughness_analysis/global/train', expected_cohort=None,
+             forecast_window=20):
     import pandas as pd
     from pathlib import Path
     from data.roughness_analysis import QS, scaling_estimates
@@ -393,8 +395,18 @@ def rfsv_fit(estimator, source='imgs/roughness_analysis/global/train'):
                               and rows.TrainEnd.eq('2016-01-01').all()
                               and rows.MaxLag.eq(400).all()):
             raise ValueError('incompatible RFSV training results')
+        if expected_cohort is not None:
+            cohort_values = rows.Cohort if 'Cohort' in rows else None
+            if ((expected_cohort.startswith('raw_history_') and cohort_values is None)
+                    or (cohort_values is not None and not cohort_values.eq(expected_cohort).all()
+                        and not (expected_cohort == 'derived_25y' and cohort_values.isna().all()))):
+                raise ValueError('RFSV roughness cohort differs from fitting cohort')
         selected.append(rows)
     summary, moments, saved_zeta = selected
+    cohort = summary.Cohort.item() if 'Cohort' in summary else None
+    if expected_cohort is not None and cohort != expected_cohort and not (
+            expected_cohort == 'derived_25y' and cohort is None):
+        raise ValueError('RFSV roughness cohort differs from fitting cohort')
     if (len(summary) != 1 or len(moments) != 400 * len(QS)
             or set(moments.Lag) != set(range(1, 401))
             or not moments.groupby('Lag').size().eq(len(QS)).all()
@@ -404,13 +416,20 @@ def rfsv_fit(estimator, source='imgs/roughness_analysis/global/train'):
     zeta, h, _ = scaling_estimates(moments)
     intercept = zeta.loc[zeta.q == 2, 'Intercept'].item()
     saved_intercept = saved_zeta.loc[saved_zeta.q == 2, 'Intercept'].item()
+    if expected_cohort and expected_cohort.startswith('raw_history_') and (
+            'NuSquared' not in summary or not np.isfinite(summary.NuSquared.item())):
+        raise ValueError('missing raw-history RFSV nu-squared summary')
     if (not np.isfinite(h) or not 0 < h < .5 or not np.isfinite(intercept)
             or not np.isclose(h, summary.H.item())
-            or not np.isclose(intercept, saved_intercept)):
+            or not np.isclose(intercept, saved_intercept)
+            or ('NuSquared' in summary and np.isfinite(summary.NuSquared.item())
+                and not np.isclose(np.exp(intercept), summary.NuSquared.item()))):
         raise ValueError('invalid RFSV training estimates')
+    if forecast_window not in (20, 'full_positive_history'):
+        raise ValueError('unsupported RFSV forecast history rule')
     return {'H': float(h), 'nu_squared': float(np.exp(intercept)),
             'lag_type': 'observation', 'max_lag': 400,
-            'forecast_window': 20, 'source': str(source)}
+            'forecast_window': forecast_window, 'source': str(source)}
 
 
 def statistical_train(kind, args):
@@ -429,7 +448,7 @@ def statistical_train(kind, args):
     elif kind == 'sarima':
         params, diagnostics['converged'] = sarima_fit(training)
     elif kind == 'rfsv':
-        params = rfsv_fit(args.estimator)
+        params = rfsv_fit(args.estimator, expected_cohort='derived_25y')
     else:
         all_residuals = residual_series(args.database, frame, 'equity')
         params = garch_fit({t: r[:len(training[t])] for t, r in all_residuals.items() if t in training})
@@ -509,9 +528,8 @@ def statistical_predict(kind, fit, frame, split='test', residuals=None):
 def main(kind):
     parser = add_common_args(argparse.ArgumentParser(description=f'{kind} variance model'),
                              window=80 if kind == 'har_80' else (20 if kind in ('har', 'rfsv') else 1))
-    if kind != 'rfsv':
-        parser.add_argument('--raw-fit-only', action='store_true',
-                            help='fit global raw-history window cohort without scoring or W&B')
+    parser.add_argument('--raw-fit-only', action='store_true',
+                        help='fit global raw-history window cohort without scoring or W&B')
     args = parser.parse_args()
     if getattr(args, 'raw_fit_only', False):
         from models.raw_statistical_fit import fit_raw

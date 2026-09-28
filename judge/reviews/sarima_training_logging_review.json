@@ -1,0 +1,26 @@
+{
+  "task": "Explain SARIMA fitting and high QLIKE, and add pooled SARIMA training logging",
+  "sources": [
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/global_statistical_raw_fit.md",
+    "models/raw_statistical_fit.py",
+    "models/tests/test_raw_statistical_fit.py",
+    "models/sarima.py",
+    "inference/evaluate_volatility_test.py",
+    "git diff -- models/raw_statistical_fit.py models/tests/test_raw_statistical_fit.py"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

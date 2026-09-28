@@ -1,0 +1,39 @@
+{
+  "task": "Cold review of test-date MASE scaling for the 14-row raw-history Garman-Klass volatility evaluation",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/evals.md",
+    "ref/implementation_plan/losses.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "inference/evaluate_volatility_test.py",
+    "models/tests/test_volatility_test_evaluation.py",
+    "models/training_blocks.py",
+    "models/raw_neural_data.py",
+    "imgs/eval/volatility_test_metrics.csv",
+    "imgs/eval/volatility_test_metrics.png",
+    "imgs/eval/volatility_test_metrics.log",
+    "git status and current diff",
+    "Independent direct fixture invocation: passed",
+    "Independent CSV integrity check: passed"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 17,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "verification",
+      "severity": "minor",
+      "evidence": "The focused fixture verifies the new test-date naive scales, ticker separation, zero-scale exclusion, metric aggregation, and table output. It does not directly exercise score_neural or the GARCH reset branch with known-answer predictions; those paths have full-run completion and row-count checks but no independent small causality fixture.",
+      "fix": "Add one small deterministic fixture for score_neural and the GARCH forecast immediately after an invalid or zero-variance row before making stronger claims about those paths."
+    }
+  ],
+  "total": 97,
+  "pass": true
+}
