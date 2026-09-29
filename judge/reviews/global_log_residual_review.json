@@ -1,0 +1,31 @@
+{
+  "task": "Plot raw and log variance residual diagnostics for 14 saved global models, with full-range and central-99.5% histograms and central-99.5% dated plots, without retraining",
+  "sources": [
+    "AGENTS.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/evals.md",
+    "inference/evaluate_volatility_test.py",
+    "inference/plot_global_residuals.py",
+    "models/raw_neural_data.py",
+    "models/tests/test_volatility_test_evaluation.py",
+    "git diff -- inference/evaluate_volatility_test.py inference/plot_global_residuals.py models/tests/test_volatility_test_evaluation.py",
+    "imgs/eval/global_eval/residuals/ (14 folders, four nonempty PNGs each)",
+    "imgs/eval/global_eval/residuals/rfsv_full/timeline_log.png",
+    "imgs/eval/global_eval/residuals/ar1/histogram_log.png",
+    "imgs/eval/global_eval/residuals/mlp_20/timeline_raw.png",
+    "Direct .venv Python invocation of two focused synthetic tests"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

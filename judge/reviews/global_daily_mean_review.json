@@ -1,0 +1,29 @@
+{
+  "task": "Add dated cross-ticker mean raw and log residual figures for each saved global volatility model while preserving the four existing figures.",
+  "sources": [
+    "AGENTS.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/evals.md",
+    "inference/plot_global_residuals.py",
+    "inference/evaluate_volatility_test.py",
+    "models/tests/test_volatility_test_evaluation.py",
+    "git diff -- inference/plot_global_residuals.py inference/evaluate_volatility_test.py models/tests/test_volatility_test_evaluation.py CONTEXT.md",
+    "imgs/eval/global_eval/residuals/ (all 14 model directories and 84 PNG file sizes)",
+    "imgs/eval/global_eval/residuals/rfsv_full/timeline_mean_log.png",
+    "imgs/eval/global_eval/residuals/har_20/timeline_mean_raw.png",
+    "independent .venv Python grouped-mean, tail-inclusion, log-formula, and six-PNG fixture"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

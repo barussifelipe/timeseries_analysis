@@ -1,0 +1,27 @@
+{
+  "task": "Cold rereview of the GARCH explanation and expanding prior-return mean",
+  "sources": [
+    "AGENTS.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/final_report/thesis_structure.tex",
+    "ref/implementation_plan/models.md",
+    "models/garch.py",
+    "models/variance_fit.py",
+    "models/tests/test_training_adjustments.py",
+    "git diff -- ref/implementation_plan/models.md",
+    "git diff --check -- ref/implementation_plan/models.md"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -128,7 +128,7 @@ class Totals:
         return values
 
 
-def score_neural(kind, fit, frame, data, scale_by_ticker, floor, batch_size, excluded_tickers=()):
+def score_neural(kind, fit, frame, data, scale_by_ticker, floor, batch_size, excluded_tickers=(), emit=None):
     settings = fit['settings']
     transformed, column = model_data(frame, settings['data_transform'])
     features = tuple(settings['feature_columns'])
@@ -158,7 +158,10 @@ def score_neural(kind, fit, frame, data, scale_by_ticker, floor, batch_size, exc
             raw = output.exp() if convention == 'log_variance' else output
             if convention not in ('log_variance', 'raw_variance', 'floored_variance'):
                 raise ValueError('unsupported neural output convention')
-            totals.add(actual[targets[batch]], raw.cpu().numpy(), scales[ids[batch]], floor)
+            raw = raw.cpu().numpy()
+            totals.add(actual[targets[batch]], raw, scales[ids[batch]], floor)
+            if emit is not None:
+                emit(frame.Date.iloc[targets[batch]].to_numpy(), actual[targets[batch]], np.maximum(raw, floor))
     return totals.result()
 
 
@@ -216,7 +219,7 @@ def statistical_predictions(kind, fit, group, target_positions):
     raise ValueError(kind)
 
 
-def score_statistical(kind, fit, frame, data, scale_by_ticker, floor, excluded_tickers=()):
+def score_statistical(kind, fit, frame, data, scale_by_ticker, floor, excluded_tickers=(), emit=None):
     targets = data.target_indices.numpy()
     actual = frame.Variance.to_numpy(dtype=float)
     totals = Totals()
@@ -228,11 +231,13 @@ def score_statistical(kind, fit, frame, data, scale_by_ticker, floor, excluded_t
         if len(chosen) and ticker not in excluded_tickers and np.isfinite(scale) and scale > 0:
             raw = statistical_predictions(kind, fit, group, chosen - offset)
             totals.add(actual[chosen], raw, np.full(len(chosen), scale), floor)
+            if emit is not None:
+                emit(frame.Date.iloc[chosen].to_numpy(), actual[chosen], np.maximum(raw, floor))
         offset = stop
     return totals.result()
 
 
-def score_rfsv_full(fit, frame, floor):
+def score_rfsv_full(fit, frame, floor, emit=None):
     """One forecast per ticker for its final recorded 2025 test observation."""
     p = fit['parameters']
     model = RFSV(p['H'], p['nu_squared'])
@@ -252,7 +257,10 @@ def score_rfsv_full(fit, frame, floor):
         if not np.isfinite(scale) or scale <= 0:
             excluded.add(ticker)
             continue
-        totals.add([target.Variance], [model.forward(history)], [scale], floor)
+        raw = model.forward(history)
+        totals.add([target.Variance], [raw], [scale], floor)
+        if emit is not None:
+            emit(np.array([target.Date]), np.array([target.Variance]), np.array([max(raw, floor)]))
     return totals.result(), excluded
 
 

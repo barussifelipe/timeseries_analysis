@@ -1,0 +1,27 @@
+{
+  "task": "Review the Statistics Concepts revisions and compiled thesis PDF",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.aux",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf",
+    "git diff -- ref/final_report/thesis_structure.tex",
+    "git diff --check -- ref/final_report/thesis_structure.tex",
+    "https://ar5iv.labs.arxiv.org/html/1410.3394"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

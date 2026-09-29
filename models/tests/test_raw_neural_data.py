@@ -105,6 +105,8 @@ def test_raw_windows():
             neural_train('base_lstm_vol', args)
         assert captured['counts']['val'] == 2
         assert captured['feature_columns'] == ('LogVolatility', 'IntradayLogReturn')
+        assert captured['source_bytes'] == db.stat().st_size
+        assert captured['source_mtime_ns'] == db.stat().st_mtime_ns
         args.limit_tickers = 2
         with patch('models.variance_neural.artifact_path', return_value=Path('unused.pth')), \
              patch('models.variance_neural.wandb_run', return_value=None), \

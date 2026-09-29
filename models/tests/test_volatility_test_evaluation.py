@@ -1,10 +1,13 @@
 import csv
+from unittest.mock import patch
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
 from inference.evaluate_volatility_test import (Totals, save_table, scales_from_test,
                                                 score_rfsv_full, score_statistical, statistical_predictions)
+from inference.plot_global_residuals import mean_variances_by_date, plot_residuals
 from models.rfsv import RFSV
 from models.training_blocks import TimeSeriesDataset, variance_metrics
 
@@ -25,6 +28,44 @@ def test_one_step_statistical_and_output(tmp_path):
     selected = score_statistical('har', {'parameters': [0, 1, 0, 0]}, frame, data,
                                  scales, 1.)
     assert selected['N'] == 8 and selected['MASE'] == 1.
+    emitted = []
+    score_statistical('har', {'parameters': [0, 1, 0, 0]}, frame, data, scales, 1.,
+                      emit=lambda dates, actual, predicted: emitted.append((dates, actual, predicted)))
+    assert np.array_equal(np.concatenate([x[1] - x[2] for x in emitted]), [1.] * 4 + [2.] * 4)
+    assert np.array_equal(np.concatenate([x[0] for x in emitted])[:4],
+                          frame.Date.iloc[20:24].to_numpy())
+    folder = tmp_path / 'residuals'
+    log_values = np.linspace(-1., 1., 1000)
+    figures = []
+    original_close = plt.close
+    with patch('inference.plot_global_residuals.plt.close', side_effect=figures.append):
+        assert plot_residuals('HAR-20', [pd.date_range('2019-01-01', periods=1000).to_numpy()],
+                              [np.exp(log_values)], [np.ones(1000)], folder) == 1000
+    assert np.allclose(figures[1].axes[0].lines[0].get_ydata(), np.expm1(log_values[3:-3]))
+    assert np.allclose(figures[4].axes[0].lines[0].get_ydata(), log_values[3:-3])
+    for figure in figures:
+        original_close(figure)
+    assert len(list(folder.glob('*.png'))) == 6
+    days, mean_actual, mean_predicted = mean_variances_by_date(
+        np.array(['2025-01-02', '2025-01-01', '2025-01-02', '2025-01-01'],
+                 dtype='datetime64[D]'),
+        np.array([4., 100., 8., 1.]), np.array([2., 90., 4., 2.]))
+    assert np.array_equal(days, np.array(['2025-01-01', '2025-01-02'], dtype='datetime64[D]'))
+    assert np.array_equal(mean_actual, [50.5, 6.])
+    assert np.array_equal(mean_predicted, [46., 3.])
+    assert np.log(mean_actual[0]) - np.log(mean_predicted[0]) > 0
+    assert np.mean(np.log([100., 1.]) - np.log([90., 2.])) < 0
+    mean_figures = []
+    with patch('inference.plot_global_residuals.plt.close', side_effect=mean_figures.append):
+        plot_residuals('HAR-20', [np.array(['2025-01-02', '2025-01-01',
+                                           '2025-01-02', '2025-01-01'], dtype='datetime64[D]')],
+                       [np.array([4., 100., 8., 1.])], [np.array([2., 90., 4., 2.])],
+                       folder / 'means')
+    assert np.allclose(mean_figures[2].axes[0].lines[0].get_ydata(), [4.5, 3.])
+    assert np.allclose(mean_figures[5].axes[0].lines[0].get_ydata(),
+                       np.log([50.5, 6.]) - np.log([46., 3.]))
+    for figure in mean_figures:
+        original_close(figure)
     constant_b = frame.copy()
     constant_b.loc[constant_b.Ticker == 'B', ['Variance', 'RawVariance']] = 2.
     scales_with_constant = scales_from_test(constant_b, data)

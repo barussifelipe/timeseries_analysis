@@ -1,0 +1,46 @@
+"""Fit the requested five-ticker Base LSTM window-20/window-80 group."""
+
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+DATABASE = 'D:/DBs/timeseries_analysis/history_coverage.db'
+TICKERS = ('NVDA', 'AAPL', 'NFLX', 'GOOG', 'AMZN')
+LOGS = ROOT / 'wandb/local_training/logs'
+
+
+def main():
+    jobs = []
+    for ticker in TICKERS:
+        for window in (20, 80):
+            name = f'base_lstm_local_{ticker}_raw_gk_logvol_return_w{window}_h128_lr0p001_20e_qlike'
+            checkpoint = ROOT / 'inference/checkpoints/base_lstm_vol/garman-klass/local' / ticker / name / 'fit.pth'
+            log = LOGS / f'{name}.log'
+            if checkpoint.exists() or log.exists():
+                raise FileExistsError(f'refusing to overwrite {checkpoint} or {log}')
+            jobs.append((ticker, window, name, log))
+    LOGS.mkdir(parents=True, exist_ok=True)
+    for ticker, window, name, log in jobs:
+        command = [sys.executable, '-m', 'models.base_lstm', '--database', DATABASE,
+                   '--estimator', 'garman-klass', '--scope', 'local', '--ticker', ticker,
+                   '--run-name', name, '--window-size', str(window), '--raw-history',
+                   '--data-transform', 'log-volatility', '--intraday-return',
+                   '--training-loss', 'qlike', '--hidden-size', '128', '--patience', '10',
+                   '--epochs', '20', '--learning-rate', '0.001', '--batch-size', '128',
+                   '--compile', '--log-every-batches', '1000', '--fit-only']
+        print(f'START {ticker} w{window}: {name}', flush=True)
+        with log.open('x', encoding='utf-8') as handle:
+            result = subprocess.run(command, cwd=ROOT, stdout=handle,
+                                    stderr=subprocess.STDOUT,
+                                    env={**os.environ, 'WANDB_MODE': 'online',
+                                         'PYTHONDONTWRITEBYTECODE': '1'}, check=False)
+        print(f'END {ticker} w{window}: exit {result.returncode}; log {log}', flush=True)
+        if result.returncode:
+            raise SystemExit(result.returncode)
+
+
+if __name__ == '__main__':
+    main()

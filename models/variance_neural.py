@@ -105,6 +105,7 @@ def neural_train(kind, args):
             raise ValueError('local raw-history runs need a ticker; global runs cannot select one')
         from models.raw_neural_data import load_raw_neural
         frame, training, floor = load_raw_neural(args.database, args.ticker, args.limit_tickers, args.limit_rows)
+        source_stat = Path(args.database).stat()
     else:
         frame, training, floor = prepare(args, include_intraday_log_return=use_return)
     transform = getattr(args, 'data_transform', 'variance')
@@ -206,6 +207,8 @@ def neural_train(kind, args):
                           'input_scale': input_scale,
                           'consecutive_sessions': consecutive, 'session_calendar': calendar,
                           'raw_history': raw, 'cohort_tickers': tuple(frame.Ticker.unique()) if raw else None, 'cohort_rule': '>80 pre-2016 raw rows and 2025-12-31 row' if raw else None,
+                          'source_bytes': source_stat.st_size if raw else None,
+                          'source_mtime_ns': source_stat.st_mtime_ns if raw else None,
                           'window_rule': 'positive valid inputs; valid target; next recorded observation' if raw else None,
                           'target_floor_policy': 'zero target plus minimum positive pre-2016 variance' if raw else None,
                           'clip_norm': None if kind == 'sigma_lstm' or getattr(args, 'no_grad_clip', False) else 1.,

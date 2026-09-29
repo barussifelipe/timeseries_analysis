@@ -1,0 +1,34 @@
+{
+  "task": "Prelaunch cold review of five-ticker local HARNet-20 and HARNet-80 fit-only queue after Base LSTM",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/local_training.md",
+    "ref/implementation_plan/models.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "inference/run_local_harnet.py",
+    "inference/run_local_base_lstm.py",
+    "models/harnet_20.py",
+    "models/harnet_80.py",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/training_blocks.py",
+    "models/raw_neural_data.py",
+    "models/tests/test_local_base_lstm.py",
+    "models/tests/test_training_adjustments.py",
+    "Working tree diff for local training plan and shared neural trainer",
+    "Direct .venv test_local_harnet_jobs invocation passed with ten mocked fit-only commands"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

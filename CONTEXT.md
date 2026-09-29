@@ -1163,3 +1163,83 @@ compare all models on matched 2025-12-31 targets before inferring model
 superiority from the RFSV row. Fresh-context cold review
 `judge/reviews/rfsv_full_test_eval_review.json` passed 100/100 with no
 findings, and its JSON validated.
+## Local Base LSTM and HARNet fitting (2026-09-28)
+
+The current request limits fitting to Base LSTM and HARNet at windows 20 and 80
+for NVDA, AAPL, NFLX, GOOG, and AMZN; other local models and all post-fit test
+scoring are deferred until requested. The five were selected by pre-2016 mean
+volume in the eligible raw-history cohort, with GOOG retained over GOOGL and
+AMZN taking the fifth company slot. `ref/implementation_plan/local_training.md`
+records each ticker's train/validation/test target-window counts and the fixed
+run settings. A fit-only CLI option skips post-fit prediction; each run still
+uses validation QLIKE to select its best checkpoint and records source database
+size and modification time. Focused raw-window, fit-only, and queue checks
+passed. Fresh-context cold review
+`judge/reviews/local_training_preflight_review.json` passed 100/100 and its
+JSON validated. The online, one-at-a-time Base LSTM queue
+`python -m inference.run_local_base_lstm` completed all ten ticker/window fits
+with zero failures, separate checkpoints, and complete W&B logs; its first W&B
+run is `xlnyeeg9`. The subsequently requested HARNet group uses each model's
+existing raw-GK-variance input and ticker-specific pre-2016 HAR initialization;
+HARNet has no configurable hidden width. Its fit-only online queue
+`python -m inference.run_local_harnet` completed all ten ticker/window fits
+with zero failures and synced W&B logs. Focused queue checks and
+fresh-context HARNet preflight review
+`judge/reviews/local_harnet_preflight_review.json` passed 100/100. Queue status
+and logs are under `wandb/local_training/`. All twenty checkpoints were reloaded
+and checked for the ticker, model, window, loss, inputs, hyperparameters,
+source database size and modification time, positive floor, and completed
+training status. No test forecast or post-fit score was produced. The next
+local-training task awaits the user's requested model group; later comparison
+must score saved local and global fits on common ticker/date keys.
+Fresh-context final cold review `judge/reviews/local_training_final_review.json`
+passed 100/100 with no findings, and its JSON validated.
+
+## Local MLP fitting complete (2026-09-28)
+
+At the user's next request, MLP window-20 and window-80 fits were added for
+the same five raw-history GK equities: NVDA, AAPL, NFLX, GOOG, and AMZN.
+`ref/implementation_plan/local_training.md` now records the MLP-specific
+decision: log-volatility plus adjusted intraday-return inputs, log-variance
+output, QLIKE, width 128, seed 42, batch 128, Adam 0.001, patience 10, and
+at most 20 epochs. The previously verified ticker/window counts are unchanged.
+`inference/run_local_mlp.py` queues only these ten fit-only online W&B runs,
+stopping on failure and preserving all prior checkpoints. Its focused command
+check passed. Fresh-context preflight cold review
+`judge/reviews/local_mlp_preflight_review.json` passed 98/100 with one minor
+test-coverage finding and no critical findings; its JSON validated. The online
+queue completed all ten ticker/window runs with zero failures. All ten
+checkpoints were reloaded and verified against ticker, window, target/input
+convention, QLIKE, hyperparameters, source database size and modification
+time, positive floor, and the exact counts in the local plan. All ten W&B
+logs show successful sync. No post-fit or test scoring was run. Next: await
+the user's next requested local model group; later score all models on
+matched ticker/date observations before aggregating local losses.
+Fresh-context final cold review `judge/reviews/local_mlp_final_review.json`
+passed 98/100 with no critical findings; its sole minor finding is absent
+launcher failure-branch test coverage, and its JSON validated.
+
+## Local SiLU-LSTM fitting complete (2026-09-29)
+
+The user requested local SiLU-LSTM window-20 and window-80 fits for NVDA,
+AAPL, NFLX, GOOG, and AMZN, matching the direct-variance MSE global runs
+documented in `ref/implementation_plan/lstm_val_training.md` and saved
+checkpoints. `ref/implementation_plan/local_training.md` records the exact
+input, target, loss, floor, windows, hyperparameters, and unchanged per-ticker
+split counts. `inference/run_local_silu_lstm.py` runs only these ten fits with
+ticker-named online W&B runs and fit-only checkpoints. The focused queue check
+passed; fresh-context preflight cold review
+`judge/reviews/local_silu_preflight_review.json` passed 99/100, and its one
+minor plan wording finding was corrected. The queue completed all ten
+ticker/window runs with zero failures. All ten checkpoints were reloaded and
+checked against ticker, window, raw-variance input/output, MSE, hyperparameters,
+source database size and modification time, positive floor, and the exact
+counts in the local plan. Every W&B log shows successful sync. No post-fit or
+test scoring was run. Next: await the user's next requested local model group;
+later compare local and global fits on matched ticker/date observations.
+Fresh-context final cold review `judge/reviews/local_silu_final_review.json`
+passed 100/100 with no findings, and its JSON validated.
+
+## Global test residual diagnostics (2026-09-29)
+
+The user requested residual plots for the 14 saved global adjusted GK models before local scoring. `inference/plot_global_residuals.py` reuses the verified artifacts, target dates, forecast floor, and shared eligible test observations from `inference/evaluate_volatility_test.py`; it does not refit models. The ticker-level raw residual is actual minus floored predicted daily, unannualized adjusted GK variance; the ticker-level log residual is log(actual variance) minus log(predicted variance), using positive saved floors. Each model has six PNGs in `imgs/eval/global_eval/residuals/<model>/`: raw/log histograms with full and central-99.5% panels, dated raw/log points restricted to each distribution's central 99.5%, and two daily cross-ticker mean timelines. For each date, the means use every eligible ticker and are computed as mean(actual) − mean(predicted) and log(mean(actual)) − log(mean(predicted)); both have the same sign. The user explicitly corrected the earlier mean-of-log-residual definition. Trimming changes display only. All 14 folders contain six nonempty PNGs. The rerun scored 4,479,204 residuals for each window-20 row, 4,295,635 for each window-80 row, and 2,705 for RFSV-full. RFSV-full's timeline is a single 2025-12-31 cross-section, so these plots are diagnostics across different date populations rather than a matched-date ranking. The focused synthetic checks passed using `.venv` Python; the virtual environment lacks pytest, while system Python lacks compatible dependencies. Fresh-context cold review `judge/reviews/global_log_of_means_review.json` validated at 100/100 with no findings; the prior `global_daily_mean_review.json` covers the superseded mean-of-logs definition. Next: follow the user's requested evaluation sequence.

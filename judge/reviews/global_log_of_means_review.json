@@ -1,0 +1,30 @@
+{
+  "task": "Cold review of corrected daily global variance residual plots using log of cross-ticker means",
+  "sources": [
+    "AGENTS.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/validate.py",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/evals.md",
+    "inference/plot_global_residuals.py",
+    "inference/evaluate_volatility_test.py",
+    "models/tests/test_volatility_test_evaluation.py",
+    "git diff -- CONTEXT.md inference/evaluate_volatility_test.py models/tests/test_volatility_test_evaluation.py",
+    "imgs/eval/global_eval/residuals/har_20/timeline_mean_log.png",
+    "imgs/eval/global_eval/residuals/rfsv_full/timeline_mean_log.png",
+    "imgs/eval/global_eval/residuals/ (14 model directories, 84 nonempty PNG files)",
+    "direct .venv Python invocation of test_one_step_statistical_and_output and an independent two-ticker formula assertion"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -1,0 +1,33 @@
+{
+  "task": "Prelaunch cold review of the five-ticker local Base LSTM window-20 and window-80 fit-only plan, CLI, and queue launcher",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/local_training.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/training_blocks.py",
+    "models/raw_neural_data.py",
+    "models/base_lstm.py",
+    "models/tests/test_raw_neural_data.py",
+    "models/tests/test_local_base_lstm.py",
+    "inference/run_local_base_lstm.py",
+    "git diff and git show HEAD for the reviewed files",
+    "Source database read-only five-ticker window-count check: all 30 counts matched the plan",
+    "Direct fit-only, raw-window, and local queue test invocations: passed; pytest unavailable in .venv",
+    "Mocked launcher dry run: ten unique fit-only commands, overwrite guard, and failure stop passed"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

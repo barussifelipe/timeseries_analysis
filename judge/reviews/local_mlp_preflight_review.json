@@ -1,0 +1,41 @@
+{
+  "task": "Preflight review of five-ticker local raw-Garman-Klass MLP window-20 and window-80 fit-only queue",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/local_training.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "inference/run_local_mlp.py",
+    "inference/run_local_base_lstm.py",
+    "inference/run_local_harnet.py",
+    "models/mlp.py",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/raw_neural_data.py",
+    "models/training_blocks.py",
+    "models/tests/test_local_base_lstm.py",
+    "inference/checkpoints/mlp/garman-klass/global/mlp_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike_online/fit.pth",
+    "inference/checkpoints/mlp/garman-klass/global/mlp_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike_online/fit.pth",
+    "direct .venv invocation of test_local_mlp_jobs: passed",
+    ".venv python -m pytest models/tests/test_local_base_lstm.py -q: pytest unavailable"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 18,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "verification",
+      "severity": "minor",
+      "evidence": "test_local_mlp_jobs checks the ten ticker/window commands and a few arguments, but does not exercise the launcher's existing-file refusal or stop-on-failed-child branches. The direct test invocation passed; pytest is unavailable in .venv.",
+      "fix": "Add one focused mocked launcher check that an existing log or checkpoint prevents launch and a nonzero child exit prevents later jobs, or verify those branches before launch."
+    }
+  ],
+  "total": 98,
+  "pass": true
+}

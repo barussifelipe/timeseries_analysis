@@ -1,13 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.16)  28 SEP 2026 13:22
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.16)  29 SEP 2026 17:29
 entering extended mode
  restricted \write18 enabled.
- file:line:error style messages enabled.
  %&-line parsing enabled.
-**c:/Users/benga/Documents/Documentos/Programming/PYTHON/timeseries_analysis/re
-f/final_report/thesis_structure.tex
-
-(c:/Users/benga/Documents/Documentos/Programming/PYTHON/timeseries_analysis/ref
-/final_report/thesis_structure.tex
+**./ref/final_report/thesis_structure.tex
+(ref/final_report/thesis_structure.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
 (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
@@ -27,101 +23,157 @@ File: size12.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
 \belowcaptionskip=\skip50
 \bibindent=\dimen148
 )
+(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsmath.sty
+Package: amsmath 2025/07/09 v2.17z AMS math features
+\@mathmargin=\skip51
+
+For additional information on amsmath, use the `?' option.
+(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amstext.sty
+Package: amstext 2024/11/17 v2.01 AMS text
+
+(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks17
+\ex@=\dimen149
+))
+(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen150
+)
+(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsopn.sty
+Package: amsopn 2022/04/08 v2.04 operator names
+)
+\inf@bad=\count283
+LaTeX Info: Redefining \frac on input line 233.
+\uproot@=\count284
+\leftroot@=\count285
+LaTeX Info: Redefining \overline on input line 398.
+LaTeX Info: Redefining \colon on input line 409.
+\classnum@=\count286
+\DOTSCASE@=\count287
+LaTeX Info: Redefining \ldots on input line 495.
+LaTeX Info: Redefining \dots on input line 498.
+LaTeX Info: Redefining \cdots on input line 619.
+\Mathstrutbox@=\box53
+\strutbox@=\box54
+LaTeX Info: Redefining \big on input line 721.
+LaTeX Info: Redefining \Big on input line 722.
+LaTeX Info: Redefining \bigg on input line 723.
+LaTeX Info: Redefining \Bigg on input line 724.
+\big@size=\dimen151
+LaTeX Font Info:    Redeclaring font encoding OML on input line 742.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 743.
+\macc@depth=\count288
+LaTeX Info: Redefining \bmod on input line 904.
+LaTeX Info: Redefining \pmod on input line 909.
+LaTeX Info: Redefining \smash on input line 939.
+LaTeX Info: Redefining \relbar on input line 969.
+LaTeX Info: Redefining \Relbar on input line 970.
+\c@MaxMatrixCols=\count289
+\dotsspace@=\muskip17
+\c@parentequation=\count290
+\dspbrk@lvl=\count291
+\tag@help=\toks18
+\row@=\count292
+\column@=\count293
+\maxfields@=\count294
+\andhelp@=\toks19
+\eqnshift@=\dimen152
+\alignsep@=\dimen153
+\tagshift@=\dimen154
+\tagwidth@=\dimen155
+\totwidth@=\dimen156
+\lineht@=\dimen157
+\@envbody=\toks20
+\multlinegap=\skip52
+\multlinetaggap=\skip53
+\mathdisplay@stack=\toks21
+LaTeX Info: Redefining \[ on input line 2950.
+LaTeX Info: Redefining \] on input line 2951.
+)
 (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdf
 tex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count283
-) (thesis_structure.aux)
+\l__color_backend_stack_int=\count295
+)
+(C:\Users\benga\AppData\Local\Temp\timeseries_thesis_fbm_cov_check\thesis_struc
+ture.aux)
 \openout1 = `thesis_structure.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 7.
-LaTeX Font Info:    ... okay on input line 7.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 7.
-LaTeX Font Info:    ... okay on input line 7.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 7.
-LaTeX Font Info:    ... okay on input line 7.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 7.
-LaTeX Font Info:    ... okay on input line 7.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 7.
-LaTeX Font Info:    ... okay on input line 7.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 7.
-LaTeX Font Info:    ... okay on input line 7.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 7.
-LaTeX Font Info:    ... okay on input line 7.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <14.4> on input line 9.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 9.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
  [1
 
 {C:/Users/benga/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 36.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 36.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 36.
- [2] [3] [4]
-Overfull \hbox (24.8721pt too wide) in paragraph at lines 74--75
+[2] [3] [4]
+Overfull \hbox (24.8721pt too wide) in paragraph at lines 76--77
 \OT1/cmr/m/n/12 In this pa-per, we present the com-par-i-son be-tween AR(1), SA
 RIMA(1,0,1)(1,0,1,5),
  []
 
-[5] [6] [7] [8]
-Overfull \hbox (2.38065pt too wide) in paragraph at lines 112--113
-[]\OT1/cmr/m/n/12 To com-bine rough lo-cal be-hav-ior with mean re-ver-sion, fr
-ac-tional Ornstein--
- []
-
-[9] [10]
-Underfull \hbox (badness 1867) in paragraph at lines 164--165
+[5] [6] [7] [8] [9] [10] [11] [12] [13]
+Underfull \hbox (badness 1867) in paragraph at lines 314--315
 []\OT1/cmr/m/n/12 Bollerslev, T. (1986). Gen-er-al-ized au-tore-gres-sive con-d
 i-tional het-
  []
 
-[11]
-Underfull \hbox (badness 1917) in paragraph at lines 180--181
+[14]
+Underfull \hbox (badness 1917) in paragraph at lines 330--331
 []\OT1/cmr/m/n/12 Reisenhofer, R., Bayer, X., and Hautsch, N. (2022). HAR-Net:
  []
 
 
-Underfull \hbox (badness 1178) in paragraph at lines 180--181
+Underfull \hbox (badness 1178) in paragraph at lines 330--331
 \OT1/cmr/m/n/12 A con-vo-lu-tional neu-ral net-work for re-al-ized volatil-ity 
 fore-cast-ing.
  []
 
-[12]
-Underfull \hbox (badness 1460) in paragraph at lines 193--194
+[15]
+Underfull \hbox (badness 1460) in paragraph at lines 343--344
 \OT1/cmr/m/n/12 ity fore-cast-ing with ma-chine learn-ing and in-tra-day com-mo
 n-al-ity.
  []
 
 
-Underfull \hbox (badness 1616) in paragraph at lines 196--197
+Underfull \hbox (badness 1616) in paragraph at lines 346--347
 []\OT1/cmr/m/n/12 Brini, A. (2026). Fore-cast-ing re-al-ized volatil-ity with t
 ime se-ries
  []
 
 
-Underfull \hbox (badness 1205) in paragraph at lines 196--197
+Underfull \hbox (badness 1205) in paragraph at lines 346--347
 \OT1/cmr/m/n/12 foun-da-tion mod-els: A com-par-i-son with econo-met-ric bench-
 marks.
  []
 
-[13] (thesis_structure.aux)
+[16]
+(C:\Users\benga\AppData\Local\Temp\timeseries_thesis_fbm_cov_check\thesis_struc
+ture.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 522 strings out of 467870
- 10040 string characters out of 5418355
- 444733 words of memory out of 5000000
- 29470 multiletter control sequences out of 15000+600000
- 633844 words of font info for 60 fonts, out of 8000000 for 9000
+ 1279 strings out of 467870
+ 20239 string characters out of 5418355
+ 445733 words of memory out of 5000000
+ 30208 multiletter control sequences out of 15000+600000
+ 634969 words of font info for 65 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 35i,5n,38p,2123b,231s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 56i,12n,65p,2050b,239s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/
 cmbx10.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
 fonts/cm/cmbx12.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/p
@@ -135,9 +187,10 @@ benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><
 C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cms
 y8.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfont
 s/cm/cmti12.pfb>
-Output written on thesis_structure.pdf (13 pages, 185911 bytes).
+Output written on C:\Users\benga\AppData\Local\Temp\timeseries_thesis_fbm_cov_c
+heck\thesis_structure.pdf (16 pages, 196919 bytes).
 PDF statistics:
- 100 PDF objects out of 1000 (max. 8388607)
+ 109 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

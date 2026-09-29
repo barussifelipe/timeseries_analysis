@@ -1,0 +1,39 @@
+{
+  "task": "Cold final review of fit-only local Base LSTM and HARNet training for five equities at windows 20 and 80",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/local_training.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- CONTEXT.md models/variance_neural.py models/tests/test_raw_neural_data.py ref/implementation_plan/local_training.md",
+    "inference/run_local_base_lstm.py",
+    "inference/run_local_harnet.py",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/raw_neural_data.py",
+    "models/harnet_20.py",
+    "models/harnet_80.py",
+    "models/training_blocks.py",
+    "models/tests/test_local_base_lstm.py",
+    "models/tests/test_raw_neural_data.py",
+    "wandb/local_training/base_lstm_queue.stdout.log",
+    "wandb/local_training/harnet_queue.stdout.log",
+    "wandb/local_training/base_lstm_queue.stderr.log",
+    "wandb/local_training/harnet_queue.stderr.log",
+    "wandb/local_training/logs/*.log (all 20 logs)",
+    "inference/checkpoints/{base_lstm_vol,harnet_20,harnet_80}/garman-klass/local/*/*/fit.pth (all 20 checkpoints)",
+    "Direct execution of test_local_base_lstm_jobs, test_local_harnet_jobs, and test_raw_windows: passed"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

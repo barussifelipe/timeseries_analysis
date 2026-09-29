@@ -1,0 +1,41 @@
+{
+  "task": "Preflight review of local SiLU-LSTM window-20 and window-80 fit-only queue for NVDA, AAPL, NFLX, GOOG, and AMZN",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/lstm_val_training.md",
+    "ref/implementation_plan/local_training.md",
+    "inference/run_local_silu_lstm.py",
+    "inference/run_local_base_lstm.py",
+    "models/silu_lstm.py",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/raw_neural_data.py",
+    "models/training_blocks.py",
+    "models/tests/test_local_base_lstm.py",
+    "models/tests/test_raw_neural_data.py",
+    "inference/checkpoints/silu_lstm/garman-klass/global/silu_lstm_raw_gk_variance_return_direct_mse_w20_h128_lr0p001_20e_wandb/fit.pth",
+    "inference/checkpoints/silu_lstm/garman-klass/global/silu_lstm_raw_gk_variance_return_direct_mse_w80_h128_lr0p001_20e_wandb/fit.pth",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "direct invocation of test_local_silu_jobs_and_failure_stop"
+  ],
+  "scores": {
+    "requirements": 29,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "requirements",
+      "severity": "minor",
+      "evidence": "The Dataset and implementation work section of ref/implementation_plan/local_training.md still says training measures validation QLIKE at each epoch, although decision 7 specifies validation MSE checkpoint selection for SiLU-LSTM and models/variance_fit.py selects val/mse when training_loss is mse.",
+      "fix": "Change that generic plan sentence to say the trainer measures the configured validation loss at each epoch."
+    }
+  ],
+  "total": 99,
+  "pass": true
+}

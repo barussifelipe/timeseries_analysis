@@ -1,0 +1,53 @@
+{
+  "task": "Final cold review of ten local raw-Garman-Klass MLP window-20 and window-80 fit-only runs for NVDA, AAPL, NFLX, GOOG, and AMZN",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/local_training.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/reviews/local_mlp_preflight_review.json",
+    "inference/run_local_mlp.py",
+    "inference/run_local_base_lstm.py",
+    "models/mlp.py",
+    "models/variance_neural.py",
+    "models/variance_fit.py",
+    "models/raw_neural_data.py",
+    "models/training_blocks.py",
+    "models/tests/test_local_base_lstm.py",
+    "models/tests/test_raw_neural_data.py",
+    "wandb/local_training/mlp_queue.stdout.log",
+    "wandb/local_training/mlp_queue.stderr.log",
+    "wandb/local_training/logs/mlp_local_AAPL_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike.log",
+    "wandb/local_training/logs/mlp_local_AAPL_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike.log",
+    "wandb/local_training/logs/mlp_local_AMZN_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike.log",
+    "wandb/local_training/logs/mlp_local_AMZN_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike.log",
+    "wandb/local_training/logs/mlp_local_GOOG_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike.log",
+    "wandb/local_training/logs/mlp_local_GOOG_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike.log",
+    "wandb/local_training/logs/mlp_local_NFLX_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike.log",
+    "wandb/local_training/logs/mlp_local_NFLX_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike.log",
+    "wandb/local_training/logs/mlp_local_NVDA_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike.log",
+    "wandb/local_training/logs/mlp_local_NVDA_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike.log",
+    "inference/checkpoints/mlp/garman-klass/local/*/mlp_local_*/fit.pth (10 files reloaded)",
+    "D:/DBs/timeseries_analysis/history_coverage.db (filesystem size and modification time)",
+    "direct .venv invocation of test_local_mlp_jobs: passed"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 18,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "verification",
+      "severity": "minor",
+      "evidence": "The focused test_local_mlp_jobs check exercises ten successful child commands but does not exercise refusal to overwrite an existing artifact or stopping after a failed child. Runtime evidence confirms the completed queue, so this is a remaining branch coverage gap.",
+      "fix": "Add one mocked launcher check for an existing log or checkpoint and a nonzero child exit before using the launcher for another model group."
+    }
+  ],
+  "total": 98,
+  "pass": true
+}

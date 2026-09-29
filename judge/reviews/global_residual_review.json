@@ -1,0 +1,30 @@
+{
+  "task": "Evaluate saved global volatility models again and plot actual-minus-predicted residual distributions and dated residuals on raw and log scales for each model",
+  "sources": [
+    "AGENTS.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/evals.md",
+    "inference/evaluate_volatility_test.py",
+    "inference/plot_global_residuals.py",
+    "models/tests/test_volatility_test_evaluation.py",
+    "git diff -- inference/evaluate_volatility_test.py inference/plot_global_residuals.py models/tests/test_volatility_test_evaluation.py CONTEXT.md",
+    "imgs/eval/global_eval/residuals/ (14 model directories, 56 nonempty PNGs)",
+    "imgs/eval/global_eval/residuals/ar1/histogram_log.png",
+    "imgs/eval/global_eval/residuals/ar1/timeline_log.png",
+    "imgs/eval/global_eval/residuals/rfsv_full/timeline_raw.png",
+    "Direct .venv Python invocation of two focused synthetic tests"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

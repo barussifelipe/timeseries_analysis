@@ -1,4 +1,6 @@
 \documentclass[12pt,a4paper]{article}
+\usepackage{amsmath}
+\numberwithin{equation}{section}
 
 \title{Volatility Forecasting: A Statistical and Deep Learning Approach}
 \author{}
@@ -91,25 +93,188 @@ On Section 2, we'll be explaining the concepts behind volatility prediction, sta
 \section{Background}
 % Present all background knowledge required to understand the work.
 \subsection{Statistics Concepts}
-Let $Y(t)$ be a random variable observed over time, and let $\mathcal{F}(t-1)$ contain the information available before time $t$. An unconditional property describes the distribution of $Y(t)$ without using that history; a conditional property describes its distribution given $\mathcal{F}(t-1)$. For example, $\mathrm{E}[Y(t)]$ is an unconditional mean, whereas $\mathrm{E}[Y(t)\mid\mathcal{F}(t-1)]$ is the mean predicted from past information. A moment summarizes an aspect of a distribution: its first moment concerns location, its second central moment dispersion, and its third central moment asymmetry.
+Let $Y(t)$ be a random variable observed over time, and let $\mathcal{F}(t-1)$ contain the information available before time $t$. An unconditional property describes the distribution of $Y(t)$ without using that history; a conditional property describes its distribution given $\mathcal{F}(t-1)$. The distinction for the mean is
+\begin{equation}\label{eq:conditional-mean}
+\mu=\mathrm{E}[Y(t)],\qquad \mu(t)=\mathrm{E}[Y(t)\mid\mathcal{F}(t-1)].
+\end{equation}
+A moment summarizes an aspect of a distribution: its first moment concerns location, its second central moment dispersion, and its third central moment asymmetry.
 
-The population mean is $\mu=\mathrm{E}[Y(t)]$, and the sample mean of $n$ observations is $\bar{y}=n^{-1}\sum_{t=1}^{n}y(t)$. An autoregressive model, for example $Y(t)=c+\phi Y(t-1)+\varepsilon(t)$ with $\mathrm{E}[\varepsilon(t)\mid\mathcal{F}(t-1)]=0$, has conditional mean $c+\phi Y(t-1)$. SARIMA extends autoregressive and moving-average modeling with ordinary and seasonal differencing; it likewise specifies a forecast of the conditional mean of the modeled series. Differencing must be reversed when expressing a forecast on the original scale \cite{boxjenkins1970}.
+For $n$ observations, the sample mean estimates the population mean:
+\begin{equation}\label{eq:sample-mean}
+\bar{y}=\frac{1}{n}\sum_{t=1}^{n}y(t).
+\end{equation}
+An autoregressive model illustrates a conditional mean. With the model shock $\varepsilon(t)$ satisfying $\mathrm{E}[\varepsilon(t)\mid\mathcal{F}(t-1)]=0$,
+\begin{equation}\label{eq:ar-mean}
+Y(t)=c+\phi Y(t-1)+\varepsilon(t),\qquad \mu(t)=c+\phi Y(t-1).
+\end{equation}
+SARIMA extends autoregressive and moving-average modeling with ordinary and seasonal differencing; it likewise specifies a forecast of the conditional mean of the modeled series. Differencing must be reversed when expressing a forecast on the original scale \cite{boxjenkins1970}. A fitted residual is the observed value minus the fitted conditional mean,
+\begin{equation}\label{eq:residual}
+r(t)=y(t)-\widehat{\mu}(t).
+\end{equation}
+Thus $r(t)$ is calculated after fitting from observed data, whereas $\varepsilon(t)$ denotes the model's unobserved error or shock; fitted residuals approximate shocks.
 
-The population variance is $\mathrm{Var}(Y(t))=\mathrm{E}[(Y(t)-\mu)^2]$. Its usual unbiased sample estimator for independent, identically distributed observations with finite variance is $s^2=(n-1)^{-1}\sum_{t=1}^{n}(y(t)-\bar{y})^2$. For dependent time-series observations, this formula remains a descriptive sample variance, but its unbiasedness is not automatic. Conditional variance describes uncertainty left after observing the past: $h(t)=\mathrm{Var}(Y(t)\mid\mathcal{F}(t-1))=\mathrm{E}[\varepsilon(t)^2\mid\mathcal{F}(t-1)]$ when $\varepsilon(t)=Y(t)-\mathrm{E}[Y(t)\mid\mathcal{F}(t-1)]$. ARCH models $h(t)$ from past squared shocks, for example $h(t)=\omega+\alpha\varepsilon(t-1)^2$; GARCH also uses past conditional variance, for example $h(t)=\omega+\alpha\varepsilon(t-1)^2+\beta h(t-1)$. With $\omega>0$, $\alpha,\beta\geq0$, and $\alpha+\beta<1$ (taking $\beta=0$ for ARCH), these models can have constant unconditional variance while conditional uncertainty changes \cite{engle1982,bollerslev1986}.
+The population variance and its sample estimate are
+\begin{equation}\label{eq:variance}
+\mathrm{Var}(Y(t))=\mathrm{E}[(Y(t)-\mu)^2],\qquad
+s^2=\frac{1}{n-1}\sum_{t=1}^{n}(y(t)-\bar{y})^2.
+\end{equation}
+The estimator $s^2$ is unbiased for independent, identically distributed observations with finite variance: across repeated samples, its expected value equals the population variance. Dividing by $n-1$ compensates for estimating $\mu$ with the same sample's mean; dividing by $n$ would underestimate variance on average. With dependent time-series observations, $s^2$ remains descriptive, but that unbiasedness is not automatic.
 
-Covariance generalizes variance to two variables: $\mathrm{Cov}(X,Y)=\mathrm{E}[(X-\mathrm{E}[X])(Y-\mathrm{E}[Y])]$, so $\mathrm{Var}(X)=\mathrm{Cov}(X,X)$. Applied to $Y(t)$ and $Y(t-k)$, it measures linear dependence across a lag $k$. The standardized third central moment, $\mathrm{E}[(Y(t)-\mu)^3]/\mathrm{Var}(Y(t))^{3/2}$, is skewness when the variance is positive and the third moment exists. Its sign indicates the direction of asymmetry.
+Conditional variance describes uncertainty left after observing the past. For $\varepsilon(t)=Y(t)-\mu(t)$, its conditional mean is zero, so
+\begin{equation}\label{eq:conditional-variance}
+h(t)=\mathrm{Var}(Y(t)\mid\mathcal{F}(t-1))
+=\mathrm{E}[\varepsilon(t)^2\mid\mathcal{F}(t-1)].
+\end{equation}
+ARCH models $h(t)$ from past squared shocks; GARCH also uses past conditional variance:
+\begin{align}
+h(t)&=\omega+\alpha\varepsilon(t-1)^2 &&\text{ARCH(1)},\label{eq:arch}\\
+h(t)&=\omega+\alpha\varepsilon(t-1)^2+\beta h(t-1) &&\text{GARCH(1,1)}.\label{eq:garch}
+\end{align}
+In estimation, lagged fitted residuals $r(t-1)$ stand in for the unobserved shocks. With $\omega>0$, $\alpha,\beta\geq0$, and $\alpha+\beta<1$ (taking $\beta=0$ for ARCH), these models can have constant unconditional variance while conditional uncertainty changes \cite{engle1982,bollerslev1986}.
 
-A shock is the part of an observation that the conditional-mean model does not predict. Zero-mean white noise has constant finite unconditional variance and zero covariance between distinct dates. White noise need not be Gaussian or independent. In a homoscedastic SARIMA model, the innovations are commonly modeled as white noise with constant conditional variance. In ARCH and GARCH, the raw shocks $\varepsilon(t)=\sqrt{h(t)}z(t)$ can be uncorrelated with constant unconditional variance while their conditional variance $h(t)$ changes; the standardized innovations $z(t)$ are commonly assumed independent with mean zero and variance one \cite{boxjenkins1970,engle1982,bollerslev1986}.
+Covariance generalizes variance to two variables:
+\begin{equation}\label{eq:covariance}
+\mathrm{Cov}(X,Y)=\mathrm{E}[(X-\mathrm{E}[X])(Y-\mathrm{E}[Y])],
+\qquad \mathrm{Var}(X)=\mathrm{Cov}(X,X).
+\end{equation}
+Applied to $Y(t)$ and $Y(t-k)$, it measures linear dependence across a lag $k$. The standardized third central moment is skewness, when the variance is positive and the third moment exists:
+\begin{equation}\label{eq:skewness}
+\operatorname{Skew}(Y(t))=
+\frac{\mathrm{E}[(Y(t)-\mu)^3]}{\mathrm{Var}(Y(t))^{3/2}}.
+\end{equation}
+Its sign indicates the direction of asymmetry.
 
-In continuous time, standard Brownian motion $W(t)$ starts at $W(0)=0$, has continuous sample paths, has independent increments, and has stationary Gaussian increments: $W(t)-W(s)\sim\mathrm{N}(0,t-s)$ for $t>s$. The increment variance is $\Delta t$, while its standard deviation is $(\Delta t)^{1/2}$. Although its increments are stationary, $W(t)$ itself is not: $\mathrm{Var}(W(t))=t$. White noise describes uncorrelated values at distinct dates; Brownian motion is a continuous-path process whose increments over disjoint intervals are independent \cite{mandelbrot1968}.
+Homoscedasticity means that error variance is constant across observations; conditional homoscedasticity specifically means the variance given past information stays fixed. Heteroscedasticity means it changes. Thus a homoscedastic model has
+\begin{equation}\label{eq:homoscedasticity}
+\mathrm{Var}(\varepsilon(t)\mid\mathcal{F}(t-1))=\sigma^2,
+\end{equation}
+whereas ARCH and GARCH set this conditional variance to $h(t)$ from \eqref{eq:arch} or \eqref{eq:garch}. Their changing conditional variance does not itself imply changing unconditional variance \cite{engle1982,bollerslev1986}.
 
-Arithmetic Brownian motion adds drift and scale to that driver, $S(t)=S(0)+\mu t+\sigma W(t)$, so its changes can be positive or negative without keeping $S(t)$ positive. Geometric Brownian motion instead models proportional changes, $dS(t)=\mu S(t)\,dt+\sigma S(t)\,dW(t)$, giving $S(t)=S(0)\exp\{(\mu-\sigma^2/2)t+\sigma W(t)\}$ and positive prices for $S(0)>0$ \cite{bachelier1900,samuelson1965,blackscholes1973}.
+A shock is the part of an observation that the conditional-mean model does not predict. Zero-mean white noise has constant finite unconditional variance and zero covariance between distinct dates. White noise need not be Gaussian or independent. In a homoscedastic SARIMA model, the innovations are commonly modeled as white noise with constant conditional variance. In ARCH and GARCH, the shocks follow
+\begin{equation}\label{eq:garch-shock}
+\varepsilon(t)=\sqrt{h(t)}z(t),
+\end{equation}
+where the standardized innovations $z(t)$ are commonly assumed independent with mean zero and variance one. The shocks can be uncorrelated with constant unconditional variance while $h(t)$ changes \cite{boxjenkins1970,engle1982,bollerslev1986}.
 
-Fractional Brownian motion $B^H(t)$ replaces the Brownian scaling exponent $1/2$ with a Hurst parameter $H\in(0,1)$. Its centered Gaussian increments are stationary and satisfy $\mathrm{Var}(B^H(t+\Delta t)-B^H(t))=(\Delta t)^{2H}$, so their standard deviation is $(\Delta t)^H$; $H=1/2$ recovers standard Brownian motion. For $H>1/2$, separated increments are positively correlated, and their slowly decaying covariance gives long memory. For $H<1/2$, increments are negatively correlated and the paths are locally rougher. Negative correlation here does not imply long memory in the usual nonsummable-covariance sense \cite{mandelbrot1968,gatheral2018}.
+In continuous time, standard Brownian motion $W(t)$ starts at zero, has continuous sample paths, has independent increments, and has stationary Gaussian increments:
+\begin{equation}\label{eq:brownian-increments}
+W(0)=0,\qquad W(t)-W(s)\sim\mathrm{N}(0,t-s),\quad t>s.
+\end{equation}
+The increment variance is $\Delta t$, while its standard deviation is $(\Delta t)^{1/2}$. Although its increments are stationary, $W(t)$ itself is not:
+\begin{equation}\label{eq:brownian-variance}
+\mathrm{Var}(W(t))=t.
+\end{equation}
+White noise describes uncorrelated values at distinct dates; Brownian motion is a continuous-path process whose increments over disjoint intervals are independent \cite{mandelbrot1968}.
 
-Ordinary continuity means a path's change tends to zero as the time interval tends to zero. H\"older continuity is stronger: locally, $|B^H(t)-B^H(s)|\leq C|t-s|^r$ for some finite $C$ and any exponent $r<H$ on a bounded interval. A smaller $H$ therefore permits less regular paths \cite{gatheral2018}. A power law has the form $C\Delta^{-\gamma}$: its log--log plot against lag $\Delta$ is a straight line with slope $-\gamma$. In \emph{Volatility is rough}, Gatheral, Jaisson, and Rosenbaum find that volatility autocovariance does not follow such a power law at their usual observed time scales, even though standard persistence procedures can suggest long memory. They explicitly do not infer the covariance's behavior at unobservable asymptotically large lags from finite data \cite{gatheral2018}.
+Arithmetic Brownian motion adds drift and scale to that driver:
+\begin{equation}\label{eq:arithmetic-brownian}
+S(t)=S(0)+\mu t+\sigma W(t).
+\end{equation}
+Its changes can be positive or negative without keeping $S(t)$ positive. Geometric Brownian motion instead models proportional changes:
+\begin{equation}\label{eq:geometric-brownian}
+dS(t)=\mu S(t)\,dt+\sigma S(t)\,dW(t).
+\end{equation}
+To solve this equation, consider a general Brownian diffusion
+\begin{equation}\label{eq:ito-diffusion}
+dX(t)=a(t)\,dt+b(t)\,dW(t).
+\end{equation}
+For a twice continuously differentiable, time-independent function $f$, the one-dimensional form of It\^o's lemma states
+\begin{align}
+d f(X(t))={}&
+\bigl[a(t)f'(X(t))+\tfrac12 b(t)^2 f''(X(t))\bigr]\,dt \notag\\
+&+b(t)f'(X(t))\,dW(t).\label{eq:ito-lemma}
+\end{align}
+\begin{samepage}
+Because $W(0)=0$, a Brownian increment of length $\Delta t$ has the exact scaling in distribution
+\begin{equation}\label{eq:brownian-small-increment}
+W(\Delta t)\overset{\mathrm{d}}{=}(\Delta t)^{1/2}Z,
+\qquad Z\sim\mathrm{N}(0,1).
+\end{equation}
+Thus its typical size is approximately $(\Delta t)^{1/2}$, and its square contributes at order $\Delta t$. Over uniform partitions of $[0,t]$, the squared increments have the nonzero limit
+\begin{equation}\label{eq:brownian-quadratic-variation}
+\sum_{i=0}^{n-1}\left[W\!\left(\frac{(i+1)t}{n}\right)
+-W\!\left(\frac{it}{n}\right)\right]^2
+\xrightarrow[n\to\infty]{\mathrm{P}}t.
+\end{equation}
+\end{samepage}
+This quadratic variation produces the second-derivative term in It\^o's lemma. For $f(x)=\log x$ on $x>0$,
+\begin{equation}\label{eq:log-derivatives}
+f'(x)=\frac{1}{x},\qquad f''(x)=-\frac{1}{x^2}.
+\end{equation}
+With $X(t)=S(t)$, $a(t)=\mu S(t)$ and $b(t)=\sigma S(t)$, It\^o's lemma gives the extra $-\sigma^2/2$ term that an ordinary chain rule would miss:
+\begin{equation}\label{eq:geometric-brownian-log}
+d\log S(t)=(\mu-\sigma^2/2)\,dt+\sigma\,dW(t).
+\end{equation}
+Integrating from zero to $t$, using $W(0)=0$, gives
+\begin{equation}\label{eq:geometric-brownian-integral}
+\log\frac{S(t)}{S(0)}=(\mu-\sigma^2/2)t+\sigma W(t).
+\end{equation}
+Exponentiating gives a positive level for $S(0)>0$, making geometric Brownian motion suitable for positive-valued quantities \cite{bachelier1900,samuelson1965,blackscholes1973}:
+\begin{equation}\label{eq:geometric-brownian-solution}
+S(t)=S(0)\exp\{(\mu-\sigma^2/2)t+\sigma W(t)\}.
+\end{equation}
 
-To combine rough local behavior with mean reversion, fractional Ornstein--Uhlenbeck (fOU) log volatility $X(t)$ adds a restoring drift to fractional Brownian forcing: $dX(t)=-\alpha(X(t)-m)\,dt+\nu\,dB^H(t)$, with $\alpha>0$. Its stationary form is $X(t)=m+\nu\int_{-\infty}^{t}e^{-\alpha(t-s)}\,dB^H(s)$: deviations from $m$ decay at a rate set by $\alpha$, while $H$ controls local roughness. The rough fractional stochastic-volatility model sets $\sigma(t)=\exp\{X(t)\}$ and takes $H<1/2$. These are Equations (3.3)--(3.4) of Gatheral, Jaisson, and Rosenbaum; the fractional OU construction is also studied by Cheridito, Kawaguchi, and Maejima \cite{gatheral2018,cheridito2003}.
+Fractional Brownian motion $B^H(t)$ replaces the Brownian scaling exponent $1/2$ with a Hurst parameter $H\in(0,1)$. Its centered Gaussian increments are stationary and satisfy
+\begin{align}
+\mathrm{Var}(B^H(t+\Delta t)-B^H(t))&=(\Delta t)^{2H},\label{eq:fractional-scaling}\\
+\mathrm{SD}(B^H(t+\Delta t)-B^H(t))&=(\Delta t)^H.\label{eq:fractional-scaling-sd}
+\end{align}
+\begin{samepage}
+The case $H=1/2$ recovers standard Brownian motion. For unit-length increments, define
+\begin{equation}\label{eq:fractional-unit-increment}
+\Delta B^H(t)=B^H(t+1)-B^H(t).
+\end{equation}
+Let $U=\Delta B^H(t)$ and $V=\Delta B^H(t+k)$, where $k\geq1$ is an integer lag. By stationary increments and the unit time step, both standard deviations equal one:
+\begin{equation}\label{eq:fractional-unit-sd}
+\mathrm{SD}(U)=((t+1)-t)^H=1,\qquad
+\mathrm{SD}(V)=((t+k+1)-(t+k))^H=1.
+\end{equation}
+Thus covariance and correlation have the same numerical value under this normalization:
+\begin{equation}\label{eq:fractional-covariance-correlation}
+\mathrm{Cov}(U,V)=\mathrm{Corr}(U,V)\,\mathrm{SD}(U)\,\mathrm{SD}(V)
+=\mathrm{Corr}(U,V)(1)(1).
+\end{equation}
+The lag dependence follows from the fractional Brownian covariance, giving
+\begin{equation}\label{eq:fractional-increment-covariance}
+\mathrm{Cov}(\Delta B^H(t),\Delta B^H(t+k))
+=\frac{(k+1)^{2H}-2k^{2H}+(k-1)^{2H}}{2}.
+\end{equation}
+For large lags and $H\ne1/2$, a Taylor expansion gives
+\begin{equation}\label{eq:fractional-increment-covariance-asymptotic}
+\mathrm{Cov}(\Delta B^H(t),\Delta B^H(t+k))
+\sim H(2H-1)k^{2H-2},\qquad k\to\infty.
+\end{equation}
+These are Equation~(2) of Shi, Yu, and Zhang with their scale parameter set to one; they also follow from the fractional Brownian covariance in Equation~(1.1) of Cheridito, Kawaguchi, and Maejima \cite{shi2025,cheridito2003}.
+\end{samepage}
+These lag covariances decay as a power of $k$, not as a geometric sequence with terms proportional to $r^k$. The relevant $p$-series test is
+\begin{equation}\label{eq:covariance-p-series}
+\sum_{k=1}^{\infty}k^{-p}\text{ converges if and only if }p>1,\qquad p=2-2H.
+\end{equation}
+At $p=1$, the harmonic series diverges; below one, the terms decay too slowly, while above one their sum is finite \cite{unlcalculus}. For $H>1/2$, the covariance is positive and $p<1$, so its sum over lags diverges: this is long memory in the nonsummable-covariance sense. For $H<1/2$, increments are negatively correlated and the paths are locally rougher, but $p>1$, so the sum of absolute covariances converges. At $H=1/2$, the exact covariance is zero at every positive lag, so the harmonic-series case does not apply \cite{shi2025,mandelbrot1968,gatheral2018}.
+
+Ordinary continuity means a path's change tends to zero as the time interval tends to zero. H\"older continuity is stronger: on a bounded interval, for every $r<H$ there is a finite path-dependent constant $C$ such that
+\begin{equation}\label{eq:holder}
+|B^H(t)-B^H(s)|\leq C|t-s|^r.
+\end{equation}
+A smaller $H$ therefore permits less regular paths \cite{gatheral2018}. A power law in lag $\Delta$ has the form
+\begin{equation}\label{eq:power-law}
+f(\Delta)=C\Delta^{-\gamma},\qquad C>0,\quad\gamma>0.
+\end{equation}
+Its log--log plot is a straight line with slope $-\gamma$. In \emph{Volatility is rough}, Gatheral, Jaisson, and Rosenbaum find that volatility autocovariance does not follow such a power law at their usual observed time scales, even though standard persistence procedures can suggest long memory. They explicitly do not infer the covariance's behavior at unobservable asymptotically large lags from finite data \cite{gatheral2018}.
+
+Fractional Ornstein--Uhlenbeck (fOU) log volatility combines a mean-reverting drift with fractional Brownian forcing:
+\begin{equation}\label{eq:fou-dynamics}
+dX(t)=-\alpha(X(t)-m)\,dt+\nu\,dB^H(t),\qquad \alpha>0.
+\end{equation}
+Its stationary form is
+\begin{equation}\label{eq:fou-stationary}
+X(t)=m+\nu\int_{-\infty}^{t}e^{-\alpha(t-s)}\,dB^H(s).
+\end{equation}
+Deviations from $m$ decay at a rate set by $\alpha$, while $H$ controls local roughness. The rough fractional stochastic-volatility model sets
+\begin{equation}\label{eq:rfsv-volatility}
+\sigma(t)=\exp\{X(t)\},\qquad H<1/2.
+\end{equation}
+The stationary form and volatility link correspond to Equations (3.3)--(3.4) of Gatheral, Jaisson, and Rosenbaum; the fractional OU construction is also studied by Cheridito, Kawaguchi, and Maejima \cite{gatheral2018,cheridito2003}.
 
 \subsection{ML Concepts}
 % To be developed in a later pass.
@@ -172,6 +337,8 @@ To combine rough local behavior with mean reversion, fractional Ornstein--Uhlenb
 \bibitem{gatheral2018} Gatheral, J., Jaisson, T., and Rosenbaum, M. (2018). Volatility is rough. \emph{Quantitative Finance}, 18(6), 933--949.
 \bibitem{mandelbrot1968} Mandelbrot, B. B., and Van Ness, J. W. (1968). Fractional Brownian motions, fractional noises and applications. \emph{SIAM Review}, 10(4), 422--437.
 \bibitem{cheridito2003} Cheridito, P., Kawaguchi, H., and Maejima, M. (2003). Fractional Ornstein--Uhlenbeck processes. \emph{Electronic Journal of Probability}, 8(3), 1--14.
+\bibitem{shi2025} Shi, S., Yu, J., and Zhang, C. (2025). Fractional Gaussian noise: Spectral density and estimation methods. \emph{Journal of Time Series Analysis}, 46(6), 1146--1174. doi:10.1111/jtsa.12750.
+\bibitem{unlcalculus} University of Nebraska--Lincoln. (n.d.). Convergence of series, Section 7.3. \emph{Calculus}. \url{https://mathbooks.unl.edu/Calculus/sec-7-3-series.html}.
 \bibitem{werbos1974} Werbos, P. J. (1974). \emph{Beyond regression: New tools for prediction and analysis in the behavioral sciences} [Doctoral dissertation, Harvard University].
 \bibitem{rumelhart1986} Rumelhart, D. E., Hinton, G. E., and Williams, R. J. (1986). Learning representations by back-propagating errors. \emph{Nature}, 323, 533--536.
 \bibitem{lapedes1987} Lapedes, A., and Farber, R. (1987). \emph{Nonlinear signal processing using neural networks: Prediction and system modelling} (Technical Report LA-UR-87-1662). Los Alamos National Laboratory.
