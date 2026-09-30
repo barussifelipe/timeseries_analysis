@@ -1,0 +1,26 @@
+{
+  "task": "Final cold review of the five thesis parameter-estimation revisions: OLS beta and BLUE, Gaussian variance likelihood and negative log likelihood, RFSV empirical moment and scale estimate, and the Section 5.2 variance predictor.",
+  "sources": [
+    "AGENTS.md instructions supplied in the task",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/final_report/thesis_structure.tex:236-275",
+    "ref/final_report/thesis_structure.pdf:13 (independent pdftotext extraction and rendered-page inspection)",
+    "ref/thesis/references.md:177-190",
+    "judge/reviews/thesis_parameter_revision_review.json",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "https://arxiv.org/pdf/1410.3394, Sections 2.1 and 5.2",
+    "https://online.stat.psu.edu/stat508/Lesson04.html, Gauss-Markov theorem section"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

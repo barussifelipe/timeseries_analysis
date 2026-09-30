@@ -1,0 +1,26 @@
+{
+  "task": "Cold review of the brief Hurst exponent explanation and bibliography cleanup in the thesis",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.aux",
+    "ref/final_report/thesis_structure.log",
+    "git diff -- ref/final_report/thesis_structure.tex",
+    "git diff --check",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "https://arxiv.org/pdf/1410.3394"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

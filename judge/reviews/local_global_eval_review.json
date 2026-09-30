@@ -1,0 +1,35 @@
+{
+  "task": "Evaluate saved local and global adjusted GK volatility fits on matched five-stock test targets",
+  "sources": [
+    "User-provided AGENTS.md instructions and evaluation request",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/local_evals.md",
+    "ref/implementation_plan/local_training.md",
+    "inference/evaluate_local_global.py",
+    "inference/evaluate_volatility_test.py",
+    "inference/plot_global_residuals.py",
+    "models/tests/test_local_global_eval.py",
+    "models/training_blocks.py",
+    "models/raw_neural_data.py",
+    "inference/checkpoints/rfsv/garman-klass/local/NVDA/raw_history_full/fit.json",
+    "inference/checkpoints/har/garman-klass/global/raw_history_w20/fit.json",
+    "imgs/eval/local_eval/metrics.csv",
+    "imgs/eval/local_eval/per_stock.csv",
+    "imgs/eval/local_eval/run.log",
+    "imgs/eval/local_eval/residuals/rfsv_full/local/timeline_mean_raw.png",
+    "imgs/eval/local_eval/residuals/harnet_80/global/histogram_log.png",
+    "judge/prompt.md",
+    "judge/score.schema.json"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

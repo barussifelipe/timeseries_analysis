@@ -1,0 +1,25 @@
+{
+  "task": "Align the Garman--Klass expectation displays as equations (2.59) and (2.60) while preserving their mathematics and numbering.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/final_report/thesis_structure.tex:415-430",
+    "working-tree diff for ref/final_report/thesis_structure.tex",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "ref/final_report/$build/thesis_structure.aux",
+    "ref/final_report/$build/thesis_structure.log",
+    "ref/final_report/$build/page19-final.png"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

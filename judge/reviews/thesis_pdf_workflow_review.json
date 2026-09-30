@@ -1,0 +1,27 @@
+{
+  "task": "Use the thesis .tex as the sole source for a direct same-directory PDF build and record that workflow in AGENTS.md",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.pdf",
+    "ref/final_report/thesis_structure.synctex.gz",
+    "ref/final_report/thesis_structure.log",
+    "git diff and status for AGENTS.md, CONTEXT.md, and ref/final_report",
+    "pdfinfo output for ref/final_report/thesis_structure.pdf",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/validate.py"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

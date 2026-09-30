@@ -1,0 +1,27 @@
+{
+  "task": "Display the gradient descent update as its own equation in the thesis ML Concepts passage and refresh the PDF",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- ref/final_report/thesis_structure.tex CONTEXT.md",
+    "ref/final_report/thesis_structure.tex:277-281",
+    "ref/final_report/thesis_structure.aux:115",
+    "ref/final_report/thesis_structure.log:190",
+    "ref/final_report/thesis_structure.pdf page 14 (rendered image and pdftotext)",
+    "git status --short",
+    "git diff --check"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -1,0 +1,28 @@
+{
+  "task": "Cold review of the thesis roughness and continuity section",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/final_report/thesis_structure.tex",
+    "git diff -- ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.pdf, pages 11–14",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.aux",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "https://arxiv.org/pdf/1410.3394",
+    "https://arxiv.org/pdf/1807.02540",
+    "git diff --check"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

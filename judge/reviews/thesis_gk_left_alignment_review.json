@@ -1,0 +1,23 @@
+{
+  "task": "Align the left edges of Garman--Klass expectation equations (2.59) and (2.60)",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "ref/final_report/thesis_structure.tex:418-430",
+    "ref/final_report/thesis_structure.pdf:19",
+    "ref/final_report/.alignment_build/thesis_structure.log"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -1,0 +1,6 @@
+Table,Population,Observations,H,R2,LagType,TrainEnd,MaxLag,Cohort,NuSquared
+equity_garman_klass_variance,NVDA,1625000,0.0606148943128168,0.998793137372734,observation,2016-01-01,400,raw_history_NVDA,0.200373726411272
+equity_garman_klass_variance,AAPL,3439000,0.0917380084044795,0.995758718885682,observation,2016-01-01,400,raw_history_AAPL,0.2243872517562264
+equity_garman_klass_variance,NFLX,1290600,0.037446451682663,0.9862909183493108,observation,2016-01-01,400,raw_history_NFLX,0.2738741846040878
+equity_garman_klass_variance,GOOG,1065000,0.0780932470614976,0.999883715292432,observation,2016-01-01,400,raw_history_GOOG,0.2008763165202505
+equity_garman_klass_variance,AMZN,1795400,0.0604179496997543,0.9997901271001886,observation,2016-01-01,400,raw_history_AMZN,0.2093295057499555

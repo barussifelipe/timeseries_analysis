@@ -1,0 +1,29 @@
+{
+  "task": "Cold review of the thesis Volatility Proxies subsection: latent volatility, realized variance consistency, and Parkinson and reduced Garman--Klass formulas and derivations",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "ref/final_report/thesis_structure.tex:380-414",
+    "ref/final_report/thesis_structure.pdf:17-19",
+    ".build_volatility_proxies/thesis_structure.log",
+    "ref/thesis/references.md",
+    "ref/thesis/thesis_notes.md",
+    "https://www.cmegroup.com/trading/fx/files/michael_parkinson.pdf",
+    "https://www.cmegroup.com/trading/fx/files/a_estimation_of_security_price.pdf",
+    "https://public.econ.duke.edu/~boller/Published_Papers/ier_98.pdf",
+    "https://arxiv.org/abs/2205.07719"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -1,0 +1,29 @@
+{"database": "D:\\DBs\\timeseries_analysis\\history_coverage.db", "source_bytes": 23995736064, "source_mtime_ns": 1789904019449177100, "tickers": ["NVDA", "AAPL", "NFLX", "GOOG", "AMZN"], "test_period": ["2019-01-01", "2025-12-31"], "mase": "test-date naive MAE per ticker/window"}
+{"model": "MLP-20 LOCAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "MLP-20 GLOBAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "MLP-80 LOCAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "MLP-80 GLOBAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "Base LSTM-20 LOCAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "Base LSTM-20 GLOBAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "Base LSTM-80 LOCAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "Base LSTM-80 GLOBAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "SiLU-LSTM-20 LOCAL", "N": 8800, "floor_hits_pct": 1.1022727272727273}
+{"model": "SiLU-LSTM-20 GLOBAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "SiLU-LSTM-80 LOCAL", "N": 8800, "floor_hits_pct": 10.613636363636363}
+{"model": "SiLU-LSTM-80 GLOBAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "HARNet-20 LOCAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "HARNet-20 GLOBAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "HARNet-80 LOCAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "HARNet-80 GLOBAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "AR(1) LOCAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "AR(1) GLOBAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "HAR-20 LOCAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "HAR-20 GLOBAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "HAR-80 LOCAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "HAR-80 GLOBAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "GARCH(1,1) LOCAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "GARCH(1,1) GLOBAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "SARIMA LOCAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "SARIMA GLOBAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "RFSV-full LOCAL", "N": 5, "floor_hits_pct": 0.0}
+{"model": "RFSV-full GLOBAL", "N": 5, "floor_hits_pct": 0.0}

@@ -1,0 +1,38 @@
+{
+  "task": "Fit AR(1), HAR-20, HAR-80, GARCH(1,1), SARIMA, and RFSV-full independently for five local adjusted Garman-Klass stocks without validation or test scoring",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/local_training.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- data/roughness_analysis.py models/raw_statistical_fit.py ref/implementation_plan/local_training.md CONTEXT.md",
+    "inference/run_local_statistical.py",
+    "inference/run_local_base_lstm.py",
+    "models/raw_neural_data.py",
+    "models/training_blocks.py",
+    "models/variance_fit.py",
+    "models/tests/test_local_statistical_fit.py",
+    "models/tests/test_raw_statistical_fit.py",
+    "models/tests/test_rfsv_raw_fit.py",
+    "models/tests/test_roughness_analysis.py",
+    "inference/checkpoints/*/garman-klass/local/*/raw_history_*/fit.json and fit.log",
+    "imgs/roughness_analysis/local/train/roughness_summary.csv, roughness_moments.csv, roughness_zeta.csv, and six PNGs",
+    ".venv/Scripts/python.exe -m models.tests.test_local_statistical_fit",
+    ".venv/Scripts/python.exe -m models.tests.test_rfsv_raw_fit",
+    ".venv/Scripts/python.exe -m models.tests.test_raw_statistical_fit",
+    ".venv/Scripts/python.exe -m unittest models.tests.test_roughness_analysis -q",
+    "git diff --check"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

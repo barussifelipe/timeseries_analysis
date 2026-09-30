@@ -1,3 +1,212 @@
+## Thesis Model Evaluation and MCS (2026-09-30)
+
+Section 2 now ends with a Model Evaluation subsection based on Hansen, Lunde, and Nason (2011). It defines matched per-model losses, pairwise loss differences, the paper's Equation (1) equal-performance null, the unnumbered Section 3.1.2 standardized excess-loss statistic and matching elimination rule, the bootstrap sequence, and the asymptotic coverage interpretation. A subsequent formatting refinement places the alternative hypothesis and bootstrap rejection condition directly below the null. The original paper was added to the thesis bibliography and `ref/thesis/references.md`, with concise findings in `ref/thesis/thesis_notes.md`. No model, data, fit, or evaluation result changed. Two direct MiKTeX passes with SyncTeX regenerated the 25-page PDF; page 20 was visually checked with the new display. The log reports only earlier overfull lines 77-78 and 253. A tiny numerical excess-loss identity check passed. Fresh-context reviews `judge/reviews/thesis_mcs_model_evaluation_review.json` and `judge/reviews/thesis_mcs_hypothesis_review.json` both passed 100/100 with no findings and validated JSON. Next thesis-writing task: develop Methods, including the project-specific MCS bootstrap and aggregation decisions.
+
+## Thesis local and global complexity (2026-09-30)
+
+The Background subsection now defines one fitted parameter vector per series for a local method and one shared vector for a global method, with explicit forecast, parameter-count, and hypothesis-class cardinality equations. It follows only Montero-Manso and Hyndman (2021), separating their Proposition 1 existence result from the Section 3.4 equal-bound complexity comparison and its assumptions. `ref/thesis/thesis_notes.md` records the paper-specific distinctions. No data, fit, or evaluation changed. Two direct MiKTeX passes with SyncTeX from `ref/final_report/` regenerated the 25-page `thesis_structure.pdf` from its `.tex` source and preserved `thesis_structure.synctex.gz`. Pages 19-20 were visually checked in the earlier build; the direct build has only earlier overfull lines at source 77-78 and 253. `AGENTS.md` now requires direct, same-directory thesis builds, and the three empty temporary `.build_*` folders were removed. Fresh-context cold reviews `judge/reviews/thesis_local_global_complexity_review.json` and `judge/reviews/thesis_pdf_workflow_review.json` passed 98/100 and 100/100, respectively; both JSON files validated. Next thesis-writing task: Methods.
+
+## Thesis volatility-proxy concepts (2026-09-30)
+
+The Volatility Proxies subsection now defines latent spot volatility and daily
+integrated variance following HARNet, then presents daily unannualized RV,
+Parkinson, and reduced Garman--Klass variance equations in that order. It
+explains RV consistency as within-day sampling grows. The intraday return now
+has its own numbered equation; the Brownian squared-range identity behind
+Parkinson and the moment calculation for the reduced Garman--Klass estimator
+each have displayed equations. Andersen and Bollerslev (1998) was added to the
+thesis bibliography
+and `ref/thesis/references.md`; `ref/thesis/thesis_notes.md` records HARNet's
+relevant equations. No data, estimator implementation, fit, or comparison was
+changed. Two MiKTeX passes generated a 23-page PDF; pages 18-19 were visually
+checked, with only older overfull lines 76-77 and 252. Next thesis-writing task:
+Local and Global complexity. Cold review remains pending: two fresh review
+agents failed when the service reported its usage limit, so no passing review
+may be claimed for this section.
+
+## Thesis RFSV predictor and c(H) equations (2026-09-30)
+
+The RFSV Section 5.2 variance predictor and the definition of c(H) now have
+separate numbered equations (`eq:rfsv-variance-predictor` and `eq:rfsv-c-h`) in
+`ref/final_report/thesis_structure.tex`. This is a formatting change only; no
+formula, model fit, data, or evaluation changed. Two MiKTeX passes built the
+PDF, and page 13 was visually checked: the equations render as (2.38) and
+(2.39). The build log has the earlier unrelated overfull lines at source 76-77
+and 252. Next thesis-writing task: Volatility Proxies.
+Fresh-context cold review `judge/reviews/thesis_rfsv_c_split_review.json`
+passed 100/100 with no findings, and its JSON validated.
+
+## Thesis RFSV Gaussian-moment scale explanation (2026-09-30)
+
+The Statistics Concepts RFSV parameter-estimation passage now states q>=0 for
+the empirical moment, defines the fractional Brownian Gaussian absolute moment
+K_q, derives the approximate nu-scaled log-volatility increment moment under
+small mean reversion, and separates slope qH from intercept log(nu^q K_q).
+It explains K_2=1 and the resulting nu-squared estimate from the q=2 intercept;
+the existing Section 5.2 variance predictor remains. This is thesis prose only:
+no model fit, data, or evaluation changed. Two MiKTeX passes built a 22-page
+PDF; pages 13-14 were visually checked. The build logs still report the older
+overfull lines at source 76-77 and 252, outside this RFSV edit. Next thesis
+writing task: Volatility Proxies.
+Fresh-context cold review `judge/reviews/thesis_rfsv_kq_review.json` passed
+100/100 with no findings, and its JSON validated.
+
+## Thesis Gaussian NLL objective notation (2026-09-30)
+
+The Statistics Concepts parameter-estimation passage now separates Gaussian
+log likelihood with `\theta^*\in\operatorname*{arg\,max}\log L(\theta)` from
+negative log likelihood loss with
+`\theta^*\in\operatorname*{arg\,min}\mathcal L_{\mathrm{NLL}}(\theta)`.
+It explains the optimizer's distribution-based criterion, with GARCH as the
+changing-variance example. No data, fit, forecast, or evaluation changed. A
+two-pass MiKTeX build produced a 21-page PDF; page 12 was visually checked,
+and only the preexisting source 76-77 overfull line remains. The first cold
+review was interrupted because the user requested this equation split before
+it finished. Next thesis-writing task: Volatility Proxies.
+
+## Thesis parameter-estimation notation revision (2026-09-30)
+
+The Statistics Concepts parameter-estimation passage now defines beta and
+qualifies OLS as BLUE under Gauss--Markov assumptions. The Gaussian likelihood
+uses sigma-squared and explains minimizing negative log likelihood. The RFSV
+moment definition now follows Gatheral et al. Section 2.1's regular-grid
+notation, with an explicit N=floor(T/Delta); an added q=2 intercept equation
+states nu-squared estimation, and the paper's unnumbered Section 5.2 variance
+predictor shows where nu-squared enters. Penn State's Gauss--Markov source was
+added to the thesis bibliography and `ref/thesis/references.md`. No data, fit,
+forecast, or evaluation changed. The PDF compiled in two MiKTeX passes and
+pages 12-13 were visually checked; only the preexisting overfull line at source
+76-77 remains. Next thesis-writing task: Volatility Proxies.
+The first cold review passed 97/100 but found commas accidentally rendered in
+two RFSV estimator superscripts. Those commas were removed, and a new two-pass
+PDF build and page-13 visual inspection confirmed clean squared symbols. The
+first review covers the superseded draft. Fresh-context final cold review
+`judge/reviews/thesis_parameter_revision_final_review.json` passed 100/100 with
+no findings, and its JSON validated.
+
+## Thesis Background: statistical parameter estimation (2026-09-30)
+
+Parameter Estimation now appears as a subsubsection of Statistics Concepts in
+`ref/final_report/thesis_structure.tex`. It explains OLS for AR/HAR, conditional
+Gaussian log likelihood for models including GARCH, the Kalman filter's role in
+SARIMA likelihood evaluation, and RFSV moment regressions for H and nu-squared.
+It distinguishes fitted coefficients from chosen model orders, constraints, and
+windows. Kalman's primary paper was added to the thesis bibliography and
+`ref/thesis/references.md`. This is thesis prose only; no data, fit, forecast,
+or evaluation changed. Two MiKTeX passes compiled a 21-page PDF, and pages
+12-13 were visually checked. The newly introduced overfull equation was fixed;
+the remaining overfull line at source 76-77 predates this step. Next thesis
+writing task: Volatility Proxies, then Local and Global complexity.
+Fresh-context cold review `judge/reviews/thesis_parameter_estimation_review.json`
+passed 100/100 with no findings, and its JSON validated.
+
+## Thesis optimizer objective and gradient descent displays (2026-09-30)
+
+The ML Concepts optimization passage now displays the generic training-loss
+argmin (`eq:training-objective`) and the gradient descent update
+(`eq:gradient-descent`). It defines argmin, the training batch, and learning
+rate, while preserving the previous update rule. No fit, target, data, or
+metric changed. The thesis PDF was rebuilt in two MiKTeX passes from the
+latest saved source; page 14 was visually checked for both equations. The
+earlier 100/100 gradient-display review applies to the superseded passage.
+Fresh-context cold review `judge/reviews/ml_optimizer_argmin_review.json`
+passed 100/100 with no findings, and its JSON validated. Next thesis-writing
+task remains Parameter Estimation and Volatility Proxies.
+
+## Thesis PDF metric bullets rendered (2026-09-30)
+
+The ML Concepts source already had five `itemize` entries for MAE, MASE, MSE,
+RMSE, and QLIKE, while the checked-in `ref/final_report/thesis_structure.pdf`
+was older and still showed the superseded combined paragraph. Two MiKTeX
+passes completed in a temporary output directory; the refreshed PDF was copied
+to `ref/final_report/thesis_structure.pdf`. Page 13 was inspected visually and
+shows all five distinct bullets below the unchanged metric equations. The
+current thesis source was not edited for this correction; unrelated artifacts
+remain untouched. Fresh-context cold review
+`judge/reviews/ml_metric_pdf_review.json` independently rendered page 13 and
+passed 100/100 with no findings; its JSON validated. Next thesis-writing task
+remains Parameter Estimation and Volatility Proxies.
+
+## Thesis ML Concepts wording revision (2026-09-30)
+
+The ML Concepts text now uses `x` for neural-layer inputs, separates the five
+metric effects into bullets, and states the generic training objective as an
+argmin of mean per-example loss. Convolution prose defines K as filter size,
+calls its terms weighted mappings, and uses the requested Bai et al. TCN
+wording. No data, model, target, or score changed. The earlier ML review covers
+superseded prose. Next thesis-writing task remains Parameter Estimation and
+Volatility Proxies; the separate matched five-stock comparison awaits
+interpretation before an equal-budget scope claim.
+Focused notation, environment, label, and citation checks passed. Fresh-context
+cold review `judge/reviews/ml_concepts_wording_review.json` passed 98/100 with
+no critical findings; its JSON validated. MiKTeX initialization remains
+blocked under the sandbox, so the revised PDF has not been visually checked.
+
+## Thesis Background: ML Concepts (2026-09-29)
+
+`ref/final_report/thesis_structure.tex` now has four ML subsubsections:
+neural networks and layers; losses, backpropagation, and optimization; temporal
+convolutions; and model fitting. The metrics use generic observed and predicted
+values, with a mean per-example loss equation and a plain-language naive scale;
+project-specific scale selection belongs in Implementation. QLIKE's positive
+domain and prediction limits are explicit. Convolutions follow HARNet's
+ordinary/receptive-field/causal/dilated order, with TCN motivation from Bai et
+al. Model fitting covers chronological train/validation/test roles, validation
+hyperparameter selection, hidden width, batches, and epochs. This revision is
+thesis prose only: no target, data selection, fit, or score changed. The earlier
+98/100 cold review applies to the superseded text. Next thesis-writing task:
+develop Parameter Estimation and Volatility Proxies; the model-comparison task
+remains interpretation of matched five-stock scores before any equal-budget
+scope claim.
+Focused structure, citation, and QLIKE-limit checks passed. MiKTeX still could
+not initialize under the sandbox, so no rendered PDF was checked. Fresh-context
+cold review `judge/reviews/ml_concepts_revision_review.json` passed 98/100
+with only that minor verification limit; its JSON validated.
+
+## Five-stock local/global volatility evaluation (2026-09-29)
+
+The saved 14 global fits and their five-stock local counterparts were scored
+without retraining on NVDA, AAPL, NFLX, GOOG, and AMZN. Each windowed
+LOCAL/GLOBAL row uses the same 8,800 eligible 2019-2025 ticker/date targets;
+RFSV-full has five separate 2025-12-31 forecasts per scope. Test-date naive
+MAE supplies each ticker/window's shared MASE scale, as specified in
+`ref/implementation_plan/local_evals.md`; this is test-relative and differs
+from the training-scaled convention in `losses.md`. Each fit's saved positive
+forecast floor is applied; actual targets are unchanged by evaluation. The
+28-row CSV and PNG table, 140-row stock audit, run log, and 168 residual PNGs
+are under `imgs/eval/local_eval/`. The PNG follows the existing volatility
+metrics figure and shows N per row; its loss colors exclude the five-date
+RFSV rows. The historical global CSV remains untouched because
+it covers a different population. Global Base LSTM-20 and local Base LSTM-20
+have different training budgets, so a scope-only causal interpretation is
+unsupported. The focused arithmetic check passed. Next: inspect the matched
+five-stock comparison, then decide whether to run a controlled equal-budget
+scope experiment; do not rank the five RFSV dates against full-period rows.
+
+## Local statistical raw-history fits (2026-09-29)
+
+AR(1), HAR-20, HAR-80, GARCH(1,1), SARIMA, and RFSV-full were fit
+independently for NVDA, AAPL, NFLX, GOOG, and AMZN: 30 pre-2016-only
+adjusted GK variance fits, with separate ticker-named JSON and plain-text
+logs under `inference/checkpoints/<model>/garman-klass/local/<ticker>/`.
+The windowed fits use the existing positive-input segment rules, ticker-specific
+training floors, and the plan's window-20 or window-80 target counts. RFSV
+uses each ticker's full preceding positive history and its own H and ν² from
+pre-2016 observation-lag 1–400 log-volatility moments. The five scaling plots,
+five-stock H chart, and summary/moments/zeta CSVs are in
+`imgs/roughness_analysis/local/train/`. Local H values are NVDA 0.060615,
+AAPL 0.091738, NFLX 0.037446, GOOG 0.078093, and AMZN 0.060418.
+The source database was `D:/DBs/timeseries_analysis/history_coverage.db`
+(23,995,736,064 bytes; mtime 2026-09-20 11:33:39 UTC). All 30 jobs exited
+successfully; reloaded artifacts matched their ticker, source version, split
+counts, finite parameters, convergence diagnostics, and local roughness CSVs.
+The focused raw-statistical, RFSV, local-roughness, and 11 existing roughness
+checks passed by direct `.venv` invocation; `pytest` is not installed. No
+W&B run or validation/test score was produced. Global fits and unrelated
+thesis edits were preserved. Next: score saved local and global fits on matched
+ticker/date keys before comparing models. See
+`ref/implementation_plan/local_training.md`.
+
 ## Full-history RFSV fit-only revision (2026-09-28)
 
 `RFSV.forward()` now accepts a ticker's positive adjusted GK variance history,

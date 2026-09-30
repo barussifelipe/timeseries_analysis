@@ -1,0 +1,25 @@
+{
+  "task": "Cold review of the thesis MCS hypothesis display: add H1 and the bootstrap rejection condition directly below H0",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md, Thesis Model Evaluation and MCS handoff",
+    "ref/thesis/plan.md, Train & Compare the models",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "ref/final_report/thesis_structure.tex, lines 459-471",
+    "ref/final_report/thesis_structure.pdf, page 20 (pdftotext -layout)",
+    "ref/final_report/thesis_structure.aux, equation labels on page 20",
+    "ref/final_report/thesis_structure.log, output and overfull-box lines",
+    "Hansen, Lunde, and Nason (2011), The Model Confidence Set, Section 2 Equation (1), unnumbered alternative, Section 2.1 testing rule, and Section 3.1.2 bootstrap discussion, https://bashtage.github.io/kevinsheppard.com/files/teaching/mfe/advanced-econometrics/Hansen_Lunde_Nason.pdf"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

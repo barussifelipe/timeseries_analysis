@@ -1,0 +1,37 @@
+{
+  "task": "Cold review of initial thesis Volatility Proxies subsection",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- ref/final_report/thesis_structure.tex ref/thesis/references.md ref/thesis/thesis_notes.md CONTEXT.md",
+    "ref/final_report/thesis_structure.tex:380-412",
+    "ref/thesis/references.md:110-118",
+    "ref/thesis/thesis_notes.md:32-33",
+    ".build_volatility_proxies/thesis_structure.log",
+    ".build_volatility_proxies/page-17.png",
+    ".build_volatility_proxies/page-18.png",
+    "https://arxiv.org/pdf/2205.07719",
+    "https://www.cmegroup.com/trading/fx/files/michael_parkinson.pdf",
+    "https://www.cmegroup.com/trading/fx/files/a_estimation_of_security_price.pdf"
+  ],
+  "scores": {
+    "requirements": 24,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "requirements",
+      "severity": "critical",
+      "evidence": "The requested Garman–Klass derivation is absent at ref/final_report/thesis_structure.tex:407-412: the reduced formula is displayed and the prose says it combines range and open-to-close information, but does not show why the coefficients yield a variance estimate or identify the paper's numbered derivation. Garman and Klass (1980) give the optimal analytic estimator in Eq. (19) and its practical simplification in Eq. (19a).",
+      "fix": "Add a short derivation using the zero-drift Brownian moments E[log(H/L)^2] = 4 log(2) V and E[log(C/O)^2] = V to show that the displayed combination has expectation V, and identify its coefficient/form as the paper's practical Eq. (19a) approximation to Eq. (19)."
+    }
+  ],
+  "total": 94,
+  "pass": false
+}

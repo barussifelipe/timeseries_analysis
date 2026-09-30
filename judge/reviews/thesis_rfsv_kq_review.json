@@ -1,0 +1,26 @@
+{
+  "task": "Cold review of the thesis RFSV Gaussian moment factor, q>=0 empirical moment, scaling regression, and q=2 intercept explanation.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/final_report/thesis_structure.tex:218-305",
+    ".build_rfsv_kq/page-13.png",
+    ".build_rfsv_kq/page-14.png",
+    ".build_rfsv_kq/thesis_structure.log",
+    "data/roughness_analysis.py:238-341,473-490",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "https://arxiv.org/pdf/1410.3394, Equation (1.1), Section 2.1, Corollary 3.1, and the unnumbered Section 5.2 variance predictor"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

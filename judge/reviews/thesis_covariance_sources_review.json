@@ -1,0 +1,26 @@
+{
+  "task": "Review the fractional Brownian unit-increment covariance, equation sources, and lag-covariance p-series explanation in ref/final_report/thesis_structure.tex",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.pdf",
+    "ref/final_report/thesis_structure.log",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "https://onlinelibrary.wiley.com/doi/pdf/10.1111/jtsa.12750",
+    "https://www.maths.tcd.ie/EMIS/journals/EJP-ECP/article/download/125/125-249-1-PB.pdf",
+    "https://mathbooks.unl.edu/Calculus/sec-7-3-series.html"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

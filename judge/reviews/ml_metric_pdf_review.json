@@ -1,0 +1,24 @@
+{
+  "task": "Refresh the thesis PDF so the five ML Concepts metric explanations render as visible bullets beneath the unchanged equations.",
+  "sources": [
+    "AGENTS.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.pdf (page 13 rendered and extracted with pdftotext)",
+    "ref/final_report/thesis_structure.log",
+    "git status --short and git diff -- CONTEXT.md ref/final_report/thesis_structure.tex"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

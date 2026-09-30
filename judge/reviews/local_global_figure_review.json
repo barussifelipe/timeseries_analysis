@@ -1,0 +1,29 @@
+{
+  "task": "Add the final local/global comparison table as a PNG under imgs/eval/local_eval/ following the existing volatility metrics figure",
+  "sources": [
+    "User-provided figure follow-up and review task",
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/local_evals.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "inference/evaluate_local_global.py",
+    "models/tests/test_local_global_eval.py",
+    "imgs/eval/volatility_test_metrics.png",
+    "imgs/eval/local_eval/metrics.png",
+    "imgs/eval/local_eval/metrics.csv",
+    "imgs/eval/local_eval/per_stock.csv",
+    "Focused test and independent CSV/PNG reload results"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

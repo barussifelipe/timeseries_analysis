@@ -457,6 +457,55 @@ def plot_global_hurst(summary, output):
     _save(figure, output, 'global_hurst.png')
 
 
+def local_raw_gk_roughness(frame, ticker, output='imgs/roughness_analysis/local/train'):
+    """Save one stock's pre-2016 raw-GK observation-lag RFSV calibration."""
+    output = Path(output)
+    table = 'equity_garman_klass_variance'
+    stem = f'{table}_{ticker}'
+    paths = [output / f'roughness_{part}.csv' for part in ('summary', 'moments', 'zeta')]
+    plot = output / f'{stem}_scaling.png'
+    if plot.exists() or any(path.exists() and ticker in pd.read_csv(path).Population.values for path in paths):
+        raise FileExistsError(f'refusing to overwrite local roughness for {ticker}')
+    train = frame[(frame.Ticker == ticker) & (frame.Date < '2016-01-01')
+                  & frame.Valid & frame.RawVariance.gt(0)].sort_values('Date')
+    values = .5 * np.log(train.RawVariance.to_numpy(dtype=float))
+    lags = np.arange(1, 401)
+    sums, counts = _observation_moments(values, lags, QS)
+    if not counts[-1]:
+        raise ValueError(f'{ticker}: no lag-400 displacement pairs')
+    moments = pd.DataFrame(
+        [(int(lag), float(q), float(sums[i, j] / counts[i]), int(counts[i]))
+         for i, lag in enumerate(lags) for j, q in enumerate(QS)],
+        columns=['Lag', 'q', 'Moment', 'Observations'])
+    zeta, hurst, r2 = scaling_estimates(moments)
+    nu_squared = float(np.exp(zeta.loc[zeta.q == 2, 'Intercept'].item()))
+    if not (np.isfinite(hurst) and 0 < hurst < .5 and np.isfinite(nu_squared) and nu_squared > 0):
+        raise ValueError(f'{ticker}: invalid roughness estimate')
+    metadata = dict(Table=table, Population=ticker, LagType='observation',
+                    TrainEnd='2016-01-01', MaxLag=400, Cohort=f'raw_history_{ticker}')
+    summary = pd.DataFrame([{'Table': table, 'Population': ticker,
+                             'Observations': int(counts.sum()), 'H': hurst, 'R2': r2,
+                             'LagType': 'observation', 'TrainEnd': '2016-01-01',
+                             'MaxLag': 400, 'Cohort': f'raw_history_{ticker}',
+                             'NuSquared': nu_squared}])
+    output.mkdir(parents=True, exist_ok=True)
+    for path, data in zip(paths, (summary, moments.assign(**metadata), zeta.assign(**metadata))):
+        existing = pd.read_csv(path) if path.exists() else data.iloc[:0]
+        pd.concat([existing, data], ignore_index=True).to_csv(path, index=False)
+    plot_scaling(moments, zeta, hurst, r2,
+                 f'Equity Garman-Klass ({ticker}, pre-2016, observation lags)',
+                 output, stem, nu_squared=nu_squared)
+    all_h = pd.read_csv(paths[0])
+    figure, axis = plt.subplots(figsize=(7, 4))
+    bars = axis.bar(all_h.Population, all_h.H)
+    axis.bar_label(bars, labels=[f'{h:.3f}' for h in all_h.H])
+    axis.set(title='Local pre-2016 Garman-Klass H', ylabel='H')
+    _save(figure, output, 'local_hurst.png')
+    return {'H': hurst, 'nu_squared': nu_squared, 'lag_type': 'observation',
+            'max_lag': 400, 'forecast_window': 'full_positive_history',
+            'source': str(output.resolve())}
+
+
 def analyze_training_roughness(conn, output='imgs/roughness_analysis', max_lag=400):
     """Save pre-2016 global equity roughness without changing full-period CSVs."""
     output = Path(output) / 'global' / 'train'

@@ -1,5 +1,6 @@
 \documentclass[12pt,a4paper]{article}
 \usepackage{amsmath}
+\usepackage{amssymb}
 \numberwithin{equation}{section}
 
 \title{Volatility Forecasting: A Statistical and Deep Learning Approach}
@@ -93,6 +94,7 @@ On Section 2, we'll be explaining the concepts behind volatility prediction, sta
 \section{Background}
 % Present all background knowledge required to understand the work.
 \subsection{Statistics Concepts}
+\subsubsection{Moments}
 Let $Y(t)$ be a random variable observed over time, and let $\mathcal{F}(t-1)$ contain the information available before time $t$. An unconditional property describes the distribution of $Y(t)$ without using that history; a conditional property describes its distribution given $\mathcal{F}(t-1)$. The distinction for the mean is
 \begin{equation}\label{eq:conditional-mean}
 \mu=\mathrm{E}[Y(t)],\qquad \mu(t)=\mathrm{E}[Y(t)\mid\mathcal{F}(t-1)].
@@ -150,6 +152,7 @@ Homoscedasticity means that error variance is constant across observations; cond
 \end{equation}
 whereas ARCH and GARCH set this conditional variance to $h(t)$ from \eqref{eq:arch} or \eqref{eq:garch}. Their changing conditional variance does not itself imply changing unconditional variance \cite{engle1982,bollerslev1986}.
 
+\subsubsection{Shock Dynamics}
 A shock is the part of an observation that the conditional-mean model does not predict. Zero-mean white noise has constant finite unconditional variance and zero covariance between distinct dates. White noise need not be Gaussian or independent. In a homoscedastic SARIMA model, the innovations are commonly modeled as white noise with constant conditional variance. In ARCH and GARCH, the shocks follow
 \begin{equation}\label{eq:garch-shock}
 \varepsilon(t)=\sqrt{h(t)}z(t),
@@ -164,7 +167,7 @@ The increment variance is $\Delta t$, while its standard deviation is $(\Delta t
 \begin{equation}\label{eq:brownian-variance}
 \mathrm{Var}(W(t))=t.
 \end{equation}
-White noise describes uncorrelated values at distinct dates; Brownian motion is a continuous-path process whose increments over disjoint intervals are independent \cite{mandelbrot1968}.
+White noise describes uncorrelated values at distinct dates; Brownian motion is a continuous-path process whose increments over disjoint intervals are independent.
 
 Arithmetic Brownian motion adds drift and scale to that driver:
 \begin{equation}\label{eq:arithmetic-brownian}
@@ -219,71 +222,272 @@ Fractional Brownian motion $B^H(t)$ replaces the Brownian scaling exponent $1/2$
 \mathrm{Var}(B^H(t+\Delta t)-B^H(t))&=(\Delta t)^{2H},\label{eq:fractional-scaling}\\
 \mathrm{SD}(B^H(t+\Delta t)-B^H(t))&=(\Delta t)^H.\label{eq:fractional-scaling-sd}
 \end{align}
-\begin{samepage}
-The case $H=1/2$ recovers standard Brownian motion. For unit-length increments, define
-\begin{equation}\label{eq:fractional-unit-increment}
-\Delta B^H(t)=B^H(t+1)-B^H(t).
-\end{equation}
-Let $U=\Delta B^H(t)$ and $V=\Delta B^H(t+k)$, where $k\geq1$ is an integer lag. By stationary increments and the unit time step, both standard deviations equal one:
-\begin{equation}\label{eq:fractional-unit-sd}
-\mathrm{SD}(U)=((t+1)-t)^H=1,\qquad
-\mathrm{SD}(V)=((t+k+1)-(t+k))^H=1.
-\end{equation}
-Thus covariance and correlation have the same numerical value under this normalization:
-\begin{equation}\label{eq:fractional-covariance-correlation}
-\mathrm{Cov}(U,V)=\mathrm{Corr}(U,V)\,\mathrm{SD}(U)\,\mathrm{SD}(V)
-=\mathrm{Corr}(U,V)(1)(1).
-\end{equation}
-The lag dependence follows from the fractional Brownian covariance, giving
-\begin{equation}\label{eq:fractional-increment-covariance}
-\mathrm{Cov}(\Delta B^H(t),\Delta B^H(t+k))
-=\frac{(k+1)^{2H}-2k^{2H}+(k-1)^{2H}}{2}.
-\end{equation}
-For large lags and $H\ne1/2$, a Taylor expansion gives
-\begin{equation}\label{eq:fractional-increment-covariance-asymptotic}
-\mathrm{Cov}(\Delta B^H(t),\Delta B^H(t+k))
-\sim H(2H-1)k^{2H-2},\qquad k\to\infty.
-\end{equation}
-These are Equation~(2) of Shi, Yu, and Zhang with their scale parameter set to one; they also follow from the fractional Brownian covariance in Equation~(1.1) of Cheridito, Kawaguchi, and Maejima \cite{shi2025,cheridito2003}.
-\end{samepage}
-These lag covariances decay as a power of $k$, not as a geometric sequence with terms proportional to $r^k$. The relevant $p$-series test is
-\begin{equation}\label{eq:covariance-p-series}
-\sum_{k=1}^{\infty}k^{-p}\text{ converges if and only if }p>1,\qquad p=2-2H.
-\end{equation}
-At $p=1$, the harmonic series diverges; below one, the terms decay too slowly, while above one their sum is finite \cite{unlcalculus}. For $H>1/2$, the covariance is positive and $p<1$, so its sum over lags diverges: this is long memory in the nonsummable-covariance sense. For $H<1/2$, increments are negatively correlated and the paths are locally rougher, but $p>1$, so the sum of absolute covariances converges. At $H=1/2$, the exact covariance is zero at every positive lag, so the harmonic-series case does not apply \cite{shi2025,mandelbrot1968,gatheral2018}.
-
-Ordinary continuity means a path's change tends to zero as the time interval tends to zero. H\"older continuity is stronger: on a bounded interval, for every $r<H$ there is a finite path-dependent constant $C$ such that
-\begin{equation}\label{eq:holder}
-|B^H(t)-B^H(s)|\leq C|t-s|^r.
-\end{equation}
-A smaller $H$ therefore permits less regular paths \cite{gatheral2018}. A power law in lag $\Delta$ has the form
-\begin{equation}\label{eq:power-law}
-f(\Delta)=C\Delta^{-\gamma},\qquad C>0,\quad\gamma>0.
-\end{equation}
-Its log--log plot is a straight line with slope $-\gamma$. In \emph{Volatility is rough}, Gatheral, Jaisson, and Rosenbaum find that volatility autocovariance does not follow such a power law at their usual observed time scales, even though standard persistence procedures can suggest long memory. They explicitly do not infer the covariance's behavior at unobservable asymptotically large lags from finite data \cite{gatheral2018}.
+The case $H=1/2$ recovers standard Brownian motion. For $H>1/2$, fractional Brownian increments are positively correlated across time, indicating persistence and long memory in the increment process. For $H<1/2$, the paths are rougher than Brownian paths: at increasingly fine time scales they remain continuous but look more jagged, because typical changes shrink more slowly as the time interval decreases \cite{gatheral2018}.
 
 Fractional Ornstein--Uhlenbeck (fOU) log volatility combines a mean-reverting drift with fractional Brownian forcing:
 \begin{equation}\label{eq:fou-dynamics}
-dX(t)=-\alpha(X(t)-m)\,dt+\nu\,dB^H(t),\qquad \alpha>0.
+dX(t)=-\alpha(X(t)-m)\,dt+\nu\,dB^H(t),\ \alpha>0.
 \end{equation}
 Its stationary form is
 \begin{equation}\label{eq:fou-stationary}
 X(t)=m+\nu\int_{-\infty}^{t}e^{-\alpha(t-s)}\,dB^H(s).
 \end{equation}
-Deviations from $m$ decay at a rate set by $\alpha$, while $H$ controls local roughness. The rough fractional stochastic-volatility model sets
-\begin{equation}\label{eq:rfsv-volatility}
-\sigma(t)=\exp\{X(t)\},\qquad H<1/2.
+Deviations from $m$ decay at a rate set by $\alpha$, while $H$ controls local roughness \cite{gatheral2018}.
+
+\subsubsection{Parameter estimation}
+Statistical fitting chooses model parameters from training observations by optimizing a specified criterion. For a linear conditional-mean model $y(t)=x(t)^\top\beta+\varepsilon(t)$, ordinary least squares (OLS) minimizes squared residuals:
+\begin{equation}\label{eq:ols-estimation}
+\widehat\beta_{\mathrm{OLS}}\in\operatorname*{arg\,min}_{\beta}
+\sum_{t\in\mathcal T_{\mathrm{train}}}\bigl(y(t)-x(t)^\top\beta\bigr)^2.
 \end{equation}
-The stationary form and volatility link correspond to Equations (3.3)--(3.4) of Gatheral, Jaisson, and Rosenbaum; the fractional OU construction is also studied by Cheridito, Kawaguchi, and Maejima \cite{gatheral2018,cheridito2003}.
+Here $\beta$ is the vector of model parameters, and $x(t)$ contains the regressors available for the forecast, including an intercept if required. OLS fits the conditional mean of models such as AR and HAR; Gaussian errors are not needed to compute it. When errors are also independent Gaussian, OLS maximizes their likelihood conditional on the regressors.
+
+Maximum likelihood instead chooses parameters that make the observed training series most probable under the assumed statistical model. With a conditional Gaussian mean $\mu_\theta(t)$ and positive conditional variance $\sigma_\theta^2(t)$, its log likelihood, up to initialization terms, is
+\begin{equation}\label{eq:gaussian-loglikelihood}
+\begin{aligned}
+\log L(\theta)&=-\frac12\sum_{t\in\mathcal T_{\mathrm{train}}}
+\left[\log\!\bigl(2\pi\sigma_\theta^2(t)\bigr)
++\frac{\bigl(y(t)-\mu_\theta(t)\bigr)^2}{\sigma_\theta^2(t)}\right],\
+\theta^*\in\operatorname*{arg\,max}_{\theta}\log L(\theta).
+\end{aligned}
+\end{equation}
+The negative log likelihood defines a loss for a minimizing optimizer:
+\begin{equation}\label{eq:gaussian-nll}
+\begin{aligned}
+\mathcal L_{\mathrm{NLL}}(\theta)&=-\log L(\theta),\
+\theta^*\in\operatorname*{arg\,min}_{\theta}\mathcal L_{\mathrm{NLL}}(\theta).
+\end{aligned}
+\end{equation}
+The two objectives give the same $\theta^*$: minimizing the negative log likelihood finds the parameters that best fit the observations under the assumed distribution. Unlike OLS with constant error variance, this criterion accounts for a variance that changes with the past, as in GARCH \cite{bollerslev1986}.
+
+Rough fractional stochastic volatility (RFSV) instead estimates roughness from moments of log-volatility increments. Following Gatheral, Jaisson, and Rosenbaum's Section 2.1 notation, observe positive volatility on a grid $\sigma_0,\sigma_\Delta,\ldots,\sigma_{N\Delta}$ over $[0,T]$, where $N=\lfloor T/\Delta\rfloor$. For moment order $q\geq0$, their empirical moment is
+\begin{equation}\label{eq:rfsv-moments}
+m(q,\Delta)=\frac{1}{N}\sum_{k=1}^{N}
+\left|\log\sigma_{k\Delta}-\log\sigma_{(k-1)\Delta}\right|^q.
+\end{equation}
+To interpret its slope and intercept, write $W^H$ for the fractional Brownian driver $B^H$ introduced above. Fractional Brownian increments obey
+\begin{equation}\label{eq:rfsv-gaussian-moment}
+\begin{aligned}
+\mathrm E\!\left[\left|W^H(t+\Delta)-W^H(t)\right|^q\right]
+&=K_q\Delta^{qH},\quad
+K_q=\mathrm E[|Z|^q],\ Z\sim\mathrm N(0,1).
+\end{aligned}
+\end{equation}
+Thus $K_q$ is the $q$th absolute moment of a standard Gaussian variable. Let $X(t)=\log\sigma(t)$. When the fOU mean-reversion rate is small over the lags considered, its increments approximately inherit the scaled fractional Brownian moments \cite{gatheral2018}:
+\begin{equation}\label{eq:rfsv-scaled-moment}
+\mathrm E\!\left[\left|X(t+\Delta)-X(t)\right|^q\right]
+\approx\nu^qK_q\Delta^{qH},\quad
+m(q,\Delta)\approx\nu^qK_q\Delta^{qH}.
+\end{equation}
+The second approximation treats the empirical moment as an estimate of the theoretical one. Taking logarithms for $q>0$ and positive moments gives
+\begin{equation}\label{eq:rfsv-log-scaling} 
+\log m(q,\Delta)\approx q\log\nu+\log K_q+qH\log\Delta.
+\end{equation}
+Consequently, in a regression across lags,
+\begin{equation}\label{eq:rfsv-slope-intercept}
+\log m(q,\Delta)\approx a_q+\zeta_q\log\Delta,
+\quad \zeta_q=qH,\ a_q=\log(\nu^qK_q).
+\end{equation}
+The slope $\zeta_q$ identifies roughness $H$, while the intercept $a_q$ contains the increment scale together with $K_q$. This Gaussian-moment factor does not disappear for general $q$. Specifically, $K_2=\mathrm E[Z^2]=1$, so
+\begin{equation}\label{eq:rfsv-nu-estimation}
+a_2=\log(\nu^2),\quad \nu^2=e^{a_2}.
+\end{equation}
+The fitted $q=2$ intercept therefore estimates $\nu^2$ as $e^{a_2}$, whereas the family of fitted slopes estimates $H$ from the relation $\zeta_q=qH$ \cite{gatheral2018}.
+The purpose of this scale estimate appears in the paper's Section 5.2 variance predictor \cite{gatheral2018}:
+\begin{equation}\label{eq:rfsv-variance-predictor}
+\widehat{\sigma}^{2}_{t+\Delta}
+=\exp\!\left\{\widehat{\log\sigma^2_{t+\Delta}}
++2c(H)\nu^2\Delta^{2H}\right\}.
+\end{equation}
+where
+\begin{equation}\label{eq:rfsv-c-h}
+c(H)=\frac{\Gamma(3/2-H)}{\Gamma(H+1/2)\Gamma(2-2H)}.
+\end{equation}
+Here $\widehat{\log\sigma^2_{t+\Delta}}$ is the conditional log-variance forecast from Section 5.1, and the $2c(H)\nu^2\Delta^{2H}$ term adjusts its exponent for conditional variance \cite{gatheral2018}. Thus $H$ controls how increment size scales with lag and $\nu^2$ its scale. The moment estimates use a volatility proxy because spot volatility is not directly observed; the proxy, sampling interval, and chosen lags can affect the estimates. 
 
 \subsection{ML Concepts}
-% To be developed in a later pass.
+\subsubsection{Neural networks and layers}
+A neural network is a parameterized composition of layers that maps inputs to predictions. Let $x^{(0)}=x$ be its input vector. In a feedforward layer,
+\begin{equation}\label{eq:neural-layer}
+z^{(\ell)}=W^{(\ell)}x^{(\ell-1)}+b^{(\ell)},\qquad
+x^{(\ell)}=\phi\!\left(z^{(\ell)}\right).
+\end{equation}
+The weights $W^{(\ell)}$ and biases $b^{(\ell)}$ are learned; the activation $\phi$ supplies nonlinearity. Without nonlinear activations, a stack of such layers reduces to one affine map. The final layer maps the learned representation to the forecast, with its output transform chosen to match the target's units.
+
+Common elementwise activations, for a scalar $z$, are
+\begin{align}\label{eq:activations}
+\operatorname{sigmoid}(z)&=\frac{1}{1+e^{-z}}, &
+\tanh(z)&=\frac{\sinh(z)}{\cosh(z)}=\frac{e^z-e^{-z}}{e^z+e^{-z}},\\
+\operatorname{ReLU}(z)&=\max(0,z), &
+\operatorname{SiLU}(z)&=z\operatorname{sigmoid}(z).
+\end{align}
+Sigmoid maps to $(0,1)$ and is useful for gates; tanh maps to $(-1,1)$ and gives signed, bounded states. Both saturate at large $|z|$, yielding small derivatives there. ReLU has a zero derivative on negative inputs, so a unit that stays negative may stop learning. SiLU is smooth and retains a small nonzero response for negative inputs.
+
+\subsubsection{Losses, backpropagation, and optimization}
+A loss function $\ell(\widehat y,y)$ assigns a numerical cost to predicting $\widehat y$ when the observed value is $y$. Following the empirical-risk formulation of Reisenhofer, Bayer, and Hautsch \cite{reisenhofer2022}, for a set $Z=\{(x_i,y_i)\}_{i=1}^{N}$ and model $f_{\theta}$ with parameters $\theta$, the mean loss is
+\begin{equation}\label{eq:empirical-loss}
+J(\theta;Z)=\frac{1}{N}\sum_{i=1}^{N}\ell\!\left(f_{\theta}(x_i),y_i\right).
+\end{equation}
+For evaluation, write $\widehat y_i=f_{\theta}(x_i)$ and $e_i=y_i-\widehat y_i$. Let $s_i>0$ be the naive scale associated with observation $i$. A one-step naive forecast simply repeats the last observed value, so its mean absolute change over a reference history provides a scale for judging whether errors are large relative to that simple forecast. With these definitions, the five metrics are
+\begin{align}\label{eq:forecast-metrics}
+\mathrm{MAE}&=\frac1N\sum_{i=1}^{N}|e_i|, &
+\mathrm{MASE}&=\frac1N\sum_{i=1}^{N}\frac{|e_i|}{s_i},\\
+\mathrm{MSE}&=\frac1N\sum_{i=1}^{N}e_i^2, &
+\mathrm{RMSE}&=\sqrt{\frac1N\sum_{i=1}^{N}e_i^2},\\
+\mathrm{QLIKE}&=\frac1N\sum_{i=1}^{N}
+\left[\frac{y_i}{\widehat y_i}-\log\!\left(\frac{y_i}{\widehat y_i}\right)-1\right].
+\end{align}
+
+\begin{itemize}
+\item \textbf{MAE} measures a typical absolute miss in the target's units and is less sensitive to large errors than squared-error measures.
+\item \textbf{MASE} compares absolute errors with the naive scale and is dimensionless; a value below one means average scaled error below that reference scale, provided the scales are defined and positive \cite{hyndman2006}.
+\item \textbf{MSE} squares errors, emphasizing large misses, and has squared target units.
+\item \textbf{RMSE} keeps the squared-error emphasis but returns to the target's units.
+\item \textbf{QLIKE} is dimensionless and is zero for an exact prediction. Its logarithm requires $y_i>0$ and $\widehat y_i>0$. For fixed $y_i>0$, QLIKE diverges rapidly as $\widehat y_i\to0^+$, strongly penalizing underprediction, and grows without bound more slowly as $\widehat y_i\to+\infty$. It has no real-valued limit as $\widehat y_i\to-\infty$ because negative predictions are outside its domain \cite{patton2011}.
+\end{itemize}
+
+An optimizer searches for parameters that minimize the chosen training loss, while evaluation can report several metrics on held-out observations. For training examples $Z_{\mathrm{train}}$, the objective is
+\begin{equation}\label{eq:training-objective}
+\theta^*\in\operatorname*{arg\,min}_{\theta}J(\theta;Z_{\mathrm{train}})
+=\operatorname*{arg\,min}_{\theta}\frac{1}{|Z_{\mathrm{train}}|}
+\sum_{(x,y)\in Z_{\mathrm{train}}}\ell\!\left(f_{\theta}(x),y\right).
+\end{equation}
+The argmin is the set of parameter values attaining the smallest training loss; an optimizer aims to approach one of them. Backpropagation applies the chain rule from the loss through each layer to compute $\nabla_\theta J$ \cite{rumelhart1986}. Gradient descent then updates the parameters by
+\begin{equation}\label{eq:gradient-descent}
+\theta_{k+1}=\theta_k-\eta\nabla_\theta J(\theta_k;Z_k).
+\end{equation}
+Here $Z_k$ is the training batch for update $k$, and the learning rate $\eta>0$ controls the size of each step in parameter space. Too large a step can overshoot a low-loss region; too small a step can make fitting slow. An optimizer specifies the update rule: ordinary stochastic gradient descent uses the current batch gradient, while Adam adapts each parameter's step using running estimates of the gradient's first and second moments \cite{kingma2015}. Neither backpropagation nor an optimizer guarantees a global minimum.
+
+\subsubsection{Temporal convolutions}
+An ordinary one-dimensional convolution slides the same finite filter $h$ along a sequence $x(t)$. If its supported offsets form a finite set $S$ of integers, its output is
+\begin{equation}\label{eq:ordinary-convolution}
+(x*h)(t)=\sum_{j\in S}h_jx(t-j).
+\end{equation}
+The \emph{receptive field} is the part of the input sequence that can affect one output. A filter with $K$ consecutive weighted mappings covers $K$ input positions in one layer; stacking layers can extend that field. Here $K$ is the filter size, or the number of input-to-output mappings in the filter. An ordinary centered filter may use future observations. For forecasting, a \emph{causal} convolution restricts these $K$ mappings to the present and past:
+\begin{equation}\label{eq:causal-convolution}
+(x*_{\mathrm c}h)(t)=\sum_{j=0}^{K-1}h_jx(t-j).
+\end{equation}
+A \emph{dilated causal} convolution separates neighboring mappings by $d\geq1$ observations:
+\begin{equation}\label{eq:causal-dilated-convolution}
+(x*_{\mathrm c,d}h)(t)=\sum_{j=0}^{K-1}h_jx(t-jd).
+\end{equation}
+Its $K$ mappings span $1+(K-1)d$ positions without adding filter weights, although a single dilated layer uses only those $K$ input positions. Bai et al. implemented causal filters with increasing dilations in their TCN architecture to let a convolutional network cover a long history without requiring an equally long filter \cite{bai2018}. HARNet uses hierarchies of such filters to represent multiple time horizons \cite{reisenhofer2022}.
+
+\subsubsection{Model fitting}
+Fitting a forecasting model starts with a chronological division into training, validation, and test periods. Training is used for parameter optimization by means of gradient descent. Validation data guide choices such as architecture, learning rate, batch size, and when to stop training; the test period is held back for the final assessment. Using test outcomes to choose a model would bias that assessment. Any transform learned from data must likewise be fitted on training data alone.
+
+These choices are \emph{hyperparameters}: they are selected outside the parameter updates rather than learned as model weights. \emph{Hidden size} counts the units in a hidden representation, an intermediate set of learned features passed to later layers. A wider representation can encode more features but increases model size and computation, with no guarantee of better test performance. Training examples are divided into \emph{batches}, each used for one gradient update. Smaller batches give more frequent updates per pass through a fixed dataset, with noisier gradients; larger batches use more memory and fewer updates per pass. An \emph{epoch} completes one pass through all training batches. The number of epochs controls how many passes are allowed, while validation loss can select a checkpoint or trigger early stopping.
+
+\subsection{Volatility Proxies}
+\subsubsection{Latent volatility and integrated variance}
+Following Reisenhofer, Bayer, and Hautsch \cite{reisenhofer2022}, let $p(t)=\log P(t)$ be the log price and suppose its continuous diffusion obeys
+\begin{equation}\label{eq:log-price-diffusion}
+\mathrm dp(t)=\mu(t)\,\mathrm dt+\sigma(t)\,\mathrm dW(t),
+\end{equation}
+where $\mu(t)$ is the drift, $W(t)$ is Brownian motion, and $\sigma(t)$ is the latent spot volatility. Its squared value is instantaneous variance. The variance accumulated over day $t$ is the integrated variance
+\begin{equation}\label{eq:integrated-variance}
+\mathrm{IV}(t)=\int_{t-1}^{t}\sigma^2(s)\,\mathrm ds.
+\end{equation}
+Neither $\sigma(t)$ nor $\mathrm{IV}(t)$ is directly observed from a finite set of prices, so empirical work uses volatility proxies. Here $\mathrm{IV}$ means \emph{integrated variance}.
+
+\subsubsection{Realized variance}
+Divide day $t$ into $N$ equally spaced intervals. The intraday log return for interval $n$ is
+\begin{equation}\label{eq:intraday-log-return}
+r(t,n)=p\!\left(t-1+\frac{n}{N}\right)-p\!\left(t-1+\frac{n-1}{N}\right),\qquad n=1,\ldots,N.
+\end{equation}
+Realized variance (RV) is the sum of their squares:
+\begin{equation}\label{eq:realized-variance}
+\mathrm{RV}_N(t)=\sum_{n=1}^{N}r(t,n)^2.
+\end{equation}
+For the continuous diffusion above, with sufficiently fine, frictionless observations, $\mathrm{RV}_N(t)$ is consistent for $\mathrm{IV}(t)$ as $N\to\infty$ \cite{andersen1998,reisenhofer2022}. Consistency means that, as the number of intraday observations in the same day increases, the estimator converges in probability to that day's integrated variance. Market microstructure noise and jumps can alter this limiting interpretation.
+
+\subsubsection{Parkinson estimator}
+When only daily high $H(t)$ and low $L(t)$ are available, Parkinson's range estimator gives the day's variance proxy
+\begin{equation}\label{eq:parkinson-variance}
+\widehat\sigma^2_{\mathrm{PK}}(t)=\frac{\left[\log\!\left(H(t)/L(t)\right)\right]^2}{4\log(2)}.
+\end{equation}
+For a continuously observed, zero-drift Brownian log-price path with constant spot volatility $\sigma(t)$ over a unit-length day, $\mathrm{IV}(t)=\sigma^2(t)$ and the squared log range satisfies \cite{parkinson1980}
+\begin{equation}\label{eq:parkinson-range-moment}
+\mathrm E\!\left[\left\{\log\!\left(H(t)/L(t)\right)\right\}^{2}\right]
+=4\log(2)\,\sigma^2(t).
+\end{equation}
+This expectation gives the denominator in \eqref{eq:parkinson-variance}. Discrete trading, drift, and jumps can affect its accuracy.
+
+\subsubsection{Garman--Klass estimator}
+Garman and Klass also use the daily open $O(t)$ and close $C(t)$. Their practical reduced estimator combines the squared log range with the squared open-to-close log return:
+\begin{equation}\label{eq:garman-klass-variance}
+\widehat\sigma^2_{\mathrm{GK}}(t)=\frac12\left[\log\!\left(\frac{H(t)}{L(t)}\right)\right]^2
+-\bigl(2\log 2-1\bigr)\left[\log\!\left(\frac{C(t)}{O(t)}\right)\right]^2.
+\end{equation}
+Under the same continuous, zero-drift Brownian model, the open-to-close return has second moment $\sigma^2(t)$. Together with \eqref{eq:parkinson-range-moment}, this gives
+\begin{align}
+&\mathrm E\!\left[\left\{\log\!\left(C(t)/O(t)\right)\right\}^{2}\right]
+=\sigma^2(t)\label{eq:garman-klass-return}\\[0.5em]
+&\mathrm E\!\left[\widehat\sigma^2_{\mathrm{GK}}(t)\right]
+=\tfrac12\bigl[4\log(2)\,\sigma^2(t)\bigr]
+-\bigl(2\log(2)-1\bigr)\sigma^2(t)=\sigma^2(t).
+\end{align}
+
+Garman and Klass selected this practical form by dropping small cross-product terms from their more efficient quadratic estimator \cite{garmanklass1980}. Like Parkinson's proxy, it uses prices within the observed session and can be biased by discrete trading or departures from the assumed price process. 
+
+\subsection{Local and Global complexity}
+Following Montero-Manso and Hyndman, let $S=\{X_i\in\mathbb{R}^{T}:i=1,\ldots,K\}$ contain $K$ observed series, and let each forecast cover $H$ future observations. A local algorithm fits a separate forecasting function $f_{\theta_i}$, with its own parameter vector $\theta_i$, to each series. A global algorithm fits one function $g_{\theta}$ and one shared parameter vector $\theta$ across the set. For an observed series $X_i$, their forecasts are
+\begin{equation}\label{eq:local-global-forecasts}
+\widehat{Y}^{\mathrm{local}}_i=f_{\theta_i}(X_i),\qquad
+\widehat{Y}^{\mathrm{global}}_i=g_{\theta}(X_i),\qquad i=1,\ldots,K.
+\end{equation}
+Both forecasting functions map $\mathbb{R}^{T}$ to $\mathbb{R}^{H}$; the distinction is whether their fitted parameters are series-specific or shared \cite{monteromanso2021}.
+
+To count fitted scalar parameters, define $P(f_{\theta})=\dim(\theta)$. The total counts are
+\begin{equation}\label{eq:local-global-parameters}
+P_{\mathrm{local}}=\sum_{i=1}^{K}P(f_{\theta_i}),\quad
+P_{\mathrm{global}}=P(g_{\theta}).
+\end{equation}
+Thus $K$ local models with $p$ parameters each use $Kp$ fitted parameters, whereas a global model with $q$ shared parameters uses $q$. The paper's formal complexity measure is $\mathcal H_i$, the hypothesis class, the set of all possible functions a model can learn. If $\mathcal H_i$ is the class for series $i$ and $\mathcal J$ the global class, their complexities are
+\begin{equation}\label{eq:local-global-complexity}
+C_{\mathrm{local}}=\prod_{i=1}^{K}|\mathcal H_i|,\quad
+C_{\mathrm{global}}=|\mathcal J|.
+\end{equation}
+The paper's  relation in Section~3.4 places these classes on the same worst-case generalization bound when $C_{\mathrm{local}}=C_{\mathrm{global}}$, assuming equal in-sample error, independent series, equal effective sample sizes, and loss bounded in $[0,1]$. Parameter complexity is a proxy for this comparison only if each parameter has the same number $B$ of possible values and distinct parameter choices give distinct functions. In that case, equal class cardinalities give
+\begin{equation}\label{eq:local-global-equal-count}
+B^{P_{\mathrm{local}}}=B^{P_{\mathrm{global}}}
+\quad\Longrightarrow\quad
+P_{\mathrm{global}}=\sum_{i=1}^{K}P(f_{\theta_i}).
+\end{equation}
+The paper illustrates this complexity with approximately $B=2^{64}$ values per double-precision parameter in an autoregressive model with one parameter per lag \cite{monteromanso2021}.
+
+\subsection{Model Evaluation}
+Hansen, Lunde, and Nason's model confidence set (MCS) compares a finite set of candidate models under one chosen loss function, without assuming that any candidate is the true data-generating model. Let $\mathcal M_0$ be the initial set, and let $L_i(t)=L\bigl(y(t),\widehat y_i(t)\bigr)$ be model $i$'s loss on a common evaluation observation at time $t$. Define the loss difference and its expected value by
+\begin{equation}\label{eq:mcs-loss-difference}
+d_{ij}(t)=L_i(t)-L_j(t),\qquad
+\mu_{ij}=\mathrm E[d_{ij}(t)],\qquad i,j\in\mathcal M_0.
+\end{equation}
+A negative $\mu_{ij}$ favors model $i$. For a current candidate set $\mathcal M\subseteq\mathcal M_0$, Equation~(1) of Hansen, Lunde, and Nason gives the equal-performance null; its alternative is that at least one pair differs:
+\begin{align}
+H_{0,\mathcal M}:&\quad \mu_{ij}=0\quad\text{for every }i,j\in\mathcal M,\label{eq:mcs-null}\\
+H_{1,\mathcal M}:&\quad \mu_{ij}\ne0\quad\text{for at least one }i,j\in\mathcal M,\label{eq:mcs-alternative}\\
+\text{Reject }H_{0,\mathcal M}:&\quad p_{\mathcal M}<\alpha.\notag
+\end{align}
+Here $p_{\mathcal M}$ is the bootstrap $p$-value. The paper leaves its loss-difference and alternative-hypothesis definitions unnumbered in Section~2 \cite{hansen2011mcs}.
+
+One test and elimination pair proposed in their Section~3.1.2 uses each model's sample excess loss relative to the average model in the current set. With $m=|\mathcal M|$ and $n$ common evaluation times, define
+\begin{align}
+\bar d_{i\cdot}&=\frac{1}{mn}\sum_{j\in\mathcal M}\sum_{t=1}^{n}d_{ij}(t),
+&t_{i\cdot}&=\frac{\bar d_{i\cdot}}{\sqrt{\widehat{\mathrm{Var}}(\bar d_{i\cdot})}},\label{eq:mcs-standardized-loss}\\
+T_{\max,\mathcal M}&=\max_{i\in\mathcal M}t_{i\cdot},
+&e_{\max,\mathcal M}&=\operatorname*{arg\,max}_{i\in\mathcal M}t_{i\cdot}.\label{eq:mcs-elimination}
+\end{align}
+The paper leaves these statistic and elimination-rule definitions unnumbered. A bootstrap estimates the null distribution of $T_{\max,\mathcal M}$ and the variance in $t_{i\cdot}$ while accounting for dependence in the loss differences. Start with $\mathcal M=\mathcal M_0$; after a rejection, remove $e_{\max,\mathcal M}$ and repeat. The first set for which the null is not rejected is the $(1-\alpha)$ MCS \cite{hansen2011mcs}.
+
+Under the paper's assumptions, the procedure asymptotically contains all models with minimum expected loss among $\mathcal M_0$ with probability at least $1-\alpha$. A surviving model is therefore not proved to be equally accurate or good in an absolute sense: limited information can leave inferior models in the set. For the volatility comparison, each MCS must use one variance proxy, forecast horizon, loss definition, and matched set of forecast observations; QLIKE and MSE lead to separate confidence sets \cite{hansen2011mcs}.
+
 \section{Methods}
 % Describe the system design and methodology. Do not include source code here.
-
+% We will describe models here, loss function and data fetching. 
 \section{Implementation}
 % Describe how the system was implemented.
 % Use pseudocode and/or informal or UML-style diagrams where useful.
+% We will describe each model setup here, input data, hyperparameters, local x global, we will show the data format, histogram and timeline. we will also describe how the fitting happened, how the parameters were initialized and how we fit parameters. 
 
 \section{Experimental Results}
 % Describe the experimental results. This is the most important section.
@@ -325,6 +529,8 @@ The stationary form and volatility link correspond to Equations (3.3)--(3.4) of 
 \bibitem{slutsky1927} Slutsky, E. (1927). The summation of random causes as a source of cyclic processes. \emph{Problems of Economic Conditions}, 3(1), 34--64. English translation in \emph{Econometrica}, 5(2), 105--146 (1937).
 \bibitem{wold1938} Wold, H. (1938). \emph{A study in the analysis of stationary time series}. Almqvist \& Wiksell.
 \bibitem{boxjenkins1970} Box, G. E. P., and Jenkins, G. M. (1970). \emph{Time series analysis: Forecasting and control}. Holden-Day.
+\bibitem{kalman1960} Kalman, R. E. (1960). A new approach to linear filtering and prediction problems. \emph{Journal of Basic Engineering}, 82(1), 35--45.
+\bibitem{pennstate508} The Pennsylvania State University. (n.d.). Linear regression, Gauss--Markov theorem. \emph{STAT 508: Applied Data Mining and Statistical Learning}, Lesson 4.
 \bibitem{engle1982} Engle, R. F. (1982). Autoregressive conditional heteroscedasticity with estimates of the variance of United Kingdom inflation. \emph{Econometrica}, 50(4), 987--1007.
 \bibitem{bollerslev1986} Bollerslev, T. (1986). Generalized autoregressive conditional heteroskedasticity. \emph{Journal of Econometrics}, 31(3), 307--327.
 \bibitem{corsi2009} Corsi, F. (2009). A simple approximate long-memory model of realized volatility. \emph{Journal of Financial Econometrics}, 7(2), 174--196.
@@ -335,12 +541,12 @@ The stationary form and volatility link correspond to Equations (3.3)--(3.4) of 
 \bibitem{blackscholes1973} Black, F., and Scholes, M. (1973). The pricing of options and corporate liabilities. \emph{Journal of Political Economy}, 81(3), 637--654.
 \bibitem{comterenault1998} Comte, F., and Renault, E. (1998). Long memory in continuous-time stochastic volatility models. \emph{Mathematical Finance}, 8(4), 291--323.
 \bibitem{gatheral2018} Gatheral, J., Jaisson, T., and Rosenbaum, M. (2018). Volatility is rough. \emph{Quantitative Finance}, 18(6), 933--949.
-\bibitem{mandelbrot1968} Mandelbrot, B. B., and Van Ness, J. W. (1968). Fractional Brownian motions, fractional noises and applications. \emph{SIAM Review}, 10(4), 422--437.
-\bibitem{cheridito2003} Cheridito, P., Kawaguchi, H., and Maejima, M. (2003). Fractional Ornstein--Uhlenbeck processes. \emph{Electronic Journal of Probability}, 8(3), 1--14.
-\bibitem{shi2025} Shi, S., Yu, J., and Zhang, C. (2025). Fractional Gaussian noise: Spectral density and estimation methods. \emph{Journal of Time Series Analysis}, 46(6), 1146--1174. doi:10.1111/jtsa.12750.
-\bibitem{unlcalculus} University of Nebraska--Lincoln. (n.d.). Convergence of series, Section 7.3. \emph{Calculus}. \url{https://mathbooks.unl.edu/Calculus/sec-7-3-series.html}.
 \bibitem{werbos1974} Werbos, P. J. (1974). \emph{Beyond regression: New tools for prediction and analysis in the behavioral sciences} [Doctoral dissertation, Harvard University].
 \bibitem{rumelhart1986} Rumelhart, D. E., Hinton, G. E., and Williams, R. J. (1986). Learning representations by back-propagating errors. \emph{Nature}, 323, 533--536.
+\bibitem{kingma2015} Kingma, D. P., and Ba, J. (2015). Adam: A method for stochastic optimization. \emph{International Conference on Learning Representations}.
+\bibitem{hyndman2006} Hyndman, R. J., and Koehler, A. B. (2006). Another look at measures of forecast accuracy. \emph{International Journal of Forecasting}, 22(4), 679--688.
+\bibitem{patton2011} Patton, A. J. (2011). Volatility forecast comparison using imperfect volatility proxies. \emph{Journal of Econometrics}, 160(1), 246--256.
+\bibitem{hansen2011mcs} Hansen, P. R., Lunde, A., and Nason, J. M. (2011). The model confidence set. \emph{Econometrica}, 79(2), 453--497. doi:10.3982/ECTA5771.
 \bibitem{lapedes1987} Lapedes, A., and Farber, R. (1987). \emph{Nonlinear signal processing using neural networks: Prediction and system modelling} (Technical Report LA-UR-87-1662). Los Alamos National Laboratory.
 \bibitem{waibel1989} Waibel, A., Hanazawa, T., Hinton, G., Shikano, K., and Lang, K. J. (1989). Phoneme recognition using time-delay neural networks. \emph{IEEE Transactions on Acoustics, Speech, and Signal Processing}, 37(3), 328--339.
 \bibitem{bai2018} Bai, S., Kolter, J. Z., and Koltun, V. (2018). An empirical evaluation of generic convolutional and recurrent networks for sequence modeling. arXiv:1803.01271.
@@ -352,6 +558,7 @@ The stationary form and volatility link correspond to Equations (3.3)--(3.4) of 
 \bibitem{chen2016} Chen, T., and Guestrin, C. (2016). XGBoost: A scalable tree boosting system. \emph{Proceedings of the 22nd ACM SIGKDD Conference}, 785--794.
 \bibitem{vaswani2017} Vaswani, A., et al. (2017). Attention is all you need. \emph{Advances in Neural Information Processing Systems}, 30.
 \bibitem{andersen2003} Andersen, T. G., Bollerslev, T., Diebold, F. X., and Labys, P. (2003). Modeling and forecasting realized volatility. \emph{Econometrica}, 71(2), 579--625.
+\bibitem{andersen1998} Andersen, T. G., and Bollerslev, T. (1998). Answering the skeptics: Yes, standard volatility models do provide accurate forecasts. \emph{International Economic Review}, 39(4), 885--905.
 \bibitem{parkinson1980} Parkinson, M. (1980). The extreme value method for estimating the variance of the rate of return. \emph{The Journal of Business}, 53(1), 61--65.
 \bibitem{garmanklass1980} Garman, M. B., and Klass, M. J. (1980). On the estimation of security price volatilities from historical data. \emph{The Journal of Business}, 53(1), 67--78.
 \bibitem{audrino2024} Audrino, F., and Chassot, J. (2024). HARd to beat: The overlooked impact of rolling windows in the era of machine learning. arXiv:2406.08041.

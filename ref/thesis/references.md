@@ -111,6 +111,10 @@ Andersen, T. G., Bollerslev, T., Diebold, F. X., & Labys, P. (2003). Modeling an
 forecasting realized volatility. *Econometrica, 71*(2), 579–625.
 https://doi.org/10.1111/1468-0262.00418
 
+Andersen, T. G., & Bollerslev, T. (1998). Answering the skeptics: Yes, standard
+volatility models do provide accurate forecasts. *International Economic Review,
+39*(4), 885–905. https://doi.org/10.2307/2527343
+
 Andersen, T. G., Bollerslev, T., & Diebold, F. X. (2007). Roughing it up: Including jump
 components in the measurement, modeling, and forecasting of return volatility. *The Review
 of Economics and Statistics, 89*(4), 701–720. https://doi.org/10.1162/rest.89.4.701
@@ -131,6 +135,9 @@ Patton, A. J. (2011). Volatility forecast comparison using imperfect volatility 
 *Journal of Econometrics, 160*(1), 246–256.
 https://doi.org/10.1016/j.jeconom.2010.03.034
 
+Hansen, P. R., Lunde, A., & Nason, J. M. (2011). The model confidence set.
+*Econometrica, 79*(2), 453–497. https://doi.org/10.3982/ECTA5771
+
 Gu, S., Kelly, B., & Xiu, D. (2020). Empirical asset pricing via machine learning. *The
 Review of Financial Studies, 33*(5), 2223–2273. https://doi.org/10.1093/rfs/hhaa009
 
@@ -146,7 +153,7 @@ Markov Model* [Undergraduate thesis]. Universidade de Passo Fundo.
 ---
 
 ## 8. Cross-asset pooling and global forecasting models
-- Montero-Manso, P., & Hyndman, R. J. (2021). Principles and algorithms for forecasting groups of time series: Locality and globality. International Journal of Forecasting, 37(4), 1632–1653. https://doi.org/10.1016/j.ijforecast.2021.03.004 
+- Montero-Manso, P., & Hyndman, R. J. (2021). Principles and algorithms for forecasting groups of time series: Locality and globality. International Journal of Forecasting, 37(4), 1632–1653. https://arxiv.org/pdf/2008.00444
 
 - Sirignano, J., & Cont, R. (2019). Universal features of price formation in financial markets: Perspectives from deep learning. Quantitative Finance, 19(9), 1449–1459. https://arxiv.org/abs/1803.06917
 
@@ -176,6 +183,10 @@ Section 7 was compiled from the bibliography of Kuinchtner & Madalozzo and is no
 independently verified; confirm the thesis year and publication details before submission.
 
 ## Training implementation sources
+
+- Pennsylvania State University, *STAT 508, Lesson 4: Linear Regression* (Gauss--Markov theorem and the BLUE qualification): https://online.stat.psu.edu/stat508/Lesson04.html
+
+- Kalman, R. E. (1960). *A new approach to linear filtering and prediction problems*. *Journal of Basic Engineering*, 82(1), 35–45. https://doi.org/10.1115/1.3662552
 
 - NumPy, `numpy.linalg.lstsq` (pooled AR(1) and HAR ordinary least squares): https://numpy.org/doc/stable/reference/generated/numpy.linalg.lstsq.html
 - statsmodels, `SARIMAX.loglike` (sum per-ticker likelihoods for shared SARIMA parameters): https://www.statsmodels.org/stable/generated/statsmodels.tsa.statespace.sarimax.SARIMAX.loglike.html

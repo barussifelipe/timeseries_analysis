@@ -2,6 +2,7 @@
 
 - Hyndman and Koehler (2006), [Another look at measures of forecast accuracy](https://robjhyndman.com/papers/mase.pdf): MASE divides each absolute forecast error by the training-history mean absolute one-step naive change for that series. Here, use each ticker's selected variance estimator history and reject a zero or undefined scale. MAE, MSE, and RMSE remain in that estimator's variance units.
 - Patton (2011), [Volatility forecast comparison using imperfect volatility proxies](https://public.econ.duke.edu/~ap172/Patton_vol_proxies_JoE_2011.pdf): QLIKE is a robust forecast comparison loss under the paper's assumptions, including conditional unbiasedness of the proxy for latent variance. This does not establish that every project estimator satisfies those assumptions.
+- Hansen, Lunde, and Nason (2011), [The model confidence set](https://doi.org/10.3982/ECTA5771): Equation (1) tests zero expected pairwise loss differences for every pair in the current model set. Their unnumbered Section 3.1.2 $T_{\max}$ statistic takes the largest standardized mean excess loss relative to the current-set average; its matching rule removes that model after a bootstrap rejection and repeats until non-rejection. Under the paper's assumptions, the resulting set asymptotically contains all minimum-expected-loss candidates with probability at least $1-\alpha$; finite samples can retain inferior models. Apply separately by variance proxy, horizon, and loss on identical forecast observations, with a dependence-aware bootstrap design specified before evaluation.
 - What we are doing is trying to unveil the structure behind the pricing or volatility and predict longer term ranges. What HFT does is basically work on it as it is to pursue imbalances on physical queues in bid and asks. 
 - We don't really act. 
 - We are trying to find the best structural model, not play with the effects of the structure. 
@@ -30,6 +31,7 @@
 - Using NIC and the way it simulated to check if our model is following the leverage effect. Could check for mean reversion and volatility clustering. 
 ---
 ## NOTES - 1.3 - *HARNet: A convolutional neural network for realized volatility forecasting* [https://arxiv.org/abs/2205.07719]
+- Section 2, equations (1)–(3), treats spot volatility as latent, defines daily integrated variance, and gives the intraday squared-return realized-variance proxy. Its consistency statement cites Andersen and Bollerslev (1998) and assumes the sampling interval shrinks within a fixed day.
 - Implementation detail: nested (1,5,20) receptive fields use a 5-step averaging convolution followed by a 4-step convolution with dilation 5. Averaging-filter initialization and fitted HAR output coefficients reproduce HAR on nonnegative histories.
 - HARnet perform the same as HAR with its initialization and even better when optimized. 
 - Uses dilated convolution filters. Allows to expand the receptive field without increasing the parameters. Allows to increase exponentially the horizon, while linearly increasing the depth. 
@@ -88,7 +90,11 @@
 - ACF and PCF work for GARCH AND ARCH as well. 
 - GARCH(p, q) can be interpret as a ARMA(m, p) in e^2 of orders m = max(p, q) and p. 
 ---
-## NOTES - 8.1 - *Principles and algorithms for forecasting groups of time series: Locality and globality. International Journal of Forecasting* [https://robjhyndman.com/papers/global-models.pdf]
+## NOTES - 8.1 - *Principles and algorithms for forecasting groups of time series: Locality and globality. International Journal of Forecasting* [https://arxiv.org/pdf/2008.00444]
+- Section 2.1 defines a local algorithm as producing one forecasting function per observed series and a global algorithm as producing one function for the set. Proposition 1 says each can reproduce the other's forecasts for finite observed series and a finite horizon; this is an existence result, not a performance guarantee for a fixed architecture.
+- Proposition 2 measures complexity by the cardinality of the available forecasting-function classes: the local class has size equal to the product of the series-specific class sizes, while the global class has its own size. Section 3.4's unnumbered equality of these sizes compares worst-case bounds only under equal in-sample error, independent series, equal effective sample sizes, and bounded loss.
+- Section 3.5 illustrates parameter counting for autoregressions with one parameter per lag and approximately 2^64 double-precision values per parameter. Under that illustrative count, matching class sizes makes global parameter count equal the sum of local parameter counts. Parameter count is not the paper's general definition of complexity.
+- Section 2.2 notes that identical finite input windows can lead to different local forecasts if full series differ; a global function needs enough history to distinguish such inputs. Correlated equity series should not be assumed to satisfy Proposition 2's independence condition.
 - Global and Local models can be equals by proposition one. However, if you have different time series and you want a different answer for each time series, you need more input to differentiate between the two of them. If you have the same input for Xi and Xj and you want a different result, you have to increase the window.
 - Generalization Error and metrics. We are assuming Ein to be the sample average while Eout to be the expected. Complexity term + Ein >= Eout 
 - How much the expected loss might differ on in-sampel and out-sample data points based on the model and the loss function. 

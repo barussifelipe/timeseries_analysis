@@ -1,0 +1,34 @@
+{
+  "task": "Review the thesis parameter-estimation notation revision: OLS beta and BLUE, Gaussian variance likelihood and negative log likelihood, RFSV empirical moment, and Section 5.2 variance predictor.",
+  "sources": [
+    "AGENTS.md instructions supplied in the task",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/final_report/thesis_structure.tex:236-272",
+    "ref/final_report/thesis_structure.pdf:12-13 (pdftotext extraction)",
+    "ref/thesis/references.md:177-190",
+    "models/rfsv.py",
+    "models/variance_fit.py:375-432",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "https://arxiv.org/pdf/1410.3394, Sections 2.1 and 5.2",
+    "https://online.stat.psu.edu/stat508/Lesson04.html (search-index excerpt of Gauss-Markov section)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 22,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "correctness",
+      "severity": "minor",
+      "evidence": "The new equations in ref/final_report/thesis_structure.tex:263 and 267 use \\widehat\\nu^{,2} and \\widehat\\sigma^{,2}. Page 13 of the compiled PDF extracts these as 'νb,2' and a comma before the superscript 2 on sigma, so the displayed estimators include an unintended comma rather than a clean squared symbol.",
+      "fix": "Remove the commas from the superscripts, e.g. use \\widehat{\\nu}^{2} and \\widehat{\\sigma}^{2}_{t+\\Delta}, then rebuild and inspect page 13."
+    }
+  ],
+  "total": 97,
+  "pass": true
+}

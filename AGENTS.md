@@ -59,6 +59,7 @@ Add focused sections such as formulas or analysis only when the task needs them.
 ## Verification
 
 - Trace all callers before changing shared data or model behavior.
+- For thesis PDF changes, compile `ref/final_report/thesis_structure.tex` from `ref/final_report/` with two `pdflatex -synctex=1` passes so `thesis_structure.pdf` and its existing SyncTeX artifact are generated beside the source. Use the `.tex` file as the source of truth; do not create separate build directories or duplicate PDFs.
 - Add the smallest runnable check for non-trivial logic. For data changes, verify formulas on a tiny known example and check schema, dates, ticker boundaries, missing values, infinities, and leakage.
 - Run the narrowest relevant checks before handing off. State exactly what ran and what could not be run.
 - After each implementation task, obtain a cold review using `judge/prompt.md`, validate its JSON with `python judge/validate.py REVIEW.json`, and fix findings until it passes (at least 95/100 and no critical findings). Report unresolved blockers without claiming a pass.

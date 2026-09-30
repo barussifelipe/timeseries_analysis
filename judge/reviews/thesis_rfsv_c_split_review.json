@@ -1,0 +1,28 @@
+{
+  "task": "Split the RFSV Section 5.2 variance predictor and c(H) definition into separately numbered equations",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/roughness_analysis.md",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.aux",
+    "ref/final_report/thesis_structure.pdf page 13",
+    ".build_rfsv_c_split/thesis_structure.aux",
+    ".build_rfsv_c_split/thesis_structure.log",
+    ".build_rfsv_c_split/thesis_structure.pdf page 13",
+    "git status --short and git diff -- ref/final_report/thesis_structure.tex",
+    "judge/prompt.md",
+    "judge/score.schema.json"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

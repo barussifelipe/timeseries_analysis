@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.16)  29 SEP 2026 17:29
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.16)  30 SEP 2026 05:48
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**./ref/final_report/thesis_structure.tex
-(ref/final_report/thesis_structure.tex
+**./thesis_structure.tex
+(thesis_structure.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
 (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
@@ -91,106 +91,133 @@ LaTeX Info: Redefining \Relbar on input line 970.
 LaTeX Info: Redefining \[ on input line 2950.
 LaTeX Info: Redefining \] on input line 2951.
 )
+(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amssymb.sty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+
+(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+))
 (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdf
 tex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count295
-)
-(C:\Users\benga\AppData\Local\Temp\timeseries_thesis_fbm_cov_check\thesis_struc
-ture.aux)
+) (thesis_structure.aux)
 \openout1 = `thesis_structure.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
- [1
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 12.
 
-{C:/Users/benga/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
-[2] [3] [4]
-Overfull \hbox (24.8721pt too wide) in paragraph at lines 76--77
+
+(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 12.
+
+
+(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+[1
+
+{C:/Users/benga/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [2]
+[3] [4]
+Overfull \hbox (24.8721pt too wide) in paragraph at lines 77--78
 \OT1/cmr/m/n/12 In this pa-per, we present the com-par-i-son be-tween AR(1), SA
 RIMA(1,0,1)(1,0,1,5),
  []
 
-[5] [6] [7] [8] [9] [10] [11] [12] [13]
-Underfull \hbox (badness 1867) in paragraph at lines 314--315
+[5] [6] [7] [8] [9] [10] [11]
+Overfull \hbox (17.56009pt too wide) detected at line 253
+[][][]
+ []
+
+[12] [13] [14] [15] [16] [17] [18] [19] [20] [21]
+Underfull \hbox (badness 1867) in paragraph at lines 535--536
 []\OT1/cmr/m/n/12 Bollerslev, T. (1986). Gen-er-al-ized au-tore-gres-sive con-d
 i-tional het-
  []
 
-[14]
-Underfull \hbox (badness 1917) in paragraph at lines 330--331
+[22]
+Underfull \hbox (badness 1917) in paragraph at lines 553--554
 []\OT1/cmr/m/n/12 Reisenhofer, R., Bayer, X., and Hautsch, N. (2022). HAR-Net:
  []
 
 
-Underfull \hbox (badness 1178) in paragraph at lines 330--331
+Underfull \hbox (badness 1178) in paragraph at lines 553--554
 \OT1/cmr/m/n/12 A con-vo-lu-tional neu-ral net-work for re-al-ized volatil-ity 
 fore-cast-ing.
  []
 
-[15]
-Underfull \hbox (badness 1460) in paragraph at lines 343--344
+[23] [24]
+Underfull \hbox (badness 1460) in paragraph at lines 567--568
 \OT1/cmr/m/n/12 ity fore-cast-ing with ma-chine learn-ing and in-tra-day com-mo
 n-al-ity.
  []
 
 
-Underfull \hbox (badness 1616) in paragraph at lines 346--347
+Underfull \hbox (badness 1616) in paragraph at lines 570--571
 []\OT1/cmr/m/n/12 Brini, A. (2026). Fore-cast-ing re-al-ized volatil-ity with t
 ime se-ries
  []
 
 
-Underfull \hbox (badness 1205) in paragraph at lines 346--347
+Underfull \hbox (badness 1205) in paragraph at lines 570--571
 \OT1/cmr/m/n/12 foun-da-tion mod-els: A com-par-i-son with econo-met-ric bench-
 marks.
  []
 
-[16]
-(C:\Users\benga\AppData\Local\Temp\timeseries_thesis_fbm_cov_check\thesis_struc
-ture.aux)
+[25] (thesis_structure.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 1279 strings out of 467870
- 20239 string characters out of 5418355
- 445733 words of memory out of 5000000
- 30208 multiletter control sequences out of 15000+600000
- 634969 words of font info for 65 fonts, out of 8000000 for 9000
+ 1851 strings out of 467870
+ 27079 string characters out of 5418355
+ 447733 words of memory out of 5000000
+ 30764 multiletter control sequences out of 15000+600000
+ 637776 words of font info for 78 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 56i,12n,65p,2050b,239s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/
-cmbx10.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
-fonts/cm/cmbx12.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/p
-ublic/amsfonts/cm/cmex10.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/font
-s/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/benga/AppData/Local/Programs/Mi
-KTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/benga/AppData/Local/Pro
-grams/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/benga/AppData/L
-ocal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/benga/A
-ppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/
-benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><
-C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cms
-y8.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfont
-s/cm/cmti12.pfb>
-Output written on C:\Users\benga\AppData\Local\Temp\timeseries_thesis_fbm_cov_c
-heck\thesis_structure.pdf (16 pages, 196919 bytes).
+ 56i,13n,65p,2033b,239s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\benga\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm
+1200.pk><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfon
+ts/cm/cmbx10.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/publ
+ic/amsfonts/cm/cmbx12.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/t
+ype1/public/amsfonts/cm/cmex10.pfb><C:/Users/benga/AppData/Local/Programs/MiKTe
+X/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/benga/AppData/Local/Progr
+ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/benga/AppData/Loc
+al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/benga/App
+Data/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/b
+enga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:
+/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.
+pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
+m/cmr8.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
+fonts/cm/cmsy10.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/p
+ublic/amsfonts/cm/cmsy8.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts
+/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/benga/AppData/Local/Programs/MiK
+TeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on thesis_structure.pdf (25 pages, 267951 bytes).
 PDF statistics:
- 109 PDF objects out of 1000 (max. 8388607)
+ 158 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

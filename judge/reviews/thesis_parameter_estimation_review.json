@@ -1,0 +1,31 @@
+{
+  "task": "Move Parameter Estimation into Statistics Concepts and explain OLS, Gaussian maximum likelihood, Kalman filtering for SARIMA, and RFSV moment estimates of H and nu-squared",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- ref/final_report/thesis_structure.tex ref/thesis/references.md CONTEXT.md",
+    "ref/final_report/thesis_structure.tex:90-275,386-432",
+    "ref/final_report/thesis_structure.aux:100-108,151",
+    "ref/final_report/thesis_structure.log:122,191",
+    "ref/final_report/thesis_structure.pdf pages 12-13 via pdftotext",
+    "ref/thesis/references.md:178-185",
+    "models/variance_fit.py:270-375",
+    "models/raw_statistical_fit.py:80-160",
+    "data/roughness_analysis.py:313-341,474-481,572-580",
+    "Gatheral, Jaisson, and Rosenbaum, Volatility is rough, https://arxiv.org/pdf/1410.3394, Section 2.1 and Section 5.2",
+    "git diff --check -- ref/final_report/thesis_structure.tex ref/thesis/references.md CONTEXT.md"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

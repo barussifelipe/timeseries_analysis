@@ -1,0 +1,27 @@
+{
+  "task": "Review the Section 2 Model Evaluation subsection describing the Hansen, Lunde, and Nason (2011) model confidence set procedure",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "ref/final_report/thesis_structure.tex, Section 2.5 and bibliography",
+    "ref/final_report/thesis_structure.pdf, pages 20-21 (pdftotext)",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.aux",
+    "ref/thesis/references.md",
+    "ref/thesis/thesis_notes.md",
+    "Hansen, Lunde, and Nason (2011), The Model Confidence Set, Econometrica 79(2), https://bashtage.github.io/kevinsheppard.com/files/teaching/mfe/advanced-econometrics/Hansen_Lunde_Nason.pdf"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

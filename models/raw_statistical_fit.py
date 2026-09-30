@@ -14,12 +14,19 @@ from models.training_blocks import TimeSeriesDataset
 
 EXPECTED = {20: {'train': 8664516, 'val': 1806548, 'test': 4479681},
             80: {'train': 7004011, 'val': 1692154, 'test': 4295773}}
+LOCAL_COUNTS = {
+    'NVDA': {20: (4223, 754, 1760), 80: (4103, 754, 1760)},
+    'AAPL': {20: (8408, 754, 1760), 80: (7915, 754, 1760)},
+    'NFLX': {20: (3407, 754, 1760), 80: (3347, 754, 1760)},
+    'GOOG': {20: (2843, 754, 1760), 80: (2783, 754, 1760)},
+    'AMZN': {20: (4669, 754, 1760), 80: (4609, 754, 1760)},
+}
 
 
-def eligible_data(database, limit_tickers=None, window=20):
+def eligible_data(database, limit_tickers=None, window=20, ticker=None):
     if window not in EXPECTED:
         raise ValueError('unsupported raw-history window')
-    frame, _, floor = load_raw_neural(database, limit_tickers=limit_tickers)
+    frame, _, floor = load_raw_neural(database, ticker=ticker, limit_tickers=limit_tickers)
     frame = frame.sort_values(['Ticker', 'Date']).reset_index(drop=True)
     counts = {}
     train_indices = None
@@ -29,8 +36,10 @@ def eligible_data(database, limit_tickers=None, window=20):
         if split == 'train':
             train_indices = data.target_indices.numpy().copy()
         del data
-    if limit_tickers is None and counts != EXPECTED[window]:
-        raise ValueError(f'raw-history window counts differ from ML: {counts} != {EXPECTED[window]}')
+    expected = (dict(zip(('train', 'val', 'test'), LOCAL_COUNTS[ticker][window]))
+                if ticker in LOCAL_COUNTS else EXPECTED[window] if ticker is None and limit_tickers is None else None)
+    if expected is not None and counts != expected:
+        raise ValueError(f'raw-history window counts differ from ML: {counts} != {expected}')
     return frame, floor, counts, train_indices
 
 
@@ -148,21 +157,33 @@ def fit_garch(segments):
 
 
 def fit_rfsv_full(args):
-    """Calibrate global RFSV once and check its forward pass on full train histories."""
+    """Calibrate RFSV and check its forward pass on full train histories."""
     if args.window_size != 20:
         raise ValueError('--window-size is unused for full-history RFSV; omit it')
-    if (args.estimator != 'garman-klass' or args.scope != 'global' or args.ticker
+    if (args.estimator != 'garman-klass' or args.scope not in ('global', 'local')
+            or (args.scope == 'local' and args.ticker not in LOCAL_COUNTS)
+            or (args.scope == 'global' and args.ticker)
             or args.limit_rows or args.limit_tickers):
-        raise ValueError('full-history RFSV fit requires global Garman-Klass and no sample limits')
+        raise ValueError('full-history RFSV fit requires Garman-Klass and an eligible scope/ticker without limits')
     from models.rfsv import RFSV
     from models.variance_fit import rfsv_fit
 
+    path = Path('inference/checkpoints/rfsv/garman-klass') / args.scope
+    if args.scope == 'local':
+        path /= args.ticker
+    path /= 'raw_history_full/fit.json'
+    if path.exists() or path.with_name('fit_failure.json').exists():
+        raise FileExistsError(f'refusing to overwrite existing fit or failure: {path}')
     started = time.monotonic()
-    frame, _, floor = load_raw_neural(args.database)
+    frame, _, floor = load_raw_neural(args.database, ticker=args.ticker)
     frame = frame.sort_values(['Ticker', 'Date'])
     cohort_tickers = int(frame.Ticker.nunique())
-    parameters = rfsv_fit('garman-klass', expected_cohort=f'raw_history_{cohort_tickers}',
-                          forecast_window='full_positive_history')
+    if args.scope == 'local':
+        from data.roughness_analysis import local_raw_gk_roughness
+        parameters = local_raw_gk_roughness(frame, args.ticker)
+    else:
+        parameters = rfsv_fit('garman-klass', expected_cohort=f'raw_history_{cohort_tickers}',
+                              forecast_window='full_positive_history')
     model = RFSV(parameters['H'], parameters['nu_squared'])
     train = frame[(frame.Date < '2016-01-01') & frame.Valid & (frame.RawVariance > 0)]
     checked = 0
@@ -174,7 +195,6 @@ def fit_rfsv_full(args):
     if not checked:
         raise ValueError('no valid pre-2016 RFSV histories')
     database = Path(args.database).resolve()
-    path = Path('inference/checkpoints/rfsv/garman-klass/global/raw_history_full/fit.json')
     artifact = {'model': 'rfsv', 'specification': 'RFSV Section 5, full positive observation history',
                 'source': str(database), 'source_bytes': database.stat().st_size,
                 'source_mtime_ns': database.stat().st_mtime_ns,
@@ -183,11 +203,13 @@ def fit_rfsv_full(args):
                 'target': 'adjusted daily unannualized Garman-Klass variance',
                 'forecast_history_rule': 'all preceding valid positive observations within ticker',
                 'forecast_horizon': 'next recorded observation',
+                'scope': args.scope, 'ticker': args.ticker,
                 'cohort_tickers': cohort_tickers, 'train_tickers_with_history': checked,
                 'train_tickers_without_history': cohort_tickers - checked,
                 'training_history_rows': len(train), 'floor': floor,
+                'counts': eligible_data(args.database, window=20, ticker=args.ticker)[2] if args.scope == 'local' else None,
                 'parameters': parameters,
-                'diagnostics': {'converged': True, 'method': 'pre-2016 pooled roughness moments',
+                'diagnostics': {'converged': True, 'method': 'pre-2016 observation-lag roughness moments',
                                 'forward_checked_training_tickers': checked},
                 'elapsed_seconds': round(time.monotonic() - started, 1)}
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -206,17 +228,26 @@ def fit_raw(kind, args):
     if kind == 'rfsv':
         return fit_rfsv_full(args)
     window = 80 if kind == 'har_80' else 20
-    if args.estimator != 'garman-klass' or args.scope != 'global' or args.ticker or args.limit_rows or args.limit_tickers or args.window_size != window:
-        raise ValueError(f'raw fit requires global Garman-Klass, window {window}, and no ticker or row limit')
-    path = Path('inference/checkpoints') / kind / f'garman-klass/global/raw_history_w{window}' / 'fit.json'
+    if (args.estimator != 'garman-klass' or args.scope not in ('global', 'local')
+            or (args.scope == 'local' and args.ticker not in LOCAL_COUNTS)
+            or (args.scope == 'global' and args.ticker)
+            or args.limit_rows or args.limit_tickers or args.window_size != window):
+        raise ValueError(f'raw fit requires Garman-Klass, window {window}, and an eligible local ticker or global scope without limits')
+    path = Path('inference/checkpoints') / kind / 'garman-klass' / args.scope
+    if args.scope == 'local':
+        path /= args.ticker
+    path = path / f'raw_history_w{window}' / 'fit.json'
+    if path.exists() or path.with_name('fit_failure.json').exists():
+        raise FileExistsError(f'refusing to overwrite existing fit or failure: {path}')
     path.parent.mkdir(parents=True, exist_ok=True)
     started = time.monotonic()
-    frame, floor, counts, targets = eligible_data(args.database, window=window)
+    frame, floor, counts, targets = eligible_data(args.database, window=window, ticker=args.ticker)
     segments = list(training_segments(frame))
     database = Path(args.database).resolve()
     metadata = {'model': kind, 'specification': {'ar1': 'AR(1)', 'har': 'HAR(1,5,20)',
                 'har_80': 'HAR(1,5,20,40,80)',
                 'sarima': 'SARIMA(1,0,1)x(1,0,1,5)', 'garch': 'GARCH(1,1)'}[kind],
+                'scope': args.scope, 'ticker': args.ticker,
                 'source': str(database), 'source_bytes': database.stat().st_size,
                 'source_mtime_ns': database.stat().st_mtime_ns,
                 'cohort_rule': '>80 pre-2016 rows and 2025-12-31 row',
