@@ -1,0 +1,29 @@
+{
+    "task":  "Move the GARCH standardized-innovation description into the displayed equation as z(t) distributed N(0,1), preserving unrelated edits and rebuilding the adjacent thesis artifacts.",
+    "sources":  [
+                    "AGENTS.md",
+                    "CONTEXT.md",
+                    "ref/thesis/plan.md",
+                    "ref/implementation_plan/methods.md",
+                    "judge/prompt.md",
+                    "judge/score.schema.json",
+                    "judge/validate.py",
+                    "judge/reviews/garch_z_normal_before.tex",
+                    "judge/reviews/garch_z_normal.diff",
+                    "ref/final_report/thesis_structure.tex",
+                    "ref/final_report/thesis_structure.log",
+                    "judge/reviews/garch_z_normal_page-23.png"
+                ],
+    "scores":  {
+                   "requirements":  30,
+                   "correctness":  25,
+                   "verification":  20,
+                   "grounding":  15,
+                   "maintainability":  10
+               },
+    "findings":  [
+
+                 ],
+    "total":  100,
+    "pass":  true
+}

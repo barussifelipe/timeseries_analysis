@@ -1,0 +1,34 @@
+{
+  "task": "MCS Hypothesis Formatting Plan: put the rejection condition on the null's displayed line with horizontal spacing, keep the alternative on its own line, and preserve equation labels and statistical definitions.",
+  "sources": [
+    "Original task and MCS Hypothesis Formatting Plan supplied in the cold-review delegation",
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/final_report/thesis_structure.tex:458-491",
+    "git diff -- ref/final_report/thesis_structure.tex",
+    "git diff --check",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/validate.py",
+    "Independent pdflatex -synctex=1 -interaction=nonstopmode thesis_structure.tex attempt from ref/final_report: CommandNotFoundException",
+    "ref/final_report/thesis_structure.log and PDF/SyncTeX/source file timestamps"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 10,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "verification",
+      "severity": "critical",
+      "evidence": "The plan and AGENTS.md require two same-directory pdflatex passes with SyncTeX and rendered legibility/overflow verification. An independent compilation attempt fails with CommandNotFoundException. The PDF, SyncTeX, and log timestamps (16:18:45) precede the edited source (17:43:09), so the old log's two overfull warnings cannot establish the new null/rejection row's fit. Source inspection confirms the requested two-row structure, spacing, preserved hypotheses, labels and bootstrap p-value definition; the unrelated preexisting prose deletion is excluded from this task. Rendered correctness remains unknown.",
+      "fix": "When an available LaTeX installation can be used, compile from ref/final_report with two pdflatex -synctex=1 passes, inspect the refreshed hypothesis display and log for legibility/overflow, and request a new cold review. Keep the current build/render blocker explicit and do not claim a passing review until verified."
+    }
+  ],
+  "total": 90,
+  "pass": false
+}

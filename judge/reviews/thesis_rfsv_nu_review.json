@@ -1,0 +1,29 @@
+{
+  "task": "Add the scaling behaviour of nu to the last paragraph of the Methods RFSV section. Independent cold review confirms the single-paragraph scope, the qualified standard-deviation scaling nu Delta^H, distinction of H exponent and nu amplitude, and nu-squared forecast correction. Final adjacent PDF and SyncTeX exist; final build log reports 31 pages with only the earlier overfull warnings, and rendered page 25 is legible. Repository-wide diff whitespace failures lie outside the focused before/current diff.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/methods.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/reviews/rfsv_nu_before.tex",
+    "judge/reviews/rfsv_nu.diff",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf",
+    "ref/final_report/thesis_structure.synctex.gz",
+    "judge/reviews/rfsv_nu_page-25.png",
+    "https://arxiv.org/html/1410.3394 (Equation 1.1, Corollary 3.1, and unnumbered Section 5.2 variance predictor)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -1,0 +1,32 @@
+{
+  "task": "Give multiline thesis equation displays one number per block and align MLP a(t+1) with the upper row's left edge.",
+  "sources": [
+    "User request supplied to the fresh-context reviewer",
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/methods.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/reviews/equation_blocks_before.tex",
+    "judge/reviews/equation_blocks.diff",
+    "judge/reviews/equation_blocks_check.json",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "judge/reviews/equation_blocks_page-14.png",
+    "judge/reviews/equation_blocks_page-15.png",
+    "judge/reviews/equation_blocks_page-20.png",
+    "judge/reviews/equation_blocks_mlp-25.png",
+    "Independent Python check: all 83 display blocks preserve mathematical tokens after stripping labels, alignment markers, whitespace and environments; every block is equation with one label; labels are unique; internal references resolve; no align display remains; final log has no undefined, rerun, multiply defined or fatal markers."
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

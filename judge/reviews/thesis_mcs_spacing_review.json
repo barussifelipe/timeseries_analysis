@@ -1,0 +1,27 @@
+{
+  "task": "Add visible paragraph spacing in thesis Section 2.5 after the bootstrap p-value explanation. Independent baseline comparison confirms only the requested medskip and noindent insertion; rendered page 20 shows a visible gap and legible equations. Final adjacent 32-page PDF/SyncTeX and successful final build log inspected. Existing whitespace findings are present in the baseline and outside task scope.",
+  "sources": [
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/reviews/mcs_spacing.diff",
+    "judge/reviews/mcs_spacing_before.tex",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf",
+    "ref/final_report/thesis_structure.synctex.gz",
+    "judge/reviews/mcs_spacing_page-20.png"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

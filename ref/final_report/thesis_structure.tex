@@ -124,14 +124,16 @@ The estimator $s^2$ is unbiased for independent, identically distributed observa
 
 Conditional variance describes uncertainty left after observing the past. For $\varepsilon(t)=Y(t)-\mu(t)$, its conditional mean is zero, so
 \begin{equation}\label{eq:conditional-variance}
-h(t)=\mathrm{Var}(Y(t)\mid\mathcal{F}(t-1))
+v(t)=\mathrm{Var}(Y(t)\mid\mathcal{F}(t-1))
 =\mathrm{E}[\varepsilon(t)^2\mid\mathcal{F}(t-1)].
 \end{equation}
-ARCH models $h(t)$ from past squared shocks; GARCH also uses past conditional variance:
-\begin{align}
-h(t)&=\omega+\alpha\varepsilon(t-1)^2 &&\text{ARCH(1)},\label{eq:arch}\\
-h(t)&=\omega+\alpha\varepsilon(t-1)^2+\beta h(t-1) &&\text{GARCH(1,1)}.\label{eq:garch}
-\end{align}
+ARCH models $v(t)$ from past squared shocks; GARCH also uses past conditional variance:
+\begin{equation}\label{eq:arch}
+\begin{aligned}
+v(t)&=\omega+\alpha\varepsilon(t-1)^2 &&\text{ARCH(1)},\\
+v(t)&=\omega+\alpha\varepsilon(t-1)^2+\beta v(t-1) &&\text{GARCH(1,1)}.
+\end{aligned}
+\end{equation}
 In estimation, lagged fitted residuals $r(t-1)$ stand in for the unobserved shocks. With $\omega>0$, $\alpha,\beta\geq0$, and $\alpha+\beta<1$ (taking $\beta=0$ for ARCH), these models can have constant unconditional variance while conditional uncertainty changes \cite{engle1982,bollerslev1986}.
 
 Covariance generalizes variance to two variables:
@@ -150,14 +152,14 @@ Homoscedasticity means that error variance is constant across observations; cond
 \begin{equation}\label{eq:homoscedasticity}
 \mathrm{Var}(\varepsilon(t)\mid\mathcal{F}(t-1))=\sigma^2,
 \end{equation}
-whereas ARCH and GARCH set this conditional variance to $h(t)$ from \eqref{eq:arch} or \eqref{eq:garch}. Their changing conditional variance does not itself imply changing unconditional variance \cite{engle1982,bollerslev1986}.
+whereas ARCH and GARCH set this conditional variance to $v(t)$ from \eqref{eq:arch}. Their changing conditional variance does not itself imply changing unconditional variance \cite{engle1982,bollerslev1986}.
 
 \subsubsection{Shock Dynamics}
 A shock is the part of an observation that the conditional-mean model does not predict. Zero-mean white noise has constant finite unconditional variance and zero covariance between distinct dates. White noise need not be Gaussian or independent. In a homoscedastic SARIMA model, the innovations are commonly modeled as white noise with constant conditional variance. In ARCH and GARCH, the shocks follow
 \begin{equation}\label{eq:garch-shock}
-\varepsilon(t)=\sqrt{h(t)}z(t),
+\varepsilon(t)=\sqrt{v(t)}z(t),
 \end{equation}
-where the standardized innovations $z(t)$ are commonly assumed independent with mean zero and variance one. The shocks can be uncorrelated with constant unconditional variance while $h(t)$ changes \cite{boxjenkins1970,engle1982,bollerslev1986}.
+where the standardized innovations $z(t)$ are commonly assumed independent with mean zero and variance one. The shocks can be uncorrelated with constant unconditional variance while $v(t)$ changes \cite{boxjenkins1970,engle1982,bollerslev1986}.
 
 In continuous time, standard Brownian motion $W(t)$ starts at zero, has continuous sample paths, has independent increments, and has stationary Gaussian increments:
 \begin{equation}\label{eq:brownian-increments}
@@ -182,11 +184,13 @@ To solve this equation, consider a general Brownian diffusion
 dX(t)=a(t)\,dt+b(t)\,dW(t).
 \end{equation}
 For a twice continuously differentiable, time-independent function $f$, the one-dimensional form of It\^o's lemma states
-\begin{align}
+\begin{equation}\label{eq:ito-lemma}
+\begin{aligned}
 d f(X(t))={}&
-\bigl[a(t)f'(X(t))+\tfrac12 b(t)^2 f''(X(t))\bigr]\,dt \notag\\
-&+b(t)f'(X(t))\,dW(t).\label{eq:ito-lemma}
-\end{align}
+\bigl[a(t)f'(X(t))+\tfrac12 b(t)^2 f''(X(t))\bigr]\,dt \\
+&+b(t)f'(X(t))\,dW(t).
+\end{aligned}
+\end{equation}
 \begin{samepage}
 Because $W(0)=0$, a Brownian increment of length $\Delta t$ has the exact scaling in distribution
 \begin{equation}\label{eq:brownian-small-increment}
@@ -218,10 +222,12 @@ S(t)=S(0)\exp\{(\mu-\sigma^2/2)t+\sigma W(t)\}.
 \end{equation}
 
 Fractional Brownian motion $B^H(t)$ replaces the Brownian scaling exponent $1/2$ with a Hurst parameter $H\in(0,1)$. Its centered Gaussian increments are stationary and satisfy
-\begin{align}
-\mathrm{Var}(B^H(t+\Delta t)-B^H(t))&=(\Delta t)^{2H},\label{eq:fractional-scaling}\\
-\mathrm{SD}(B^H(t+\Delta t)-B^H(t))&=(\Delta t)^H.\label{eq:fractional-scaling-sd}
-\end{align}
+\begin{equation}\label{eq:fractional-scaling}
+\begin{aligned}
+\mathrm{Var}(B^H(t+\Delta t)-B^H(t))&=(\Delta t)^{2H},\\
+\mathrm{SD}(B^H(t+\Delta t)-B^H(t))&=(\Delta t)^H.
+\end{aligned}
+\end{equation}
 The case $H=1/2$ recovers standard Brownian motion. For $H>1/2$, fractional Brownian increments are positively correlated across time, indicating persistence and long memory in the increment process. For $H<1/2$, the paths are rougher than Brownian paths: at increasingly fine time scales they remain continuous but look more jagged, because typical changes shrink more slowly as the time interval decreases \cite{gatheral2018}.
 
 Fractional Ornstein--Uhlenbeck (fOU) log volatility combines a mean-reverting drift with fractional Brownian forcing:
@@ -315,12 +321,14 @@ x^{(\ell)}=\phi\!\left(z^{(\ell)}\right).
 The weights $W^{(\ell)}$ and biases $b^{(\ell)}$ are learned; the activation $\phi$ supplies nonlinearity. Without nonlinear activations, a stack of such layers reduces to one affine map. The final layer maps the learned representation to the forecast, with its output transform chosen to match the target's units.
 
 Common elementwise activations, for a scalar $z$, are
-\begin{align}\label{eq:activations}
+\begin{equation}\label{eq:activations}
+\begin{aligned}
 \operatorname{sigmoid}(z)&=\frac{1}{1+e^{-z}}, &
 \tanh(z)&=\frac{\sinh(z)}{\cosh(z)}=\frac{e^z-e^{-z}}{e^z+e^{-z}},\\
 \operatorname{ReLU}(z)&=\max(0,z), &
 \operatorname{SiLU}(z)&=z\operatorname{sigmoid}(z).
-\end{align}
+\end{aligned}
+\end{equation}
 Sigmoid maps to $(0,1)$ and is useful for gates; tanh maps to $(-1,1)$ and gives signed, bounded states. Both saturate at large $|z|$, yielding small derivatives there. ReLU has a zero derivative on negative inputs, so a unit that stays negative may stop learning. SiLU is smooth and retains a small nonzero response for negative inputs.
 
 \subsubsection{Losses, backpropagation, and optimization}
@@ -329,14 +337,16 @@ A loss function $\ell(\widehat y,y)$ assigns a numerical cost to predicting $\wi
 J(\theta;Z)=\frac{1}{N}\sum_{i=1}^{N}\ell\!\left(f_{\theta}(x_i),y_i\right).
 \end{equation}
 For evaluation, write $\widehat y_i=f_{\theta}(x_i)$ and $e_i=y_i-\widehat y_i$. Let $s_i>0$ be the naive scale associated with observation $i$. A one-step naive forecast simply repeats the last observed value, so its mean absolute change over a reference history provides a scale for judging whether errors are large relative to that simple forecast. With these definitions, the five metrics are
-\begin{align}\label{eq:forecast-metrics}
+\begin{equation}\label{eq:forecast-metrics}
+\begin{aligned}
 \mathrm{MAE}&=\frac1N\sum_{i=1}^{N}|e_i|, &
 \mathrm{MASE}&=\frac1N\sum_{i=1}^{N}\frac{|e_i|}{s_i},\\
 \mathrm{MSE}&=\frac1N\sum_{i=1}^{N}e_i^2, &
 \mathrm{RMSE}&=\sqrt{\frac1N\sum_{i=1}^{N}e_i^2},\\
 \mathrm{QLIKE}&=\frac1N\sum_{i=1}^{N}
 \left[\frac{y_i}{\widehat y_i}-\log\!\left(\frac{y_i}{\widehat y_i}\right)-1\right].
-\end{align}
+\end{aligned}
+\end{equation}
 
 \begin{itemize}
 \item \textbf{MAE} measures a typical absolute miss in the target's units and is less sensitive to large errors than squared-error measures.
@@ -420,13 +430,15 @@ Garman and Klass also use the daily open $O(t)$ and close $C(t)$. Their practica
 -\bigl(2\log 2-1\bigr)\left[\log\!\left(\frac{C(t)}{O(t)}\right)\right]^2.
 \end{equation}
 Under the same continuous, zero-drift Brownian model, the open-to-close return has second moment $\sigma^2(t)$. Together with \eqref{eq:parkinson-range-moment}, this gives
-\begin{align}
+\begin{equation}\label{eq:garman-klass-return}
+\begin{aligned}
 &\mathrm E\!\left[\left\{\log\!\left(C(t)/O(t)\right)\right\}^{2}\right]
-=\sigma^2(t)\label{eq:garman-klass-return}\\[0.5em]
+=\sigma^2(t)\\[0.5em]
 &\mathrm E\!\left[\widehat\sigma^2_{\mathrm{GK}}(t)\right]
 =\tfrac12\bigl[4\log(2)\,\sigma^2(t)\bigr]
 -\bigl(2\log(2)-1\bigr)\sigma^2(t)=\sigma^2(t).
-\end{align}
+\end{aligned}
+\end{equation}
 
 Garman and Klass selected this practical form by dropping small cross-product terms from their more efficient quadratic estimator \cite{garmanklass1980}. Like Parkinson's proxy, it uses prices within the observed session and can be biased by discrete trading or departures from the assumed price process. 
 
@@ -463,27 +475,213 @@ d_{ij}(t)=L_i(t)-L_j(t),\qquad
 \mu_{ij}=\mathrm E[d_{ij}(t)],\qquad i,j\in\mathcal M_0.
 \end{equation}
 A negative $\mu_{ij}$ favors model $i$. For a current candidate set $\mathcal M\subseteq\mathcal M_0$, Equation~(1) of Hansen, Lunde, and Nason gives the equal-performance null; its alternative is that at least one pair differs:
-\begin{align}
-H_{0,\mathcal M}:&\quad \mu_{ij}=0\quad\text{for every }i,j\in\mathcal M,\label{eq:mcs-null}\\
-H_{1,\mathcal M}:&\quad \mu_{ij}\ne0\quad\text{for at least one }i,j\in\mathcal M,\label{eq:mcs-alternative}\\
-\text{Reject }H_{0,\mathcal M}:&\quad p_{\mathcal M}<\alpha.\notag
-\end{align}
-Here $p_{\mathcal M}$ is the bootstrap $p$-value. The paper leaves its loss-difference and alternative-hypothesis definitions unnumbered in Section~2 \cite{hansen2011mcs}.
+\begin{equation}\label{eq:mcs-null}
+\begin{aligned}
+H_{0,\mathcal M}:&\quad \mu_{ij}=0\quad\text{for every }i,j\in\mathcal M,\qquad\text{Reject }H_{0,\mathcal M}\text{ if }p_{\mathcal M}<\alpha.\\
+H_{1,\mathcal M}:&\quad \mu_{ij}\ne0\quad\text{for at least one }i,j\in\mathcal M.
+\end{aligned}
+\end{equation}
+Here $p_{\mathcal M}$ is the bootstrap p-value \cite{hansen2011mcs}.
 
-One test and elimination pair proposed in their Section~3.1.2 uses each model's sample excess loss relative to the average model in the current set. With $m=|\mathcal M|$ and $n$ common evaluation times, define
-\begin{align}
+\medskip
+\noindent
+With $m=|\mathcal M|$ and $n$ common evaluation times, define
+\begin{equation}\label{eq:mcs-standardized-loss}
+\begin{aligned}
 \bar d_{i\cdot}&=\frac{1}{mn}\sum_{j\in\mathcal M}\sum_{t=1}^{n}d_{ij}(t),
-&t_{i\cdot}&=\frac{\bar d_{i\cdot}}{\sqrt{\widehat{\mathrm{Var}}(\bar d_{i\cdot})}},\label{eq:mcs-standardized-loss}\\
+&t_{i\cdot}&=\frac{\bar d_{i\cdot}}{\sqrt{\widehat{\mathrm{Var}}(\bar d_{i\cdot})}},\\
 T_{\max,\mathcal M}&=\max_{i\in\mathcal M}t_{i\cdot},
-&e_{\max,\mathcal M}&=\operatorname*{arg\,max}_{i\in\mathcal M}t_{i\cdot}.\label{eq:mcs-elimination}
-\end{align}
-The paper leaves these statistic and elimination-rule definitions unnumbered. A bootstrap estimates the null distribution of $T_{\max,\mathcal M}$ and the variance in $t_{i\cdot}$ while accounting for dependence in the loss differences. Start with $\mathcal M=\mathcal M_0$; after a rejection, remove $e_{\max,\mathcal M}$ and repeat. The first set for which the null is not rejected is the $(1-\alpha)$ MCS \cite{hansen2011mcs}.
-
-Under the paper's assumptions, the procedure asymptotically contains all models with minimum expected loss among $\mathcal M_0$ with probability at least $1-\alpha$. A surviving model is therefore not proved to be equally accurate or good in an absolute sense: limited information can leave inferior models in the set. For the volatility comparison, each MCS must use one variance proxy, forecast horizon, loss definition, and matched set of forecast observations; QLIKE and MSE lead to separate confidence sets \cite{hansen2011mcs}.
+&e_{\max,\mathcal M}&=\operatorname*{arg\,max}_{i\in\mathcal M}t_{i\cdot}.
+\end{aligned}
+\end{equation}
+A bootstrap estimates the null distribution of $T_{\max,\mathcal M}$ and the variance in $t_{i\cdot}$ while accounting for dependence in the loss differences. Start with $\mathcal M=\mathcal M_0$; after a rejection, remove $e_{\max,\mathcal M}$ and repeat. The first set for which the null is not rejected is the $(1-\alpha)$ MCS \cite{hansen2011mcs}.
 
 \section{Methods}
-% Describe the system design and methodology. Do not include source code here.
-% We will describe models here, loss function and data fetching. 
+\subsection{Data}
+The equity stock universe is assembled from NASDAQ and NYSE listing files containing symbols, instrument names, and market capitalizations. These lists define candidate stocks, rather than constructed financial indices. For NASDAQ, symbols are stripped of surrounding whitespace, slashes are replaced by hyphens for Yahoo compatibility, and duplicates are removed. NYSE receives additional filtering: symbols containing a caret are excluded, and share classes are grouped by the base symbol obtained by removing a trailing class suffix. Within each group, the unsuffixed symbol is preferred, followed by class A; otherwise, the largest-market-capitalization row is selected. After this selection, instrument names containing Fund, Trust, Notes, Warrant, Preferred, Debentures, Senior Floating Rate, or Term are excluded without regard to case. Slashes are then replaced by hyphens and duplicates removed. The acquisition scheduler also removes duplicates from the combined exchange lists. The NYSE name and share-class rules are not applied to NASDAQ.
+
+Each ticker is downloaded sequentially from Yahoo Finance through yfinance Python library, requesting its maximum available history with adjusted OHLC prices and volume. We used a retry mechanism to handle rate limits and network errors. 
+
+The full dataset contains 22,817,463 observations across 5,842 tickers through September 10, 2026. The forecasting subset is smaller: 2,714 tickers have more than 80 raw observations before January 1, 2016 and a recorded observation on December 31, 2025. Training targets precede January 1, 2016; validation targets run from January 1, 2016 through December 31, 2018; test targets run from January 1, 2019 through December 31, 2025. 
+
+The observed variance proxy is the reduced Garman-Klass estimator in \eqref{eq:garman-klass-variance}. We select it because it combines information from the intraday high-low range and the open-to-close log return, providing a daily variance proxy that uses all four OHLC prices. Rows are invalid if OHLCV values are missing or nonfinite, prices are nonpositive, volume is negative, the high is below either open or close, the low is above either open or close, or the calculated variance is negative or nonfinite. Every input observation in a usable window must have valid, strictly positive variance. In the case of a zero variance: as an input, the window become invalid; as a target it becomes the floor value. The models need to understand the inputs that led to a zero target.
+
+Let $i$ identify a ticker and $t$ its chronological observation number. Write $v_i(t)=\widehat\sigma^2_{\mathrm{GK},i}(t)$ for its original observed proxy, retaining the Background estimator notation. A valid zero target receives the project adjustment
+\begin{equation}\label{eq:methods-target-floor}
+y_i(t)=
+\begin{cases}
+f_{\mathrm{target}},&v_i(t)=0,\\
+v_i(t),&v_i(t)>0,
+\end{cases}
+\qquad f_{\mathrm{target}}=3.396062419686545\times10^{-13}.
+\end{equation}
+The floor is the smallest positive variance in the training cohort and is used because $\log(0)$ is undefined. 
+
+For a history length $w$, each forecast sample has the form
+\begin{equation}\label{eq:methods-sample}
+X_i(t)=\bigl(x_i(t-w+1),\ldots,x_i(t)\bigr),
+\qquad Y_i(t+1)=y_i(t+1).
+\end{equation}
+Here $x_i(t)$ is the input vector for that observation, formed from the variance proxy and, where used, the adjusted within-session log return. $X_i(t)$ represents the input sample, and $Y_i(t+1)$ is the scalar next-observation target. Records are sorted by ticker and date, and histories never cross ticker boundaries. We consider Friday to Monday as one time step.
+
+The saved coverage audit gives the following usable samples:
+\begin{center}
+\begin{tabular}{r|rrr}
+History length & Training & Validation & Test \\
+\hline
+20 observations & 8,664,516 & 1,806,548 & 4,479,681 \\
+80 observations & 7,004,011 & 1,692,154 & 4,295,773
+\end{tabular}
+\end{center}
+
+\subsection{Models}
+ Each sample consists of one ticker's history and one next-observation target. Local models use their own parameter vector $\theta_i$, whereas global models share one vector $\theta$ across these separate samples, as in \eqref{eq:local-global-forecasts}. 
+
+Architectural scalar outputs are denoted $a(t+1)$. Depending on the output convention, their conversion to variance is
+\begin{equation}\label{eq:methods-output-map}
+\widetilde y(t+1)=\mathcal T\bigl(a(t+1)\bigr),\qquad
+\widehat y(t+1)=\max\{f_{\mathrm{pred}},\widetilde y(t+1)\}.
+\end{equation}
+Here $\mathcal T(a)=a$ for a variance output, $\mathcal T(a)=e^a$ for log variance, and $\mathcal T(a)=e^{2a}$ for log volatility. The positive training-derived prediction floor $f_{\mathrm{pred}}$ is a lower limit, not an upper cap. 
+
+For AR and SARIMA, write $v(t)$ for the observed variance-proxy series and $\widehat v(t+1)$ for its conditional mean forecast, used as an estimate of conditional return variance. Their raw forecast in \eqref{eq:methods-output-map} is $\widetilde y(t+1)=\widehat v(t+1)$. Under the zero-conditional-mean innovation assumption, the future shock contributes zero to this forecast.
+
+\subsubsection{AR}
+The one-lag autoregressive baseline models variance by
+\begin{equation}\label{eq:methods-ar}
+v(t+1)=\beta_0+\beta_1v(t)+\varepsilon(t),\qquad
+\widehat v(t+1)=\beta_0+\beta_1v(t).
+\end{equation}
+\noindent Where $\varepsilon(t)$ is assumed to be $\mathrm{WN}(0,\sigma^2)$. $\beta_0$ is an intercept and $\beta_1$ weights the latest variance \cite{yule1927}.
+
+\subsubsection{SARIMA}
+Let $L$ be the lag operator, $Lx(t)=x(t-1)$, for a generic series $x$. The seasonal autoregressive integrated moving-average specification for the variance series is
+\begin{equation}\label{eq:methods-sarima}
+\phi(L)\Phi(L^s)(1-L)^d(1-L^s)^D v(t)
+=\vartheta(L)\Theta(L^s)\varepsilon(t).
+\end{equation}
+The one-step variance forecast, conditional on the available within-ticker history $\mathcal F(t)$, is
+\begin{equation}\label{eq:methods-sarima-forecast}
+\widehat v(t+1)=\mathrm E\!\left[v(t+1)\mid\mathcal F(t)\right].
+\end{equation}
+The polynomial definitions are
+\begin{equation}\label{eq:methods-sarima-polynomials}
+\begin{aligned}
+\phi(L)&=1-\sum_{j=1}^{p}\phi_j L^j,&
+\Phi(L^s)&=1-\sum_{j=1}^{P}\Phi_j L^{sj},\\
+\vartheta(L)&=1+\sum_{j=1}^{q}\vartheta_j L^j,&
+\Theta(L^s)&=1+\sum_{j=1}^{Q}\Theta_j L^{sj}.
+\end{aligned}
+\end{equation}
+$p,q$ are the nonseasonal autoregressive and moving-average orders; $P,Q$ are their seasonal counterparts. $d,D$ count ordinary and seasonal differences, and $s$ is the seasonal period in observations. The coefficients $\phi_j,\Phi_j,\vartheta_j,\Theta_j$ weight past values and shocks; $\varepsilon(t)$ is a zero-mean white-noise innovation. 
+
+\subsubsection{GARCH}
+GARCH uses the adjusted within-session return rather than variance as its driving observation:
+\begin{equation}\label{eq:methods-garch-return}
+\begin{aligned}
+r(t)&=\log\!\left(\frac{C(t)}{O(t)}\right),\quad
+\varepsilon(t)=r(t)-\mu(t)=\sqrt{v(t)}\,z(t),\\
+v(t)&=\mathrm{Var}\!\left(r(t)\mid\mathcal F(t-1)\right),\quad z(t)\sim\mathcal N(0,1).
+\end{aligned}
+\end{equation}
+$C(t),O(t)$ are adjusted close and open, $\mu(t)$ is a causal mean based on preceding within-ticker returns, and $\varepsilon(t)$ is the residual. $\mathcal F(t-1)$ contains the information available before observation $t$, and $v(t)$ here is the conditional return variance, distinct from the observed variance proxy used as input to the other models. The GARCH(1,1) recursion and one-step variance forecast are
+\begin{equation}\label{eq:methods-garch}
+v(t)=\omega+\alpha\varepsilon^2(t-1)+\beta v(t-1),\qquad
+\widetilde y(t+1)=v(t+1).
+\end{equation}
+The restrictions are $\omega>0$, $\alpha,\beta\geq0$, and $\alpha+\beta<1$. $\omega$ supplies the base variance, $\alpha$ controls the response to squared shocks, and $\beta$ carries variance persistence \cite{bollerslev1986}. Volatility is $\sqrt{v(t+1)}$.
+
+\subsubsection{HAR}
+Define the trailing average over $j$ observations by
+\begin{equation}\label{eq:methods-har-average}
+\bar v^{(j)}(t)=\frac1j\sum_{k=0}^{j-1}v(t-k).
+\end{equation}
+The heterogeneous autoregressive forecast is
+\begin{equation}\label{eq:methods-har}
+\widetilde y(t+1)=\beta_0+\sum_{j\in\mathcal J}\beta_j\bar v^{(j)}(t),\qquad
+\mathcal J=\{1,5,20\}\ \text{or}\ \{1,5,20,40,80\}.
+\end{equation}
+$\beta_0$ is the intercept and each $\beta_j$ weights a distinct historical horizon. The first set defines HAR-20; the second extends it to HAR-80. Daily, approximately weekly, and approximately monthly averages give a parsimonious representation of dependence across horizons \cite{corsi2009,reisenhofer2022}. The project uses a 20-observation monthly horizon in accordance with Reisenhofer, Bayer, and Hautsch \cite{reisenhofer2022}, to ensure consistent window sizes when comparing HAR and HARNet.
+
+\subsubsection{RFSV}
+Rough fractional stochastic volatility uses the mean-reverting log-volatility dynamics:
+\begin{equation}\label{eq:methods-rfsv-dynamics}
+X(t)=\log\sigma(t),\qquad
+\mathrm dX(t)=-\alpha\bigl(X(t)-m\bigr)\,\mathrm dt+\nu\,\mathrm dB^H(t).
+\end{equation}
+Here $B^H$ is fractional Brownian motion, where $0<H<1/2$ measures roughness, $\alpha>0$ is the mean-reversion rate, $m$ is the long-run log-volatility level, and $\nu$ scales the noise. $X(t)$ here is the scalar latent process. Gatheral et al.'s Equation~(5.1) gives a historical kernel for log variance. With the positive proxy substituted for latent variance, write
+\begin{equation}\label{eq:methods-rfsv-kernel}
+\widehat\ell(t+\Delta)=\frac{\cos(\pi H)}{\pi}\Delta^{H+1/2}
+\int_0^{\infty}\frac{\log v(t-u)}{(u+\Delta)u^{H+1/2}}\,\mathrm du.
+\end{equation}
+$\widehat\ell$ is the conditional log-variance predictor, $u$ is backward lag, and $\Delta>0$ is the forecast horizon. The variance mapping includes the Gaussian exponential-moment correction from the paper's Section~5.2 predictor:
+\begin{equation}\label{eq:methods-rfsv-variance}
+\widetilde y(t+\Delta)=\exp\{\widehat\ell(t+\Delta)+2c(H)\nu^2\Delta^{2H}\},
+\quad c(H)=\frac{\Gamma(3/2-H)}{\Gamma(H+1/2)\Gamma(2-2H)}.
+\end{equation}
+$\Gamma$ is the gamma function. $H$ changes how past log variance is weighted. $\nu^2$ scales the Gaussian correction in the variance forecast \cite{gatheral2018}.
+
+\subsubsection{MLP}
+The multilayer perceptron flattens the input history into $x^{(0)}$ and applies three hidden layers:
+\begin{equation}\label{eq:methods-mlp}
+\begin{aligned}
+&z^{(\ell)}=W^{(\ell)}x^{(\ell-1)}+b^{(\ell)},&
+&x^{(\ell)}=\operatorname{SiLU}(z^{(\ell)}),\quad \ell=1,2,3,\\
+&a(t+1)=W^{(4)}x^{(3)}+b^{(4)}.
+\end{aligned}
+\end{equation}
+The $W^{(\ell)}$ and $b^{(\ell)}$ are weight matrices and bias vectors, as in \eqref{eq:neural-layer}. SiLU is the elementwise activation in \eqref{eq:activations}. The affine compositions mix information from all positions in the flattened history.
+
+\subsubsection{LSTM}
+For one position $t$ in a chronological input sequence, concatenate the preceding hidden state and current input as $q(t)=[h(t-1);x(t)]$. Here $h(t)$ is a neural hidden-state vector, distinct from GARCH's scalar conditional variance $v(t)$. The custom long short-term memory cell uses
+\begin{equation}\label{eq:methods-lstm-if}
+\begin{aligned}
+i(t)&=\operatorname{sigmoid}(W_iq(t)+b_i),&
+f(t)&=\operatorname{sigmoid}(W_fq(t)+b_f),\\
+g(t)&=\tanh(W_gq(t)+b_g),&
+o(t)&=\operatorname{sigmoid}(W_oq(t)+b_o),\\
+c(t)&=f(t)\odot c(t-1)+i(t)\odot g(t),&
+h(t)&=o(t)\odot\tanh(c(t)).
+\end{aligned}
+\end{equation}
+$i,f,o$ are input, forget, and output gates; $g$ is the candidate update; $c$ is the cell-state vector. $\odot$ means elementwise multiplication. The matrices $W_i,W_f,W_g,W_o$ and vectors $b_i,b_f,b_g,b_o$ parameterize the corresponding affine maps. The forget gate carries preceding cell information, the input gate admits new information, and the output gate controls its exposed representation \cite{hochreiter1997}. After the last history position $t$, the scalar readout is
+\begin{equation}\label{eq:methods-lstm-readout}
+a(t+1)=W_{\mathrm{out}}h(t)+b_{\mathrm{out}}.
+\end{equation}
+$W_{\mathrm{out}}$ is a row vector and $b_{\mathrm{out}}$ a scalar bias.
+
+\subsubsection{SiLU-LSTM}
+The sigmoid linear unit is
+\begin{equation}\label{eq:methods-silu}
+\operatorname{SiLU}(z)=z\operatorname{sigmoid}(z)=\frac{z}{1+e^{-z}}.
+\end{equation}
+SiLU-LSTM preserves the sigmoid gates, cell update, and scalar readout of the preceding LSTM, replacing the candidate and cell-output hyperbolic tangents by
+\begin{equation}\label{eq:methods-silu-lstm}
+g(t)=\operatorname{SiLU}(W_gq(t)+b_g),\quad
+h(t)=o(t)\odot\operatorname{SiLU}(c(t)).
+\end{equation}
+
+\subsubsection{HARNet}
+The implemented HARNet uses a hierarchy of single-channel causal convolutions, following the nested-horizon design of Reisenhofer et al. \cite{reisenhofer2022}. Set $z_0(t)=v(t)$ and define each successive feature by
+\begin{equation}\label{eq:methods-harnet-convolution}
+z_\ell(t)=\operatorname{ReLU}\!\left(\sum_{k=0}^{K_\ell-1}
+a_{\ell,k}z_{\ell-1}(t-d_\ell k)\right),\quad
+\operatorname{ReLU}(z)=\max\{0,z\}.
+\end{equation}
+$a_{\ell,k}$ are filter weights, $K_\ell$ is filter length, and $d_\ell$ is dilation in observations. Convolutional biases are absent. The layer settings and resulting receptive fields $R_\ell$ are
+\begin{equation}\label{eq:methods-harnet-horizons}
+\begin{aligned}
+&(K_1,K_2,K_3,K_4)=(5,4,2,2),\\
+&(d_1,d_2,d_3,d_4)=(1,5,20,40),\\
+&R_0=1,\quad R_\ell=R_{\ell-1}+(K_\ell-1)d_\ell.
+\end{aligned}
+\end{equation}
+Thus the features cover 1, 5, 20, 40, and 80 observations. HARNet-20 uses layers 1 and 2, while HARNet-80 also uses layers 3 and 4. With $L=2$ or $L=4$, respectively, their readout is
+\begin{equation}\label{eq:methods-harnet-readout}
+a(t+1)=b_{\mathrm{out}}+\sum_{\ell=0}^{L}w_\ell z_\ell(t).
+\end{equation}
+$w_\ell$ are scalar readout weights and $b_{\mathrm{out}}$ is its intercept. 
+
 \section{Implementation}
 % Describe how the system was implemented.
 % Use pseudocode and/or informal or UML-style diagrams where useful.

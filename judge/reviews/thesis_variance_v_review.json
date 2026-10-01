@@ -1,0 +1,33 @@
+{
+  "task": "Change lowercase variance-valued h(t) to v(t) throughout the thesis starting at Equation 2.6, preserving other meanings and case.",
+  "sources": [
+    "User request supplied in cold-review task",
+    "AGENTS.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/methods.md",
+    "judge/reviews/variance_v.diff",
+    "judge/reviews/variance_v_before.tex",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.aux",
+    "judge/reviews/variance_v_background-09.png",
+    "judge/reviews/variance_v_background-10.png",
+    "judge/reviews/variance_v_methods-23.png",
+    "judge/reviews/variance_v_methods-24.png",
+    "judge/reviews/variance_v_methods-25.png",
+    "Independent prefix, uppercase-H, and remaining-h checks run during review"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

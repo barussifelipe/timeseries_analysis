@@ -1,0 +1,30 @@
+{
+  "task": "Recompile thesis_structure.pdf from the user's saved changes with two direct SyncTeX-enabled pdflatex passes, preserving the thesis source.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/validate.py",
+    "git diff -- CONTEXT.md ref/final_report/thesis_structure.tex",
+    "git diff --check",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf (metadata: 267082 bytes, generated after source; log reports 25 pages)",
+    "ref/final_report/thesis_structure.synctex.gz",
+    "judge/reviews/thesis_recompile_page20.png",
+    "judge/reviews/thesis_mcs_inline_rejection_review.json",
+    "Implementer-provided check results: both direct pdflatex -synctex=1 passes exited 0"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

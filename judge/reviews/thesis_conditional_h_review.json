@@ -1,0 +1,27 @@
+{
+  "task": "Use h(t+1) for AR and SARIMA conditional variance forecasts in Methods and retain the explicit GARCH h(t) conditional return variance definition.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/methods.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/reviews/garch_h_before.tex",
+    "judge/reviews/ar_sarima_garch_h.diff",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "judge/reviews/ar_sarima_h_page-23.png",
+    "judge/reviews/ar_sarima_h_page-24.png"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

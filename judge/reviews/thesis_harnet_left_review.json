@@ -1,0 +1,27 @@
+{
+  "task": "Align all three rows of thesis Equation (3.21) to their common left edge, preserving formulas and one equation number.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/methods.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/reviews/harnet_left.diff",
+    "judge/reviews/harnet_left_before.tex",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.aux",
+    "ref/final_report/thesis_structure.log",
+    "judge/reviews/harnet_left_page-26.png"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

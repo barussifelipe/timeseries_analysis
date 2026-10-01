@@ -1,0 +1,27 @@
+{
+  "task": "Cold review of the user-requested AR/SARIMA observed-series notation change from v(t) to h(t), with forecasts distinguished as hat h(t+1). Review is limited to the saved AR/SARIMA patch; concurrent user changes to GARCH prose are excluded. Current source confirms the reviewed AR/SARIMA region remains intact. The rendered page is the implementer preview; the current editor-rebuilt log confirms successful compilation without new overflow or unresolved references. The implementer reports two direct SyncTeX passes; the reviewer did not rerun them.",
+  "sources": [
+    "AGENTS.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/methods.md",
+    "ref/final_report/thesis_structure.tex",
+    "judge/reviews/ar_sarima_series_h_before.tex",
+    "judge/reviews/ar_sarima_series_h.diff",
+    "judge/reviews/ar_sarima_series_h_page-23.png",
+    "ref/final_report/thesis_structure.log",
+    "judge/validate.py"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

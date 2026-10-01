@@ -1,3 +1,107 @@
+## Thesis equation-block numbering (2026-10-02)
+
+All nine multiline `align` displays now use `aligned` inside `equation`,
+with one equation number per block. Former row labels were consolidated
+and internal references updated. MLP's scalar readout starts at the same
+left edge as its first hidden-layer equation. Mathematical contents and
+model/data behavior are unchanged. Two direct `pdflatex -synctex=1` passes
+regenerated the adjacent 31-page PDF and SyncTeX. Label/reference checks
+passed; rendered activations, metrics, MCS, MLP, and LSTM blocks were checked.
+Only the earlier overflow warnings remain (source lines 77-78 and now 259).
+Fresh-context review `judge/reviews/thesis_equation_blocks_review.json`
+passed 100/100 with no findings and validated JSON.
+Research plan position is unchanged; Implementation remains next.
+
+## Thesis variance notation unified (2026-10-02)
+
+At the user's request, variance-valued lowercase `h(t)` is now `v(t)` from
+Background Equation 2.6 onward, including ARCH/GARCH, AR/SARIMA forecasts,
+and the RFSV historical kernel. Neural hidden-state `h(t)`, convolution
+filters, and uppercase `H` retain their meanings. AR/SARIMA use `v(t)` for
+the observed proxy and `hat v(t+1)` for its forecast; GARCH explicitly states
+that its `v(t)` is conditional return variance. The Methods plan's notation
+rows match the source. No model, data, or evaluation behavior changed.
+Two direct `pdflatex -synctex=1` passes regenerated the adjacent 31-page PDF
+and SyncTeX. Background pages 9-10 and Methods pages 23-25 were visually
+checked; only earlier overfull warnings at lines 77-78 and 253 remain.
+Fresh-context review `judge/reviews/thesis_variance_v_review.json` passed
+100/100 with no findings and validated JSON.
+Research plan position is unchanged; Implementation remains next.
+
+## Thesis rebuild and automatic preview configuration (2026-10-01)
+
+Fixed missing math delimiters around `p_{\mathcal M}` in the user's MCS
+paragraph, which blocked compilation. Two successful direct
+`pdflatex -synctex=1` passes from `ref/final_report/` regenerated the adjacent
+32-page PDF and SyncTeX. The final log has no undefined citations/references,
+rerun requests, or fatal errors; existing overfull and underfull warnings remain.
+Project VS Code settings now enable builds on file changes, LaTeX autosave
+after 1500 ms, the internal PDF tab, and no automatic cleanup. The existing
+two-pass recipe and Perl-free glob cleanup are preserved. Settings JSON and
+final-log checks passed. Live editor refresh could not be exercised from this
+terminal; PDF rendering was unavailable because PyMuPDF is not installed.
+Research plan position remains unchanged: Implementation is next.
+
+## Thesis Methods drafted (2026-10-01)
+
+Methods in `ref/final_report/thesis_structure.tex` now contains exactly Data
+and Models, with AR, SARIMA, GARCH, HAR, RFSV, MLP, LSTM, SiLU-LSTM, and
+HARNet in the agreed order. It describes the exchange-specific stock-universe
+filters, sequential acquisition defaults, audited raw-history GK cohort and
+chronological splits, positive-input windows, zero-target policy, and separate
+forecast floor. Counts are saved audit figures: the source database and listing
+CSVs are unavailable here. No data behavior, fitting, or metric result changed.
+The MLP has three hidden layers in current code; the roadmap's two-layer
+description is stale. RFSV uses a full positive-history approximation and its
+existing evaluator uses final-date targets, so its results require separate
+matched-date treatment. Cryptocurrency transfer remains intended work.
+
+`ref/implementation_plan/methods.md` records every agreed decision, audited
+count, default requiring validation, and the notation/code cross-check. Existing
+primary-paper citations are reused; `ref/thesis/thesis_notes.md` qualifies
+HARNet's implemented hierarchy and the current full-history RFSV variant.
+Two successful direct `pdflatex -synctex=1` passes regenerated the adjacent
+33-page PDF and SyncTeX after the final source edit. Pages 21-28 were rendered
+and visually inspected. Only the earlier overfull warnings at lines 77-78 and
+253 remain; references and citations resolve. Focused source/audit checks and
+`git diff --check` pass. Fresh-context cold review
+`judge/reviews/thesis_methods_review.json` passed 100/100 with no findings,
+and its JSON validated. Next thesis-writing task:
+Implementation, using saved experiment configurations for fitting procedures,
+transforms, model settings, initialization, and reproducibility details.
+
+## Thesis PDF recompiled from user edits (2026-10-01)
+
+Two direct `pdflatex -synctex=1` passes from `ref/final_report/` successfully
+regenerated the 25-page `thesis_structure.pdf` and its adjacent SyncTeX file
+from the user's latest saved source. No thesis source was edited. MiKTeX exists
+at `AppData/Local/Programs/MiKTeX/miktex/bin/x64/pdflatex.exe`, outside PATH;
+the sandbox attempt could not access its user configuration, and the approved
+retry succeeded. The earlier missing-build blocker below is now resolved.
+The log retains overfull warnings at lines 77-78 and 253 and bibliography
+underfull warnings. Page 20 was rendered and visually checked: the updated MCS
+display fits without overflow. Fresh-context cold review
+`judge/reviews/thesis_recompile_review.json` passed 100/100 with no findings,
+and its JSON validated. Next thesis-writing task: Methods.
+
+## MCS hypothesis display formatting (2026-10-01)
+
+The MCS display in `ref/final_report/thesis_structure.tex` now places the
+bootstrap rejection condition beside the null, separated by horizontal
+spacing, and keeps the alternative on its own line. Both equation labels and
+statistical definitions are preserved, along with the preexisting local prose
+edit below the display. The focused source check and `git diff --check`
+passed. Two direct `pdflatex -synctex=1` attempts from `ref/final_report/`
+failed because `pdflatex` is unavailable in this environment; the earlier
+MiKTeX installation recorded below could not be found. The PDF and SyncTeX
+remain unchanged, and rendered legibility and overflow are unverified.
+Fresh-context cold review
+`judge/reviews/thesis_mcs_inline_rejection_review.json` validated at 90/100,
+FAIL, with the missing build and rendered inspection as its critical blocker.
+Next: run the required two-pass build, inspect this display, and obtain a
+passing rereview when LaTeX is available; Methods remains the next
+thesis-writing task.
+
 ## Thesis Model Evaluation and MCS (2026-09-30)
 
 Section 2 now ends with a Model Evaluation subsection based on Hansen, Lunde, and Nason (2011). It defines matched per-model losses, pairwise loss differences, the paper's Equation (1) equal-performance null, the unnumbered Section 3.1.2 standardized excess-loss statistic and matching elimination rule, the bootstrap sequence, and the asymptotic coverage interpretation. A subsequent formatting refinement places the alternative hypothesis and bootstrap rejection condition directly below the null. The original paper was added to the thesis bibliography and `ref/thesis/references.md`, with concise findings in `ref/thesis/thesis_notes.md`. No model, data, fit, or evaluation result changed. Two direct MiKTeX passes with SyncTeX regenerated the 25-page PDF; page 20 was visually checked with the new display. The log reports only earlier overfull lines 77-78 and 253. A tiny numerical excess-loss identity check passed. Fresh-context reviews `judge/reviews/thesis_mcs_model_evaluation_review.json` and `judge/reviews/thesis_mcs_hypothesis_review.json` both passed 100/100 with no findings and validated JSON. Next thesis-writing task: develop Methods, including the project-specific MCS bootstrap and aggregation decisions.

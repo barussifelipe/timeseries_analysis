@@ -1,14 +1,22 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.16)  30 SEP 2026 05:48
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.10.1)  2 OCT 2026 00:46
 entering extended mode
  restricted \write18 enabled.
+ file:line:error style messages enabled.
  %&-line parsing enabled.
-**./thesis_structure.tex
-(thesis_structure.tex
+**"c:/Users/Vanessa Castanho/Documents/Programming/stock_time_series_analysis/r
+ef/final_report/thesis_structure.tex"
+
+(c:/Users/Vanessa Castanho/Documents/Programming/stock_time_series_analysis/ref
+/final_report/thesis_structure.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
+
+(C:\Users\Vanessa Castanho\AppData\Local\Programs\MiKTeX\tex/latex/base\article
+.cls
 Document Class: article 2025/01/22 v1.4n Standard LaTeX document class
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/base\size12.clo
+
+(C:\Users\Vanessa Castanho\AppData\Local\Programs\MiKTeX\tex/latex/base\size12.
+clo
 File: size12.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
 )
 \c@part=\count275
@@ -23,24 +31,30 @@ File: size12.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
 \belowcaptionskip=\skip50
 \bibindent=\dimen148
 )
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsmath.sty
+(C:\Users\Vanessa Castanho\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsm
+ath.sty
 Package: amsmath 2025/07/09 v2.17z AMS math features
 \@mathmargin=\skip51
 
 For additional information on amsmath, use the `?' option.
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amstext.sty
+
+(C:\Users\Vanessa Castanho\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amst
+ext.sty
 Package: amstext 2024/11/17 v2.01 AMS text
 
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsgen.sty
+(C:\Users\Vanessa Castanho\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsg
+en.sty
 File: amsgen.sty 1999/11/30 v2.0 generic functions
 \@emptytoks=\toks17
 \ex@=\dimen149
 ))
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsbsy.sty
+(C:\Users\Vanessa Castanho\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsb
+sy.sty
 Package: amsbsy 1999/11/29 v1.2d Bold Symbols
 \pmbraise@=\dimen150
 )
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsopn.sty
+(C:\Users\Vanessa Castanho\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amso
+pn.sty
 Package: amsopn 2022/04/08 v2.04 operator names
 )
 \inf@bad=\count283
@@ -91,10 +105,12 @@ LaTeX Info: Redefining \Relbar on input line 970.
 LaTeX Info: Redefining \[ on input line 2950.
 LaTeX Info: Redefining \] on input line 2951.
 )
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amssymb.sty
+(C:\Users\Vanessa Castanho\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\ams
+symb.sty
 Package: amssymb 2013/01/14 v3.01 AMS font symbols
 
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amsfonts.sty
+(C:\Users\Vanessa Castanho\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\ams
+fonts.sty
 Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
 \symAMSa=\mathgroup4
 \symAMSb=\mathgroup5
@@ -102,8 +118,8 @@ LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
 LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
 ))
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdf
-tex.def
+(C:\Users\Vanessa Castanho\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3
+backend-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count295
 ) (thesis_structure.aux)
@@ -126,98 +142,102 @@ LaTeX Font Info:    ... okay on input line 10.
 LaTeX Font Info:    Trying to load font information for U+msa on input line 12.
 
 
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
+(C:\Users\Vanessa Castanho\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\ums
+a.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
 LaTeX Font Info:    Trying to load font information for U+msb on input line 12.
 
 
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
+(C:\Users\Vanessa Castanho\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\ums
+b.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-[1
+) [1
 
-{C:/Users/benga/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [2]
-[3] [4]
+{C:/Users/Vanessa Castanho/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [
+2] [3] [4]
 Overfull \hbox (24.8721pt too wide) in paragraph at lines 77--78
 \OT1/cmr/m/n/12 In this pa-per, we present the com-par-i-son be-tween AR(1), SA
 RIMA(1,0,1)(1,0,1,5),
  []
 
 [5] [6] [7] [8] [9] [10] [11]
-Overfull \hbox (17.56009pt too wide) detected at line 253
+Overfull \hbox (17.56009pt too wide) detected at line 259
 [][][]
  []
 
-[12] [13] [14] [15] [16] [17] [18] [19] [20] [21]
-Underfull \hbox (badness 1867) in paragraph at lines 535--536
+[12] [13] [14] [15] [16] [17] [18] [19] [20] [21] [22] [23] [24] [25] [26]
+[27]
+Underfull \hbox (badness 1867) in paragraph at lines 733--734
 []\OT1/cmr/m/n/12 Bollerslev, T. (1986). Gen-er-al-ized au-tore-gres-sive con-d
 i-tional het-
  []
 
-[22]
-Underfull \hbox (badness 1917) in paragraph at lines 553--554
+[28]
+Underfull \hbox (badness 1917) in paragraph at lines 751--752
 []\OT1/cmr/m/n/12 Reisenhofer, R., Bayer, X., and Hautsch, N. (2022). HAR-Net:
  []
 
 
-Underfull \hbox (badness 1178) in paragraph at lines 553--554
+Underfull \hbox (badness 1178) in paragraph at lines 751--752
 \OT1/cmr/m/n/12 A con-vo-lu-tional neu-ral net-work for re-al-ized volatil-ity 
 fore-cast-ing.
  []
 
-[23] [24]
-Underfull \hbox (badness 1460) in paragraph at lines 567--568
+[29]
+Underfull \hbox (badness 1460) in paragraph at lines 765--766
 \OT1/cmr/m/n/12 ity fore-cast-ing with ma-chine learn-ing and in-tra-day com-mo
 n-al-ity.
  []
 
 
-Underfull \hbox (badness 1616) in paragraph at lines 570--571
+Underfull \hbox (badness 1616) in paragraph at lines 768--769
 []\OT1/cmr/m/n/12 Brini, A. (2026). Fore-cast-ing re-al-ized volatil-ity with t
 ime se-ries
  []
 
 
-Underfull \hbox (badness 1205) in paragraph at lines 570--571
+Underfull \hbox (badness 1205) in paragraph at lines 768--769
 \OT1/cmr/m/n/12 foun-da-tion mod-els: A com-par-i-son with econo-met-ric bench-
 marks.
  []
 
-[25] (thesis_structure.aux)
+[30] [31] (thesis_structure.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 1851 strings out of 467870
- 27079 string characters out of 5418355
- 447733 words of memory out of 5000000
- 30764 multiletter control sequences out of 15000+600000
+ 1871 strings out of 467870
+ 28093 string characters out of 5412995
+ 446733 words of memory out of 5000000
+ 30782 multiletter control sequences out of 15000+600000
  637776 words of font info for 78 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 56i,13n,65p,2033b,239s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\benga\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm
-1200.pk><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfon
-ts/cm/cmbx10.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/publ
-ic/amsfonts/cm/cmbx12.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/t
-ype1/public/amsfonts/cm/cmex10.pfb><C:/Users/benga/AppData/Local/Programs/MiKTe
-X/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/benga/AppData/Local/Progr
-ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/benga/AppData/Loc
-al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/benga/App
-Data/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/b
-enga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:
-/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.
-pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
-m/cmr8.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
-fonts/cm/cmsy10.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/p
-ublic/amsfonts/cm/cmsy8.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts
-/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/benga/AppData/Local/Programs/MiK
-TeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on thesis_structure.pdf (25 pages, 267951 bytes).
+ 56i,13n,65p,2125b,243s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\Vanessa Castanho\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/
+dpi600\tcrm1200.pk><C:/Users/Vanessa Castanho/AppData/Local/Programs/MiKTeX/fon
+ts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/Vanessa Castanho/AppData/Local
+/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/Vanessa Ca
+stanho/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb>
+<C:/Users/Vanessa Castanho/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
+fonts/cm/cmmi12.pfb><C:/Users/Vanessa Castanho/AppData/Local/Programs/MiKTeX/fo
+nts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/Vanessa Castanho/AppData/Local
+/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/Vanessa Cas
+tanho/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C
+:/Users/Vanessa Castanho/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfo
+nts/cm/cmr17.pfb><C:/Users/Vanessa Castanho/AppData/Local/Programs/MiKTeX/fonts
+/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/Vanessa Castanho/AppData/Local/Pro
+grams/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/Vanessa Castanho
+/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Us
+ers/Vanessa Castanho/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/
+cm/cmsy8.pfb><C:/Users/Vanessa Castanho/AppData/Local/Programs/MiKTeX/fonts/typ
+e1/public/amsfonts/cm/cmti12.pfb><C:/Users/Vanessa Castanho/AppData/Local/Progr
+ams/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on thesis_structure.pdf (31 pages, 291976 bytes).
 PDF statistics:
- 158 PDF objects out of 1000 (max. 8388607)
+ 177 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

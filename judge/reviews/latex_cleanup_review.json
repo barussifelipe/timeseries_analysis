@@ -1,0 +1,25 @@
+{
+  "task": "Add glob cleanup to project LaTeX Workshop settings while preserving existing build recipes and valid JSON.",
+  "sources": [
+    "Task request supplied to cold reviewer",
+    "AGENTS.md",
+    "CONTEXT.md (current handoff sections)",
+    "ref/thesis/plan.md",
+    ".vscode/settings.json",
+    "git diff -- .vscode/settings.json",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/validate.py",
+    "Independent Python check: strict JSON parse, glob setting, defined recipe tools (PASS)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

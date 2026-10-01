@@ -1,0 +1,30 @@
+{
+  "task": "Rebuild the thesis twice to resolve references and configure automatic PDF preview updates while writing. Cold review of the narrow math-delimiter correction and VS Code settings; live editor interaction and rendered appearance remain untested and are explicitly disclosed.",
+  "sources": [
+    "AGENTS.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/validate.py",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    ".vscode/settings.json",
+    "git diff -- .vscode/settings.json CONTEXT.md ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.tex:470",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.aux",
+    "ref/final_report/thesis_structure.pdf:header and file metadata",
+    "ref/final_report/thesis_structure.synctex.gz:decompressed header and file metadata",
+    "C:/Users/Vanessa Castanho/.vscode/extensions/james-yu.latex-workshop-10.19.0/package.json:autoBuild.run schema",
+    "C:/Users/Vanessa Castanho/AppData/Local/Programs/Microsoft VS Code/07f806f999/resources/app/out/vs/workbench/workbench.desktop.main.js:files.autoSave and files.autoSaveDelay schemas"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}
