@@ -184,6 +184,8 @@ independently verified; confirm the thesis year and publication details before s
 
 ## Training implementation sources
 
+- Elfwing, S., Uchibe, E., and Doya, K. (2017). *Sigmoid-weighted linear units for neural network function approximation in reinforcement learning*. arXiv:1702.03118v3. Equation (10) defines the SiLU derivative (dSiLU): https://arxiv.org/pdf/1702.03118
+
 - Pennsylvania State University, *STAT 508, Lesson 4: Linear Regression* (Gauss--Markov theorem and the BLUE qualification): https://online.stat.psu.edu/stat508/Lesson04.html
 
 - Kalman, R. E. (1960). *A new approach to linear filtering and prediction problems*. *Journal of Basic Engineering*, 82(1), 35–45. https://doi.org/10.1115/1.3662552

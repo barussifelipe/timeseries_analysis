@@ -1,3 +1,175 @@
+## Thesis Technical Evaluation (2026-10-02)
+
+Follow-up edits explain the saved nine-ticker exclusions: zero raw GK variance
+on the final and preceding dates receives the same floor, leaving a zero
+RFSV final-date MASE scale. Tables and figures now use section-based numbers.
+The complexity table is flushed before Residual Structure. Its last column
+reports the Global / Local combination ratio B^(-2713p), without percentage
+scaling, following the user's latest correction.
+The plain-ratio follow-up rebuilt the adjacent PDF/SyncTeX with two passes;
+the focused check and fresh-context review
+`judge/reviews/technical_plain_ratio_review.json` passed 100/100 without
+findings, with validated JSON.
+The rebuilt PDF has 46 pages; Table 5.5 appears on page 35, before Residual
+Structure on page 37. Two direct SyncTeX passes and the extended focused
+check pass; no new overflows or unresolved references. Fresh-context follow-up
+review `judge/reviews/technical_evaluation_followup_review.json` passed
+100/100 with no findings and validated JSON. These edits do not change
+scores, data, or plan position.
+
+Technical Evaluation now contains Overall Result, Parameter Complexity, and
+Residual Structure in `ref/final_report/thesis_structure.tex`. The agreed
+plan is saved as `ref/implementation_plan/technical_evaluation.md`. Four
+editable metric tables preserve all 42 saved CSV rows, with separate global
+window populations and separate RFSV final-date tables. Global counts come
+from the matching full-history log, not the older windowed-RFSV log.
+
+Evaluation Setup now follows saved observation weighting, pooled RMSE, and
+test-relative ticker/window naive MASE. This supersedes the equal-weight
+RMSE convention below; evaluation code and saved metrics are unchanged.
+Training-scaled MASE remains the roadmap convention for future work, and
+the reporting departure is explicit. Full-period five-stock extrema select
+Local SARIMA, Global AR(1), Global MLP-80, and Local SiLU-LSTM-80 for four
+figure groups reusing 16 matched-population residual plots. Log-of-means
+timelines are distinguished from individual log residuals, and display
+trimming, varying axes, and retrospective test selection are disclosed.
+
+The complexity table uses verified architecture counts and B = 2^64 for
+2,714 tickers; its local column is extrapolated from only five fitted local
+tickers. Encoding combinations require distinguishability to count functions.
+Checkpoint tensors are unavailable; SARIMA's five parameters are checked
+from its selected specification because statsmodels is not installed.
+Mixed metric/scope winners, differing training budgets, and RFSV's single
+date prevent blanket superiority or scope-only attribution. No fitting,
+rescoring, downloads, commits, or pushes were run.
+
+The focused check `python judge/check_technical_evaluation.py` verifies
+42 rows, counts, floor-hit rates, rounded precision, RMSE identities,
+extrema, complexity exponents, figure paths, and subsection order.
+Two direct SyncTeX-enabled passes built a 45-page PDF; pages 32-41 were
+visually inspected (also page 31 after merge recovery). Existing overflow
+warnings outside this task remain;
+the added section has no overflow or undefined references. Fresh-context
+review `judge/reviews/technical_evaluation_review.json` passed 100/100 with
+no findings and validated JSON. The user's Computational Evaluation timing paragraph
+was preserved verbatim during recovery from an incorrect merge. The local
+loss display and introduction now fit; the matched table stays on one page.
+Next concrete thesis task: substantiate Computational Evaluation with saved
+timing evidence, then scope matched-observation MCS and unseen-asset
+transfer checks; these analyses are not completed by this section.
+
+## Thesis Evaluation Setup (2026-10-02)
+
+Hyperparameters opening now records the user's baseline-LSTM comparison
+(window 20; hidden sizes 4, 16, 32, 64, 128; learning rates 0.001 and 0.0001)
+and choices 128/0.001. Corrected the first-layer architecture attribution to
+Zhang et al., Appendix B, Table B.2, using the existing zhang2022 citation;
+the SiLU crypto-winter paper uses smaller hidden widths. No new experiment
+was run or ranking independently verified. Research notes record the source.
+Two final direct SyncTeX-enabled LaTeX passes regenerated the adjacent
+36-page PDF. No new overflow or undefined-reference warnings remain in the
+rewritten paragraph; existing user whitespace elsewhere is preserved.
+Fresh-context review `judge/reviews/thesis_hyperparameters_opening_review.json`
+passed 100/100 with no findings and validated JSON.
+
+Implementation now ends with Evaluation Setup: report the global metric over
+all global forecast observations; report the arithmetic mean of the five
+ticker-specific local metrics for each model specification, with equal ticker
+weight, as requested. Global and local equations reuse the Concepts mean
+loss J(theta; Z) and observation loss ell(prediction, actual), with one shared
+global theta and ticker-specific local theta_i. Evaluation sets and counts
+are defined; M = 5 per model specification. RMSE takes the square root before
+averaging local scores. This supersedes the earlier three-subsection layout.
+No evaluation code changed. `inference/evaluate_local_global.py::aggregate`
+currently uses observation-count weighting and derives RMSE from pooled MSE;
+it must be aligned with this reporting convention before using its output as
+an equal-weight local summary. Experimental Results remains next.
+Two direct SyncTeX-enabled LaTeX passes rebuilt the adjacent 35-page PDF.
+No undefined references or new layout warnings occur in the added paragraph;
+existing overfull warnings at lines 77-78, 259, and 698-699 remain.
+The added source has no trailing whitespace; existing user whitespace remains.
+Fresh-context review `judge/reviews/thesis_evaluation_equations_review.json`
+passed 100/100 with no findings and validated JSON.
+
+## Thesis Elfwing citation placement (2026-10-02)
+
+Added `\cite{elfwing2017}` immediately after Elfwing, Uchibe, and Doya in
+Implementation (line 740), removing the stray possessive. Two direct
+SyncTeX-enabled LaTeX passes regenerated the adjacent 35-page PDF; the
+citation resolves to reference 25 without undefined-reference warnings.
+Existing user wording is preserved elsewhere. The changed line adds no
+whitespace error; five existing trailing-space lines remain. Existing
+layout warnings are outside the changed paragraph. Fresh-context review
+`judge/reviews/thesis_elfwing_citation_review.json` passed 100/100 with no
+findings and validated JSON. No temporary judge files were created.
+No model or data changes;
+research plan position remains Experimental Results next.
+
+## Thesis SARIMA fitting wording (2026-10-02)
+
+Simplified the Implementation SARIMA Fitting bullet: Powell searches parameter
+values to maximize the combined training-segment log likelihood; the Kalman
+filter evaluates each candidate. Global/local pooling, first-segment starting
+values, and the 100-iteration cap are retained. No fitting code changed.
+User edits elsewhere in the thesis are preserved. Two direct SyncTeX-enabled
+LaTeX passes regenerated the adjacent 35-page PDF; page 29 was visually checked.
+Only earlier overfull warnings at lines 77-78 and 259 remain. Fresh-context
+review `judge/reviews/thesis_sarima_wording_review.json` passed 100/100 with no
+findings and validated JSON. `git diff --check` reports three existing user
+trailing-space lines (GARCH/RFSV inputs and Adam learning rate); this task adds
+none. Temporary judge diff and preview files were removed after review.
+Research plan position is unchanged; Experimental Results remains next.
+
+## Thesis Input data bold labels (2026-10-02)
+
+All nine model bullets in Implementation's Input data now begin with a bold
+`Input:` label after the model name. The user's invalid `\bold` command was
+replaced with `\textbf`; SARIMA's variance input is explicit again. Existing
+user edits to the population and AR description are preserved. Brief GARCH,
+LSTM, SiLU, and HARNet phrasing adjustments keep the labels within the margins.
+No model, data, or fitting behavior changed. Two direct SyncTeX-enabled LaTeX
+passes rebuilt the adjacent 36-page PDF; only the preexisting overfull warnings
+at lines 77-78 and 259 remain. Nine-label source checks and `git diff --check`
+passed; Input data pages 27-28 were visually inspected. Fresh-context review
+`judge/reviews/thesis_input_labels_review.json` passed 100/100 with no findings
+and validated JSON. At the user's request, task-created judge previews, focused
+diffs, and temporary check notes were deleted after review; review JSONs remain.
+Research plan position is unchanged; Experimental Results remains next.
+
+## Thesis Implementation model setup (2026-10-02)
+
+Implementation in `ref/final_report/thesis_structure.tex` now contains Input
+data, Hyperparameters, and Fitting in that order, with separate model bullets
+and one bullet per hyperparameter. It documents the selected global cohort
+and five local tickers, 20/80 variants, units/transforms, training-only
+estimation and initialization, validation checkpoint selection, and the
+QLIKE/MSE distinction. The SiLU derivative source (Elfwing et al., printed
+Equation 10) is in the bibliography, references, and notes; the recurrent
+instability mechanism is qualified as a hypothesis, with input/output changes
+acknowledged. `ref/implementation_plan/implementation.md` records the full
+numbered decisions and verification requirements as additionally requested.
+
+Code verification clarified that selected SARIMA/GARCH evaluation carries
+preceding filtering state; window 20 controls target eligibility. The stale
+two-layer MLP roadmap entry remains superseded by current 128 -> 128 -> 2
+hidden layers. Checkpoints are absent in this workspace, so their contents
+remain unverified; selectors, launchers, code, saved reports, and prior handoff
+records support the described settings. Methods prose is unchanged. No
+model, dataset, interface, fit, or evaluation behavior changed.
+
+Two final direct `pdflatex -synctex=1` passes regenerated the adjacent 36-page
+PDF and SyncTeX. Rendered pages 26-32 were inspected. Exact subsection/bullet
+checks (9 input, 17 hyperparameter, 9 fitting bullets), unchanged-Methods
+comparison, citation/reference log checks, and `git diff --check` passed.
+Only preexisting overfull warnings at source lines 77-78 and 259 remain.
+Fresh-context cold review `judge/reviews/models_setup_review.json` passed
+100/100 with no findings, and its JSON validated. The review corrected an
+earlier draft's failure attribution: the documented SiLU QLIKE event rejected
+nonfinite or nonpositive validation forecasts; the nonfinite-gradient event
+belonged to a separate MSE exponential-head trial. Research plan position is
+unchanged; next thesis task is Experimental Results, with matched-observation
+and RFSV final-date comparison limits explicit before interpreting scores.
+
 ## Thesis equation-block numbering (2026-10-02)
 
 All nine multiline `align` displays now use `aligned` inside `equation`,

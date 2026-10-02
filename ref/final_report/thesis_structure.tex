@@ -1,7 +1,11 @@
 \documentclass[12pt,a4paper]{article}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{longtable}
 \numberwithin{equation}{section}
+\numberwithin{table}{section}
+\numberwithin{figure}{section}
 
 \title{Volatility Forecasting: A Statistical and Deep Learning Approach}
 \author{}
@@ -66,9 +70,9 @@ Daily variance must therefore be estimated from observable prices. With sufficie
 
 
 \subsection{Motivations}
-The main objective with this project is understanding the better approach for predicting the price of an asset. The potential capabilities of ML models in finance forecasting tasks are tremendous, although the stability and robustness of statistical models are extremely reliable. 
+The main objective with this project is understanding the better approach for predicting the price of an asset from a volatility forecast. The potential capabilities of ML models in finance forecasting tasks are tremendous, although the stability and robustness of statistical models are extremely reliable. 
 
-Several approaches have been presented as comparing both types of models. However, our objective is to extend these comparisons to include, besides the baseline models (AR, SARIMA, GARCH, HAR, MLP), HARnet and RFSV models. 
+Several approaches have been presented as comparing both types of models. However, our objective is to extend these comparisons to include, besides the baseline models (AR, SARIMA, GARCH, HAR, MLP, LSTM), HARnet and RFSV models. 
 
 Furthermore, we are interested in understanding the generalization capacity of such models. Our focus is to understand the difference in performance between a local (fitted by one equity data) and a global (fitted by several tickers) model. 
 
@@ -683,9 +687,81 @@ a(t+1)=b_{\mathrm{out}}+\sum_{\ell=0}^{L}w_\ell z_\ell(t).
 $w_\ell$ are scalar readout weights and $b_{\mathrm{out}}$ is its intercept. 
 
 \section{Implementation}
-% Describe how the system was implemented.
-% Use pseudocode and/or informal or UML-style diagrams where useful.
-% We will describe each model setup here, input data, hyperparameters, local x global, we will show the data format, histogram and timeline. we will also describe how the fitting happened, how the parameters were initialized and how we fit parameters. 
+\subsection{Input data}
+The configurations below describe the experiments selected by the current evaluation scripts. Global fits pool the 2,714-ticker forecasting dataset; local fits estimate parameters separately for the five tickers with the highest average daily trading volume before 2016: NVDA, AAPL, NFLX, GOOG, and AMZN. Each target is next-recorded-observation, daily, unannualized adjusted Garman--Klass variance, with the zero-target adjustment defined in \eqref{eq:methods-target-floor}.
+
+\begin{itemize}
+    \item \textbf{AR:} uses as input the latest estimator variance. At each possible training target, AR checks the preceding 20 recorded observations. If all are valid and positive and the target is valid, it adds the latest variance–target pair to least squares.
+    \item \textbf{SARIMA:} uses the variance observations as input. It divides each ticker's training history into segments, with at least 21 observations, of consecutive valid, positive-variance observations. An invalid observation ends the segment and is excluded; a valid zero-variance observation is floored, included as the final observation, and ends the segment.
+    \item \textbf{GARCH:} uses the within-session log returns. It uses the same training segment rules as SARIMA. Its conditional mean is an expanding average of preceding returns within that segment. 
+    \item \textbf{HAR:} uses the raw variance histories. HAR-20 uses variance histories of 20 observations; HAR-80 uses 80. Their inputs are the variance averages for the corresponding horizons.
+    \item \textbf{RFSV:} uses log variance history. Here $T$ is the number of all preceding valid positive observations within the forecast ticker, excluding the target and future observations. Invalid and zero inputs are omitted from this full history, so $T$ varies by ticker and forecast date. 
+    \item \textbf{MLP:} \textbf{Input:} the 20- and 80-observation variants use two features per observation: log volatility $= \tfrac12\log v(t)$ and log return. The scalar output is log variance, exponentiated for a variance forecast.
+    \item \textbf{LSTM:} log volatility and log return. The 20- and 80-observation variants process these features in chronological sequence order and output log variance.
+    \item \textbf{SiLU-LSTM:} \textbf{Input:} raw variance and log return. The 20- and 80-observation variants produce a direct variance output.
+    \item \textbf{HARNet:} \textbf{Input:} HARNet-20 and HARNet-80 receive variance alone, in 20- and 80-observation histories respectively, and produce direct variance outputs.
+\end{itemize}
+ Training-derived positive prediction floors are applied after the output mapping in \eqref{eq:methods-output-map}; each local fit derives its floor from its own ticker's training history.
+
+\subsection{Hyperparameters}
+The neural model hyperparameters were selected by comparing baseline LSTM configurations with a fixed input window of 20 observations. Hidden sizes of $\{4,16,32,64,128\}$ were evaluated, with 128 yielding the best performance in these comparisons. This choice is also consistent with Zhang et al., who used 128 units in the first hidden layer of their LSTM architectures \cite{zhang2022}. Learning rates of $10^{-3}$ and $10^{-4}$ were compared, and $10^{-3}$ was selected for its better convergence performance.
+\begin{itemize}
+    \item \textbf{History length:} 20 and 80 observations for MLP, LSTM, SiLU-LSTM, HAR, and HARNet. AR uses one lag with window-20 eligibility; SARIMA and GARCH use preceding filtering history, window-20 scoring eligibility, and segment-based estimation. RFSV uses the full positive history $T$.
+    \item \textbf{HAR averaging horizons:} HAR-20 uses $\{1,5,20\}$. HAR-80 uses $\{1,5,20,40,80\}$. HARNet uses the matching horizons.
+    \item \textbf{AR order:} 1, with an intercept.
+    \item \textbf{SARIMA orders:} nonseasonal $(1,0,1)$ and seasonal $(1,0,1,5)$, with a five-observation seasonal period.
+    \item \textbf{GARCH orders:} $(1,1)$, with $\omega>0$, $\alpha,\beta\geq0$, and $\alpha+\beta<1$.
+    \item \textbf{Recurrent hidden width:} 128 for LSTM and SiLU-LSTM.
+    \item \textbf{MLP hidden widths:} $128\rightarrow128\rightarrow2$, followed by one scalar output; all three hidden layers use SiLU.
+    \item \textbf{HARNet hierarchy:} one channel per convolution, with filter lengths $(5,4)$ and dilations $(1,5)$ for HARNet-20; HARNet-80 adds lengths $(2,2)$ and dilations $(20,40)$. Convolutional biases are absent, and ReLU follows each convolution.
+    \item \textbf{Adam learning rate:} initially 0.001 for the neural models. We use a learning rate scheduler. 
+    \item \textbf{Batch size:} 128 training samples.
+    \item \textbf{Maximum epochs:} 20.
+    \item \textbf{Patience:} 10 consecutive epochs without improvement in the configured validation loss.
+    \item \textbf{Learning-rate step decay:} 0.1, applied once after the first patience interval.
+    \item \textbf{Random seed:} 42 for neural initialization and batch shuffling.
+    \item \textbf{RFSV moment orders:} $q\in\{1,1.5,2,3,4\}$ for log-volatility displacement moments.
+    \item \textbf{RFSV observation lags:} 1--400 recorded-observation steps. $H$ and $\nu^2$ are fitted quantities, not chosen hyperparameters.
+\end{itemize}
+
+\subsection{Fitting}
+All parameter estimation and initialization statistics use training observations only. Global statistical objectives aggregate within-ticker contributions without joining series across their boundaries; local objectives use only the selected ticker.
+\begin{itemize}
+    \item \textbf{AR:} fit the intercept and one-lag coefficient by ordinary least squares (OLS).
+    \item \textbf{SARIMA:} estimate the parameters by numerically maximizing the combined training-segment log likelihood using Powell optimization, by searching for parameter values that improve the objective, without calculating gradients. For each candidate parameter vector, the Kalman filter calculates each segment's likelihood. It processes observations sequentially, predicting each value and updating the estimated state when the observation arrives. It also calculates the likelihood for each parameter set Powell tries.
+    \item \textbf{GARCH:} subtracts the average of preceding returns from each training return. Parameters are estimated by numerically minimizing the combined Gaussian negative log likelihood using L-BFGS-B, with at most 100 iterations, by using gradients and an approximate curvature estimate, while respecting parameter bounds. Let $s$ be the training residual mean square. Start from $\omega=0.1s$, $\alpha=0.1$, and $\beta=0.8$. Each segment's initial variance is its residual mean square, bounded below by $10^{-8}s$.
+    \item \textbf{HAR:} estimate the intercept and horizon coefficients by OLS on the matching eligible 20- or 80-observation training samples.
+    \item \textbf{RFSV:} regress log displacement moments against log observation lag on positive pre-2016 log volatility. Fit $\zeta(q)=Hq$ through the origin using the moment slopes; estimate $\nu^2$ by exponentiating the $q=2$ log-moment intercept. Global moments pool within-ticker displacement pairs; local regressions use the ticker alone.
+    \item \textbf{MLP:} use minibatch Adam with variance-unit QLIKE. Initialize the output weights with Xavier uniform initialization and multiply them by 0.01; set the output bias to the log of the median training-history variance after the zero-target adjustment.
+    \item \textbf{LSTM:} use minibatch Adam with variance-unit QLIKE. Scale the default output-layer weights by 0.01 and set the output bias to the log of the median training-history variance after the zero-target adjustment.
+    \item \textbf{SiLU-LSTM:} use minibatch Adam with variance-unit MSE on raw direct outputs during training. Scale the default output-layer weights by 0.01 and set the output bias to the median training-history variance after the zero-target adjustment. Training outputs are not floored to preserve gradient flow; validation predictions are floored before calculating validation MSE.
+    \item \textbf{HARNet:} initialize from the matching training-only HAR fit, using averaging convolution filters and the HAR intercept and coefficients in the final layer, then optimize with minibatch Adam and variance-unit QLIKE. On positive inputs this initialization reproduces the corresponding HAR forecast before the shared prediction floor.
+\end{itemize}
+Training batches are shuffled, while observations within each input sequence retain chronological order. After every epoch, validation selects the best checkpoint by QLIKE for MLP, LSTM, and HARNet, or by MSE for SiLU-LSTM. Ten consecutive unimproved epochs trigger one tenfold learning-rate reduction and reset the patience counter; another ten consecutive unimproved epochs stop fitting. 
+
+QLIKE is the neural training objective except for the selected SiLU-LSTM configuration, which uses MSE on direct variance outputs. Log-variance outputs are mapped back to variance before interpreting the loss. QLIKE, MSE, RMSE, MAE and MASE are the evaluation metrics for comparison. 
+
+Earlier SiLU-LSTM trials with QLIKE exhibited numerical instability, including rejected nonfinite or nonpositive validation forecasts. Elfwing, Uchibe, and Doya~\cite{elfwing2017} demonstrated that  $dSiLU(z)$ when large positive $z$, approaches 1, whereas $dtanh(z)$ approaches zero. Repeated recurrent transformations can therefore preserve sensitivity or, conditionally on learned weights and gate values, amplify it; amplification is not guaranteed. The successful SiLU configuration also changes the input from log volatility to variance and the output from log variance to direct variance, so its stability cannot be attributed solely to switching the loss.
+
+\subsection{Evaluation Setup}
+
+The saved evaluations weight forecast observations equally. With the loss $\ell(\widehat y,y)$ and mean loss $J(\theta;Z)$ from \eqref{eq:empirical-loss}, the global loss uses one shared parameter vector:
+\begin{equation}\label{eq:evaluation-global-loss}
+J_{\mathrm{global}}=J(\theta;Z_{\mathrm{global}})
+=\frac{1}{N_{\mathrm{global}}}\sum_{(x,y)\in Z_{\mathrm{global}}}
+\ell\!\left(g_{\theta}(x),y\right).
+\end{equation}
+Local scores weight each ticker's mean loss by its forecast count:
+\begin{equation}\label{eq:evaluation-local-loss}
+\begin{aligned}
+J_{\mathrm{local}}&=\frac{\sum_{i=1}^{M}N_iJ(\theta_i;Z_i)}{\sum_{i=1}^{M}N_i}\\
+&=\frac{1}{\sum_{i=1}^{M}N_i}\sum_{i=1}^{M}
+\sum_{(x,y)\in Z_i}\ell\!\left(f_{\theta_i}(x),y\right).
+\end{aligned}
+\end{equation}
+Here $g_{\theta}$ has shared parameters, while $f_{\theta_i}$ has ticker-specific parameters as in \eqref{eq:local-global-forecasts}. $Z_{\mathrm{global}}$ and $Z_i$ contain the eligible forecast observations, with counts $N_{\mathrm{global}}$ and $N_i$; $M=5$ for local evaluation. These expressions apply to MAE, MASE, MSE, and QLIKE. For either scope, RMSE is the square root of pooled MSE, rather than the mean of ticker RMSEs. In the matched full-period table each ticker has 1,760 targets, so observation weighting also gives equal ticker weight for the mean losses.
+
+The saved tables use a test-relative MASE scale: for each ticker and window, divide absolute forecast errors by the naive mean absolute variance change over exactly that ticker's eligible test target dates, using the preceding observed variance for each naive forecast. RFSV-full uses the final target's absolute change from its preceding observation. This departs from the training-history scale defined in the loss specification and Background: these scores describe performance relative to test-period persistence and must not be presented as training-scaled MASE. Test targets are used for reporting this denominator only, not for fitting or checkpoint selection. A scale must be finite and positive. QLIKE requires finite positive actual and predicted variances. Each fit's saved positive forecast floor is applied before scoring, leaving actual targets unchanged.
 
 \section{Experimental Results}
 % Describe the experimental results. This is the most important section.
@@ -695,24 +771,209 @@ $w_\ell$ are scalar readout weights and $b_{\mathrm{out}}$ is its intercept.
 % - demonstrate correctness;
 % - evaluate computational performance, such as CPU/GPU time and RAM usage;
 % - evaluate effectiveness, such as expected gain and its standard deviation.
+\begin{itemize}
+    \item Identify the best generalizing model on our dataset
+    \item Compare related work results
+    \item Analyze residuals structure 
+    \item Understand the parameter complexity between same model class.
+\end{itemize}
 
 \subsection{Setting}
-% Describe the experimental setting: hardware, software, datasets, splits,
-% hyperparameters, reproducibility controls, and evaluation metrics.
-
-\subsection{Case Studies}
-% Describe the case studies used in the experiments.
-
-\subsection{Correctness}
-% Describe experiments that demonstrate the correctness of the implementation.
+All of the fitting and evaluation process were done in a machine with 16GB RAM, NVIDIA RTX 2060 6GB and Ryzen 5 5600x.
 
 \subsection{Computational Evaluation}
-% Evaluate computational performance, such as training time and CPU, GPU,
-% RAM, and VRAM usage.
+The Global ML models took around 3-5 hours per fit, while the ML models around 30 minutes, with exception of SARIMA that took 2 hours. Accounting for the hyperparameter selection, 1 week of full computing time was needed to arrive at the final fits.
 
 \subsection{Technical Evaluation}
-% Evaluate the effectiveness of the proposed approach.
-% Describe the experiments and summarize the results using tables and graphs.
+\subsubsection{Overall Result}
+All tables report saved one-step forecasts of daily, unannualized adjusted Garman--Klass variance, mapped back from any model-specific output transformation. MAE and RMSE have variance units, MSE has squared variance units, and MASE and QLIKE are dimensionless. Smaller losses are better. 
+
+Global window-20 models share 4,479,204 scored targets, while window-80 models share 4,295,635. The source dataset has 2,714 tickers. The saved RFSV final-date audit records nine tickers (CMTV, FORTY, GYRO, JBK, KELYB, LBTYB, MGYR, PYT, and SENEB) with zero raw Garman--Klass variance on both 2025-12-31 and the preceding recorded date. The loader replaces both zeros with the same variance floor, leaving their absolute variance change equal to zero. This change supplies RFSV's final-date MASE denominator, so MASE is undefined for these tickers and they are excluded. The same nine exclusions are applied to every global model to align the scored populations within each window; RFSV itself still uses final-date targets only. Relative to the window loaders, this removes 477 window-20 and 138 window-80 targets. Longer positive-input histories also change eligibility, so the two windows are different populations. Bold minima in Table~\ref{tab:global-results} are therefore computed separately within each window, not as a matched cross-window contest.
+
+For window 20, the lowest MAE and QLIKE belong to Base LSTM, the lowest MASE to SARIMA, and the lowest MSE and RMSE to SiLU-LSTM. For window 80, MLP has the lowest MAE and MASE, SiLU-LSTM the lowest MSE and RMSE, and Base LSTM the lowest QLIKE. The very large SiLU-LSTM and SARIMA QLIKE scores show that favorable absolute or squared errors need not imply favorable relative variance loss. Their nonzero floor-hit rates are reported; a low frequency alone does not establish that flooring has negligible effects. No floor-sensitivity reranking is available here.
+
+\begingroup\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{longtable}{lrrrrrrr}
+\caption{Global full-period saved losses. Bold denotes the minimum within each window population; the horizontal grouping is given by the model window. Column multipliers give the original units.}\label{tab:global-results}\\
+\hline Model & $N$ & MAE & MASE & MSE & RMSE & QLIKE & Floor (\%)\\
+ & & $\times10^{-4}$ & & $\times10^{-8}$ & $\times10^{-4}$ & & \\\hline
+\endfirsthead
+\hline Model & $N$ & MAE & MASE & MSE & RMSE & QLIKE & Floor (\%)\\
+ & & $\times10^{-4}$ & & $\times10^{-8}$ & $\times10^{-4}$ & & \\\hline
+\endhead
+\hline\endfoot
+MLP-20 & 4479204 & 8.81892 & 0.915842 & 6329.17 & 79.5561 & 0.423064 & 0\\
+Base LSTM-20 & 4479204 & \textbf{8.30367} & 0.856723 & 6150.66 & 78.4262 & \textbf{0.417746} & 0\\
+SiLU-LSTM-20 & 4479204 & 8.71735 & 1.05825 & \textbf{6149.58} & \textbf{78.4192} & 2.00901e+06 & 0.00133952\\
+HARNet-20 & 4479204 & 9.32486 & 0.90717 & 6694.92 & 81.8225 & 0.430701 & 0\\
+AR(1) & 4479204 & 10.0777 & 1.78426 & 6548.7 & 80.924 & 0.82591 & 0\\
+HAR-20 & 4479204 & 8.89648 & 1.08314 & 6306.65 & 79.4144 & 0.513557 & 0\\
+GARCH(1,1) & 4479204 & 8.72693 & 1.00347 & 6402.7 & 80.0169 & 0.544858 & 0\\
+SARIMA & 4479204 & 8.80278 & \textbf{0.854312} & 6312.31 & 79.4501 & 809357 & 0.0675343\\
+\hline
+MLP-80 & 4295635 & \textbf{7.73253} & \textbf{0.835756} & 5828.46 & 76.3443 & 0.402393 & 0\\
+Base LSTM-80 & 4295635 & 7.79028 & 0.836248 & 5891.24 & 76.7544 & \textbf{0.387551} & 0\\
+SiLU-LSTM-80 & 4295635 & 8.06634 & 0.957537 & \textbf{5742.03} & \textbf{75.7762} & 855347 & 0.00221155\\
+HARNet-80 & 4295635 & 8.5242 & 0.873767 & 6104.03 & 78.1283 & 0.398789 & 0\\
+HAR-80 & 4295635 & 8.41129 & 0.959493 & 5875.67 & 76.6529 & 0.43661 & 0\\
+\end{longtable}
+\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{longtable}{lrrrrrrr}
+\caption{Global RFSV-full: final-date forecasts only (2025-12-31), excluded from full-period rankings.}\label{tab:rfsv-global}\\
+\hline Model & $N$ & MAE & MASE & MSE & RMSE & QLIKE & Floor (\%)\\
+ & & $\times10^{-4}$ & & $\times10^{-8}$ & $\times10^{-4}$ & & \\\hline
+\endfirsthead
+\hline Model & $N$ & MAE & MASE & MSE & RMSE & QLIKE & Floor (\%)\\
+ & & $\times10^{-4}$ & & $\times10^{-8}$ & $\times10^{-4}$ & & \\\hline
+\endhead
+\hline\endfoot
+RFSV-full & 2705 & 6.91016 & 10.2927 & 1121.6 & 33.4903 & 0.56445 & 0\\
+\end{longtable}
+\endgroup
+
+\clearpage
+\begingroup\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{longtable}{lrrrrrrr}
+\caption{Matched five-stock Local $\times$ Global full-period losses. All rows use the same 8,800 targets; bold marks the overall minimum across both scopes.}\label{tab:matched-results}\\
+\hline Model & $N$ & MAE & MASE & MSE & RMSE & QLIKE & Floor (\%)\\
+ & & $\times10^{-4}$ & & $\times10^{-8}$ & $\times10^{-4}$ & & \\\hline
+\endfirsthead
+\hline Model & $N$ & MAE & MASE & MSE & RMSE & QLIKE & Floor (\%)\\
+ & & $\times10^{-4}$ & & $\times10^{-8}$ & $\times10^{-4}$ & & \\\hline
+\endhead
+\hline\endfoot
+MLP-20 Local & 8800 & 2.41654 & 0.998704 & 19.8164 & 4.45156 & 0.323319 & 0\\
+MLP-20 Global & 8800 & 2.38653 & 0.995313 & 19.3084 & 4.39413 & 0.289298 & 0\\
+MLP-80 Local & 8800 & 2.66653 & 1.10488 & 21.8086 & 4.66996 & 0.365705 & 0\\
+MLP-80 Global & 8800 & 2.15998 & 0.896018 & \textbf{17.9261} & \textbf{4.23392} & \textbf{0.279815} & 0\\
+Base LSTM-20 Local & 8800 & 2.16824 & 0.907022 & 19.8629 & 4.45679 & 0.297445 & 0\\
+Base LSTM-20 Global & 8800 & 2.22459 & 0.928232 & 18.6576 & 4.31944 & 0.280657 & 0\\
+Base LSTM-80 Local & 8800 & 2.15813 & 0.886869 & 19.5862 & 4.42563 & 0.294209 & 0\\
+Base LSTM-80 Global & 8800 & 2.13585 & 0.892587 & 18.1628 & 4.26178 & 0.282732 & 0\\
+SiLU-LSTM-20 Local & 8800 & 2.48928 & 1.08808 & 21.6745 & 4.65558 & 0.905984 & 1.10227\\
+SiLU-LSTM-20 Global & 8800 & 2.7325 & 1.20579 & 20.1112 & 4.48455 & 0.372279 & 0\\
+SiLU-LSTM-80 Local & 8800 & 2.24768 & 0.947574 & 22.0495 & 4.69569 & 3.18492 & 10.6136\\
+SiLU-LSTM-80 Global & 8800 & 2.38984 & 1.02927 & 19.8601 & 4.45647 & 0.328143 & 0\\
+HARNet-20 Local & 8800 & 2.11595 & 0.892743 & 18.3777 & 4.28693 & 0.28784 & 0\\
+HARNet-20 Global & 8800 & 2.20169 & 0.918785 & 18.5456 & 4.30647 & 0.283658 & 0\\
+HARNet-80 Local & 8800 & 2.09498 & 0.865972 & 18.1179 & 4.25651 & 0.281475 & 0\\
+HARNet-80 Global & 8800 & 2.12793 & 0.885052 & 18.1083 & 4.25539 & 0.28347 & 0\\
+AR(1) Local & 8800 & 3.77586 & 1.63276 & 26.7056 & 5.16775 & 0.509255 & 0\\
+AR(1) Global & 8800 & 4.94533 & 2.39741 & 36.0441 & 6.00368 & 0.688002 & 0\\
+HAR-20 Local & 8800 & 2.46479 & 1.03921 & 19.1405 & 4.37499 & 0.329296 & 0\\
+HAR-20 Global & 8800 & 2.79246 & 1.24376 & 21.4673 & 4.63328 & 0.398557 & 0\\
+HAR-80 Local & 8800 & 2.28968 & 0.957714 & 18.662 & 4.31995 & 0.303838 & 0\\
+HAR-80 Global & 8800 & 2.41723 & 1.03541 & 20.2989 & 4.50543 & 0.333513 & 0\\
+GARCH(1,1) Local & 8800 & 2.39042 & 0.988583 & 23.6177 & 4.8598 & 0.347896 & 0\\
+GARCH(1,1) Global & 8800 & 2.61477 & 1.13228 & 23.858 & 4.88447 & 0.383185 & 0\\
+SARIMA Local & 8800 & \textbf{1.98639} & \textbf{0.830068} & 18.7609 & 4.33138 & 0.311451 & 0\\
+SARIMA Global & 8800 & 2.09643 & 0.870198 & 20.8865 & 4.57018 & 0.308186 & 0\\
+\end{longtable}
+\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{longtable}{lrrrrrrr}
+\caption{Matched five-stock RFSV-full on 2025-12-31 only. Bold marks the lower loss between these two rows, separately from full-period results.}\label{tab:rfsv-matched}\\
+\hline Model & $N$ & MAE & MASE & MSE & RMSE & QLIKE & Floor (\%)\\
+ & & $\times10^{-4}$ & & $\times10^{-8}$ & $\times10^{-4}$ & & \\\hline
+\endfirsthead
+\hline Model & $N$ & MAE & MASE & MSE & RMSE & QLIKE & Floor (\%)\\
+ & & $\times10^{-4}$ & & $\times10^{-8}$ & $\times10^{-4}$ & & \\\hline
+\endhead
+\hline\endfoot
+RFSV-full Local & 5 & \textbf{0.260246} & \textbf{3.06845} & \textbf{0.117401} & \textbf{0.342639} & \textbf{0.130563} & 0\\
+RFSV-full Global & 5 & 0.536293 & 5.87051 & 0.38155 & 0.617698 & 0.258485 & 0\\
+\end{longtable}
+\endgroup
+
+Table~\ref{tab:matched-results} evaluates NVDA, AAPL, NFLX, GOOG, and AMZN on the same 8,800 ticker/date targets during 2019--2025. Across both scopes, Local SARIMA minimizes MAE and MASE, whereas Global MLP-80 minimizes MSE, RMSE, and QLIKE. Global AR(1) maximizes MAE, MASE, MSE, and RMSE; Local SiLU-LSTM-80 maximizes QLIKE. Evidence about scope is mixed: Local HAR-20 and HAR-80 outperform their global counterparts on every loss, while Global MLP-20 and MLP-80 outperform their local counterparts throughout. Local HARNet-80 has lower MAE, MASE, and QLIKE, but Global HARNet-80 has slightly lower MSE and RMSE. The five-stock findings cannot establish blanket global superiority or generalization to unseen assets. Training configurations also differ: Global Base LSTM-20 and its local counterparts have different training budgets. Scope alone cannot explain these differences.
+
+RFSV-full is kept in Tables~\ref{tab:rfsv-global} and \ref{tab:rfsv-matched}: its global row contains 2,705 final-date forecasts, while each matched row contains five forecasts on 2025-12-31. Local RFSV has lower losses than Global RFSV on these five targets. Its smaller absolute errors cannot be ranked against the full-period models, because the dates and sample sizes differ. The final-date MASE denominator is also especially sensitive to a single observed variance change.
+
+\subsubsection{Parameter Complexity}
+For the idealized comparison in \cite{monteromanso2021}, take $B=2^{64}$ possible encodings per scalar parameter and $K=2,714$ tickers. For a model with $p$ fitted scalars, the parameter-combination budgets are
+\begin{equation}\label{eq:technical-combinations}
+C_{\mathrm{local}}=B^{2,714p},\qquad C_{\mathrm{global}}=B^p.
+\end{equation}
+The local column in Table~\ref{tab:parameter-combinations} extrapolates the selected architecture to all 2,714 tickers; only five local tickers were actually fitted, whose corresponding budget would be $B^{5p}$. These are encoding budgets, not counts of admissible finite coefficients: stability constraints and invalid floating-point encodings reduce the usable combinations. They equal counts of distinct forecasting functions only under the distinguishability assumption. Neural hidden-unit permutations, for example, can represent the same function with different parameter vectors. Thus this comparison concerns parameter storage and the potential combination space, not proof of realized function complexity or forecast quality.
+
+\begin{table}[htbp]
+\centering\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrrrr}\hline
+Model & $p$ & Local (extrapolated) & Global & Global/Local\\\hline
+AR(1) & 2 & $B^{5,428}$ & $B^2$ & $B^{-5,426}$\\
+HAR-20 & 4 & $B^{10,856}$ & $B^4$ & $B^{-10,852}$\\
+HAR-80 & 6 & $B^{16,284}$ & $B^6$ & $B^{-16,278}$\\
+GARCH(1,1) & 3 & $B^{8,142}$ & $B^3$ & $B^{-8,139}$\\
+SARIMA & 5 & $B^{13,570}$ & $B^5$ & $B^{-13,565}$\\
+RFSV-full & 2 & $B^{5,428}$ & $B^2$ & $B^{-5,426}$\\
+MLP-20 & 22,021 & $B^{59,764,994}$ & $B^{22,021}$ & $B^{-59,742,973}$\\
+MLP-80 & 37,381 & $B^{101,452,034}$ & $B^{37,381}$ & $B^{-101,414,653}$\\
+Base LSTM-20 / -80 & 67,201 & $B^{182,383,514}$ & $B^{67,201}$ & $B^{-182,316,313}$\\
+SiLU-LSTM-20 / -80 & 67,201 & $B^{182,383,514}$ & $B^{67,201}$ & $B^{-182,316,313}$\\
+HARNet-20 & 13 & $B^{35,282}$ & $B^{13}$ & $B^{-35,269}$\\
+HARNet-80 & 19 & $B^{51,566}$ & $B^{19}$ & $B^{-51,547}$\\\hline
+\end{tabular}
+\caption{Parameter-combination budgets for the selected model specifications, with $B=2^{64}$. The local column assumes one parameter vector per ticker across the full cohort.}\label{tab:parameter-combinations}
+\end{table}
+
+The last column reports the ratio of global to local parameter combinations: $C_{\mathrm{global}}/C_{\mathrm{local}}=B^{-2,713p}$. Exact powers preserve these very small nonzero ratios. They compare the idealized combination budgets, not fitted parameter counts.
+
+Counts include fitted coefficients and neural weights and biases, excluding optimizer state, filtering state, fixed hyperparameters, and preprocessing metadata. AR includes its intercept and lag coefficient; HAR includes its intercept and three or five horizon coefficients; GARCH includes $\omega,\alpha,\beta$; SARIMA includes nonseasonal and seasonal AR/MA coefficients and innovation variance, without a trend; RFSV includes $H$ and $\nu^2$. For the two-feature MLP, the count is $(2w+1)128+(128+1)128+(128+1)2+(2+1)$ for window $w$. Each recurrent model has four affine gates and a scalar readout, giving $4(128+2+1)128+129=67,201$, independent of window length. HARNet has nine or thirteen convolution weights plus four or six output weights and bias terms in total, giving 13 or 19 parameters. Saved checkpoints are unavailable here; these counts are verified from the selected architecture and configuration code, not from checkpoint tensors.
+
+\clearpage
+\subsubsection{Residual Structure}
+The models below are selected retrospectively from the matched test-table extrema as illustrations, not by a new validation procedure. Figures~\ref{fig:res-sarima}--\ref{fig:res-silu} all use the same five stocks and 8,800 targets as Table~\ref{tab:matched-results}. Each model's four saved plots appear once and are reused across metric comparisons.
+
+Raw residuals are actual minus predicted variance; individual log residuals are $\log v(t)-\log\widehat v(t)$. Positive values indicate underprediction and negative values overprediction. Raw daily timelines show the cross-ticker mean actual minus mean predicted variance. Log daily timelines instead show $\log(\overline v(t))-\log(\overline{\widehat v}(t))$, not the mean of individual log residuals. Cross-ticker averaging can conceal offsetting errors. Each histogram has an all-residual panel and a central-99.5\% panel trimmed at the 0.25\% and 99.75\% quantiles for display only; the daily mean timelines and saved losses use all observations. Existing axis scales and histogram bins differ, so compare numeric axes rather than apparent panel widths or peak heights.
+
+\paragraph{MAE and MASE: Local SARIMA versus Global AR(1).}
+Local SARIMA has a raw distribution concentrated near zero with a longer positive tail (Figure~\ref{fig:res-sarima}); its log distribution is much closer to zero than Global AR(1)'s negative shift (Figure~\ref{fig:res-ar1}). The AR daily timelines stay negative over extended periods, showing a persistent visual tendency to overpredict this panel. SARIMA's daily raw means fluctuate more closely around zero but retain large positive spikes, especially around 2020 and 2025. Lower absolute losses therefore coexist with episodic underprediction; they do not establish unbiasedness.
+
+\paragraph{MSE and RMSE: Global MLP-80 versus Global AR(1).}
+Global MLP-80's raw histogram is concentrated near zero and its log histogram has a modest negative shift (Figure~\ref{fig:res-mlp}). Its daily raw means show smaller routine negative offsets than AR(1), although both retain pronounced positive spikes around 2020 and 2025. MLP-80 also has intervals of larger fluctuations around 2022. The squared-error ranking accounts for all individual observations, including tails; neither a narrow central histogram nor a cross-ticker mean timeline alone determines MSE. AR(1)'s figures are reused here from the preceding comparison.
+
+\paragraph{QLIKE: Global MLP-80 versus Local SiLU-LSTM-80.}
+Local SiLU-LSTM-80's raw histogram looks concentrated near zero, yet its individual log residuals have a long positive tail reaching beyond six (Figure~\ref{fig:res-silu}), indicating severe relative underprediction for some observations. Its floor-hit share is 10.6136\%, compared with zero for Global MLP-80; the saved QLIKE scores are 3.18492 and 0.279815. QLIKE penalizes large actual-to-predicted ratios strongly, explaining why a modest raw error can accompany a large loss when the prediction is very small. The SiLU log-of-means timeline has periods of positive excursions, including around 2022, but aggregation can hide individual extremes. MLP-80's previously shown figures provide the lower-loss comparison. These visual patterns motivate further residual diagnostics; no formal independence, whiteness, statistical significance, or causal interpretation is established here.
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth,height=.19\textheight,keepaspectratio]{../../imgs/eval/local_eval/residuals/sarima/local/histogram_raw.png}\par
+\includegraphics[width=\textwidth,height=.19\textheight,keepaspectratio]{../../imgs/eval/local_eval/residuals/sarima/local/histogram_log.png}\par
+\includegraphics[width=\textwidth,height=.19\textheight,keepaspectratio]{../../imgs/eval/local_eval/residuals/sarima/local/timeline_mean_raw.png}\par
+\includegraphics[width=\textwidth,height=.19\textheight,keepaspectratio]{../../imgs/eval/local_eval/residuals/sarima/local/timeline_mean_log.png}\par
+\caption{Local SARIMA on the matched five-stock test panel ($N=8,800$; 1,760 dates). From top: raw histogram, individual log histogram, daily mean raw residual, and daily log-of-means residual. Histogram right panels show the central 99.5\%; timelines use all observations. Axis scales are those of the saved plots.}\label{fig:res-sarima}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth,height=.19\textheight,keepaspectratio]{../../imgs/eval/local_eval/residuals/ar1/global/histogram_raw.png}\par
+\includegraphics[width=\textwidth,height=.19\textheight,keepaspectratio]{../../imgs/eval/local_eval/residuals/ar1/global/histogram_log.png}\par
+\includegraphics[width=\textwidth,height=.19\textheight,keepaspectratio]{../../imgs/eval/local_eval/residuals/ar1/global/timeline_mean_raw.png}\par
+\includegraphics[width=\textwidth,height=.19\textheight,keepaspectratio]{../../imgs/eval/local_eval/residuals/ar1/global/timeline_mean_log.png}\par
+\caption{Global AR(1) on the matched five-stock test panel ($N=8,800$; 1,760 dates). From top: raw histogram, individual log histogram, daily mean raw residual, and daily log-of-means residual. Histogram right panels show the central 99.5\%; timelines use all observations. Axis scales are those of the saved plots.}\label{fig:res-ar1}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth,height=.19\textheight,keepaspectratio]{../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_raw.png}\par
+\includegraphics[width=\textwidth,height=.19\textheight,keepaspectratio]{../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_log.png}\par
+\includegraphics[width=\textwidth,height=.19\textheight,keepaspectratio]{../../imgs/eval/local_eval/residuals/mlp_80/global/timeline_mean_raw.png}\par
+\includegraphics[width=\textwidth,height=.19\textheight,keepaspectratio]{../../imgs/eval/local_eval/residuals/mlp_80/global/timeline_mean_log.png}\par
+\caption{Global MLP-80 on the matched five-stock test panel ($N=8,800$; 1,760 dates). From top: raw histogram, individual log histogram, daily mean raw residual, and daily log-of-means residual. Histogram right panels show the central 99.5\%; timelines use all observations. Axis scales are those of the saved plots.}\label{fig:res-mlp}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth,height=.19\textheight,keepaspectratio]{../../imgs/eval/local_eval/residuals/silu_lstm_80/local/histogram_raw.png}\par
+\includegraphics[width=\textwidth,height=.19\textheight,keepaspectratio]{../../imgs/eval/local_eval/residuals/silu_lstm_80/local/histogram_log.png}\par
+\includegraphics[width=\textwidth,height=.19\textheight,keepaspectratio]{../../imgs/eval/local_eval/residuals/silu_lstm_80/local/timeline_mean_raw.png}\par
+\includegraphics[width=\textwidth,height=.19\textheight,keepaspectratio]{../../imgs/eval/local_eval/residuals/silu_lstm_80/local/timeline_mean_log.png}\par
+\caption{Local SiLU-LSTM-80 on the matched five-stock test panel ($N=8,800$; 1,760 dates). From top: raw histogram, individual log histogram, daily mean raw residual, and daily log-of-means residual. Histogram right panels show the central 99.5\%; timelines use all observations. Axis scales are those of the saved plots.}\label{fig:res-silu}
+\end{figure}
+\clearpage
 
 \section{Conclusions}
 % Summarize the work and outline possible future developments.
@@ -742,6 +1003,7 @@ $w_\ell$ are scalar readout weights and $b_{\mathrm{out}}$ is its intercept.
 \bibitem{werbos1974} Werbos, P. J. (1974). \emph{Beyond regression: New tools for prediction and analysis in the behavioral sciences} [Doctoral dissertation, Harvard University].
 \bibitem{rumelhart1986} Rumelhart, D. E., Hinton, G. E., and Williams, R. J. (1986). Learning representations by back-propagating errors. \emph{Nature}, 323, 533--536.
 \bibitem{kingma2015} Kingma, D. P., and Ba, J. (2015). Adam: A method for stochastic optimization. \emph{International Conference on Learning Representations}.
+\bibitem{elfwing2017} Elfwing, S., Uchibe, E., and Doya, K. (2017). Sigmoid-weighted linear units for neural network function approximation in reinforcement learning. arXiv:1702.03118, version 3, Equation~(10).
 \bibitem{hyndman2006} Hyndman, R. J., and Koehler, A. B. (2006). Another look at measures of forecast accuracy. \emph{International Journal of Forecasting}, 22(4), 679--688.
 \bibitem{patton2011} Patton, A. J. (2011). Volatility forecast comparison using imperfect volatility proxies. \emph{Journal of Econometrics}, 160(1), 246--256.
 \bibitem{hansen2011mcs} Hansen, P. R., Lunde, A., and Nason, J. M. (2011). The model confidence set. \emph{Econometrica}, 79(2), 453--497. doi:10.3982/ECTA5771.

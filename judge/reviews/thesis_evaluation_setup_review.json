@@ -1,0 +1,30 @@
+{
+  "task": "Add an Evaluation Setup subsection under Implementation explaining global forecast-observation metrics and equal-weight means of local model metrics; add the requested 1/M sum formula.",
+  "sources": [
+    "Original user task and subsequent formula request supplied in review messages",
+    "AGENTS.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/validate.py",
+    "CONTEXT.md: Thesis Evaluation Setup section",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/implementation.md",
+    "git diff -- ref/final_report/thesis_structure.tex CONTEXT.md (task scope isolated using supplied preexisting-change description)",
+    "ref/final_report/thesis_structure.tex: Implementation and Evaluation Setup",
+    "inference/evaluate_local_global.py: aggregate and evaluation caller",
+    "ref/final_report/thesis_structure.log: final successful 35-page build and warnings",
+    "ref/final_report/thesis_structure.pdf and thesis_structure.synctex.gz: adjacent artifact metadata",
+    "Reviewer source check: subsection location, requested formula, and added whitespace",
+    "git diff --check: preexisting whitespace outside task insertion"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

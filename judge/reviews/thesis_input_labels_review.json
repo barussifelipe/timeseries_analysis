@@ -1,0 +1,29 @@
+{
+  "task": "Cold review of the requested bold Input: labels at the beginning of each model description in thesis Implementation / Input data.",
+  "sources": [
+    "User request supplied to this fresh-context reviewer: I wanted to put the input as bold in the beginning of each model in the input data, can you do that?",
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/implementation.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/reviews/thesis_input_labels.diff",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "Adjacent thesis_structure.pdf and thesis_structure.synctex.gz metadata",
+    "judge/reviews/models_setup_preview/input_labels_page_27.png",
+    "judge/reviews/models_setup_preview/input_labels_page_28.png",
+    "Independent checks: nine textbf{Input:} labels in Input data; no invalid bold command; final log has no NUL bytes and records 36-page PDF; only preexisting overfull warnings at lines 77-78 and 259; git diff --check exits successfully"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -200,7 +200,6 @@
 \newlabel{eq:methods-lstm-if}{{3.16}{25}{}{equation.3.16}{}}
 \newlabel{eq:methods-lstm-readout}{{3.17}{25}{}{equation.3.17}{}}
 \citation{reisenhofer2022}
-\bibcite{euronext2015}{1}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.8}SiLU-LSTM}{26}{}\protected@file@percent }
 \newlabel{eq:methods-silu}{{3.18}{26}{}{equation.3.18}{}}
 \newlabel{eq:methods-silu-lstm}{{3.19}{26}{}{equation.3.19}{}}
@@ -208,6 +207,83 @@
 \newlabel{eq:methods-harnet-convolution}{{3.20}{26}{}{equation.3.20}{}}
 \newlabel{eq:methods-harnet-horizons}{{3.21}{26}{}{equation.3.21}{}}
 \newlabel{eq:methods-harnet-readout}{{3.22}{26}{}{equation.3.22}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Implementation}{26}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Input data}{26}{}\protected@file@percent }
+\citation{zhang2022}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Hyperparameters}{28}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Fitting}{29}{}\protected@file@percent }
+\citation{elfwing2017}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Evaluation Setup}{31}{}\protected@file@percent }
+\newlabel{eq:evaluation-global-loss}{{4.1}{31}{}{equation.4.1}{}}
+\newlabel{eq:evaluation-local-loss}{{4.2}{31}{}{equation.4.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Experimental Results}{32}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Goals}{32}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Setting}{32}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Computational Evaluation}{32}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Technical Evaluation}{32}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.1}Overall Result}{32}{}\protected@file@percent }
+\gdef \LT@i {\LT@entry 
+    {4}{62.87862pt}\LT@entry 
+    {4}{35.75044pt}\LT@entry 
+    {4}{38.1225pt}\LT@entry 
+    {4}{43.02254pt}\LT@entry 
+    {4}{38.1225pt}\LT@entry 
+    {4}{38.1225pt}\LT@entry 
+    {4}{52.75069pt}\LT@entry 
+    {4}{46.61171pt}}
+\gdef \LT@ii {\LT@entry 
+    {4}{43.76167pt}\LT@entry 
+    {4}{23.00026pt}\LT@entry 
+    {4}{33.86153pt}\LT@entry 
+    {4}{33.86153pt}\LT@entry 
+    {1}{31.05568pt}\LT@entry 
+    {4}{33.86153pt}\LT@entry 
+    {4}{33.86153pt}\LT@entry 
+    {1}{42.48248pt}}
+\@writefile{lot}{\contentsline {table}{\numberline {5.1}{Global full-period saved losses. Bold denotes the minimum within each window population; the horizontal grouping is given by the model window. Column multipliers give the original units.}}{33}{}\protected@file@percent }
+\newlabel{tab:global-results}{{5.1}{33}{}{table.5.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5.2}{Global RFSV-full: final-date forecasts only (2025-12-31), excluded from full-period rankings.}}{33}{}\protected@file@percent }
+\newlabel{tab:rfsv-global}{{5.2}{33}{}{table.5.2}{}}
+\gdef \LT@iii {\LT@entry 
+    {4}{90.32484pt}\LT@entry 
+    {4}{23.00026pt}\LT@entry 
+    {4}{38.1225pt}\LT@entry 
+    {4}{43.02254pt}\LT@entry 
+    {4}{38.1225pt}\LT@entry 
+    {4}{38.1225pt}\LT@entry 
+    {4}{43.02254pt}\LT@entry 
+    {1}{42.48248pt}}
+\gdef \LT@iv {\LT@entry 
+    {4}{71.2079pt}\LT@entry 
+    {1}{13.59871pt}\LT@entry 
+    {4}{43.02254pt}\LT@entry 
+    {4}{38.1225pt}\LT@entry 
+    {4}{43.02254pt}\LT@entry 
+    {4}{43.02254pt}\LT@entry 
+    {4}{43.02254pt}\LT@entry 
+    {1}{42.48248pt}}
+\@writefile{lot}{\contentsline {table}{\numberline {5.3}{Matched five-stock Local $\times $ Global full-period losses. All rows use the same 8,800 targets; bold marks the overall minimum across both scopes.}}{34}{}\protected@file@percent }
+\newlabel{tab:matched-results}{{5.3}{34}{}{table.5.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5.4}{Matched five-stock RFSV-full on 2025-12-31 only. Bold marks the lower loss between these two rows, separately from full-period results.}}{34}{}\protected@file@percent }
+\newlabel{tab:rfsv-matched}{{5.4}{34}{}{table.5.4}{}}
+\citation{monteromanso2021}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.2}Parameter Complexity}{35}{}\protected@file@percent }
+\newlabel{eq:technical-combinations}{{5.1}{35}{}{equation.5.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5.5}{\ignorespaces Parameter-combination budgets for the selected model specifications, with $B=2^{64}$. The local column assumes one parameter vector per ticker across the full cohort.}}{35}{}\protected@file@percent }
+\newlabel{tab:parameter-combinations}{{5.5}{35}{}{table.5.5}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.3}Residual Structure}{37}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{MAE and MASE: Local SARIMA versus Global AR(1).}{37}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{MSE and RMSE: Global MLP-80 versus Global AR(1).}{37}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{QLIKE: Global MLP-80 versus Local SiLU-LSTM-80.}{37}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5.1}{\ignorespaces Local SARIMA on the matched five-stock test panel ($N=8,800$; 1,760 dates). From top: raw histogram, individual log histogram, daily mean raw residual, and daily log-of-means residual. Histogram right panels show the central 99.5\%; timelines use all observations. Axis scales are those of the saved plots.}}{39}{}\protected@file@percent }
+\newlabel{fig:res-sarima}{{5.1}{39}{}{figure.5.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.2}{\ignorespaces Global AR(1) on the matched five-stock test panel ($N=8,800$; 1,760 dates). From top: raw histogram, individual log histogram, daily mean raw residual, and daily log-of-means residual. Histogram right panels show the central 99.5\%; timelines use all observations. Axis scales are those of the saved plots.}}{40}{}\protected@file@percent }
+\newlabel{fig:res-ar1}{{5.2}{40}{}{figure.5.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.3}{\ignorespaces Global MLP-80 on the matched five-stock test panel ($N=8,800$; 1,760 dates). From top: raw histogram, individual log histogram, daily mean raw residual, and daily log-of-means residual. Histogram right panels show the central 99.5\%; timelines use all observations. Axis scales are those of the saved plots.}}{41}{}\protected@file@percent }
+\newlabel{fig:res-mlp}{{5.3}{41}{}{figure.5.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.4}{\ignorespaces Local SiLU-LSTM-80 on the matched five-stock test panel ($N=8,800$; 1,760 dates). From top: raw histogram, individual log histogram, daily mean raw residual, and daily log-of-means residual. Histogram right panels show the central 99.5\%; timelines use all observations. Axis scales are those of the saved plots.}}{42}{}\protected@file@percent }
+\newlabel{fig:res-silu}{{5.4}{42}{}{figure.5.4}{}}
+\bibcite{euronext2015}{1}
 \bibcite{bloombergterminal}{2}
 \bibcite{nasdaqtotalview}{3}
 \bibcite{zuckerman2019}{4}
@@ -215,21 +291,13 @@
 \bibcite{yule1927}{6}
 \bibcite{slutsky1927}{7}
 \bibcite{wold1938}{8}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Implementation}{27}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5}Experimental Results}{27}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Goals}{27}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Setting}{27}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Case Studies}{27}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Correctness}{27}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Computational Evaluation}{27}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}Technical Evaluation}{27}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusions}{27}{}\protected@file@percent }
 \bibcite{boxjenkins1970}{9}
 \bibcite{kalman1960}{10}
 \bibcite{pennstate508}{11}
 \bibcite{engle1982}{12}
 \bibcite{bollerslev1986}{13}
 \bibcite{corsi2009}{14}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusions}{43}{}\protected@file@percent }
 \bibcite{muller1993}{15}
 \bibcite{bachelier1900}{16}
 \bibcite{osborne1959}{17}
@@ -240,28 +308,29 @@
 \bibcite{werbos1974}{22}
 \bibcite{rumelhart1986}{23}
 \bibcite{kingma2015}{24}
-\bibcite{hyndman2006}{25}
-\bibcite{patton2011}{26}
-\bibcite{hansen2011mcs}{27}
-\bibcite{lapedes1987}{28}
-\bibcite{waibel1989}{29}
-\bibcite{bai2018}{30}
-\bibcite{reisenhofer2022}{31}
-\bibcite{elman1990}{32}
-\bibcite{hochreiter1997}{33}
-\bibcite{cho2014}{34}
-\bibcite{breiman2001}{35}
-\bibcite{chen2016}{36}
-\bibcite{vaswani2017}{37}
-\bibcite{andersen2003}{38}
-\bibcite{andersen1998}{39}
-\bibcite{parkinson1980}{40}
-\bibcite{garmanklass1980}{41}
-\bibcite{audrino2024}{42}
-\bibcite{monteromanso2021}{43}
-\bibcite{liu2023}{44}
-\bibcite{zhang2022}{45}
-\bibcite{mouti2023}{46}
-\bibcite{tang2023}{47}
-\bibcite{brini2026}{48}
-\gdef \@abspage@last{31}
+\bibcite{elfwing2017}{25}
+\bibcite{hyndman2006}{26}
+\bibcite{patton2011}{27}
+\bibcite{hansen2011mcs}{28}
+\bibcite{lapedes1987}{29}
+\bibcite{waibel1989}{30}
+\bibcite{bai2018}{31}
+\bibcite{reisenhofer2022}{32}
+\bibcite{elman1990}{33}
+\bibcite{hochreiter1997}{34}
+\bibcite{cho2014}{35}
+\bibcite{breiman2001}{36}
+\bibcite{chen2016}{37}
+\bibcite{vaswani2017}{38}
+\bibcite{andersen2003}{39}
+\bibcite{andersen1998}{40}
+\bibcite{parkinson1980}{41}
+\bibcite{garmanklass1980}{42}
+\bibcite{audrino2024}{43}
+\bibcite{monteromanso2021}{44}
+\bibcite{liu2023}{45}
+\bibcite{zhang2022}{46}
+\bibcite{mouti2023}{47}
+\bibcite{tang2023}{48}
+\bibcite{brini2026}{49}
+\gdef \@abspage@last{46}

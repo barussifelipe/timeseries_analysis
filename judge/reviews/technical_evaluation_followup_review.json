@@ -1,0 +1,37 @@
+{
+  "task": "Cold review of thesis Technical Evaluation follow-up: nine zero-scale ticker explanation, parameter-table placement, section-based table/figure numbering, and Global/Local percentage as third column.",
+  "sources": [
+    "AGENTS.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/technical_followup.diff",
+    "judge/technical_followup_before.tex",
+    "judge/technical_followup_checks.md",
+    "judge/check_technical_evaluation.py",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/technical_evaluation.md",
+    "CONTEXT.md",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.aux",
+    "models/raw_neural_data.py",
+    "inference/evaluate_volatility_test.py",
+    "imgs/eval/volatility_test_metrics_full_history.log",
+    "imgs/eval/volatility_test_metrics.csv",
+    "imgs/eval/local_eval/metrics.csv",
+    "judge/technical_followup-33.png",
+    "judge/technical_followup-35.png",
+    "judge/technical_followup-36.png",
+    "judge/technical_followup-37.png"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

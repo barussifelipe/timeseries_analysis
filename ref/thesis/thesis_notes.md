@@ -134,3 +134,12 @@
 
 
 
+## Implementation: SiLU derivative and stability hypothesis (2026-10-02)
+
+- Architecture citation clarification: Zhang, Zhang, Cucuringu, and Qian, arXiv:2202.08962v2, Appendix B, Table B.2 notes, specify widths 128, 128/64, and 128/64/32 for MLP variants and state that LSTM variants have similar meanings. This supports a 128-unit first LSTM layer; it is not a SiLU-LSTM architecture attribution. Source: https://arxiv.org/html/2202.08962#A2. The project's selected width and learning rate remain its own comparison decisions, as reported by the user.
+
+- Source: Elfwing, Uchibe, and Doya, arXiv:1702.03118v3, Section 2.2, printed Equation (10), https://arxiv.org/pdf/1702.03118. In the paper's notation, aₖ(s) = σ(zₖ)(1 + zₖ(1 − σ(zₖ))) is dSiLU, the derivative of SiLU. Its large-positive-input limit is 1; tanh's derivative approaches zero.
+- Project hypothesis: repeated recurrent transformations can preserve sensitivity and can amplify it depending on learned weights and gates. The source does not establish the cause of this project's instability. Sigmoid gates remain unchanged; only candidate and cell-output activations switch to SiLU.
+- Project decision: selected SiLU-LSTM runs use variance plus within-session returns, direct variance outputs, and raw-output MSE training. MLP/LSTM use log-volatility plus returns, log-variance outputs, and QLIKE. HARNet uses variance and QLIKE. Input transformation and output parameterization also changed in the successful SiLU configuration, precluding a loss-only causal attribution.
+- Verification limit: checkpoint files are unavailable locally. Selected configurations were checked against evaluation selectors, local launchers, the LSTM-20 continuation launcher, fitting code, and saved evaluation reports. The `30e` directory suffix is historical; the continuation caps the run at 20 epochs.
+- Selected evaluation uses full preceding filtering history for SARIMA/GARCH with 20-observation target eligibility, unlike a truncated 20-input forecast call. RFSV final-date scoring and matched-observation limitations belong in Experimental Results; no evaluation or data behavior changed here.

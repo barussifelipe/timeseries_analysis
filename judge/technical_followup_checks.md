@@ -1,0 +1,9 @@
+# Technical Evaluation follow-up verification
+
+- User requests: add the zero-scale explanation beside the nine-ticker exclusion, keep complexity table before Residual Structure, adjust numbering (section-based numbering accepted by user), and add Global/Local percentage as third complexity-table column.
+- `python judge/check_technical_evaluation.py`: PASS. Extended checks verify ratio exponent 2713p for every distinct parameter count, third-column header, pre-residual float flush, and section-based table/figure numbering, in addition to all original 42-row artifact checks.
+- Two final direct `pdflatex -synctex=1 -interaction=nonstopmode -halt-on-error thesis_structure.tex` passes from `ref/final_report/`: exit 0; adjacent 46-page PDF and SyncTeX rebuilt. No unresolved-reference, new-section overflow, or ignored-error messages. Existing overflows only at lines 81-82, 263, 702-703, and 707-708 outside the change.
+- PDF text check locates Table 5.5 on page 35 and Residual Structure on page 37. Rendered pages 33, 35, 36, and 37 inspected; ratio column fits and table stays outside Residual Structure. References show Tables 5.1-5.5 and Figures 5.1-5.4.
+- Exclusion explanation is attributed to saved audit facts in CONTEXT.md (Full-history RFSV test row, 2026-09-28). Loader code replaces valid zero variances with the shared floor; evaluator rejects nonpositive final-date scales and applies excluded tickers globally. Database remains unavailable for independent reinspection of original OHLC rows.
+- Ratios are parameter-combination budgets, not parameter-count ratios: 100 B^p / B^(2714p) = 100 B^(-2713p) percent. Exact powers avoid underflow or misleading zero percentages.
+- Task source diff is `judge/technical_followup.diff`; existing user wording elsewhere is preserved. No downloads, training, rescoring, commits, or pushes.

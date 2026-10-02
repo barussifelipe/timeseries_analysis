@@ -1,0 +1,27 @@
+{
+  "task": "Define g_theta and f_theta in the thesis Evaluation Setup. Review scope is the added forecasting-function definition sentence; other working-tree thesis edits predate this task.",
+  "sources": [
+    "Original user request supplied to fresh reviewer: Just define g theta and f theta",
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/implementation.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "ref/final_report/thesis_structure.tex: Concepts local/global forecasts and Evaluation Setup",
+    "git diff -- ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log: successful 35-page output, no undefined references, layout warnings outside the changed paragraph",
+    "Adjacent PDF and SyncTeX file metadata",
+    "Implementer check results supplied to reviewer: two pdflatex -synctex=1 passes exited 0"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}
