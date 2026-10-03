@@ -14,7 +14,7 @@
 
 - `models/rfsv.py`: share equation (5.1)'s log-space kernel between variance-unit `forward` and the older volatility-unit `forecast` interface; keep the Section 5.2 correction in both outputs without squaring tiny volatility inputs.
 - `models/variance_fit.py`: permit the new full-history forecast rule in the saved RFSV parameter metadata, keeping the old 20-window default for prior callers.
-- `models/raw_statistical_fit.py`: route the raw RFSV fit-only command to a separate full-history artifact and run the pre-2016 per-ticker `forward` check.
+- `models/support_scripts/raw_statistical_fit.py`: route the raw RFSV fit-only command to a separate full-history artifact and run the pre-2016 per-ticker `forward` check.
 
 ## Verification
 

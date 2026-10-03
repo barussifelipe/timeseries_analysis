@@ -56,7 +56,7 @@ and 5,640 for window 80. The earlier positive-table runs used a different
 cohort and observation set (5,416,755 / 1,120,921 / 2,649,257 train / validation /
 test windows before the optional consecutive-session filter). Their metrics
 cannot be compared directly with these raw-history windows. Counts above came
-from `python -m models.raw_neural_coverage D:/DBs/timeseries_analysis/history_coverage.db`.
+from `python -m models.support_scripts.raw_neural_coverage D:/DBs/timeseries_analysis/history_coverage.db`.
 
 CBIO and VATE have no valid pre-2016 variance rows. They contribute no training
 or validation windows, but 2,134 window-20 and 1,912 window-80 test windows.

@@ -11,9 +11,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 
-from models.raw_neural_data import load_raw_neural
-from models.raw_statistical_fit import EXPECTED
-from models.rfsv import RFSV
+from models.support_scripts.raw_neural_data import load_raw_neural
+from models.support_scripts.raw_statistical_fit import EXPECTED
 from models.training_blocks import TimeSeriesDataset, load_fit
 from models.variance_neural import make_model, model_data
 
@@ -33,6 +32,7 @@ STATISTICAL = {'AR(1)': ('ar1', 20), 'HAR-20': ('har', 20),
                'HAR-80': ('har_80', 80), 'GARCH(1,1)': ('garch', 20),
                'SARIMA': ('sarima', 20)}
 RFSV_FULL = ROOT / 'rfsv/garman-klass/global/raw_history_full/fit.json'
+RFSV_WINDOWS = {'RFSV-20': 20, 'RFSV-80': 80}
 
 
 def artifacts(database, frame, floor):
@@ -74,7 +74,8 @@ def artifacts(database, frame, floor):
             or fit['forecast_history_rule'] != 'all preceding valid positive observations within ticker'
             or not fit['diagnostics']['converged']):
         raise ValueError('RFSV-full: incompatible statistical artifact')
-    result['RFSV-full'] = (RFSV_FULL, fit, None)
+    for label, window in RFSV_WINDOWS.items():
+        result[label] = (RFSV_FULL, fit, window)
     return result
 
 
@@ -165,7 +166,7 @@ def score_neural(kind, fit, frame, data, scale_by_ticker, floor, batch_size, exc
     return totals.result()
 
 
-def statistical_predictions(kind, fit, group, target_positions):
+def statistical_predictions(kind, fit, group, target_positions, window=None):
     """Each prediction uses only earlier rows from this ticker."""
     p = fit['parameters']
     variance = group.Variance.to_numpy(dtype=float)
@@ -183,14 +184,16 @@ def statistical_predictions(kind, fit, group, target_positions):
         from scipy.special import betainc
         from math import gamma
         h, nu = p['H'], p['nu_squared']
-        edges = np.arange(21, dtype=float)
+        if window not in (20, 80):
+            raise ValueError('RFSV requires a 20- or 80-observation window')
+        edges = np.arange(window + 1, dtype=float)
         mass = betainc(.5 - h, .5 + h, edges / (1 + edges))
         weights = np.diff(mass)
         weights[-1] += 1 - mass[-1]
         constant = 2 * gamma(1.5 - h) / (gamma(h + .5) * gamma(2 - 2 * h)) * nu
         for begin in range(0, len(out), 4096):
             pos = target_positions[begin:begin + 4096]
-            out[begin:begin + len(pos)] = np.exp(np.log(variance[pos[:, None] - np.arange(1, 21)]) @ weights + constant)
+            out[begin:begin + len(pos)] = np.exp(np.log(variance[pos[:, None] - np.arange(1, window + 1)]) @ weights + constant)
         return out
     if kind == 'sarima':
         from statsmodels.tsa.statespace.sarimax import SARIMAX
@@ -229,7 +232,7 @@ def score_statistical(kind, fit, frame, data, scale_by_ticker, floor, excluded_t
         chosen = targets[np.searchsorted(targets, offset):np.searchsorted(targets, stop)]
         scale = scale_by_ticker.get(ticker, np.nan)
         if len(chosen) and ticker not in excluded_tickers and np.isfinite(scale) and scale > 0:
-            raw = statistical_predictions(kind, fit, group, chosen - offset)
+            raw = statistical_predictions(kind, fit, group, chosen - offset, data.window_size)
             totals.add(actual[chosen], raw, np.full(len(chosen), scale), floor)
             if emit is not None:
                 emit(frame.Date.iloc[chosen].to_numpy(), actual[chosen], np.maximum(raw, floor))
@@ -237,37 +240,10 @@ def score_statistical(kind, fit, frame, data, scale_by_ticker, floor, excluded_t
     return totals.result()
 
 
-def score_rfsv_full(fit, frame, floor, emit=None):
-    """One forecast per ticker for its final recorded 2025 test observation."""
-    p = fit['parameters']
-    model = RFSV(p['H'], p['nu_squared'])
-    totals = Totals()
-    excluded = set()
-    for ticker, group in frame.groupby('Ticker', sort=False, observed=True):
-        target = group.iloc[-1]
-        if target.Date != np.datetime64('2025-12-31'):
-            raise ValueError('RFSV-full: unexpected final target date')
-        earlier = group.iloc[:-1]
-        history = earlier.loc[earlier.Valid & earlier.RawVariance.gt(0), 'Variance'].to_numpy(dtype=float)
-        if not target.Valid or not np.isfinite(target.Variance) or not len(history):
-            excluded.add(ticker)
-            continue
-        previous = earlier.iloc[-1]
-        scale = abs(float(target.Variance) - float(previous.Variance)) if previous.Valid else np.nan
-        if not np.isfinite(scale) or scale <= 0:
-            excluded.add(ticker)
-            continue
-        raw = model.forward(history)
-        totals.add([target.Variance], [raw], [scale], floor)
-        if emit is not None:
-            emit(np.array([target.Date]), np.array([target.Variance]), np.array([max(raw, floor)]))
-    return totals.result(), excluded
-
-
 def save_table(rows, output):
     output.parent.mkdir(parents=True, exist_ok=True)
     metrics = ('MAE', 'MASE', 'MSE', 'RMSE', 'QLIKE')
-    columns = ['model', *metrics, 'floor_hit_pct', 'artifact']
+    columns = ['model', 'N', *metrics, 'floor_hit_pct', 'artifact']
     with output.with_suffix('.csv').open('w', newline='', encoding='utf-8') as handle:
         writer = csv.DictWriter(handle, columns, extrasaction='ignore')
         writer.writeheader()
@@ -290,7 +266,7 @@ def save_table(rows, output):
     ax.set_title('One-step adjusted Garman-Klass variance forecasts | 2019-01-01 to 2025-12-31', pad=20)
     fig.text(.5, .048, 'Red: lowest loss. Blue: second lowest. Daily, unannualized variance; MASE uses naive MAE on each row\'s scored test dates.',
              ha='center', fontsize=9)
-    fig.text(.5, .023, 'RFSV-full: one forecast per ticker on 2025-12-31; other rows use all eligible 2019-2025 dates. Colors are descriptive, not a matched-date ranking.',
+    fig.text(.5, .023, 'RFSV uses the same eligible test targets and ticker/window MASE scales as the other rows at its window.',
              ha='center', fontsize=8)
     fig.savefig(output, dpi=180, bbox_inches='tight')
     plt.close(fig)
@@ -305,12 +281,7 @@ def main():
     frame, _, floor = load_raw_neural(args.database)
     frame = frame.sort_values(['Ticker', 'Date']).reset_index(drop=True)
     fits = artifacts(args.database, frame, floor)
-    print(json.dumps({'preflight': '14 artifacts verified', 'floor': floor}), flush=True)
-    rfsv_result, rfsv_excluded = score_rfsv_full(fits['RFSV-full'][1], frame, floor)
-    if rfsv_result['N'] + len(rfsv_excluded) != frame.Ticker.nunique():
-        raise ValueError('RFSV-full: incomplete ticker accounting')
-    print(json.dumps({'rfsv_full_scored_tickers': rfsv_result['N'],
-                      'excluded_tickers_all_models': sorted(rfsv_excluded)}), flush=True)
+    print(json.dumps({'preflight': '15 artifacts verified', 'floor': floor}), flush=True)
     rows = []
     for window in (20, 80):
         data = TimeSeriesDataset(frame, window, split='test', valid_column='Valid')
@@ -320,7 +291,7 @@ def main():
         scale_by_ticker = scales_from_test(frame, data)
         names = data.ticker_names
         eligible = np.array([np.isfinite(scale_by_ticker.get(name, np.nan)) and scale_by_ticker.get(name, np.nan) > 0
-                             and name not in rfsv_excluded for name in names])
+                             for name in names])
         scored_count = int(eligible[data.ticker_ids.numpy()].sum())
         excluded = len(data) - scored_count
         print(json.dumps({'window': window, 'scored_count': scored_count,
@@ -329,9 +300,10 @@ def main():
             if fitted_window != window:
                 continue
             try:
-                result = (score_neural(NEURAL[label][0], fit, frame, data, scale_by_ticker, floor, args.batch_size, rfsv_excluded)
+                result = (score_neural(NEURAL[label][0], fit, frame, data, scale_by_ticker, floor, args.batch_size)
                           if label in NEURAL else
-                          score_statistical(STATISTICAL[label][0], fit, frame, data, scale_by_ticker, floor, rfsv_excluded))
+                          score_statistical('rfsv' if label in RFSV_WINDOWS else STATISTICAL[label][0],
+                                            fit, frame, data, scale_by_ticker, floor))
                 if result['N'] != scored_count:
                     raise ValueError('scored count differs from common MASE-eligible test count')
                 row = {'model': label, **result, 'excluded_no_test_scale': excluded, 'artifact': str(path)}
@@ -341,10 +313,6 @@ def main():
                 print(json.dumps({'failed_row': label, 'error': str(error)}), flush=True)
                 raise
         del data
-    rfsv_row = {'model': 'RFSV-full', **rfsv_result,
-                'excluded_no_test_scale': len(rfsv_excluded), 'artifact': str(RFSV_FULL)}
-    rows.append(rfsv_row)
-    print(json.dumps(rfsv_row), flush=True)
     save_table(rows, args.output)
     print(json.dumps({'completed_rows': len(rows), 'png': str(args.output),
                       'csv': str(args.output.with_suffix('.csv'))}), flush=True)

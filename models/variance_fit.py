@@ -532,7 +532,7 @@ def main(kind):
                         help='fit global raw-history window cohort without scoring or W&B')
     args = parser.parse_args()
     if getattr(args, 'raw_fit_only', False):
-        from models.raw_statistical_fit import fit_raw
+        from models.support_scripts.raw_statistical_fit import fit_raw
         fit_raw(kind, args)
         return
     path = statistical_train(kind, args)

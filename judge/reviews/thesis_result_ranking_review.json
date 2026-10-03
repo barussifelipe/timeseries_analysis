@@ -1,0 +1,30 @@
+{
+  "task": "Cold review of the thesis result tables after the corrected all-row red and blue rankings, including RFSV and the five-stock RFSV row spacing.",
+  "sources": [
+    "user-provided AGENTS.md instructions and correction",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/technical_evaluation.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- .vscode/settings.json CONTEXT.md judge/check_technical_evaluation.py ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.tex",
+    "judge/check_technical_evaluation.py",
+    "imgs/eval/volatility_test_metrics.csv",
+    "imgs/eval/local_eval/metrics.csv",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf via pdftotext -layout",
+    "python judge/check_technical_evaluation.py (PASS: 42 rows and color rankings)",
+    "git diff --check -- .vscode/settings.json CONTEXT.md judge/check_technical_evaluation.py ref/final_report/thesis_structure.tex (PASS)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

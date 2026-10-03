@@ -2,7 +2,7 @@
   "latex-workshop.latex.tools": [
     {
       "name": "pdflatex",
-      "command": "C:\\Users\\Vanessa Castanho\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64\\pdflatex.exe",
+      "command": "pdflatex",
       "args": [
         "-synctex=1",
         "-interaction=nonstopmode",
@@ -22,8 +22,6 @@
   "latex-workshop.latex.autoBuild.run": "onFileChange",
   "latex-workshop.latex.autoClean.run": "never",
   "latex-workshop.view.pdf.viewer": "tab",
-  "[latex]": {
-    "files.autoSave": "afterDelay",
-    "files.autoSaveDelay": 1500
-  }
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1500
 }

@@ -27,7 +27,7 @@
 | 6 | Acquire each ticker sequentially with maximum history, adjusted OHLC, threading disabled. | `scan_history_coverage`, distinct from the earlier bulk-download return prototype. |
 | 7 | Persist status, attempts, first/last date, last error; skip successful saved tickers on restart. | No acquisition is run for thesis writing. |
 | 8 | Recorded acquisition: 5,842 tickers, 22,817,463 observations through 2026-09-10. | `ref/coverage/history_coverage.md`; snapshot, not new computation. |
-| 9 | Cohort: 2,714 tickers, more than 80 raw pre-2016 rows, and a row on 2025-12-31. | `models/raw_neural_data.py` and saved audit; end-date criterion introduces survivorship selection. |
+| 9 | Cohort: 2,714 tickers, more than 80 raw pre-2016 rows, and a row on 2025-12-31. | `models/support_scripts/raw_neural_data.py` and saved audit; end-date criterion introduces survivorship selection. |
 | 10 | Retain all available history through 2025-12-31; no ten-year minimum. | Distinct from earlier fixed-period cohorts. |
 | 11 | Training target dates precede 2016-01-01. | Chronological split. |
 | 12 | Validation target dates are 2016-01-01 through 2018-12-31. | Chronological split. |

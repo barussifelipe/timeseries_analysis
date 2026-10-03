@@ -1,0 +1,25 @@
+{
+  "task": "Move the MCS rejection rule from Equation 2.60 to prose after Equation 2.61, define the bootstrap p-value, and state removal and stopping conditions",
+  "sources": [
+    "User-provided AGENTS.md instructions and repository AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/mcs_implementation.md",
+    "ref/final_report/thesis_structure.tex:477-500",
+    "git diff -- ref/final_report/thesis_structure.tex (MCS hunk)",
+    "ref/final_report/thesis_structure.aux:166-167",
+    "ref/final_report/thesis_structure.log",
+    "judge/prompt.md",
+    "judge/score.schema.json"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

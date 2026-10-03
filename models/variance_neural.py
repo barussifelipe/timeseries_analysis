@@ -103,7 +103,7 @@ def neural_train(kind, args):
     if raw:
         if args.scope == 'local' and not args.ticker or args.scope == 'global' and args.ticker:
             raise ValueError('local raw-history runs need a ticker; global runs cannot select one')
-        from models.raw_neural_data import load_raw_neural
+        from models.support_scripts.raw_neural_data import load_raw_neural
         frame, training, floor = load_raw_neural(args.database, args.ticker, args.limit_tickers, args.limit_rows)
         source_stat = Path(args.database).stat()
     else:
@@ -340,7 +340,7 @@ def _main(kind):
         return
     fit = load_fit(path)
     if args.raw_history:
-        from models.raw_neural_data import load_raw_neural
+        from models.support_scripts.raw_neural_data import load_raw_neural
         frame, _, _ = load_raw_neural(args.database, args.ticker, args.limit_tickers, args.limit_rows)
     else:
         frame, _, _ = prepare(args, include_intraday_log_return=args.intraday_return)

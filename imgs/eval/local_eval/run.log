@@ -25,5 +25,7 @@
 {"model": "GARCH(1,1) GLOBAL", "N": 8800, "floor_hits_pct": 0.0}
 {"model": "SARIMA LOCAL", "N": 8800, "floor_hits_pct": 0.0}
 {"model": "SARIMA GLOBAL", "N": 8800, "floor_hits_pct": 0.0}
-{"model": "RFSV-full LOCAL", "N": 5, "floor_hits_pct": 0.0}
-{"model": "RFSV-full GLOBAL", "N": 5, "floor_hits_pct": 0.0}
+{"model": "RFSV-20 LOCAL", "N": 8800, "floor_hits_pct": 0.011363636363636364}
+{"model": "RFSV-20 GLOBAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "RFSV-80 LOCAL", "N": 8800, "floor_hits_pct": 0.0}
+{"model": "RFSV-80 GLOBAL", "N": 8800, "floor_hits_pct": 0.0}

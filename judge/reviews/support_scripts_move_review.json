@@ -1,0 +1,27 @@
+{
+  "task": "Move four model support files into models/support_scripts and update their callers",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff and git status",
+    "models/support_scripts/lstm_val_sweep.py",
+    "models/support_scripts/raw_neural_coverage.py",
+    "models/support_scripts/raw_neural_data.py",
+    "models/support_scripts/raw_statistical_fit.py",
+    "Updated callers, tests, and documentation found by repository-wide reference search",
+    "Independent module imports and eight focused test functions run with .venv/Scripts/python.exe"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

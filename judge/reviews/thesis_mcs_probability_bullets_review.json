@@ -1,0 +1,26 @@
+{
+  "task": "Cold review of the Section 2.5 MCS bootstrap p-value notation and decision bullets",
+  "sources": [
+    "User request and repository AGENTS.md instructions",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/mcs_implementation.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.tex, lines 477-515",
+    "ref/final_report/thesis_structure.aux, MCS equation labels",
+    "ref/final_report/thesis_structure.log, build output and warnings",
+    "ref/final_report/thesis_structure.pdf, visually inspected pages 20-21"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

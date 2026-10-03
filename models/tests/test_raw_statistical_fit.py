@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from models.raw_statistical_fit import (eligible_data, garch_objective, sarima_objective,
+from models.support_scripts.raw_statistical_fit import (eligible_data, garch_objective, sarima_objective,
                                         fit_sarima, streamed_ols, training_segments)
 from models.sarima import SARIMA
 
@@ -36,7 +36,7 @@ def test_sarima_training_logs_objective(monkeypatch, capsys):
         value = objective(initial)
         return SimpleNamespace(x=initial, success=True, message='done', nit=1, fun=value)
 
-    monkeypatch.setattr('models.raw_statistical_fit.minimize', minimize)
+    monkeypatch.setattr('models.support_scripts.raw_statistical_fit.minimize', minimize)
     _, diagnostics = fit_sarima([(np.array([1.]), None), (np.array([2.]), None)])
     rows = [json.loads(line) for line in capsys.readouterr().out.splitlines()]
     assert [row['sarima_stage'] for row in rows] == ['seed_fit', 'pooled_fit', 'pooled_evaluation']

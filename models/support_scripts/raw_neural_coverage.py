@@ -7,7 +7,7 @@ from contextlib import closing
 import numpy as np
 import pandas as pd
 
-from models.raw_neural_data import raw_frame
+from models.support_scripts.raw_neural_data import raw_frame
 
 
 def coverage(database):

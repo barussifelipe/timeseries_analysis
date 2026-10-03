@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 from inference.evaluate_volatility_test import (Totals, save_table, scales_from_test,
-                                                score_rfsv_full, score_statistical, statistical_predictions)
+                                                score_statistical, statistical_predictions)
 from inference.plot_global_residuals import mean_variances_by_date, plot_residuals
 from models.rfsv import RFSV
 from models.training_blocks import TimeSeriesDataset, variance_metrics
@@ -85,7 +85,7 @@ def test_one_step_statistical_and_output(tmp_path):
     sarima = statistical_predictions('sarima', {'parameters': [.1, .1, .1, .1, 1.]}, gap, positions)
     assert np.isfinite(sarima).all()
     rfsv_fit = {'parameters': {'H': .1, 'nu_squared': .2}}
-    rfsv = statistical_predictions('rfsv', rfsv_fit, group, positions)
+    rfsv = statistical_predictions('rfsv', rfsv_fit, group, positions, 20)
     assert np.allclose(rfsv, [RFSV(.1, .2).forecast(np.sqrt(group.Variance.iloc[i-20:i])) ** 2
                               for i in positions])
     actual = np.array([21., 22.])
@@ -103,23 +103,24 @@ def test_one_step_statistical_and_output(tmp_path):
     with image.with_suffix('.csv').open(newline='', encoding='utf-8') as handle:
         saved = list(csv.DictReader(handle))
         assert saved[0]['model'] == 'HAR-20'
-        assert 'N' not in saved[0] and 'excluded_no_test_scale' not in saved[0]
+        assert saved[0]['N'] == '2' and 'excluded_no_test_scale' not in saved[0]
 
 
-def test_full_history_rfsv_one_final_forecast_per_ticker():
+def test_window_rfsv_scoring_uses_test_scale():
     rows = []
-    for ticker, values in [('A', [1., 2., 3., 4.]), ('B', [2., 2., 2., 2.])]:
+    for ticker, values in [('A', np.arange(1., 25.)), ('B', np.full(24, 2.))]:
         for i, value in enumerate(values):
-            rows.append({'Ticker': ticker, 'Date': pd.Timestamp('2025-12-28') + pd.Timedelta(days=i),
+            rows.append({'Ticker': ticker, 'Date': pd.Timestamp('2019-01-01') + pd.Timedelta(days=i),
                          'Variance': value, 'RawVariance': value, 'Valid': True})
     frame = pd.DataFrame(rows)
+    data = TimeSeriesDataset(frame, 20, split='test', valid_column='Valid')
+    scales = scales_from_test(frame, data)
     fit = {'parameters': {'H': .1, 'nu_squared': .2}}
-    scored, excluded = score_rfsv_full(fit, frame, 1e-12)
-    assert scored['N'] == 1 and excluded == {'B'}
-    expected = RFSV(.1, .2).forward([1., 2., 3.])
-    assert np.isclose(scored['MAE'], abs(4. - expected))
-    assert np.isclose(scored['MASE'], abs(4. - expected))
+    scored = score_statistical('rfsv', fit, frame, data, scales, 1e-12)
+    assert scored['N'] == 4 and np.isnan(scales['B']) and scales['A'] == 1.
+    predicted = [RFSV(.1, .2).forward(np.arange(i - 19., i + 1.)) for i in range(20, 24)]
+    assert np.isclose(scored['MAE'], np.mean(np.abs(np.arange(21., 25.) - predicted)))
     changed = frame.copy()
     changed.loc[0, 'Variance'] = changed.loc[0, 'RawVariance'] = 100.
-    changed_score, _ = score_rfsv_full(fit, changed, 1e-12)
+    changed_score = score_statistical('rfsv', fit, changed, data, scales, 1e-12)
     assert not np.isclose(scored['MAE'], changed_score['MAE'])

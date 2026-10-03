@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 
 from models.variance_fit import rfsv_fit
-from models.raw_statistical_fit import fit_rfsv_full
+from models.support_scripts.raw_statistical_fit import fit_rfsv_full
 
 
 def test_rfsv_raw_cohort_guard():
@@ -73,7 +73,7 @@ def test_full_history_fit_calls_forward():
             args = Namespace(estimator='garman-klass', scope='global', ticker=None,
                              limit_rows=None, limit_tickers=None, window_size=20,
                              database=str(database))
-            with patch('models.raw_statistical_fit.load_raw_neural', return_value=(frame, {}, 1.)), \
+            with patch('models.support_scripts.raw_statistical_fit.load_raw_neural', return_value=(frame, {}, 1.)), \
                  patch('models.variance_fit.rfsv_fit', return_value=parameters) as read_parameters:
                 path = fit_rfsv_full(args)
             read_parameters.assert_called_once_with('garman-klass', expected_cohort='raw_history_2',

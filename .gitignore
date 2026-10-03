@@ -4,3 +4,4 @@
 wandb/
 inference/checkpoints/
 __pycache__/
+forecasts.csv

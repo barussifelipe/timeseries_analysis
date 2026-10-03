@@ -1,3 +1,44 @@
+## MCS summaries and thesis table layout (2026-10-03)
+
+The current `imgs/eval/mcs/20_size/final_sets.md` and `80_size/final_sets.md`
+now list only the intersection across all five stock-level final sets: five
+models at window 20 and six at window 80. The superseded
+`imgs/eval/mcs/historical_rfsv/` run and root `final_set.md` were removed at
+the user's request; root `forecasts.csv` and `results.json` remain historical.
+No forecasts, losses, or MCS memberships changed. Thesis Tables 5.1 and 5.2
+now span the text width with inline metric scales, MSE displayed in units of
+10⁻⁹, and no separator before the RFSV rows in Table 5.2. The underlying
+metric CSVs are unchanged. Two in-place SyncTeX-enabled `pdflatex` passes
+rebuilt the 46-page PDF. The next thesis task remains revision of the stale
+final-date RFSV prose against the window-matched results.
+
+## Window-matched RFSV scoring and MCS (2026-10-03)
+
+The current implementation plan is `ref/implementation_plan/rfsv_adjustment_scoring.md`.
+Saved pre-2016 global and five local RFSV H, ν², and positive floors now score
+the full 2019–2025 eligible test period with preceding 20- or 80-observation
+within-ticker histories. The target remains next-recorded adjusted daily,
+unannualized Garman–Klass variance. Both RFSV rows use their window's
+test-date naive MASE scale. The former nine-ticker final-date exclusion was
+removed after both full-period window populations showed positive scales:
+4,479,681 forecasts at window 20 and 4,295,773 at window 80, with zero
+scale exclusions. The global CSV has 15 rows; the five-stock CSV has 30
+local/global rows and 150 per-stock audit rows. Both MCS runs use 18 matching
+candidates per stock, 1,760 aligned dates, 10,000 QLIKE bootstrap draws,
+and blocks of 20 or 80 observations. Current outputs are under
+`imgs/eval/mcs/20_size/` and `imgs/eval/mcs/80_size/`; the root MCS outputs
+remain historical. Their dated QLIKE means match the five-stock audit and
+repeated loss-matrix bootstraps reproduce the saved elimination traces.
+Only the two thesis result tables, captions, and numerical rankings were
+updated; surrounding historical final-date claims await the user's edit.
+The focused 45-row table check and two adjacent SyncTeX-enabled PDF passes
+passed. Global and five-stock residual regeneration completed, with six PNGs
+for each of 15 global and 30 local/global model sets; their RFSV counts match
+the scored populations. Fresh-context review
+`judge/reviews/rfsv_window_mcs_review.json` passed 100/100 with no findings,
+and `python judge/validate.py` validated its JSON. The next concrete task is to revise those surrounding result claims
+and interpretation against the matched-period scores and MCS outputs.
+
 ## Thesis Technical Evaluation (2026-10-02)
 
 Follow-up edits explain the saved nine-ticker exclusions: zero raw GK variance
@@ -1728,3 +1769,36 @@ passed 100/100 with no findings, and its JSON validated.
 ## Global test residual diagnostics (2026-09-29)
 
 The user requested residual plots for the 14 saved global adjusted GK models before local scoring. `inference/plot_global_residuals.py` reuses the verified artifacts, target dates, forecast floor, and shared eligible test observations from `inference/evaluate_volatility_test.py`; it does not refit models. The ticker-level raw residual is actual minus floored predicted daily, unannualized adjusted GK variance; the ticker-level log residual is log(actual variance) minus log(predicted variance), using positive saved floors. Each model has six PNGs in `imgs/eval/global_eval/residuals/<model>/`: raw/log histograms with full and central-99.5% panels, dated raw/log points restricted to each distribution's central 99.5%, and two daily cross-ticker mean timelines. For each date, the means use every eligible ticker and are computed as mean(actual) − mean(predicted) and log(mean(actual)) − log(mean(predicted)); both have the same sign. The user explicitly corrected the earlier mean-of-log-residual definition. Trimming changes display only. All 14 folders contain six nonempty PNGs. The rerun scored 4,479,204 residuals for each window-20 row, 4,295,635 for each window-80 row, and 2,705 for RFSV-full. RFSV-full's timeline is a single 2025-12-31 cross-section, so these plots are diagnostics across different date populations rather than a matched-date ranking. The focused synthetic checks passed using `.venv` Python; the virtual environment lacks pytest, while system Python lacks compatible dependencies. Fresh-context cold review `judge/reviews/global_log_of_means_review.json` validated at 100/100 with no findings; the prior `global_daily_mean_review.json` covers the superseded mean-of-logs definition. Next: follow the user's requested evaluation sequence.
+## Thesis Result Table Presentation (2026-10-03)
+
+Evaluation Setup equation 4.2 puts both local-loss forms on one display line. The VS Code LaTeX recipe uses the available `pdflatex` command for two SyncTeX passes; workspace autosave and LaTeX Workshop are configured to rebuild after edits. The nine zero-change RFSV exclusions are stated in two direct sentences with all tickers named. The global and five-stock result tables include RFSV rows and omit N and Floor (%) columns. At the user's correction, each metric column has one red minimum and one blue second minimum across all displayed rows, including RFSV; these colors describe numerical values across different date populations and do not establish comparable model performance. The five-stock RFSV rows have no divider between them. Two direct SyncTeX passes regenerated the adjacent 46-page PDF; the 42-row metric/color check passed, with no new overfull warnings. Fresh-context review `judge/reviews/thesis_result_ranking_review.json` passed 100/100 and validated. Saved scores and evaluation code did not change. Next thesis task remains substantiating Computational Evaluation with saved timing evidence, then scoping matched-observation MCS and unseen-asset transfer checks.
+## MCS framework definition (2026-10-03)
+
+`models/mcs_definition.py` now defines finite-positive-variance QLIKE losses and
+the model-agnostic T_max MCS elimination sequence with 20-observation
+non-circular moving blocks, 10,000 bootstrap draws, alpha 0.10, seed 42,
+lexicographic ties, and adjusted p-values. Synthetic checks cover the loss,
+block draws, centered statistic, deterministic output, elimination, and invalid
+inputs. No saved forecasts were loaded, no stock-specific MCS was calculated,
+and no training or model comparison was run. The next task is to connect
+verified dated forecast histories, enforce exact per-stock key alignment, and
+run the five-stock evaluation requested in the plan. The broader thesis
+evaluation position is unchanged.
+The focused pytest check passed; fresh-context review
+`judge/reviews/mcs_definition_review.json` validated at 100/100 with no
+findings.
+
+## Five-stock MCS final sets documented (2026-10-03)
+
+The saved `imgs/eval/mcs/results.json` scores 26 local/global configurations
+separately for AAPL, AMZN, GOOG, NFLX, and NVDA, with 1,760 matched
+observations per stock, dimensionless QLIKE, and a 90% MCS using 20-observation
+moving blocks and 10,000 draws. The five final sets contain 8, 11, 17, 15,
+and 16 configurations, respectively. `imgs/eval/mcs/final_set.md` records
+all 26 membership rows and the eight-configuration intersection. The
+intersection is descriptive, not a test of equal performance or a 90% joint
+coverage result. RFSV is excluded because only final-date forecasts are
+available. No forecasts or MCS were rerun for this documentation task.
+Next: use the saved evaluation for the thesis comparison, preserving the
+per-stock interpretation and the differing model features and training budgets;
+unseen-asset transfer remains untested.

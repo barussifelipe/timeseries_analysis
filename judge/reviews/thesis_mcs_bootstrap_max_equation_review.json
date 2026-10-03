@@ -1,0 +1,26 @@
+{
+  "task": "Cold review of the thesis Model Evaluation bootstrap maximum and numbered p-value equations",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/mcs_implementation.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "ref/final_report/thesis_structure.tex (Model Evaluation, lines 477-517, and git diff)",
+    "ref/final_report/thesis_structure.aux (equation labels 2.60-2.63)",
+    "ref/final_report/thesis_structure.log (46-page build and warnings)",
+    "ref/final_report/thesis_structure.pdf (rendered page 21)",
+    "https://www.kevinsheppard.com/files/teaching/mfe/advanced-econometrics/Hansen_Lunde_Nason.pdf (Section 3.1.2)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

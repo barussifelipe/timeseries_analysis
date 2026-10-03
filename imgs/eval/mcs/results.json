@@ -1,0 +1,2819 @@
+{
+  "metadata": {
+    "database": "D:\\DBs\\timeseries_analysis\\history_coverage.db",
+    "source_bytes": 23995736064,
+    "source_mtime_ns": 1789904019449177100,
+    "target": "next recorded adjusted daily unannualized GK variance",
+    "loss": "dimensionless QLIKE",
+    "test_dates": [
+      "2019-01-01",
+      "2025-12-31"
+    ],
+    "candidate_order": [
+      "AR(1) GLOBAL",
+      "AR(1) LOCAL",
+      "Base LSTM-20 GLOBAL",
+      "Base LSTM-20 LOCAL",
+      "Base LSTM-80 GLOBAL",
+      "Base LSTM-80 LOCAL",
+      "GARCH(1,1) GLOBAL",
+      "GARCH(1,1) LOCAL",
+      "HAR-20 GLOBAL",
+      "HAR-20 LOCAL",
+      "HAR-80 GLOBAL",
+      "HAR-80 LOCAL",
+      "HARNet-20 GLOBAL",
+      "HARNet-20 LOCAL",
+      "HARNet-80 GLOBAL",
+      "HARNet-80 LOCAL",
+      "MLP-20 GLOBAL",
+      "MLP-20 LOCAL",
+      "MLP-80 GLOBAL",
+      "MLP-80 LOCAL",
+      "SARIMA GLOBAL",
+      "SARIMA LOCAL",
+      "SiLU-LSTM-20 GLOBAL",
+      "SiLU-LSTM-20 LOCAL",
+      "SiLU-LSTM-80 GLOBAL",
+      "SiLU-LSTM-80 LOCAL"
+    ],
+    "exclusions": [
+      "RFSV-full: final-date-only forecast"
+    ],
+    "forecast_file": "imgs\\eval\\mcs\\forecasts.csv"
+  },
+  "stocks": {
+    "AAPL": {
+      "n": 1760,
+      "first_date": "2019-01-02",
+      "last_date": "2025-12-31",
+      "calendar_gaps": 383,
+      "fits": [
+        {
+          "candidate": "MLP-20 LOCAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\local\\AAPL\\mlp_local_AAPL_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 1.4346749840017278e-06
+        },
+        {
+          "candidate": "MLP-20 GLOBAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\global\\mlp_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "MLP-80 LOCAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\local\\AAPL\\mlp_local_AAPL_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 1.4346749840017278e-06
+        },
+        {
+          "candidate": "MLP-80 GLOBAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\global\\mlp_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "Base LSTM-20 LOCAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\local\\AAPL\\base_lstm_local_AAPL_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 1.4346749840017278e-06
+        },
+        {
+          "candidate": "Base LSTM-20 GLOBAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\global\\raw_gk_logvol_return_w20_h128_lr0p001_30e\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "Base LSTM-80 LOCAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\local\\AAPL\\base_lstm_local_AAPL_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 1.4346749840017278e-06
+        },
+        {
+          "candidate": "Base LSTM-80 GLOBAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\global\\base_lstm_raw_gk_logvol_return_w80_h128_lr0p001_20e_wandb\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "SiLU-LSTM-20 LOCAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\local\\AAPL\\silu_lstm_local_AAPL_raw_gk_variance_return_direct_mse_w20_h128_lr0p001_20e\\fit.pth",
+          "floor": 1.4346749840017278e-06
+        },
+        {
+          "candidate": "SiLU-LSTM-20 GLOBAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\global\\silu_lstm_raw_gk_variance_return_direct_mse_w20_h128_lr0p001_20e_wandb\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "SiLU-LSTM-80 LOCAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\local\\AAPL\\silu_lstm_local_AAPL_raw_gk_variance_return_direct_mse_w80_h128_lr0p001_20e\\fit.pth",
+          "floor": 1.4346749840017278e-06
+        },
+        {
+          "candidate": "SiLU-LSTM-80 GLOBAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\global\\silu_lstm_raw_gk_variance_return_direct_mse_w80_h128_lr0p001_20e_wandb\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HARNet-20 LOCAL",
+          "path": "inference\\checkpoints\\harnet_20\\garman-klass\\local\\AAPL\\harnet_20_local_AAPL_raw_gk_variance_w20_lr0p001_20e_qlike\\fit.pth",
+          "floor": 1.4346749840017278e-06
+        },
+        {
+          "candidate": "HARNet-20 GLOBAL",
+          "path": "inference\\checkpoints\\harnet_20\\garman-klass\\global\\harnet_20_raw_gk_variance_w20_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HARNet-80 LOCAL",
+          "path": "inference\\checkpoints\\harnet_80\\garman-klass\\local\\AAPL\\harnet_80_local_AAPL_raw_gk_variance_w80_lr0p001_20e_qlike\\fit.pth",
+          "floor": 1.4346749840017278e-06
+        },
+        {
+          "candidate": "HARNet-80 GLOBAL",
+          "path": "inference\\checkpoints\\harnet_80\\garman-klass\\global\\harnet_80_raw_gk_variance_w80_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "AR(1) LOCAL",
+          "path": "inference\\checkpoints\\ar1\\garman-klass\\local\\AAPL\\raw_history_w20\\fit.json",
+          "floor": 1.4346749840017278e-06
+        },
+        {
+          "candidate": "AR(1) GLOBAL",
+          "path": "inference\\checkpoints\\ar1\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HAR-20 LOCAL",
+          "path": "inference\\checkpoints\\har\\garman-klass\\local\\AAPL\\raw_history_w20\\fit.json",
+          "floor": 1.4346749840017278e-06
+        },
+        {
+          "candidate": "HAR-20 GLOBAL",
+          "path": "inference\\checkpoints\\har\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HAR-80 LOCAL",
+          "path": "inference\\checkpoints\\har_80\\garman-klass\\local\\AAPL\\raw_history_w80\\fit.json",
+          "floor": 1.4346749840017278e-06
+        },
+        {
+          "candidate": "HAR-80 GLOBAL",
+          "path": "inference\\checkpoints\\har_80\\garman-klass\\global\\raw_history_w80\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "GARCH(1,1) LOCAL",
+          "path": "inference\\checkpoints\\garch\\garman-klass\\local\\AAPL\\raw_history_w20\\fit.json",
+          "floor": 1.4346749840017278e-06
+        },
+        {
+          "candidate": "GARCH(1,1) GLOBAL",
+          "path": "inference\\checkpoints\\garch\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "SARIMA LOCAL",
+          "path": "inference\\checkpoints\\sarima\\garman-klass\\local\\AAPL\\raw_history_w20\\fit.json",
+          "floor": 1.4346749840017278e-06
+        },
+        {
+          "candidate": "SARIMA GLOBAL",
+          "path": "inference\\checkpoints\\sarima\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        }
+      ],
+      "members": [
+        "Base LSTM-20 GLOBAL",
+        "Base LSTM-80 GLOBAL",
+        "Base LSTM-80 LOCAL",
+        "HARNet-20 GLOBAL",
+        "HARNet-80 GLOBAL",
+        "HARNet-80 LOCAL",
+        "MLP-20 GLOBAL",
+        "MLP-80 GLOBAL"
+      ],
+      "adjusted_p_values": {
+        "AR(1) GLOBAL": 9.999000099990002e-05,
+        "AR(1) LOCAL": 9.999000099990002e-05,
+        "Base LSTM-20 GLOBAL": 1.0,
+        "Base LSTM-20 LOCAL": 0.0037996200379962005,
+        "Base LSTM-80 GLOBAL": 1.0,
+        "Base LSTM-80 LOCAL": 1.0,
+        "GARCH(1,1) GLOBAL": 9.999000099990002e-05,
+        "GARCH(1,1) LOCAL": 0.0037996200379962005,
+        "HAR-20 GLOBAL": 9.999000099990002e-05,
+        "HAR-20 LOCAL": 9.999000099990002e-05,
+        "HAR-80 GLOBAL": 9.999000099990002e-05,
+        "HAR-80 LOCAL": 0.0037996200379962005,
+        "HARNet-20 GLOBAL": 1.0,
+        "HARNet-20 LOCAL": 0.009799020097990201,
+        "HARNet-80 GLOBAL": 1.0,
+        "HARNet-80 LOCAL": 1.0,
+        "MLP-20 GLOBAL": 1.0,
+        "MLP-20 LOCAL": 0.001999800019998,
+        "MLP-80 GLOBAL": 1.0,
+        "MLP-80 LOCAL": 0.00019998000199980003,
+        "SARIMA GLOBAL": 0.009799020097990201,
+        "SARIMA LOCAL": 0.009299070092990702,
+        "SiLU-LSTM-20 GLOBAL": 9.999000099990002e-05,
+        "SiLU-LSTM-20 LOCAL": 9.999000099990002e-05,
+        "SiLU-LSTM-80 GLOBAL": 0.00019998000199980003,
+        "SiLU-LSTM-80 LOCAL": 9.999000099990002e-05
+      },
+      "trace": [
+        {
+          "candidates": [
+            "AR(1) GLOBAL",
+            "AR(1) LOCAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL",
+            "SiLU-LSTM-80 LOCAL"
+          ],
+          "t_max": 6.436894792528635,
+          "p_value": 9.999000099990002e-05,
+          "removed": "SiLU-LSTM-80 LOCAL"
+        },
+        {
+          "candidates": [
+            "AR(1) GLOBAL",
+            "AR(1) LOCAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 15.597837863798597,
+          "p_value": 9.999000099990002e-05,
+          "removed": "AR(1) GLOBAL"
+        },
+        {
+          "candidates": [
+            "AR(1) LOCAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 10.458318827200362,
+          "p_value": 9.999000099990002e-05,
+          "removed": "AR(1) LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 10.396147083865642,
+          "p_value": 9.999000099990002e-05,
+          "removed": "HAR-20 GLOBAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 9.9618099224094,
+          "p_value": 9.999000099990002e-05,
+          "removed": "SiLU-LSTM-20 LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 8.128750847728314,
+          "p_value": 9.999000099990002e-05,
+          "removed": "SiLU-LSTM-20 GLOBAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 8.126813762095782,
+          "p_value": 9.999000099990002e-05,
+          "removed": "GARCH(1,1) GLOBAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 6.227590996762978,
+          "p_value": 9.999000099990002e-05,
+          "removed": "HAR-80 GLOBAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 5.69945807189497,
+          "p_value": 9.999000099990002e-05,
+          "removed": "HAR-20 LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 4.888531079739388,
+          "p_value": 0.00019998000199980003,
+          "removed": "SiLU-LSTM-80 GLOBAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL"
+          ],
+          "t_max": 4.818945359371353,
+          "p_value": 0.00019998000199980003,
+          "removed": "MLP-80 LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL"
+          ],
+          "t_max": 3.7360304863134615,
+          "p_value": 0.001999800019998,
+          "removed": "MLP-20 LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL"
+          ],
+          "t_max": 3.504602008993787,
+          "p_value": 0.0037996200379962005,
+          "removed": "GARCH(1,1) LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL"
+          ],
+          "t_max": 4.695505316714371,
+          "p_value": 9.999000099990002e-05,
+          "removed": "HAR-80 LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL"
+          ],
+          "t_max": 3.7196997725060417,
+          "p_value": 0.000999900009999,
+          "removed": "Base LSTM-20 LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL"
+          ],
+          "t_max": 3.128328225900258,
+          "p_value": 0.009299070092990702,
+          "removed": "SARIMA LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL"
+          ],
+          "t_max": 3.07658003526165,
+          "p_value": 0.009799020097990201,
+          "removed": "SARIMA GLOBAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-80 GLOBAL"
+          ],
+          "t_max": 3.2181982681882,
+          "p_value": 0.0086991300869913,
+          "removed": "HARNet-20 LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-80 GLOBAL"
+          ],
+          "t_max": 1.6315319357070024,
+          "p_value": 0.34726527347265274,
+          "removed": null
+        }
+      ],
+      "settings": {
+        "block_length": 20,
+        "repetitions": 10000,
+        "alpha": 0.1,
+        "seed": 2684470948,
+        "generator": "numpy.default_rng",
+        "numpy_version": "2.5.1"
+      }
+    },
+    "AMZN": {
+      "n": 1760,
+      "first_date": "2019-01-02",
+      "last_date": "2025-12-31",
+      "calendar_gaps": 383,
+      "fits": [
+        {
+          "candidate": "MLP-20 LOCAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\local\\AMZN\\mlp_local_AMZN_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 1.6514549371501217e-05
+        },
+        {
+          "candidate": "MLP-20 GLOBAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\global\\mlp_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "MLP-80 LOCAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\local\\AMZN\\mlp_local_AMZN_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 1.6514549371501217e-05
+        },
+        {
+          "candidate": "MLP-80 GLOBAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\global\\mlp_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "Base LSTM-20 LOCAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\local\\AMZN\\base_lstm_local_AMZN_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 1.6514549371501217e-05
+        },
+        {
+          "candidate": "Base LSTM-20 GLOBAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\global\\raw_gk_logvol_return_w20_h128_lr0p001_30e\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "Base LSTM-80 LOCAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\local\\AMZN\\base_lstm_local_AMZN_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 1.6514549371501217e-05
+        },
+        {
+          "candidate": "Base LSTM-80 GLOBAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\global\\base_lstm_raw_gk_logvol_return_w80_h128_lr0p001_20e_wandb\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "SiLU-LSTM-20 LOCAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\local\\AMZN\\silu_lstm_local_AMZN_raw_gk_variance_return_direct_mse_w20_h128_lr0p001_20e\\fit.pth",
+          "floor": 1.6514549371501217e-05
+        },
+        {
+          "candidate": "SiLU-LSTM-20 GLOBAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\global\\silu_lstm_raw_gk_variance_return_direct_mse_w20_h128_lr0p001_20e_wandb\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "SiLU-LSTM-80 LOCAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\local\\AMZN\\silu_lstm_local_AMZN_raw_gk_variance_return_direct_mse_w80_h128_lr0p001_20e\\fit.pth",
+          "floor": 1.6514549371501217e-05
+        },
+        {
+          "candidate": "SiLU-LSTM-80 GLOBAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\global\\silu_lstm_raw_gk_variance_return_direct_mse_w80_h128_lr0p001_20e_wandb\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HARNet-20 LOCAL",
+          "path": "inference\\checkpoints\\harnet_20\\garman-klass\\local\\AMZN\\harnet_20_local_AMZN_raw_gk_variance_w20_lr0p001_20e_qlike\\fit.pth",
+          "floor": 1.6514549371501217e-05
+        },
+        {
+          "candidate": "HARNet-20 GLOBAL",
+          "path": "inference\\checkpoints\\harnet_20\\garman-klass\\global\\harnet_20_raw_gk_variance_w20_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HARNet-80 LOCAL",
+          "path": "inference\\checkpoints\\harnet_80\\garman-klass\\local\\AMZN\\harnet_80_local_AMZN_raw_gk_variance_w80_lr0p001_20e_qlike\\fit.pth",
+          "floor": 1.6514549371501217e-05
+        },
+        {
+          "candidate": "HARNet-80 GLOBAL",
+          "path": "inference\\checkpoints\\harnet_80\\garman-klass\\global\\harnet_80_raw_gk_variance_w80_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "AR(1) LOCAL",
+          "path": "inference\\checkpoints\\ar1\\garman-klass\\local\\AMZN\\raw_history_w20\\fit.json",
+          "floor": 1.6514549371501217e-05
+        },
+        {
+          "candidate": "AR(1) GLOBAL",
+          "path": "inference\\checkpoints\\ar1\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HAR-20 LOCAL",
+          "path": "inference\\checkpoints\\har\\garman-klass\\local\\AMZN\\raw_history_w20\\fit.json",
+          "floor": 1.6514549371501217e-05
+        },
+        {
+          "candidate": "HAR-20 GLOBAL",
+          "path": "inference\\checkpoints\\har\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HAR-80 LOCAL",
+          "path": "inference\\checkpoints\\har_80\\garman-klass\\local\\AMZN\\raw_history_w80\\fit.json",
+          "floor": 1.6514549371501217e-05
+        },
+        {
+          "candidate": "HAR-80 GLOBAL",
+          "path": "inference\\checkpoints\\har_80\\garman-klass\\global\\raw_history_w80\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "GARCH(1,1) LOCAL",
+          "path": "inference\\checkpoints\\garch\\garman-klass\\local\\AMZN\\raw_history_w20\\fit.json",
+          "floor": 1.6514549371501217e-05
+        },
+        {
+          "candidate": "GARCH(1,1) GLOBAL",
+          "path": "inference\\checkpoints\\garch\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "SARIMA LOCAL",
+          "path": "inference\\checkpoints\\sarima\\garman-klass\\local\\AMZN\\raw_history_w20\\fit.json",
+          "floor": 1.6514549371501217e-05
+        },
+        {
+          "candidate": "SARIMA GLOBAL",
+          "path": "inference\\checkpoints\\sarima\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        }
+      ],
+      "members": [
+        "Base LSTM-20 GLOBAL",
+        "Base LSTM-20 LOCAL",
+        "Base LSTM-80 GLOBAL",
+        "Base LSTM-80 LOCAL",
+        "HARNet-20 GLOBAL",
+        "HARNet-20 LOCAL",
+        "HARNet-80 GLOBAL",
+        "HARNet-80 LOCAL",
+        "MLP-20 GLOBAL",
+        "MLP-80 GLOBAL",
+        "SARIMA LOCAL"
+      ],
+      "adjusted_p_values": {
+        "AR(1) GLOBAL": 9.999000099990002e-05,
+        "AR(1) LOCAL": 9.999000099990002e-05,
+        "Base LSTM-20 GLOBAL": 1.0,
+        "Base LSTM-20 LOCAL": 1.0,
+        "Base LSTM-80 GLOBAL": 1.0,
+        "Base LSTM-80 LOCAL": 1.0,
+        "GARCH(1,1) GLOBAL": 9.999000099990002e-05,
+        "GARCH(1,1) LOCAL": 0.0124987501249875,
+        "HAR-20 GLOBAL": 9.999000099990002e-05,
+        "HAR-20 LOCAL": 9.999000099990002e-05,
+        "HAR-80 GLOBAL": 9.999000099990002e-05,
+        "HAR-80 LOCAL": 0.0124987501249875,
+        "HARNet-20 GLOBAL": 1.0,
+        "HARNet-20 LOCAL": 1.0,
+        "HARNet-80 GLOBAL": 1.0,
+        "HARNet-80 LOCAL": 1.0,
+        "MLP-20 GLOBAL": 1.0,
+        "MLP-20 LOCAL": 0.07189281071892811,
+        "MLP-80 GLOBAL": 1.0,
+        "MLP-80 LOCAL": 9.999000099990002e-05,
+        "SARIMA GLOBAL": 0.07189281071892811,
+        "SARIMA LOCAL": 1.0,
+        "SiLU-LSTM-20 GLOBAL": 9.999000099990002e-05,
+        "SiLU-LSTM-20 LOCAL": 9.999000099990002e-05,
+        "SiLU-LSTM-80 GLOBAL": 9.999000099990002e-05,
+        "SiLU-LSTM-80 LOCAL": 9.999000099990002e-05
+      },
+      "trace": [
+        {
+          "candidates": [
+            "AR(1) GLOBAL",
+            "AR(1) LOCAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL",
+            "SiLU-LSTM-80 LOCAL"
+          ],
+          "t_max": 13.521339360079255,
+          "p_value": 9.999000099990002e-05,
+          "removed": "SiLU-LSTM-80 LOCAL"
+        },
+        {
+          "candidates": [
+            "AR(1) GLOBAL",
+            "AR(1) LOCAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 12.540061881225942,
+          "p_value": 9.999000099990002e-05,
+          "removed": "AR(1) GLOBAL"
+        },
+        {
+          "candidates": [
+            "AR(1) LOCAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 12.376606718158671,
+          "p_value": 9.999000099990002e-05,
+          "removed": "AR(1) LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 8.342815271159152,
+          "p_value": 9.999000099990002e-05,
+          "removed": "HAR-20 GLOBAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 7.043661976719119,
+          "p_value": 9.999000099990002e-05,
+          "removed": "MLP-80 LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 6.849887251603995,
+          "p_value": 9.999000099990002e-05,
+          "removed": "SiLU-LSTM-20 GLOBAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 5.9342527158674105,
+          "p_value": 9.999000099990002e-05,
+          "removed": "GARCH(1,1) GLOBAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 5.617033879574784,
+          "p_value": 9.999000099990002e-05,
+          "removed": "SiLU-LSTM-20 LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 5.811767715288233,
+          "p_value": 9.999000099990002e-05,
+          "removed": "HAR-20 LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 5.8197959357488696,
+          "p_value": 9.999000099990002e-05,
+          "removed": "HAR-80 GLOBAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 5.212943622370003,
+          "p_value": 9.999000099990002e-05,
+          "removed": "SiLU-LSTM-80 GLOBAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL"
+          ],
+          "t_max": 3.1994020016363405,
+          "p_value": 0.0124987501249875,
+          "removed": "GARCH(1,1) LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL"
+          ],
+          "t_max": 3.2601445136381177,
+          "p_value": 0.0082991700829917,
+          "removed": "HAR-80 LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL"
+          ],
+          "t_max": 2.467579173380119,
+          "p_value": 0.07189281071892811,
+          "removed": "MLP-20 LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL"
+          ],
+          "t_max": 2.6188282824919273,
+          "p_value": 0.0428957104289571,
+          "removed": "SARIMA GLOBAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-80 GLOBAL",
+            "SARIMA LOCAL"
+          ],
+          "t_max": 2.0989154446171896,
+          "p_value": 0.1351864813518648,
+          "removed": null
+        }
+      ],
+      "settings": {
+        "block_length": 20,
+        "repetitions": 10000,
+        "alpha": 0.1,
+        "seed": 4091952314,
+        "generator": "numpy.default_rng",
+        "numpy_version": "2.5.1"
+      }
+    },
+    "GOOG": {
+      "n": 1760,
+      "first_date": "2019-01-02",
+      "last_date": "2025-12-31",
+      "calendar_gaps": 383,
+      "fits": [
+        {
+          "candidate": "MLP-20 LOCAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\local\\GOOG\\mlp_local_GOOG_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 7.183749465642971e-06
+        },
+        {
+          "candidate": "MLP-20 GLOBAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\global\\mlp_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "MLP-80 LOCAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\local\\GOOG\\mlp_local_GOOG_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 7.183749465642971e-06
+        },
+        {
+          "candidate": "MLP-80 GLOBAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\global\\mlp_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "Base LSTM-20 LOCAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\local\\GOOG\\base_lstm_local_GOOG_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 7.183749465642971e-06
+        },
+        {
+          "candidate": "Base LSTM-20 GLOBAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\global\\raw_gk_logvol_return_w20_h128_lr0p001_30e\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "Base LSTM-80 LOCAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\local\\GOOG\\base_lstm_local_GOOG_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 7.183749465642971e-06
+        },
+        {
+          "candidate": "Base LSTM-80 GLOBAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\global\\base_lstm_raw_gk_logvol_return_w80_h128_lr0p001_20e_wandb\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "SiLU-LSTM-20 LOCAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\local\\GOOG\\silu_lstm_local_GOOG_raw_gk_variance_return_direct_mse_w20_h128_lr0p001_20e\\fit.pth",
+          "floor": 7.183749465642971e-06
+        },
+        {
+          "candidate": "SiLU-LSTM-20 GLOBAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\global\\silu_lstm_raw_gk_variance_return_direct_mse_w20_h128_lr0p001_20e_wandb\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "SiLU-LSTM-80 LOCAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\local\\GOOG\\silu_lstm_local_GOOG_raw_gk_variance_return_direct_mse_w80_h128_lr0p001_20e\\fit.pth",
+          "floor": 7.183749465642971e-06
+        },
+        {
+          "candidate": "SiLU-LSTM-80 GLOBAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\global\\silu_lstm_raw_gk_variance_return_direct_mse_w80_h128_lr0p001_20e_wandb\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HARNet-20 LOCAL",
+          "path": "inference\\checkpoints\\harnet_20\\garman-klass\\local\\GOOG\\harnet_20_local_GOOG_raw_gk_variance_w20_lr0p001_20e_qlike\\fit.pth",
+          "floor": 7.183749465642971e-06
+        },
+        {
+          "candidate": "HARNet-20 GLOBAL",
+          "path": "inference\\checkpoints\\harnet_20\\garman-klass\\global\\harnet_20_raw_gk_variance_w20_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HARNet-80 LOCAL",
+          "path": "inference\\checkpoints\\harnet_80\\garman-klass\\local\\GOOG\\harnet_80_local_GOOG_raw_gk_variance_w80_lr0p001_20e_qlike\\fit.pth",
+          "floor": 7.183749465642971e-06
+        },
+        {
+          "candidate": "HARNet-80 GLOBAL",
+          "path": "inference\\checkpoints\\harnet_80\\garman-klass\\global\\harnet_80_raw_gk_variance_w80_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "AR(1) LOCAL",
+          "path": "inference\\checkpoints\\ar1\\garman-klass\\local\\GOOG\\raw_history_w20\\fit.json",
+          "floor": 7.183749465642971e-06
+        },
+        {
+          "candidate": "AR(1) GLOBAL",
+          "path": "inference\\checkpoints\\ar1\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HAR-20 LOCAL",
+          "path": "inference\\checkpoints\\har\\garman-klass\\local\\GOOG\\raw_history_w20\\fit.json",
+          "floor": 7.183749465642971e-06
+        },
+        {
+          "candidate": "HAR-20 GLOBAL",
+          "path": "inference\\checkpoints\\har\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HAR-80 LOCAL",
+          "path": "inference\\checkpoints\\har_80\\garman-klass\\local\\GOOG\\raw_history_w80\\fit.json",
+          "floor": 7.183749465642971e-06
+        },
+        {
+          "candidate": "HAR-80 GLOBAL",
+          "path": "inference\\checkpoints\\har_80\\garman-klass\\global\\raw_history_w80\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "GARCH(1,1) LOCAL",
+          "path": "inference\\checkpoints\\garch\\garman-klass\\local\\GOOG\\raw_history_w20\\fit.json",
+          "floor": 7.183749465642971e-06
+        },
+        {
+          "candidate": "GARCH(1,1) GLOBAL",
+          "path": "inference\\checkpoints\\garch\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "SARIMA LOCAL",
+          "path": "inference\\checkpoints\\sarima\\garman-klass\\local\\GOOG\\raw_history_w20\\fit.json",
+          "floor": 7.183749465642971e-06
+        },
+        {
+          "candidate": "SARIMA GLOBAL",
+          "path": "inference\\checkpoints\\sarima\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        }
+      ],
+      "members": [
+        "Base LSTM-20 GLOBAL",
+        "Base LSTM-20 LOCAL",
+        "Base LSTM-80 GLOBAL",
+        "Base LSTM-80 LOCAL",
+        "GARCH(1,1) LOCAL",
+        "HAR-20 LOCAL",
+        "HAR-80 LOCAL",
+        "HARNet-20 GLOBAL",
+        "HARNet-20 LOCAL",
+        "HARNet-80 GLOBAL",
+        "HARNet-80 LOCAL",
+        "MLP-20 GLOBAL",
+        "MLP-20 LOCAL",
+        "MLP-80 GLOBAL",
+        "MLP-80 LOCAL",
+        "SARIMA GLOBAL",
+        "SARIMA LOCAL"
+      ],
+      "adjusted_p_values": {
+        "AR(1) GLOBAL": 9.999000099990002e-05,
+        "AR(1) LOCAL": 0.018098190180981903,
+        "Base LSTM-20 GLOBAL": 1.0,
+        "Base LSTM-20 LOCAL": 1.0,
+        "Base LSTM-80 GLOBAL": 1.0,
+        "Base LSTM-80 LOCAL": 1.0,
+        "GARCH(1,1) GLOBAL": 0.0093990600939906,
+        "GARCH(1,1) LOCAL": 1.0,
+        "HAR-20 GLOBAL": 0.0093990600939906,
+        "HAR-20 LOCAL": 1.0,
+        "HAR-80 GLOBAL": 0.0093990600939906,
+        "HAR-80 LOCAL": 1.0,
+        "HARNet-20 GLOBAL": 1.0,
+        "HARNet-20 LOCAL": 1.0,
+        "HARNet-80 GLOBAL": 1.0,
+        "HARNet-80 LOCAL": 1.0,
+        "MLP-20 GLOBAL": 1.0,
+        "MLP-20 LOCAL": 1.0,
+        "MLP-80 GLOBAL": 1.0,
+        "MLP-80 LOCAL": 1.0,
+        "SARIMA GLOBAL": 1.0,
+        "SARIMA LOCAL": 1.0,
+        "SiLU-LSTM-20 GLOBAL": 0.0093990600939906,
+        "SiLU-LSTM-20 LOCAL": 0.0093990600939906,
+        "SiLU-LSTM-80 GLOBAL": 0.0093990600939906,
+        "SiLU-LSTM-80 LOCAL": 0.0093990600939906
+      },
+      "trace": [
+        {
+          "candidates": [
+            "AR(1) GLOBAL",
+            "AR(1) LOCAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL",
+            "SiLU-LSTM-80 LOCAL"
+          ],
+          "t_max": 8.124548949758601,
+          "p_value": 9.999000099990002e-05,
+          "removed": "AR(1) GLOBAL"
+        },
+        {
+          "candidates": [
+            "AR(1) LOCAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL",
+            "SiLU-LSTM-80 LOCAL"
+          ],
+          "t_max": 3.074199036876096,
+          "p_value": 0.0093990600939906,
+          "removed": "SiLU-LSTM-20 LOCAL"
+        },
+        {
+          "candidates": [
+            "AR(1) LOCAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-80 GLOBAL",
+            "SiLU-LSTM-80 LOCAL"
+          ],
+          "t_max": 5.683786279722062,
+          "p_value": 9.999000099990002e-05,
+          "removed": "HAR-20 GLOBAL"
+        },
+        {
+          "candidates": [
+            "AR(1) LOCAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-80 GLOBAL",
+            "SiLU-LSTM-80 LOCAL"
+          ],
+          "t_max": 4.785869622462385,
+          "p_value": 9.999000099990002e-05,
+          "removed": "SiLU-LSTM-20 GLOBAL"
+        },
+        {
+          "candidates": [
+            "AR(1) LOCAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-80 GLOBAL",
+            "SiLU-LSTM-80 LOCAL"
+          ],
+          "t_max": 4.203353657522536,
+          "p_value": 0.00019998000199980003,
+          "removed": "GARCH(1,1) GLOBAL"
+        },
+        {
+          "candidates": [
+            "AR(1) LOCAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-80 GLOBAL",
+            "SiLU-LSTM-80 LOCAL"
+          ],
+          "t_max": 3.1921584344282445,
+          "p_value": 0.0051994800519948,
+          "removed": "SiLU-LSTM-80 LOCAL"
+        },
+        {
+          "candidates": [
+            "AR(1) LOCAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 6.046182145708602,
+          "p_value": 9.999000099990002e-05,
+          "removed": "SiLU-LSTM-80 GLOBAL"
+        },
+        {
+          "candidates": [
+            "AR(1) LOCAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL"
+          ],
+          "t_max": 5.715790028171274,
+          "p_value": 9.999000099990002e-05,
+          "removed": "HAR-80 GLOBAL"
+        },
+        {
+          "candidates": [
+            "AR(1) LOCAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL"
+          ],
+          "t_max": 3.1970458694377752,
+          "p_value": 0.018098190180981903,
+          "removed": "AR(1) LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL"
+          ],
+          "t_max": 2.3700198044781513,
+          "p_value": 0.12318768123187682,
+          "removed": null
+        }
+      ],
+      "settings": {
+        "block_length": 20,
+        "repetitions": 10000,
+        "alpha": 0.1,
+        "seed": 233227757,
+        "generator": "numpy.default_rng",
+        "numpy_version": "2.5.1"
+      }
+    },
+    "NFLX": {
+      "n": 1760,
+      "first_date": "2019-01-02",
+      "last_date": "2025-12-31",
+      "calendar_gaps": 383,
+      "fits": [
+        {
+          "candidate": "MLP-20 LOCAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\local\\NFLX\\mlp_local_NFLX_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 5.220344092297364e-06
+        },
+        {
+          "candidate": "MLP-20 GLOBAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\global\\mlp_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "MLP-80 LOCAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\local\\NFLX\\mlp_local_NFLX_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 5.220344092297364e-06
+        },
+        {
+          "candidate": "MLP-80 GLOBAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\global\\mlp_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "Base LSTM-20 LOCAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\local\\NFLX\\base_lstm_local_NFLX_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 5.220344092297364e-06
+        },
+        {
+          "candidate": "Base LSTM-20 GLOBAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\global\\raw_gk_logvol_return_w20_h128_lr0p001_30e\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "Base LSTM-80 LOCAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\local\\NFLX\\base_lstm_local_NFLX_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 5.220344092297364e-06
+        },
+        {
+          "candidate": "Base LSTM-80 GLOBAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\global\\base_lstm_raw_gk_logvol_return_w80_h128_lr0p001_20e_wandb\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "SiLU-LSTM-20 LOCAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\local\\NFLX\\silu_lstm_local_NFLX_raw_gk_variance_return_direct_mse_w20_h128_lr0p001_20e\\fit.pth",
+          "floor": 5.220344092297364e-06
+        },
+        {
+          "candidate": "SiLU-LSTM-20 GLOBAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\global\\silu_lstm_raw_gk_variance_return_direct_mse_w20_h128_lr0p001_20e_wandb\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "SiLU-LSTM-80 LOCAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\local\\NFLX\\silu_lstm_local_NFLX_raw_gk_variance_return_direct_mse_w80_h128_lr0p001_20e\\fit.pth",
+          "floor": 5.220344092297364e-06
+        },
+        {
+          "candidate": "SiLU-LSTM-80 GLOBAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\global\\silu_lstm_raw_gk_variance_return_direct_mse_w80_h128_lr0p001_20e_wandb\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HARNet-20 LOCAL",
+          "path": "inference\\checkpoints\\harnet_20\\garman-klass\\local\\NFLX\\harnet_20_local_NFLX_raw_gk_variance_w20_lr0p001_20e_qlike\\fit.pth",
+          "floor": 5.220344092297364e-06
+        },
+        {
+          "candidate": "HARNet-20 GLOBAL",
+          "path": "inference\\checkpoints\\harnet_20\\garman-klass\\global\\harnet_20_raw_gk_variance_w20_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HARNet-80 LOCAL",
+          "path": "inference\\checkpoints\\harnet_80\\garman-klass\\local\\NFLX\\harnet_80_local_NFLX_raw_gk_variance_w80_lr0p001_20e_qlike\\fit.pth",
+          "floor": 5.220344092297364e-06
+        },
+        {
+          "candidate": "HARNet-80 GLOBAL",
+          "path": "inference\\checkpoints\\harnet_80\\garman-klass\\global\\harnet_80_raw_gk_variance_w80_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "AR(1) LOCAL",
+          "path": "inference\\checkpoints\\ar1\\garman-klass\\local\\NFLX\\raw_history_w20\\fit.json",
+          "floor": 5.220344092297364e-06
+        },
+        {
+          "candidate": "AR(1) GLOBAL",
+          "path": "inference\\checkpoints\\ar1\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HAR-20 LOCAL",
+          "path": "inference\\checkpoints\\har\\garman-klass\\local\\NFLX\\raw_history_w20\\fit.json",
+          "floor": 5.220344092297364e-06
+        },
+        {
+          "candidate": "HAR-20 GLOBAL",
+          "path": "inference\\checkpoints\\har\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HAR-80 LOCAL",
+          "path": "inference\\checkpoints\\har_80\\garman-klass\\local\\NFLX\\raw_history_w80\\fit.json",
+          "floor": 5.220344092297364e-06
+        },
+        {
+          "candidate": "HAR-80 GLOBAL",
+          "path": "inference\\checkpoints\\har_80\\garman-klass\\global\\raw_history_w80\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "GARCH(1,1) LOCAL",
+          "path": "inference\\checkpoints\\garch\\garman-klass\\local\\NFLX\\raw_history_w20\\fit.json",
+          "floor": 5.220344092297364e-06
+        },
+        {
+          "candidate": "GARCH(1,1) GLOBAL",
+          "path": "inference\\checkpoints\\garch\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "SARIMA LOCAL",
+          "path": "inference\\checkpoints\\sarima\\garman-klass\\local\\NFLX\\raw_history_w20\\fit.json",
+          "floor": 5.220344092297364e-06
+        },
+        {
+          "candidate": "SARIMA GLOBAL",
+          "path": "inference\\checkpoints\\sarima\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        }
+      ],
+      "members": [
+        "Base LSTM-20 GLOBAL",
+        "Base LSTM-20 LOCAL",
+        "Base LSTM-80 GLOBAL",
+        "Base LSTM-80 LOCAL",
+        "GARCH(1,1) GLOBAL",
+        "HAR-80 GLOBAL",
+        "HAR-80 LOCAL",
+        "HARNet-20 GLOBAL",
+        "HARNet-20 LOCAL",
+        "HARNet-80 GLOBAL",
+        "HARNet-80 LOCAL",
+        "MLP-20 GLOBAL",
+        "MLP-80 GLOBAL",
+        "SARIMA GLOBAL",
+        "SiLU-LSTM-80 GLOBAL"
+      ],
+      "adjusted_p_values": {
+        "AR(1) GLOBAL": 0.016298370162983702,
+        "AR(1) LOCAL": 0.016298370162983702,
+        "Base LSTM-20 GLOBAL": 1.0,
+        "Base LSTM-20 LOCAL": 1.0,
+        "Base LSTM-80 GLOBAL": 1.0,
+        "Base LSTM-80 LOCAL": 1.0,
+        "GARCH(1,1) GLOBAL": 1.0,
+        "GARCH(1,1) LOCAL": 0.0225977402259774,
+        "HAR-20 GLOBAL": 0.0225977402259774,
+        "HAR-20 LOCAL": 0.0225977402259774,
+        "HAR-80 GLOBAL": 1.0,
+        "HAR-80 LOCAL": 1.0,
+        "HARNet-20 GLOBAL": 1.0,
+        "HARNet-20 LOCAL": 1.0,
+        "HARNet-80 GLOBAL": 1.0,
+        "HARNet-80 LOCAL": 1.0,
+        "MLP-20 GLOBAL": 1.0,
+        "MLP-20 LOCAL": 0.0225977402259774,
+        "MLP-80 GLOBAL": 1.0,
+        "MLP-80 LOCAL": 0.0225977402259774,
+        "SARIMA GLOBAL": 1.0,
+        "SARIMA LOCAL": 0.0225977402259774,
+        "SiLU-LSTM-20 GLOBAL": 0.0225977402259774,
+        "SiLU-LSTM-20 LOCAL": 0.0225977402259774,
+        "SiLU-LSTM-80 GLOBAL": 1.0,
+        "SiLU-LSTM-80 LOCAL": 0.016298370162983702
+      },
+      "trace": [
+        {
+          "candidates": [
+            "AR(1) GLOBAL",
+            "AR(1) LOCAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL",
+            "SiLU-LSTM-80 LOCAL"
+          ],
+          "t_max": 2.910921467880481,
+          "p_value": 0.016298370162983702,
+          "removed": "SiLU-LSTM-80 LOCAL"
+        },
+        {
+          "candidates": [
+            "AR(1) GLOBAL",
+            "AR(1) LOCAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 7.014276335245232,
+          "p_value": 9.999000099990002e-05,
+          "removed": "AR(1) LOCAL"
+        },
+        {
+          "candidates": [
+            "AR(1) GLOBAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 6.871662642683073,
+          "p_value": 9.999000099990002e-05,
+          "removed": "AR(1) GLOBAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 2.898314960092252,
+          "p_value": 0.0225977402259774,
+          "removed": "SiLU-LSTM-20 LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 6.818784634650812,
+          "p_value": 9.999000099990002e-05,
+          "removed": "MLP-80 LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 6.623457542043954,
+          "p_value": 9.999000099990002e-05,
+          "removed": "MLP-20 LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 5.361867403886276,
+          "p_value": 9.999000099990002e-05,
+          "removed": "HAR-20 LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 4.879683040039632,
+          "p_value": 0.00019998000199980003,
+          "removed": "HAR-20 GLOBAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 4.3866218547636215,
+          "p_value": 0.0010998900109989002,
+          "removed": "GARCH(1,1) LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 3.9988357406879,
+          "p_value": 0.0023997600239976003,
+          "removed": "SiLU-LSTM-20 GLOBAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 3.3283518838185886,
+          "p_value": 0.0105989401059894,
+          "removed": "SARIMA LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 2.300831332967136,
+          "p_value": 0.1252874712528747,
+          "removed": null
+        }
+      ],
+      "settings": {
+        "block_length": 20,
+        "repetitions": 10000,
+        "alpha": 0.1,
+        "seed": 3276785861,
+        "generator": "numpy.default_rng",
+        "numpy_version": "2.5.1"
+      }
+    },
+    "NVDA": {
+      "n": 1760,
+      "first_date": "2019-01-02",
+      "last_date": "2025-12-31",
+      "calendar_gaps": 383,
+      "fits": [
+        {
+          "candidate": "MLP-20 LOCAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\local\\NVDA\\mlp_local_NVDA_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 2.159315941011296e-05
+        },
+        {
+          "candidate": "MLP-20 GLOBAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\global\\mlp_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "MLP-80 LOCAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\local\\NVDA\\mlp_local_NVDA_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 2.159315941011296e-05
+        },
+        {
+          "candidate": "MLP-80 GLOBAL",
+          "path": "inference\\checkpoints\\mlp\\garman-klass\\global\\mlp_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "Base LSTM-20 LOCAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\local\\NVDA\\base_lstm_local_NVDA_raw_gk_logvol_return_w20_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 2.159315941011296e-05
+        },
+        {
+          "candidate": "Base LSTM-20 GLOBAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\global\\raw_gk_logvol_return_w20_h128_lr0p001_30e\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "Base LSTM-80 LOCAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\local\\NVDA\\base_lstm_local_NVDA_raw_gk_logvol_return_w80_h128_lr0p001_20e_qlike\\fit.pth",
+          "floor": 2.159315941011296e-05
+        },
+        {
+          "candidate": "Base LSTM-80 GLOBAL",
+          "path": "inference\\checkpoints\\base_lstm_vol\\garman-klass\\global\\base_lstm_raw_gk_logvol_return_w80_h128_lr0p001_20e_wandb\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "SiLU-LSTM-20 LOCAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\local\\NVDA\\silu_lstm_local_NVDA_raw_gk_variance_return_direct_mse_w20_h128_lr0p001_20e\\fit.pth",
+          "floor": 2.159315941011296e-05
+        },
+        {
+          "candidate": "SiLU-LSTM-20 GLOBAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\global\\silu_lstm_raw_gk_variance_return_direct_mse_w20_h128_lr0p001_20e_wandb\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "SiLU-LSTM-80 LOCAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\local\\NVDA\\silu_lstm_local_NVDA_raw_gk_variance_return_direct_mse_w80_h128_lr0p001_20e\\fit.pth",
+          "floor": 2.159315941011296e-05
+        },
+        {
+          "candidate": "SiLU-LSTM-80 GLOBAL",
+          "path": "inference\\checkpoints\\silu_lstm\\garman-klass\\global\\silu_lstm_raw_gk_variance_return_direct_mse_w80_h128_lr0p001_20e_wandb\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HARNet-20 LOCAL",
+          "path": "inference\\checkpoints\\harnet_20\\garman-klass\\local\\NVDA\\harnet_20_local_NVDA_raw_gk_variance_w20_lr0p001_20e_qlike\\fit.pth",
+          "floor": 2.159315941011296e-05
+        },
+        {
+          "candidate": "HARNet-20 GLOBAL",
+          "path": "inference\\checkpoints\\harnet_20\\garman-klass\\global\\harnet_20_raw_gk_variance_w20_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HARNet-80 LOCAL",
+          "path": "inference\\checkpoints\\harnet_80\\garman-klass\\local\\NVDA\\harnet_80_local_NVDA_raw_gk_variance_w80_lr0p001_20e_qlike\\fit.pth",
+          "floor": 2.159315941011296e-05
+        },
+        {
+          "candidate": "HARNet-80 GLOBAL",
+          "path": "inference\\checkpoints\\harnet_80\\garman-klass\\global\\harnet_80_raw_gk_variance_w80_lr0p001_20e_qlike_online\\fit.pth",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "AR(1) LOCAL",
+          "path": "inference\\checkpoints\\ar1\\garman-klass\\local\\NVDA\\raw_history_w20\\fit.json",
+          "floor": 2.159315941011296e-05
+        },
+        {
+          "candidate": "AR(1) GLOBAL",
+          "path": "inference\\checkpoints\\ar1\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HAR-20 LOCAL",
+          "path": "inference\\checkpoints\\har\\garman-klass\\local\\NVDA\\raw_history_w20\\fit.json",
+          "floor": 2.159315941011296e-05
+        },
+        {
+          "candidate": "HAR-20 GLOBAL",
+          "path": "inference\\checkpoints\\har\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "HAR-80 LOCAL",
+          "path": "inference\\checkpoints\\har_80\\garman-klass\\local\\NVDA\\raw_history_w80\\fit.json",
+          "floor": 2.159315941011296e-05
+        },
+        {
+          "candidate": "HAR-80 GLOBAL",
+          "path": "inference\\checkpoints\\har_80\\garman-klass\\global\\raw_history_w80\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "GARCH(1,1) LOCAL",
+          "path": "inference\\checkpoints\\garch\\garman-klass\\local\\NVDA\\raw_history_w20\\fit.json",
+          "floor": 2.159315941011296e-05
+        },
+        {
+          "candidate": "GARCH(1,1) GLOBAL",
+          "path": "inference\\checkpoints\\garch\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        },
+        {
+          "candidate": "SARIMA LOCAL",
+          "path": "inference\\checkpoints\\sarima\\garman-klass\\local\\NVDA\\raw_history_w20\\fit.json",
+          "floor": 2.159315941011296e-05
+        },
+        {
+          "candidate": "SARIMA GLOBAL",
+          "path": "inference\\checkpoints\\sarima\\garman-klass\\global\\raw_history_w20\\fit.json",
+          "floor": 3.396062419686545e-13
+        }
+      ],
+      "members": [
+        "Base LSTM-20 GLOBAL",
+        "Base LSTM-20 LOCAL",
+        "Base LSTM-80 GLOBAL",
+        "Base LSTM-80 LOCAL",
+        "HAR-20 LOCAL",
+        "HAR-80 LOCAL",
+        "HARNet-20 GLOBAL",
+        "HARNet-20 LOCAL",
+        "HARNet-80 GLOBAL",
+        "HARNet-80 LOCAL",
+        "MLP-20 GLOBAL",
+        "MLP-20 LOCAL",
+        "MLP-80 GLOBAL",
+        "SiLU-LSTM-20 GLOBAL",
+        "SiLU-LSTM-20 LOCAL",
+        "SiLU-LSTM-80 GLOBAL"
+      ],
+      "adjusted_p_values": {
+        "AR(1) GLOBAL": 9.999000099990002e-05,
+        "AR(1) LOCAL": 9.999000099990002e-05,
+        "Base LSTM-20 GLOBAL": 1.0,
+        "Base LSTM-20 LOCAL": 1.0,
+        "Base LSTM-80 GLOBAL": 1.0,
+        "Base LSTM-80 LOCAL": 1.0,
+        "GARCH(1,1) GLOBAL": 0.0124987501249875,
+        "GARCH(1,1) LOCAL": 0.0051994800519948,
+        "HAR-20 GLOBAL": 0.08699130086991301,
+        "HAR-20 LOCAL": 1.0,
+        "HAR-80 GLOBAL": 0.08699130086991301,
+        "HAR-80 LOCAL": 1.0,
+        "HARNet-20 GLOBAL": 1.0,
+        "HARNet-20 LOCAL": 1.0,
+        "HARNet-80 GLOBAL": 1.0,
+        "HARNet-80 LOCAL": 1.0,
+        "MLP-20 GLOBAL": 1.0,
+        "MLP-20 LOCAL": 1.0,
+        "MLP-80 GLOBAL": 1.0,
+        "MLP-80 LOCAL": 0.0124987501249875,
+        "SARIMA GLOBAL": 0.08699130086991301,
+        "SARIMA LOCAL": 0.0124987501249875,
+        "SiLU-LSTM-20 GLOBAL": 1.0,
+        "SiLU-LSTM-20 LOCAL": 1.0,
+        "SiLU-LSTM-80 GLOBAL": 1.0,
+        "SiLU-LSTM-80 LOCAL": 0.08699130086991301
+      },
+      "trace": [
+        {
+          "candidates": [
+            "AR(1) GLOBAL",
+            "AR(1) LOCAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL",
+            "SiLU-LSTM-80 LOCAL"
+          ],
+          "t_max": 5.111737283285412,
+          "p_value": 9.999000099990002e-05,
+          "removed": "AR(1) GLOBAL"
+        },
+        {
+          "candidates": [
+            "AR(1) LOCAL",
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL",
+            "SiLU-LSTM-80 LOCAL"
+          ],
+          "t_max": 4.872231098593473,
+          "p_value": 9.999000099990002e-05,
+          "removed": "AR(1) LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "GARCH(1,1) LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL",
+            "SiLU-LSTM-80 LOCAL"
+          ],
+          "t_max": 3.6917239278301826,
+          "p_value": 0.0051994800519948,
+          "removed": "GARCH(1,1) LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SARIMA LOCAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL",
+            "SiLU-LSTM-80 LOCAL"
+          ],
+          "t_max": 3.421439017689372,
+          "p_value": 0.0124987501249875,
+          "removed": "SARIMA LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "MLP-80 LOCAL",
+            "SARIMA GLOBAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL",
+            "SiLU-LSTM-80 LOCAL"
+          ],
+          "t_max": 3.4186089232083847,
+          "p_value": 0.0122987701229877,
+          "removed": "MLP-80 LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "GARCH(1,1) GLOBAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL",
+            "SiLU-LSTM-80 LOCAL"
+          ],
+          "t_max": 3.4304380192098187,
+          "p_value": 0.011698830116988301,
+          "removed": "GARCH(1,1) GLOBAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "HAR-20 GLOBAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL",
+            "SiLU-LSTM-80 LOCAL"
+          ],
+          "t_max": 2.586383763936018,
+          "p_value": 0.08699130086991301,
+          "removed": "HAR-20 GLOBAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "SARIMA GLOBAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL",
+            "SiLU-LSTM-80 LOCAL"
+          ],
+          "t_max": 2.660711070957895,
+          "p_value": 0.06919308069193081,
+          "removed": "SARIMA GLOBAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL",
+            "SiLU-LSTM-80 LOCAL"
+          ],
+          "t_max": 2.612795074476987,
+          "p_value": 0.07729227077292271,
+          "removed": "SiLU-LSTM-80 LOCAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 GLOBAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 2.8554533435846228,
+          "p_value": 0.0425957404259574,
+          "removed": "HAR-80 GLOBAL"
+        },
+        {
+          "candidates": [
+            "Base LSTM-20 GLOBAL",
+            "Base LSTM-20 LOCAL",
+            "Base LSTM-80 GLOBAL",
+            "Base LSTM-80 LOCAL",
+            "HAR-20 LOCAL",
+            "HAR-80 LOCAL",
+            "HARNet-20 GLOBAL",
+            "HARNet-20 LOCAL",
+            "HARNet-80 GLOBAL",
+            "HARNet-80 LOCAL",
+            "MLP-20 GLOBAL",
+            "MLP-20 LOCAL",
+            "MLP-80 GLOBAL",
+            "SiLU-LSTM-20 GLOBAL",
+            "SiLU-LSTM-20 LOCAL",
+            "SiLU-LSTM-80 GLOBAL"
+          ],
+          "t_max": 2.1355900232922695,
+          "p_value": 0.21377862213778623,
+          "removed": null
+        }
+      ],
+      "settings": {
+        "block_length": 20,
+        "repetitions": 10000,
+        "alpha": 0.1,
+        "seed": 3644269654,
+        "generator": "numpy.default_rng",
+        "numpy_version": "2.5.1"
+      }
+    }
+  },
+  "inclusion_pct": {
+    "AR(1) GLOBAL": 0.0,
+    "AR(1) LOCAL": 0.0,
+    "Base LSTM-20 GLOBAL": 100.0,
+    "Base LSTM-20 LOCAL": 80.0,
+    "Base LSTM-80 GLOBAL": 100.0,
+    "Base LSTM-80 LOCAL": 100.0,
+    "GARCH(1,1) GLOBAL": 20.0,
+    "GARCH(1,1) LOCAL": 20.0,
+    "HAR-20 GLOBAL": 0.0,
+    "HAR-20 LOCAL": 40.0,
+    "HAR-80 GLOBAL": 20.0,
+    "HAR-80 LOCAL": 60.0,
+    "HARNet-20 GLOBAL": 100.0,
+    "HARNet-20 LOCAL": 80.0,
+    "HARNet-80 GLOBAL": 100.0,
+    "HARNet-80 LOCAL": 100.0,
+    "MLP-20 GLOBAL": 100.0,
+    "MLP-20 LOCAL": 40.0,
+    "MLP-80 GLOBAL": 100.0,
+    "MLP-80 LOCAL": 20.0,
+    "SARIMA GLOBAL": 40.0,
+    "SARIMA LOCAL": 40.0,
+    "SiLU-LSTM-20 GLOBAL": 20.0,
+    "SiLU-LSTM-20 LOCAL": 20.0,
+    "SiLU-LSTM-80 GLOBAL": 40.0,
+    "SiLU-LSTM-80 LOCAL": 0.0
+  }
+}

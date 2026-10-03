@@ -1,0 +1,27 @@
+{
+  "task": "Cold review of the general QLIKE T_max MCS framework in models/mcs_definition.py, without stock-specific evaluation",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/mcs_implementation.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "models/mcs_definition.py",
+    "models/tests/test_mcs_definition.py",
+    "models/training_blocks.py",
+    "git status --short and task-file diff",
+    "python -m models.tests.test_mcs_definition (passed)",
+    "git diff --check -- models/mcs_definition.py models/tests/test_mcs_definition.py CONTEXT.md (passed)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

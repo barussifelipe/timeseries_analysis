@@ -11,11 +11,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from inference.evaluate_volatility_test import (NEURAL, STATISTICAL, ROOT,
+                                               RFSV_WINDOWS,
                                                scales_from_test, score_neural,
-                                               score_rfsv_full, score_statistical)
+                                               score_statistical)
 from inference.plot_global_residuals import NAMES, plot_residuals
 from inference.run_local_base_lstm import DATABASE, TICKERS
-from models.raw_neural_data import load_raw_neural
+from models.support_scripts.raw_neural_data import load_raw_neural
 from models.training_blocks import TimeSeriesDataset, load_fit
 
 
@@ -45,11 +46,11 @@ def path_for(label, scope, ticker):
         else:
             run = f'{kind}_local_{ticker}_raw_gk_variance_w{window}_lr0p001_20e_qlike'
         return ROOT / kind / 'garman-klass/local' / ticker / run / 'fit.pth'
-    kind, window = (('rfsv', None) if label == 'RFSV-full' else STATISTICAL[label])
+    kind, window = (('rfsv', RFSV_WINDOWS[label]) if label in RFSV_WINDOWS else STATISTICAL[label])
     directory = ROOT / kind / 'garman-klass' / scope
     if scope == 'local':
         directory /= ticker
-    return directory / ('raw_history_full' if window is None else f'raw_history_w{window}') / 'fit.json'
+    return directory / ('raw_history_full' if label in RFSV_WINDOWS else f'raw_history_w{window}') / 'fit.json'
 
 
 def verified_fit(label, scope, ticker, database, floor, counts):
@@ -57,9 +58,9 @@ def verified_fit(label, scope, ticker, database, floor, counts):
     fit = load_fit(path) if label in NEURAL else json.loads(path.read_text(encoding='utf-8'))
     source = Path(database).resolve()
     kind, window = (NEURAL[label][0], NEURAL[label][2]) if label in NEURAL else (
-        ('rfsv', None) if label == 'RFSV-full' else STATISTICAL[label])
+        ('rfsv', RFSV_WINDOWS[label]) if label in RFSV_WINDOWS else STATISTICAL[label])
     metadata = fit['settings'] if label in NEURAL else fit
-    expected_counts = counts[window] if window else None
+    expected_counts = counts[window]
     recorded_source = metadata.get('database') if label in NEURAL else metadata.get('source')
     if (metadata.get('model') != kind or metadata.get('scope', 'global') != scope
             or metadata.get('ticker') != (ticker if scope == 'local' else None)
@@ -67,8 +68,8 @@ def verified_fit(label, scope, ticker, database, floor, counts):
             or (metadata.get('source_bytes') is not None and metadata['source_bytes'] != source.stat().st_size)
             or (metadata.get('source_mtime_ns') is not None and metadata['source_mtime_ns'] != source.stat().st_mtime_ns)
             or (scope == 'local' and metadata.get('cohort_tickers', 1) not in (1, [ticker], (ticker,)))
-            or (window and metadata.get('counts') != expected_counts and scope == 'local')
-            or (window and (metadata.get('window_size') if label in NEURAL else metadata.get('window')) != window)
+            or (label not in RFSV_WINDOWS and metadata.get('counts') != expected_counts and scope == 'local')
+            or (label not in RFSV_WINDOWS and (metadata.get('window_size') if label in NEURAL else metadata.get('window')) != window)
             or (scope == 'local' and fit['floor'] != floor)
             or not np.isfinite(fit['floor']) or fit['floor'] <= 0):
         raise ValueError(f'{label} {scope} {ticker}: incompatible source or fit metadata')
@@ -81,7 +82,7 @@ def verified_fit(label, scope, ticker, database, floor, counts):
             raise ValueError(f'{label} {scope} {ticker}: incompatible neural input/output convention')
     elif (not fit['diagnostics']['converged'] or fit['source_bytes'] != source.stat().st_size
           or fit['source_mtime_ns'] != source.stat().st_mtime_ns
-          or (label == 'RFSV-full' and (fit['parameters']['forecast_window'] != 'full_positive_history'
+          or (label in RFSV_WINDOWS and (fit['parameters']['forecast_window'] != 'full_positive_history'
               or fit['forecast_history_rule'] != 'all preceding valid positive observations within ticker'))):
         raise ValueError(f'{label} {scope} {ticker}: incompatible statistical fit')
     return path, fit
@@ -105,8 +106,8 @@ def write_csv(path, rows):
 
 def save_table_png(rows, output):
     """Render the matched five-stock CSV rows in the existing metrics-table style."""
-    if len(rows) != 28 or sum(row['population'] == 'final-date' for row in rows) != 2:
-        raise ValueError('expected 26 full-period and two final-date rows')
+    if len(rows) != 30 or any(row['population'] != 'full-period' for row in rows):
+        raise ValueError('expected 30 full-period rows')
     metrics = ('MAE', 'MASE', 'MSE', 'RMSE', 'QLIKE')
     displayed = [[row['model'], f"{int(row['N']):,}",
                   *(f"{float(row[key]):.6g}" for key in metrics),
@@ -122,10 +123,7 @@ def save_table_png(rows, output):
     table.set_fontsize(10)
     for index, row in enumerate(rows, start=1):
         table[index, 0].get_text().set_ha('left')
-        if row['population'] == 'final-date':
-            for col in range(8):
-                table[index, col].set_facecolor('#e9edf1')
-        elif index % 4 in (3, 0):
+        if index % 4 in (3, 0):
             for col in range(8):
                 table[index, col].set_facecolor('#f5f7f9')
     full = [index for index, row in enumerate(rows) if row['population'] == 'full-period']
@@ -141,7 +139,7 @@ def save_table_png(rows, output):
              ha='center', fontsize=10)
     fig.text(.5, .053, 'Daily, unannualized variance; MASE uses each ticker’s eligible test-date naive MAE. Floor hit is the share of forecasts raised to the saved floor.',
              ha='center', fontsize=10)
-    fig.text(.5, .027, 'Shaded RFSV-full rows use five forecasts on 2025-12-31 only; compare them with each other, not with full-period rows.',
+    fig.text(.5, .027, 'RFSV-20 and RFSV-80 use the same eligible targets and MASE scale as other models at each window.',
              ha='center', fontsize=10)
     fig.savefig(output, dpi=180, bbox_inches='tight')
     plt.close(fig)
@@ -155,7 +153,7 @@ def main():
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     frames, datasets, scales, fits = {}, {}, {}, {}
-    labels = list(NEURAL) + list(STATISTICAL) + ['RFSV-full']
+    labels = list(NEURAL) + list(STATISTICAL) + list(RFSV_WINDOWS)
     for ticker in TICKERS:
         frame, _, floor = load_raw_neural(args.database, ticker=ticker)
         frame = frame.sort_values(['Ticker', 'Date']).reset_index(drop=True)
@@ -177,7 +175,7 @@ def main():
                 fits[label, scope, ticker] = verified_fit(label, scope, ticker, args.database, floor, counts)
     table, audit, log = [], [], []
     for label in labels:
-        window = NEURAL[label][2] if label in NEURAL else (None if label == 'RFSV-full' else STATISTICAL[label][1])
+        window = NEURAL[label][2] if label in NEURAL else (RFSV_WINDOWS[label] if label in RFSV_WINDOWS else STATISTICAL[label][1])
         per_scope = {}
         for scope in ('local', 'global'):
             records, dates, actuals, predictions = [], [], [], []
@@ -188,27 +186,22 @@ def main():
                     dates.append(d)
                     actuals.append(a)
                     predictions.append(p)
-                if label == 'RFSV-full':
-                    result, excluded = score_rfsv_full(fit, frame, fit['floor'], emit=emit)
-                    if excluded or result['N'] != 1:
-                        raise ValueError(f'{label} {scope} {ticker}: final target unavailable')
-                elif label in NEURAL:
+                if label in NEURAL:
                     result = score_neural(NEURAL[label][0], fit, frame, datasets[ticker, window],
                                           {ticker: scales[ticker, window]}, fit['floor'], args.batch_size, emit=emit)
                 else:
-                    result = score_statistical(STATISTICAL[label][0], fit, frame, datasets[ticker, window],
+                    result = score_statistical('rfsv' if label in RFSV_WINDOWS else STATISTICAL[label][0], fit, frame, datasets[ticker, window],
                                                {ticker: scales[ticker, window]}, fit['floor'], emit=emit)
-                if result['N'] != (1 if window is None else 1760):
+                if result['N'] != 1760:
                     raise ValueError(f'{label} {scope} {ticker}: missing forecasts')
                 row = {'model': label, 'scope': scope.upper(), 'ticker': ticker,
-                       'window': window or 'final-date', 'mase_scale': (scales[ticker, window] if window else
-                       abs(float(frame.Variance.iloc[-1]) - float(frame.Variance.iloc[-2]))),
+                       'window': window, 'mase_scale': scales[ticker, window],
                        'forecast_floor': fit['floor'], **result, 'artifact': str(path)}
                 audit.append(row)
                 records.append(result)
             per_scope[scope] = (records, np.concatenate(dates).astype('datetime64[D]'))
             combined = aggregate(records)
-            row = {'model': f'{label} {scope.upper()}', 'population': 'final-date' if window is None else 'full-period',
+            row = {'model': f'{label} {scope.upper()}', 'population': 'full-period',
                    **combined}
             table.append(row)
             count = plot_residuals(row['model'], dates, actuals, predictions,
@@ -218,7 +211,7 @@ def main():
             log.append({'model': row['model'], 'N': count, 'floor_hits_pct': combined['floor_hit_pct']})
         if not np.array_equal(np.sort(per_scope['local'][1]), np.sort(per_scope['global'][1])):
             raise ValueError(f'{label}: LOCAL/GLOBAL target dates differ')
-    if len(table) != 28 or len(audit) != 140:
+    if len(table) != 30 or len(audit) != 150:
         raise ValueError('incomplete local/global comparison')
     write_csv(args.output / 'metrics.csv', table)
     write_csv(args.output / 'per_stock.csv', audit)

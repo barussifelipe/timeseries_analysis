@@ -10,8 +10,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from inference.evaluate_volatility_test import (NEURAL, STATISTICAL, EXPECTED, artifacts,
+                                                RFSV_WINDOWS,
                                                 load_raw_neural, scales_from_test,
-                                                score_neural, score_rfsv_full,
+                                                score_neural,
                                                 score_statistical)
 from models.training_blocks import TimeSeriesDataset
 
@@ -22,7 +23,8 @@ NAMES = {
     'SiLU-LSTM-20': 'silu_lstm_20', 'SiLU-LSTM-80': 'silu_lstm_80',
     'HARNet-20': 'harnet_20', 'HARNet-80': 'harnet_80',
     'AR(1)': 'ar1', 'HAR-20': 'har_20', 'HAR-80': 'har_80',
-    'GARCH(1,1)': 'garch_11', 'SARIMA': 'sarima', 'RFSV-full': 'rfsv_full',
+    'GARCH(1,1)': 'garch_11', 'SARIMA': 'sarima',
+    'RFSV-20': 'rfsv_20', 'RFSV-80': 'rfsv_80',
 }
 
 
@@ -103,7 +105,7 @@ def main():
     frame, _, floor = load_raw_neural(args.database)
     frame = frame.sort_values(['Ticker', 'Date']).reset_index(drop=True)
     fits = artifacts(args.database, frame, floor)
-    print(json.dumps({'preflight': '14 artifacts verified', 'floor': floor}), flush=True)
+    print(json.dumps({'preflight': '15 artifacts verified', 'floor': floor}), flush=True)
 
     dates, actuals, predictions = [], [], []
     def emit(batch_dates, batch_actual, batch_predicted):
@@ -111,11 +113,6 @@ def main():
         actuals.append(batch_actual)
         predictions.append(batch_predicted)
 
-    rfsv, excluded = score_rfsv_full(fits['RFSV-full'][1], frame, floor, emit=emit)
-    if rfsv['N'] + len(excluded) != frame.Ticker.nunique():
-        raise ValueError('RFSV-full: incomplete ticker accounting')
-    count = plot_residuals('RFSV-full', dates, actuals, predictions, args.output / NAMES['RFSV-full'])
-    print(json.dumps({'model': 'RFSV-full', 'residuals': count}), flush=True)
     for window in (20, 80):
         data = TimeSeriesDataset(frame, window, split='test', valid_column='Valid')
         if len(data) != EXPECTED[window]['test']:
@@ -124,16 +121,16 @@ def main():
         ids = data.ticker_ids.numpy()
         names = data.ticker_names
         eligible = np.array([np.isfinite(scales.get(name, np.nan)) and scales.get(name, np.nan) > 0
-                             and name not in excluded for name in names])
+                             for name in names])
         expected = int(eligible[ids].sum())
         for label, (_, fit, fitted_window) in fits.items():
             if fitted_window != window:
                 continue
             dates, actuals, predictions = [], [], []
             result = (score_neural(NEURAL[label][0], fit, frame, data, scales, floor,
-                                   args.batch_size, excluded, emit=emit) if label in NEURAL else
-                      score_statistical(STATISTICAL[label][0], fit, frame, data, scales,
-                                        floor, excluded, emit=emit))
+                                   args.batch_size, emit=emit) if label in NEURAL else
+                      score_statistical('rfsv' if label in RFSV_WINDOWS else STATISTICAL[label][0],
+                                        fit, frame, data, scales, floor, emit=emit))
             if result['N'] != expected:
                 raise ValueError(f'{label}: count differs from shared test population')
             count = plot_residuals(label, dates, actuals, predictions, args.output / NAMES[label])

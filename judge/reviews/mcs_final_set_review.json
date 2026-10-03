@@ -1,0 +1,25 @@
+{
+  "task": "Cold review of five-stock MCS final-set documentation from saved results.json and CONTEXT.md milestone",
+  "sources": [
+    "AGENTS.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "ref/implementation_plan/mcs_implementation.md",
+    "ref/thesis/plan.md",
+    "imgs/eval/mcs/results.json",
+    "imgs/eval/mcs/final_set.md",
+    "CONTEXT.md",
+    "git diff -- CONTEXT.md imgs/eval/mcs/final_set.md",
+    "independent Python membership/intersection check"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

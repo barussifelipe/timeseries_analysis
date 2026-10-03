@@ -8,7 +8,7 @@ import numpy as np
 from scipy.optimize import minimize
 from scipy.signal import lfilter
 
-from models.raw_neural_data import load_raw_neural
+from models.support_scripts.raw_neural_data import load_raw_neural
 from models.training_blocks import TimeSeriesDataset
 
 

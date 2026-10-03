@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 import numpy as np
 
-from models.raw_neural_data import load_raw_neural
+from models.support_scripts.raw_neural_data import load_raw_neural
 from models.training_blocks import TimeSeriesDataset
 from models.variance_neural import (make_model, model_data, neural_predict, neural_train,
                                     score_neural_records, sigma_zscore_log_volatility)

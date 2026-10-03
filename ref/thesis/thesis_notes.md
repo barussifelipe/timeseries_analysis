@@ -143,3 +143,8 @@
 - Project decision: selected SiLU-LSTM runs use variance plus within-session returns, direct variance outputs, and raw-output MSE training. MLP/LSTM use log-volatility plus returns, log-variance outputs, and QLIKE. HARNet uses variance and QLIKE. Input transformation and output parameterization also changed in the successful SiLU configuration, precluding a loss-only causal attribution.
 - Verification limit: checkpoint files are unavailable locally. Selected configurations were checked against evaluation selectors, local launchers, the LSTM-20 continuation launcher, fitting code, and saved evaluation reports. The `30e` directory suffix is historical; the continuation caps the run at 20 epochs.
 - Selected evaluation uses full preceding filtering history for SARIMA/GARCH with 20-observation target eligibility, unlike a truncated 20-input forecast call. RFSV final-date scoring and matched-observation limitations belong in Experimental Results; no evaluation or data behavior changed here.
+
+## MCS framework (2026-10-03)
+
+- Source: Hansen, Lunde, and Nason (2011), Section 3.1.2, as cited in `ref/thesis/references.md`: T_max tests the maximum standardized mean excess loss and eliminates its maximizing candidate after rejection. Brini (2026), Section 4.4, as cited there, uses QLIKE, a moving-block bootstrap, 10,000 repetitions, and a 90% confidence set per asset/horizon.
+- Project decisions in `ref/implementation_plan/mcs_implementation.md`: use 20 consecutive retained forecast observations per non-circular block, seed 42, and the finite-bootstrap p-value correction. The framework in `models/mcs_definition.py` accepts aligned single-asset QLIKE losses; forecast extraction, key checks, per-stock streams, and project-data evaluation remain pending.

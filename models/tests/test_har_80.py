@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 from models.har_80 import HAR80
-from models.raw_statistical_fit import streamed_ols
+from models.support_scripts.raw_statistical_fit import streamed_ols
 
 
 def test_har_80():

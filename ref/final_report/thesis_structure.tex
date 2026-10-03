@@ -2,7 +2,9 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage{xcolor}
 \usepackage{longtable}
+\usepackage{array}
 \numberwithin{equation}{section}
 \numberwithin{table}{section}
 \numberwithin{figure}{section}
@@ -473,7 +475,7 @@ P_{\mathrm{global}}=\sum_{i=1}^{K}P(f_{\theta_i}).
 The paper illustrates this complexity with approximately $B=2^{64}$ values per double-precision parameter in an autoregressive model with one parameter per lag \cite{monteromanso2021}.
 
 \subsection{Model Evaluation}
-Hansen, Lunde, and Nason's model confidence set (MCS) compares a finite set of candidate models under one chosen loss function, without assuming that any candidate is the true data-generating model. Let $\mathcal M_0$ be the initial set, and let $L_i(t)=L\bigl(y(t),\widehat y_i(t)\bigr)$ be model $i$'s loss on a common evaluation observation at time $t$. Define the loss difference and its expected value by
+Hansen, Lunde, and Nason's \cite{hansen2011mcs} model confidence set (MCS) compares a finite set of candidate models under one chosen loss function, without assuming that any candidate is the true data-generating model. Let $\mathcal M_0$ be the initial set, and let $L_i(t)=L\bigl(y(t),\widehat y_i(t)\bigr)$ be model $i$'s loss on a common evaluation observation at time $t$. Define the loss difference and its expected value by
 \begin{equation}\label{eq:mcs-loss-difference}
 d_{ij}(t)=L_i(t)-L_j(t),\qquad
 \mu_{ij}=\mathrm E[d_{ij}(t)],\qquad i,j\in\mathcal M_0.
@@ -481,12 +483,10 @@ d_{ij}(t)=L_i(t)-L_j(t),\qquad
 A negative $\mu_{ij}$ favors model $i$. For a current candidate set $\mathcal M\subseteq\mathcal M_0$, Equation~(1) of Hansen, Lunde, and Nason gives the equal-performance null; its alternative is that at least one pair differs:
 \begin{equation}\label{eq:mcs-null}
 \begin{aligned}
-H_{0,\mathcal M}:&\quad \mu_{ij}=0\quad\text{for every }i,j\in\mathcal M,\qquad\text{Reject }H_{0,\mathcal M}\text{ if }p_{\mathcal M}<\alpha.\\
+H_{0,\mathcal M}:&\quad \mu_{ij}=0\quad\text{for every }i,j\in\mathcal M.\\
 H_{1,\mathcal M}:&\quad \mu_{ij}\ne0\quad\text{for at least one }i,j\in\mathcal M.
 \end{aligned}
 \end{equation}
-Here $p_{\mathcal M}$ is the bootstrap p-value \cite{hansen2011mcs}.
-
 \medskip
 \noindent
 With $m=|\mathcal M|$ and $n$ common evaluation times, define
@@ -498,7 +498,24 @@ T_{\max,\mathcal M}&=\max_{i\in\mathcal M}t_{i\cdot},
 &e_{\max,\mathcal M}&=\operatorname*{arg\,max}_{i\in\mathcal M}t_{i\cdot}.
 \end{aligned}
 \end{equation}
-A bootstrap estimates the null distribution of $T_{\max,\mathcal M}$ and the variance in $t_{i\cdot}$ while accounting for dependence in the loss differences. Start with $\mathcal M=\mathcal M_0$; after a rejection, remove $e_{\max,\mathcal M}$ and repeat. The first set for which the null is not rejected is the $(1-\alpha)$ MCS \cite{hansen2011mcs}.
+\begin{samepage}
+A block bootstrap estimates the null distribution of $T_{\max,\mathcal M}$ and the variance of $\bar d_{i\cdot}$ from 10,000 block resamples drawn with replacement. For resample $b$, let $\bar d^*_{i\cdot}(b)$ be model $i$'s resampled mean excess loss. The centered bootstrap maximum is
+\begin{equation}\label{eq:mcs-bootstrap-max}
+T^*_{\max,\mathcal M}(b)=\max_{i\in\mathcal M}
+\frac{\bar d^*_{i\cdot}(b)-\bar d_{i\cdot}}
+{\sqrt{\widehat{\mathrm{Var}}(\bar d_{i\cdot})}}.
+\end{equation}
+Let $\Pr^*$ denote probability over these resamples. The upper-tail p-value is
+\begin{equation}\label{eq:mcs-bootstrap-p-value}
+p_{\mathcal M}=\Pr^*\!\left(T^*_{\max,\mathcal M}\geq T_{\max,\mathcal M}\right).
+\end{equation}
+Starting with $\mathcal M=\mathcal M_0$, apply the following rule:
+\begin{itemize}
+    \item If $p_{\mathcal M}<\alpha$, reject $H_{0,\mathcal M}$, remove $e_{\max,\mathcal M}$, and repeat with the smaller set.
+    \item If $p_{\mathcal M}\geq\alpha$, stop and retain $\mathcal M$ as the $(1-\alpha)$ MCS.
+\end{itemize}
+If only one model remains, retain it without another test \cite{hansen2011mcs}.
+\end{samepage}
 
 \section{Methods}
 \subsection{Data}
@@ -753,15 +770,12 @@ J_{\mathrm{global}}=J(\theta;Z_{\mathrm{global}})
 \end{equation}
 Local scores weight each ticker's mean loss by its forecast count:
 \begin{equation}\label{eq:evaluation-local-loss}
-\begin{aligned}
-J_{\mathrm{local}}&=\frac{\sum_{i=1}^{M}N_iJ(\theta_i;Z_i)}{\sum_{i=1}^{M}N_i}\\
-&=\frac{1}{\sum_{i=1}^{M}N_i}\sum_{i=1}^{M}
-\sum_{(x,y)\in Z_i}\ell\!\left(f_{\theta_i}(x),y\right).
-\end{aligned}
+\resizebox{0.85\linewidth}{!}{$\displaystyle J_{\mathrm{local}}=\frac{\sum_{i=1}^{M}N_iJ(\theta_i;Z_i)}{\sum_{i=1}^{M}N_i}
+=\frac{1}{\sum_{i=1}^{M}N_i}\sum_{i=1}^{M}\sum_{(x,y)\in Z_i}\ell\!\left(f_{\theta_i}(x),y\right).$}
 \end{equation}
-Here $g_{\theta}$ has shared parameters, while $f_{\theta_i}$ has ticker-specific parameters as in \eqref{eq:local-global-forecasts}. $Z_{\mathrm{global}}$ and $Z_i$ contain the eligible forecast observations, with counts $N_{\mathrm{global}}$ and $N_i$; $M=5$ for local evaluation. These expressions apply to MAE, MASE, MSE, and QLIKE. For either scope, RMSE is the square root of pooled MSE, rather than the mean of ticker RMSEs. In the matched full-period table each ticker has 1,760 targets, so observation weighting also gives equal ticker weight for the mean losses.
+Here $g_{\theta}$ has shared parameters, while $f_{\theta_i}$ has ticker-specific parameters as in \eqref{eq:local-global-forecasts}. $Z_{\mathrm{global}}$ and $Z_i$ contain the eligible forecast observations, with counts $N_{\mathrm{global}}$ and $N_i$; $M=5$ for local evaluation. 
 
-The saved tables use a test-relative MASE scale: for each ticker and window, divide absolute forecast errors by the naive mean absolute variance change over exactly that ticker's eligible test target dates, using the preceding observed variance for each naive forecast. RFSV-full uses the final target's absolute change from its preceding observation. This departs from the training-history scale defined in the loss specification and Background: these scores describe performance relative to test-period persistence and must not be presented as training-scaled MASE. Test targets are used for reporting this denominator only, not for fitting or checkpoint selection. A scale must be finite and positive. QLIKE requires finite positive actual and predicted variances. Each fit's saved positive forecast floor is applied before scoring, leaving actual targets unchanged.
+The saved tables use a test-relative MASE scale: for each ticker and window, divide absolute forecast errors by the naive mean absolute variance change over exactly that ticker's eligible test target dates, using the preceding observed variance for each naive forecast. RFSV-full uses the final target's absolute change from its preceding observation.
 
 \section{Experimental Results}
 % Describe the experimental results. This is the most important section.
@@ -788,109 +802,86 @@ The Global ML models took around 3-5 hours per fit, while the ML models around 3
 \subsubsection{Overall Result}
 All tables report saved one-step forecasts of daily, unannualized adjusted Garman--Klass variance, mapped back from any model-specific output transformation. MAE and RMSE have variance units, MSE has squared variance units, and MASE and QLIKE are dimensionless. Smaller losses are better. 
 
-Global window-20 models share 4,479,204 scored targets, while window-80 models share 4,295,635. The source dataset has 2,714 tickers. The saved RFSV final-date audit records nine tickers (CMTV, FORTY, GYRO, JBK, KELYB, LBTYB, MGYR, PYT, and SENEB) with zero raw Garman--Klass variance on both 2025-12-31 and the preceding recorded date. The loader replaces both zeros with the same variance floor, leaving their absolute variance change equal to zero. This change supplies RFSV's final-date MASE denominator, so MASE is undefined for these tickers and they are excluded. The same nine exclusions are applied to every global model to align the scored populations within each window; RFSV itself still uses final-date targets only. Relative to the window loaders, this removes 477 window-20 and 138 window-80 targets. Longer positive-input histories also change eligibility, so the two windows are different populations. Bold minima in Table~\ref{tab:global-results} are therefore computed separately within each window, not as a matched cross-window contest.
+Global window-20 models share 4,479,204 scored targets, while window-80 models share 4,295,635. The source dataset has 2,714 tickers. CMTV, FORTY, GYRO, JBK, KELYB, LBTYB, MGYR, PYT, and SENEB have zero raw Garman--Klass variance on 2025-12-31 and the preceding date. Flooring leaves their variance change at zero, making final-date MASE undefined; all nine are excluded from every global model. Relative to the window loaders, this removes 477 window-20 and 138 window-80 targets. Longer positive-input histories also change eligibility, so the two windows are different populations. Table~\ref{tab:global-results} colors the two smallest values per column across all rows; RFSV uses final-date targets only, so these colors are descriptive rather than a matched comparison.
 
-For window 20, the lowest MAE and QLIKE belong to Base LSTM, the lowest MASE to SARIMA, and the lowest MSE and RMSE to SiLU-LSTM. For window 80, MLP has the lowest MAE and MASE, SiLU-LSTM the lowest MSE and RMSE, and Base LSTM the lowest QLIKE. The very large SiLU-LSTM and SARIMA QLIKE scores show that favorable absolute or squared errors need not imply favorable relative variance loss. Their nonzero floor-hit rates are reported; a low frequency alone does not establish that flooring has negligible effects. No floor-sensitivity reranking is available here.
+For window 20, the lowest MAE and QLIKE belong to Base LSTM, the lowest MASE to SARIMA, and the lowest MSE and RMSE to SiLU-LSTM. For window 80, MLP has the lowest MAE and MASE, SiLU-LSTM the lowest MSE and RMSE, and Base LSTM the lowest QLIKE. The very large SiLU-LSTM and SARIMA QLIKE scores show that favorable absolute or squared errors need not imply favorable relative variance loss. Saved diagnostics record nonzero floor-hit rates for these models; a low frequency alone does not establish that flooring has negligible effects. No floor-sensitivity reranking is available here.
 
-\begingroup\scriptsize\setlength{\tabcolsep}{3pt}
-\begin{longtable}{lrrrrrrr}
-\caption{Global full-period saved losses. Bold denotes the minimum within each window population; the horizontal grouping is given by the model window. Column multipliers give the original units.}\label{tab:global-results}\\
-\hline Model & $N$ & MAE & MASE & MSE & RMSE & QLIKE & Floor (\%)\\
- & & $\times10^{-4}$ & & $\times10^{-8}$ & $\times10^{-4}$ & & \\\hline
-\endfirsthead
-\hline Model & $N$ & MAE & MASE & MSE & RMSE & QLIKE & Floor (\%)\\
- & & $\times10^{-4}$ & & $\times10^{-8}$ & $\times10^{-4}$ & & \\\hline
-\endhead
-\hline\endfoot
-MLP-20 & 4479204 & 8.81892 & 0.915842 & 6329.17 & 79.5561 & 0.423064 & 0\\
-Base LSTM-20 & 4479204 & \textbf{8.30367} & 0.856723 & 6150.66 & 78.4262 & \textbf{0.417746} & 0\\
-SiLU-LSTM-20 & 4479204 & 8.71735 & 1.05825 & \textbf{6149.58} & \textbf{78.4192} & 2.00901e+06 & 0.00133952\\
-HARNet-20 & 4479204 & 9.32486 & 0.90717 & 6694.92 & 81.8225 & 0.430701 & 0\\
-AR(1) & 4479204 & 10.0777 & 1.78426 & 6548.7 & 80.924 & 0.82591 & 0\\
-HAR-20 & 4479204 & 8.89648 & 1.08314 & 6306.65 & 79.4144 & 0.513557 & 0\\
-GARCH(1,1) & 4479204 & 8.72693 & 1.00347 & 6402.7 & 80.0169 & 0.544858 & 0\\
-SARIMA & 4479204 & 8.80278 & \textbf{0.854312} & 6312.31 & 79.4501 & 809357 & 0.0675343\\
+\begingroup\scriptsize\setlength{\tabcolsep}{2pt}
+\begin{longtable}{@{}p{.235\linewidth}>{\raggedleft\arraybackslash}p{\dimexpr .165\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .115\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .165\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .175\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .145\linewidth-2\tabcolsep\relax}@{}}
+\caption{Global saved losses on eligible 2019--2025 targets. Window 20 has 4,479,681 forecasts per row and window 80 has 4,295,773; RFSV shares the corresponding window population. Red and blue mark the smallest and second-smallest values per column across all rows.}\label{tab:global-results}\\
+\hline Model & MAE ($\times10^{-4}$) & MASE & MSE ($\times10^{-9}$) & RMSE ($\times10^{-4}$) & QLIKE\\
 \hline
-MLP-80 & 4295635 & \textbf{7.73253} & \textbf{0.835756} & 5828.46 & 76.3443 & 0.402393 & 0\\
-Base LSTM-80 & 4295635 & 7.79028 & 0.836248 & 5891.24 & 76.7544 & \textbf{0.387551} & 0\\
-SiLU-LSTM-80 & 4295635 & 8.06634 & 0.957537 & \textbf{5742.03} & \textbf{75.7762} & 855347 & 0.00221155\\
-HARNet-80 & 4295635 & 8.5242 & 0.873767 & 6104.03 & 78.1283 & 0.398789 & 0\\
-HAR-80 & 4295635 & 8.41129 & 0.959493 & 5875.67 & 76.6529 & 0.43661 & 0\\
-\end{longtable}
-\endgroup
-
-\begingroup\scriptsize\setlength{\tabcolsep}{3pt}
-\begin{longtable}{lrrrrrrr}
-\caption{Global RFSV-full: final-date forecasts only (2025-12-31), excluded from full-period rankings.}\label{tab:rfsv-global}\\
-\hline Model & $N$ & MAE & MASE & MSE & RMSE & QLIKE & Floor (\%)\\
- & & $\times10^{-4}$ & & $\times10^{-8}$ & $\times10^{-4}$ & & \\\hline
 \endfirsthead
-\hline Model & $N$ & MAE & MASE & MSE & RMSE & QLIKE & Floor (\%)\\
- & & $\times10^{-4}$ & & $\times10^{-8}$ & $\times10^{-4}$ & & \\\hline
+\hline Model & MAE ($\times10^{-4}$) & MASE & MSE ($\times10^{-9}$) & RMSE ($\times10^{-4}$) & QLIKE\\
+\hline
 \endhead
 \hline\endfoot
-RFSV-full & 2705 & 6.91016 & 10.2927 & 1121.6 & 33.4903 & 0.56445 & 0\\
+MLP-20 & 8.81883 & 0.915832 & 63285.7 & 79.5523 & 0.423184\\
+Base LSTM-20 & 8.30355 & 0.856715 & 61500.8 & 78.4224 & 0.417868\\
+SiLU-LSTM-20 & 8.71735 & 1.05824 & 61489.9 & 78.4155 & 2.00879e+06\\
+HARNet-20 & 9.32531 & 0.907195 & 66944.7 & 81.8197 & 0.430829\\
+AR(1) & 10.0775 & 1.78421 & 65480.7 & 80.9201 & 0.826027\\
+HAR-20 & 8.89705 & 1.08316 & 63062.6 & 79.412 & 0.513684\\
+GARCH(1,1) & 8.72768 & 1.0035 & 64021.9 & 80.0137 & 0.544997\\
+SARIMA & 8.80366 & 0.854352 & 63119 & 79.4475 & 811815\\
+RFSV-20 & 10.1714 & 1.06676 & 62855.5 & 79.2814 & 0.486142\\
+\hline
+MLP-80 & \textcolor{red}{7.73236} & \textcolor{red}{0.835773} & \textcolor{blue}{58282.7} & \textcolor{blue}{76.3431} & 0.402411\\
+Base LSTM-80 & \textcolor{blue}{7.79013} & \textcolor{blue}{0.836285} & 58910.5 & 76.7532 & \textcolor{red}{0.387572}\\
+SiLU-LSTM-80 & 8.06617 & 0.957564 & \textcolor{red}{57418.5} & \textcolor{red}{75.775} & 855319\\
+HARNet-80 & 8.52407 & 0.873897 & 61038.3 & 78.127 & \textcolor{blue}{0.398811}\\
+HAR-80 & 8.41118 & 0.959635 & 58754.8 & 76.6517 & 0.436633\\
+RFSV-80 & 9.48762 & 1.04249 & 58508.4 & 76.4908 & 0.444466\\
 \end{longtable}
 \endgroup
 
 \clearpage
-\begingroup\scriptsize\setlength{\tabcolsep}{3pt}
-\begin{longtable}{lrrrrrrr}
-\caption{Matched five-stock Local $\times$ Global full-period losses. All rows use the same 8,800 targets; bold marks the overall minimum across both scopes.}\label{tab:matched-results}\\
-\hline Model & $N$ & MAE & MASE & MSE & RMSE & QLIKE & Floor (\%)\\
- & & $\times10^{-4}$ & & $\times10^{-8}$ & $\times10^{-4}$ & & \\\hline
+\begingroup\scriptsize\setlength{\tabcolsep}{2pt}
+\begin{longtable}{@{}p{.235\linewidth}>{\raggedleft\arraybackslash}p{\dimexpr .165\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .115\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .165\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .175\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .145\linewidth-2\tabcolsep\relax}@{}}
+\caption{Five-stock Local and Global saved losses on 8,800 shared 2019--2025 targets per row. RFSV-20 and RFSV-80 use their matching window targets and ticker-specific test-date MASE scales. Red and blue mark the smallest and second-smallest values per column across all rows.}\label{tab:matched-results}\\
+\hline Model & MAE ($\times10^{-4}$) & MASE & MSE ($\times10^{-9}$) & RMSE ($\times10^{-4}$) & QLIKE\\
+\hline
 \endfirsthead
-\hline Model & $N$ & MAE & MASE & MSE & RMSE & QLIKE & Floor (\%)\\
- & & $\times10^{-4}$ & & $\times10^{-8}$ & $\times10^{-4}$ & & \\\hline
+\hline Model & MAE ($\times10^{-4}$) & MASE & MSE ($\times10^{-9}$) & RMSE ($\times10^{-4}$) & QLIKE\\
+\hline
 \endhead
 \hline\endfoot
-MLP-20 Local & 8800 & 2.41654 & 0.998704 & 19.8164 & 4.45156 & 0.323319 & 0\\
-MLP-20 Global & 8800 & 2.38653 & 0.995313 & 19.3084 & 4.39413 & 0.289298 & 0\\
-MLP-80 Local & 8800 & 2.66653 & 1.10488 & 21.8086 & 4.66996 & 0.365705 & 0\\
-MLP-80 Global & 8800 & 2.15998 & 0.896018 & \textbf{17.9261} & \textbf{4.23392} & \textbf{0.279815} & 0\\
-Base LSTM-20 Local & 8800 & 2.16824 & 0.907022 & 19.8629 & 4.45679 & 0.297445 & 0\\
-Base LSTM-20 Global & 8800 & 2.22459 & 0.928232 & 18.6576 & 4.31944 & 0.280657 & 0\\
-Base LSTM-80 Local & 8800 & 2.15813 & 0.886869 & 19.5862 & 4.42563 & 0.294209 & 0\\
-Base LSTM-80 Global & 8800 & 2.13585 & 0.892587 & 18.1628 & 4.26178 & 0.282732 & 0\\
-SiLU-LSTM-20 Local & 8800 & 2.48928 & 1.08808 & 21.6745 & 4.65558 & 0.905984 & 1.10227\\
-SiLU-LSTM-20 Global & 8800 & 2.7325 & 1.20579 & 20.1112 & 4.48455 & 0.372279 & 0\\
-SiLU-LSTM-80 Local & 8800 & 2.24768 & 0.947574 & 22.0495 & 4.69569 & 3.18492 & 10.6136\\
-SiLU-LSTM-80 Global & 8800 & 2.38984 & 1.02927 & 19.8601 & 4.45647 & 0.328143 & 0\\
-HARNet-20 Local & 8800 & 2.11595 & 0.892743 & 18.3777 & 4.28693 & 0.28784 & 0\\
-HARNet-20 Global & 8800 & 2.20169 & 0.918785 & 18.5456 & 4.30647 & 0.283658 & 0\\
-HARNet-80 Local & 8800 & 2.09498 & 0.865972 & 18.1179 & 4.25651 & 0.281475 & 0\\
-HARNet-80 Global & 8800 & 2.12793 & 0.885052 & 18.1083 & 4.25539 & 0.28347 & 0\\
-AR(1) Local & 8800 & 3.77586 & 1.63276 & 26.7056 & 5.16775 & 0.509255 & 0\\
-AR(1) Global & 8800 & 4.94533 & 2.39741 & 36.0441 & 6.00368 & 0.688002 & 0\\
-HAR-20 Local & 8800 & 2.46479 & 1.03921 & 19.1405 & 4.37499 & 0.329296 & 0\\
-HAR-20 Global & 8800 & 2.79246 & 1.24376 & 21.4673 & 4.63328 & 0.398557 & 0\\
-HAR-80 Local & 8800 & 2.28968 & 0.957714 & 18.662 & 4.31995 & 0.303838 & 0\\
-HAR-80 Global & 8800 & 2.41723 & 1.03541 & 20.2989 & 4.50543 & 0.333513 & 0\\
-GARCH(1,1) Local & 8800 & 2.39042 & 0.988583 & 23.6177 & 4.8598 & 0.347896 & 0\\
-GARCH(1,1) Global & 8800 & 2.61477 & 1.13228 & 23.858 & 4.88447 & 0.383185 & 0\\
-SARIMA Local & 8800 & \textbf{1.98639} & \textbf{0.830068} & 18.7609 & 4.33138 & 0.311451 & 0\\
-SARIMA Global & 8800 & 2.09643 & 0.870198 & 20.8865 & 4.57018 & 0.308186 & 0\\
+MLP-20 Local & 2.41654 & 0.998704 & 198.164 & 4.45156 & 0.323319\\
+MLP-20 Global & 2.38653 & 0.995313 & 193.084 & 4.39413 & 0.289298\\
+MLP-80 Local & 2.66653 & 1.10488 & 218.086 & 4.66996 & 0.365705\\
+MLP-80 Global & 2.15998 & 0.896018 & \textcolor{red}{179.261} & \textcolor{red}{4.23392} & \textcolor{red}{0.279815}\\
+Base LSTM-20 Local & 2.16824 & 0.907022 & 198.629 & 4.45679 & 0.297445\\
+Base LSTM-20 Global & 2.22459 & 0.928232 & 186.576 & 4.31944 & \textcolor{blue}{0.280657}\\
+Base LSTM-80 Local & 2.15813 & 0.886869 & 195.862 & 4.42563 & 0.294209\\
+Base LSTM-80 Global & 2.13585 & 0.892587 & 181.628 & 4.26178 & 0.282732\\
+SiLU-LSTM-20 Local & 2.48928 & 1.08808 & 216.745 & 4.65558 & 0.905984\\
+SiLU-LSTM-20 Global & 2.7325 & 1.20579 & 201.112 & 4.48455 & 0.372279\\
+SiLU-LSTM-80 Local & 2.24768 & 0.947574 & 220.495 & 4.69569 & 3.18492\\
+SiLU-LSTM-80 Global & 2.38984 & 1.02927 & 198.601 & 4.45647 & 0.328143\\
+HARNet-20 Local & 2.11595 & 0.892743 & 183.777 & 4.28693 & 0.28784\\
+HARNet-20 Global & 2.20169 & 0.918785 & 185.456 & 4.30647 & 0.283658\\
+HARNet-80 Local & \textcolor{blue}{2.09498} & \textcolor{blue}{0.865972} & 181.179 & 4.25651 & 0.281475\\
+HARNet-80 Global & 2.12793 & 0.885052 & 181.083 & 4.25539 & 0.28347\\
+AR(1) Local & 3.77586 & 1.63276 & 267.056 & 5.16775 & 0.509255\\
+AR(1) Global & 4.94533 & 2.39741 & 360.441 & 6.00368 & 0.688002\\
+HAR-20 Local & 2.46479 & 1.03921 & 191.405 & 4.37499 & 0.329296\\
+HAR-20 Global & 2.79246 & 1.24376 & 214.673 & 4.63328 & 0.398557\\
+HAR-80 Local & 2.28968 & 0.957714 & 186.62 & 4.31995 & 0.303838\\
+HAR-80 Global & 2.41723 & 1.03541 & 202.989 & 4.50543 & 0.333513\\
+GARCH(1,1) Local & 2.39042 & 0.988583 & 236.177 & 4.8598 & 0.347896\\
+GARCH(1,1) Global & 2.61477 & 1.13228 & 238.58 & 4.88447 & 0.383185\\
+SARIMA Local & \textcolor{red}{1.98639} & \textcolor{red}{0.830068} & 187.609 & 4.33138 & 0.311451\\
+SARIMA Global & 2.09643 & 0.870198 & 208.865 & 4.57018 & 0.308186\\
+RFSV-20 Local & 2.21821 & 0.924491 & 184.617 & 4.29671 & 0.299769\\
+RFSV-20 Global & 2.86563 & 1.18549 & 241.805 & 4.91737 & 0.324429\\
+RFSV-80 Local & 2.19111 & 0.914082 & \textcolor{blue}{180.254} & \textcolor{blue}{4.24563} & 0.297806\\
+RFSV-80 Global & 2.80188 & 1.15992 & 225.784 & 4.75167 & 0.322797\\
 \end{longtable}
 \endgroup
 
-\begingroup\scriptsize\setlength{\tabcolsep}{3pt}
-\begin{longtable}{lrrrrrrr}
-\caption{Matched five-stock RFSV-full on 2025-12-31 only. Bold marks the lower loss between these two rows, separately from full-period results.}\label{tab:rfsv-matched}\\
-\hline Model & $N$ & MAE & MASE & MSE & RMSE & QLIKE & Floor (\%)\\
- & & $\times10^{-4}$ & & $\times10^{-8}$ & $\times10^{-4}$ & & \\\hline
-\endfirsthead
-\hline Model & $N$ & MAE & MASE & MSE & RMSE & QLIKE & Floor (\%)\\
- & & $\times10^{-4}$ & & $\times10^{-8}$ & $\times10^{-4}$ & & \\\hline
-\endhead
-\hline\endfoot
-RFSV-full Local & 5 & \textbf{0.260246} & \textbf{3.06845} & \textbf{0.117401} & \textbf{0.342639} & \textbf{0.130563} & 0\\
-RFSV-full Global & 5 & 0.536293 & 5.87051 & 0.38155 & 0.617698 & 0.258485 & 0\\
-\end{longtable}
-\endgroup
+The full-period rows of Table~\ref{tab:matched-results} evaluate NVDA, AAPL, NFLX, GOOG, and AMZN on the same 8,800 ticker/date targets during 2019--2025. Among those rows, Local SARIMA has the lowest MAE and MASE; Global MLP-80 has the lowest MSE, RMSE, and QLIKE. Global AR(1) maximizes MAE, MASE, MSE, and RMSE; Local SiLU-LSTM-80 maximizes QLIKE. Evidence about scope is mixed: Local HAR-20 and HAR-80 outperform their global counterparts on every loss, while Global MLP-20 and MLP-80 outperform their local counterparts throughout. Local HARNet-80 has lower MAE, MASE, and QLIKE, but Global HARNet-80 has slightly lower MSE and RMSE. The five-stock findings cannot establish blanket global superiority or generalization to unseen assets. Training configurations also differ: Global Base LSTM-20 and its local counterparts have different training budgets. Scope alone cannot explain these differences.
 
-Table~\ref{tab:matched-results} evaluates NVDA, AAPL, NFLX, GOOG, and AMZN on the same 8,800 ticker/date targets during 2019--2025. Across both scopes, Local SARIMA minimizes MAE and MASE, whereas Global MLP-80 minimizes MSE, RMSE, and QLIKE. Global AR(1) maximizes MAE, MASE, MSE, and RMSE; Local SiLU-LSTM-80 maximizes QLIKE. Evidence about scope is mixed: Local HAR-20 and HAR-80 outperform their global counterparts on every loss, while Global MLP-20 and MLP-80 outperform their local counterparts throughout. Local HARNet-80 has lower MAE, MASE, and QLIKE, but Global HARNet-80 has slightly lower MSE and RMSE. The five-stock findings cannot establish blanket global superiority or generalization to unseen assets. Training configurations also differ: Global Base LSTM-20 and its local counterparts have different training budgets. Scope alone cannot explain these differences.
-
-RFSV-full is kept in Tables~\ref{tab:rfsv-global} and \ref{tab:rfsv-matched}: its global row contains 2,705 final-date forecasts, while each matched row contains five forecasts on 2025-12-31. Local RFSV has lower losses than Global RFSV on these five targets. Its smaller absolute errors cannot be ranked against the full-period models, because the dates and sample sizes differ. The final-date MASE denominator is also especially sensitive to a single observed variance change.
+RFSV-full appears in Tables~\ref{tab:global-results} and \ref{tab:matched-results}: its global row contains 2,705 final-date forecasts, while each five-stock row contains five forecasts on 2025-12-31. Local RFSV has lower losses than Global RFSV on these five targets. Its colored values are numerically smaller than full-period losses, but the dates and sample sizes differ, so the colors do not establish a like-for-like model ranking. The final-date MASE denominator is also especially sensitive to a single observed variance change.
 
 \subsubsection{Parameter Complexity}
 For the idealized comparison in \cite{monteromanso2021}, take $B=2^{64}$ possible encodings per scalar parameter and $K=2,714$ tickers. For a model with $p$ fitted scalars, the parameter-combination budgets are

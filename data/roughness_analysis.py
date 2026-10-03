@@ -532,7 +532,7 @@ def analyze_training_roughness(conn, output='imgs/roughness_analysis', max_lag=4
 
 def analyze_raw_gk_training_roughness(conn, output='imgs/roughness_analysis', max_lag=400):
     """Replace pre-2016 GK roughness outputs using the raw-history model cohort."""
-    from models.raw_neural_data import raw_frame
+    from models.support_scripts.raw_neural_data import raw_frame
 
     table = 'equity_garman_klass_variance'
     output = Path(output) / 'global' / 'train'

@@ -5,7 +5,7 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-from models import lstm_val_sweep
+from models.support_scripts import lstm_val_sweep
 
 
 def test_lstm_val_sweep():
