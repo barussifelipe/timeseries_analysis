@@ -1,0 +1,26 @@
+{
+  "task": "Remove the Global/Local column from the Parameter Complexity table",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- ref/final_report/thesis_structure.tex judge/check_technical_evaluation.py",
+    "ref/final_report/thesis_structure.tex",
+    "judge/check_technical_evaluation.py",
+    "python judge/check_technical_evaluation.py (passed)",
+    "ref/final_report/thesis_structure.pdf (pdfinfo and pdftotext page 40)",
+    "ref/final_report/thesis_structure.log"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

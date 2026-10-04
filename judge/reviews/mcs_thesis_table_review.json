@@ -1,0 +1,35 @@
+{
+  "task": "Document the complete five stock-level MCS-20 and MCS-80 final sets and their sole difference in the thesis",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/rfsv_adjustment_scoring.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.pdf",
+    "ref/final_report/thesis_structure.log",
+    "imgs/eval/mcs/all_windows/mcs_20.json",
+    "imgs/eval/mcs/all_windows/mcs_80.json",
+    "imgs/eval/mcs/all_windows/final_sets_20.md",
+    "imgs/eval/mcs/all_windows/final_sets_80.md",
+    "models/mcs_definition.py",
+    "judge/check_mcs_thesis_table.py",
+    "judge/check_technical_evaluation.py",
+    "git status --short and git diff",
+    "python judge/check_mcs_thesis_table.py",
+    "python judge/check_technical_evaluation.py",
+    "pdfinfo and pdftotext inspection of thesis_structure.pdf"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

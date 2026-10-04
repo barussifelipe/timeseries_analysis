@@ -1,3 +1,130 @@
+## Thesis cross-window MCS table (2026-10-04)
+
+Section 5.4.3 now reports the five stock-level final-set sizes for both
+20- and 80-observation bootstrap blocks in Table 5.6. Per the user's final
+preference, it lists only the ten-model intersection shared by all five stocks,
+then shows the difference between block-length results in the table.
+The only membership difference is GOOG's AR(1) Local, retained with
+80-observation blocks. Counts and names were checked against both saved result JSONs; the
+technical-evaluation checker now accepts the current subsection order and
+passes. Two direct SyncTeX-enabled pdflatex passes rebuilt the 50-page PDF;
+the table and adjacent pages were visually inspected. A `\FloatBarrier` after
+Table 5.6 keeps it before the Section 5.4.4 heading, verified on PDF page 39.
+The separate
+data-selection text checker currently fails on its preexisting 96-bar wording
+assertion. No MCS result, forecast, or source data changed. Next: interpret
+these MCS results alongside matched QLIKE scores and revise stale RFSV prose.
+
+## Cross-window MCS reassessment (2026-10-04)
+
+At the user's request, both MCS block-length runs now include all 30 distinct
+local/global candidates, including both 20- and 80-observation forecast variants.
+The reassessment reads the two saved window-matched forecast files, verifies
+identical 1,760 dates and actuals for every candidate and identical predictions
+for six shared candidates, then recomputes QLIKE T_max sets with the original
+10,000 draws, alpha 0.10, seed 42, and blocks of 20 or 80 observations. New
+outputs are in `imgs/eval/mcs/all_windows/`; original window-only results remain
+for comparison. Ten models survive across all five stocks in either run.
+Stock-level membership differs only for GOOG (19 members with 20-observation
+blocks, 20 with 80-observation blocks). The thesis MCS candidate description
+now matches these runs. No fitting, data selection, or forecast regeneration
+occurred. Focused MCS tests passed (2), and a repeated run produced byte-identical
+result JSONs. Two in-place pdflatex passes rebuilt the thesis PDF and SyncTeX.
+The broader technical-evaluation checker currently fails its fixed subsection-order
+assertion against the user's new MCS subsection; the fresh-context MCS review
+passed 99/100 with validated JSON at
+`judge/reviews/cross_window_mcs_review.json`. Next: interpret these MCS results in the Experimental Results section
+alongside matched QLIKE scores, then continue the stale RFSV prose revision.
+
+## Thesis Crypto Realized Variance Table (2026-10-04)
+
+Section 5.4.1 (Experimental Results) now includes Table 5.5 (tab:crypto-rv-results)
+presenting the transfer evaluation of all 15 saved equity-trained Global fits on
+the 15-minute intraday Realized Variance proxy \eqref{eq:realized-variance} over the
+same 8,800 retained crypto targets. It follows the exact format of Table 5.4
+(longtable layout, 15 model rows grouped into window-20 and window-80 by \hline,
+minima in red, second minima in blue, maxima in dark orange). Column scalings
+preserve RMSE = sqrt(MSE) identities: MAE (×10⁻³), MASE (unscaled), MSE (×10⁻²),
+RMSE (×10⁻¹), and QLIKE (unscaled, with floor-hit values in scientific notation).
+Accompanying text notes that under Realized Variance, RFSV-80 achieves the lowest
+MSE and RMSE, outperforming all neural and classical models on squared loss, while
+Base LSTM-20 minimizes MASE and QLIKE, and SiLU-LSTM-20 minimizes MAE. It also
+documents how floor activations on high-variance crypto regimes heavily penalize
+QLIKE (reaching 1.34×10¹⁰ for MLP-20), whereas recurrent and statistical models
+without floor hits maintain stable QLIKE values between 0.39 and 2.09 (with MLP-80
+at 84.66). Two in-place SyncTeX-enabled pdflatex passes rebuilt the 49-page PDF
+without errors or undefined citations. Focused checks judge/check_technical_evaluation.py
+and judge/check_data_selection_text.py passed. Fresh-context cold review
+judge/reviews/crypto_rv_thesis_table_review.json passed 99/100 with validated JSON.
+The next thesis task remains revision of stale final-date RFSV prose against
+the window-matched results.
+
+## Thesis Crypto RV Validity & Calendar Gaps Before Table 5.4 (2026-10-04)
+
+
+Section 5.4.1 (Experimental Results) now documents the cryptocurrency Realized
+Variance (RV) validity requirements, omitted dates from joint estimator filtering,
+and the resulting calendar gaps in the explanatory paragraph immediately preceding
+Table 5.4 (tab:crypto-results). It explains that constructing daily Realized
+Variance strictly requires 96 complete, clean 15-minute intraday bars per 24-hour
+UTC day and the preceding day's 23:45 close for return continuity
+(r₁(t) = ln(P_{t, 00:00} / P_{t-1, 23:45})). Dates failing these criteria (due to
+vendor collection dropouts, API holes, or missing preceding boundary closes) were
+omitted from the joint panel. To ensure a matched, directly comparable evaluation
+panel across estimators, candidate dates were filtered by their intersection,
+retaining the latest 1,760 jointly valid observations per coin through 2025-12-31.
+Consequently, forecasting models target the next recorded valid observation from
+preceding valid history, bridging occasional calendar gaps (64--65 targets per coin
+have a two- or three-day gap). Two in-place SyncTeX-enabled pdflatex passes rebuilt
+the 48-page PDF without errors or undefined citations. Focused checks
+judge/check_data_selection_text.py and judge/check_technical_evaluation.py passed.
+Fresh-context cold review judge/reviews/crypto_evaluation_data_issues_review.json
+passed 100/100 with validated JSON. The next thesis task remains revision of
+stale final-date RFSV prose against the window-matched results.
+
+## Thesis Data Section Local & Crypto Selection (2026-10-04)
+
+
+Section 3.1 (Data) now documents the local equity selection (NVDA, AAPL,
+NFLX, GOOG, and AMZN) from the 2,714-ticker cohort, chosen by highest mean
+nonnegative daily trading volume before 2016 (retaining one share class per
+firm, with GOOG outranking GOOGL). It explains the equity volume rationale:
+corporate forward share-split conventions generally keep nominal prices within
+comparable retail-accessible bands ($10¹ to $10²), allowing raw volume to
+capture major market pillars.
+
+Section 3.1 also documents the out-of-sample cryptocurrency transfer selection
+(BTC, ETH, SOL, XRP, and DOGE) across 1,760 aligned dates from 2019 to 2025. It
+provides the concise rationale for ranking by mean daily dollar volume
+(Close × Volume) rather than raw token volume: cryptocurrency token supplies span
+over ten orders of magnitude without standardized denominations; raw volume is
+dominated by micro-priced tokens while dropping BTC (which ranks 113th in raw
+volume), whereas dollar volume neutralizes denomination bias and reflects market
+liquidity. Furthermore, it clarifies that while equities rely solely on daily
+OHLC range data, the cryptocurrency dataset provides both the daily
+Garman--Klass (GK) estimator and the 15-minute intraday realized variance (RV)
+proxy (96 fifteen-minute squared log returns per day), enabling cross-proxy
+transfer evaluation. Line 933 in Section 5.2 was streamlined to match this
+concise phrasing. Two in-place SyncTeX-enabled pdflatex passes rebuilt the
+48-page PDF without undefined references or fatal errors. Focused check
+judge/check_data_selection_text.py and judge/check_technical_evaluation.py
+passed. Fresh-context review judge/reviews/data_local_crypto_selection_review.json
+passed 100/100 with validated JSON. The next thesis task remains revision of
+stale final-date RFSV prose against the window-matched results.
+
+## Thesis computational timing (2026-10-04)
+
+Section 5.3 now starts with the documented lower bound of 70 h 52 min of
+cumulative experiment-run elapsed time, including global model selection,
+final fits, measured failed/interrupted attempts, and local fits. The total is
+not calendar or GPU time and excludes runs without final elapsed markers.
+The final-global-fit table reports 14 timed fits for 15 model variants because
+RFSV-20/80 share one parameter fit; Base LSTM-20 and MLP-80 report only
+completed continuation segments. Five-stock local fits total 46 min 42 s
+across 40 neural fits and 2 min 23 s across 30 statistical fits. No fitting
+or evaluation was rerun. The next thesis task remains revision of stale
+final-date RFSV prose against the window-matched results.
+
 ## MCS summaries and thesis table layout (2026-10-03)
 
 The current `imgs/eval/mcs/20_size/final_sets.md` and `80_size/final_sets.md`
@@ -6,8 +133,10 @@ models at window 20 and six at window 80. The superseded
 `imgs/eval/mcs/historical_rfsv/` run and root `final_set.md` were removed at
 the user's request; root `forecasts.csv` and `results.json` remain historical.
 No forecasts, losses, or MCS memberships changed. Thesis Tables 5.1 and 5.2
-now span the text width with inline metric scales, MSE displayed in units of
-10⁻⁹, and no separator before the RFSV rows in Table 5.2. The underlying
+now span the text width with inline metric scales. MSE is displayed in units of
+10⁻⁵ in Table 5.1 and 10⁻⁷ in Table 5.2; RMSE uses 10⁻³ in Table 5.1 and
+10⁻⁴ in Table 5.2. There is no
+separator before the RFSV rows in Table 5.2. The underlying
 metric CSVs are unchanged. Two in-place SyncTeX-enabled `pdflatex` passes
 rebuilt the 46-page PDF. The next thesis task remains revision of the stale
 final-date RFSV prose against the window-matched results.
@@ -1802,3 +1931,66 @@ available. No forecasts or MCS were rerun for this documentation task.
 Next: use the saved evaluation for the thesis comparison, preserving the
 per-stock interpretation and the differing model features and training budgets;
 unseen-asset transfer remains untested.
+## Crypto global transfer scoring (2026-10-04)
+
+`ref/implementation_plan/crypto_scoring.md` records the dollar-volume ranking and
+fixed scoring choices. BTC, ETH, SOL, XRP, and DOGE lead by mean close × raw
+volume on their 1,760 retained GK dates; this is estimated USD turnover, with
+historical OHLC quote currency inferred from vendor price scale and dollar
+market display because the historical endpoint omits an explicit currency field.
+Saved equity-trained global fits were scored without refitting on the same
+8,800 crypto target keys per configuration, at their saved 20- or 80-record
+window. All 15 aggregate and 75 per-crypto rows, 90 residual plots, table PNG,
+and run log are under `imgs/eval/crypto_eval/`. All rows have N=8,800; no
+targets or MASE scales were excluded, and saved positive floors had zero hits.
+Base LSTM-80 has the lowest QLIKE (0.587240); this is an unseen-asset transfer
+result on vendor daily, unannualized GK variance, separate from equity rankings.
+The small known-example check passed; source metadata, ranking arithmetic,
+row counts, and plot counts were reconciled. Fresh-context review
+`judge/reviews/crypto_global_scoring_review.json` passed 100/100 with no
+findings and validated JSON. Next: interpret transfer limits before
+incorporating these results in the thesis comparison.
+## Crypto transfer thesis table (2026-10-04)
+
+Technical Evaluation now places the 15-row equity-trained Global crypto
+loss table immediately after the five-stock matched-results table. Table 5.4
+uses scaled columns (MAE ×10^-3, MSE ×10^-4, RMSE ×10^-2) and the same
+red/blue/orange extrema convention. The nearby prose distinguishes vendor
+crypto OHLC from adjusted equity OHLC, states the 8,800-target population and
+test-date MASE convention, and names the metric-specific minima. The following
+parameter-complexity table automatically becomes Table 5.5. The expanded
+focused check validates all 60 displayed metric rows against saved CSVs and
+their color rankings. Two in-place SyncTeX-enabled `pdflatex` passes built the
+48-page PDF; pages 36-37 were visually inspected, with no new overfull boxes
+or unresolved references. No forecasts or metrics were rerun. Next: cold
+review this table, then interpret transfer limits for the thesis discussion.
+## Crypto realized-variance transfer scoring (2026-10-04)
+
+`ref/implementation_plan/crypto_rv_scoring.md` fixes the second crypto transfer
+test. The same saved equity-trained GK Global fits now receive prior valid
+15-minute realized-variance history and forecast the next recorded valid daily
+RV on exactly the same 1,760 retained GK/RV target dates per BTC, ETH, SOL,
+XRP, and DOGE (8,800 per configuration). RV is the daily, unannualized sum of
+96 squared 15-minute close-to-close log returns, including the prior UTC day's
+final close. The fits, input transforms, and GK-training floors were not
+changed. Earlier raw daily rows lacking complete positive RV were omitted
+from RV input histories; 64-65 targets per coin follow a two- or three-day
+calendar gap. Training/validation populations and prior GK scores did not
+change. The target-key set is identical to GK, while both input and target
+variance proxies changed, so score differences do not isolate estimator
+quality.
+
+`imgs/eval/crypto_rv_eval/` contains 15 aggregate rows, 75 audit rows, a
+table image, run log, and 90 residual plots. Every row has N=8,800 with no
+target exclusions. Base LSTM-20 has the lowest RV QLIKE (0.392958) and MASE
+(0.872923). MLP-20, SiLU-LSTM-20/80, and SARIMA hit their saved floors;
+MLP-20's QLIKE is about 1.34e10, a negative result driven by extreme
+underpredictions. A source-feed diagnostic found retained 15-minute closes
+outside the vendor daily high-low on 22 BTC, 12 ETH, 72 SOL, 95 XRP, and 27
+DOGE dates; 123 of these 228 mismatches exceed a 1% margin. SOL has 24 RV
+targets above 1 and a maximum of 6.90, versus maximum GK 0.143. Scores keep
+the requested matched targets unchanged; the mismatch limits interpretation
+of estimator comparisons. The synthetic RV boundary/window checks passed; aggregate
+arithmetic, counts, floors, and plots were reconciled. Next: fresh-context
+review, then decide how to present the matched GK/RV transfer comparison in
+the thesis without implying a causal estimator ranking.

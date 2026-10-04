@@ -1,5 +1,7 @@
 # RFSV Rescoring and Window Matched MCS Implementation Plan
 
+The later cross-window MCS reassessment supersedes decision 4 for that reassessment only: both 20- and 80-observation bootstrap runs compare all 30 distinct saved candidates on the same 1,760 dates per stock. The original window-matched results remain available for comparison.
+
 ## Implementation decisions
 
 ### Agreed decisions

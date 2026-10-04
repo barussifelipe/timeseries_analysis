@@ -1,0 +1,26 @@
+{
+  "task": "Add a reference after the neural hidden-unit permutation symmetry statement in thesis Section 5.4.4.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.tex:1027-1032,1163",
+    "ref/final_report/thesis_structure.aux:269,338",
+    "ref/final_report/thesis_structure.log:491",
+    "https://proceedings.neurips.cc/paper_files/paper/2023/file/4e9d8aeeab6120c3c83ccf95d4c211d3-Paper-Conference.pdf (Section 2.1, Equation 1)",
+    "https://proceedings.neurips.cc/paper_files/paper/2023/hash/4e9d8aeeab6120c3c83ccf95d4c211d3-Abstract-Conference.html"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

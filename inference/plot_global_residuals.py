@@ -34,7 +34,7 @@ def mean_variances_by_date(dates, actual, predicted):
             np.bincount(inverse, weights=predicted) / counts)
 
 
-def plot_residuals(label, dates, actuals, predictions, output):
+def plot_residuals(label, dates, actuals, predictions, output, variance_label='adjusted GK variance'):
     dates = np.concatenate(dates).astype('datetime64[D]')
     actual = np.concatenate(actuals)
     predicted = np.concatenate(predictions)
@@ -45,7 +45,7 @@ def plot_residuals(label, dates, actuals, predictions, output):
     output.mkdir(parents=True, exist_ok=True)
     days, mean_actual, mean_predicted = mean_variances_by_date(dates, actual, predicted)
     for name, residuals, xlabel in (
-            ('raw', actual - predicted, 'Actual - predicted (daily unannualized adjusted GK variance)'),
+            ('raw', actual - predicted, f'Actual - predicted (daily unannualized {variance_label})'),
             ('log', np.log(actual) - np.log(predicted), 'Log(actual variance) - log(predicted variance)')):
         low, high = np.quantile(residuals, [.0025, .9975])
         central = (residuals >= low) & (residuals <= high)
@@ -83,7 +83,7 @@ def plot_residuals(label, dates, actuals, predictions, output):
                 marker='o' if len(days) == 1 else None)
         ax.axhline(0, color='#a03d3d', linewidth=.8)
         ax.set_xlabel('Test target date')
-        ax.set_ylabel('Mean(actual) - mean(predicted)\nGK variance' if name == 'raw'
+        ax.set_ylabel('Mean(actual) - mean(predicted)\n' + variance_label if name == 'raw'
                       else 'Log(mean actual) - log(mean predicted)\ndimensionless')
         ax.set_title(f'{label} | Daily {"mean raw residual" if name == "raw" else "log residual of ticker means"} | '
                      f'{len(days):,} date{"s" if len(days) != 1 else ""}')

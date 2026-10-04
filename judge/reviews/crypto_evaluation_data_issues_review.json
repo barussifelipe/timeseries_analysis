@@ -1,0 +1,27 @@
+{
+  "task": "Document cryptocurrency Realized Variance (RV) validity criteria (96 complete intraday bars per 24-hour UTC day, preceding 23:45 close for return continuity), omitted dates from joint estimator filtering, and resulting calendar gaps in the explanatory paragraph immediately preceding Table 5.4 (tab:crypto-results) in ref/final_report/thesis_structure.tex.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/crypto_evaluation_data_issues.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/check_data_selection_text.py",
+    "judge/check_technical_evaluation.py",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf",
+    "git diff ref/final_report/thesis_structure.tex"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

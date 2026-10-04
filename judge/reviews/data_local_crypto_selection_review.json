@@ -1,0 +1,27 @@
+{
+  "task": "Add the fact that for cryptocurrency evaluation we had both the Garman--Klass (GK) estimator and the Realized Variance (RV) proxy to Section 3.1 (Data) in ref/final_report/thesis_structure.tex, alongside the local equity selection and concise crypto dollar-volume selection.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/data_local_crypto_selection.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/check_data_selection_text.py",
+    "judge/check_technical_evaluation.py",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf",
+    "git diff ref/final_report/thesis_structure.tex"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -1,0 +1,27 @@
+{
+  "task": "Place Global before Local (extrapolated) in the Parameter Complexity table while preserving each model's parameter-combination values.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/technical_evaluation.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- ref/final_report/thesis_structure.tex judge/check_technical_evaluation.py",
+    "ref/final_report/thesis_structure.tex",
+    "judge/check_technical_evaluation.py",
+    "python judge/check_technical_evaluation.py (passed)",
+    "pdftotext -f 40 -l 40 -layout ref/final_report/thesis_structure.pdf -",
+    "ref/final_report/thesis_structure.log"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -1,0 +1,27 @@
+{
+  "task": "Cold review of Tables 5.2 and 5.3 bottom captions matching Tables 5.1 and 5.4 in spacing, text size, and format",
+  "sources": [
+    "User-provided AGENTS.md instructions and delegated task",
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.aux",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf (pdftotext pages 33-36; pdftohtml font inspection)",
+    "python judge/check_technical_evaluation.py (PASS)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

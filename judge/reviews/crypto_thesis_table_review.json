@@ -1,0 +1,28 @@
+{
+  "task": "Add the existing 15-row crypto global metrics table immediately after the matched equity results in the thesis, align surrounding numeric claims, and rebuild the adjacent PDF",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/crypto_scoring.md",
+    "git diff -- ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.tex",
+    "imgs/eval/crypto_eval/metrics.csv",
+    "judge/check_technical_evaluation.py",
+    "python judge/check_technical_evaluation.py (PASS: all 60 saved metric rows)",
+    "ref/final_report/thesis_structure.pdf (pages 36-38, text extraction and rendered pages 36-37)",
+    "ref/final_report/thesis_structure.aux",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.synctex.gz"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

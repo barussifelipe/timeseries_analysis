@@ -1,0 +1,45 @@
+{
+  "task": "Reassess MCS-20 and MCS-80 using all saved 20- and 80-window candidates in each run",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/rfsv_adjustment_scoring.md",
+    "git status --short and git diff",
+    "inference/reassess_mcs.py",
+    "inference/run_mcs.py",
+    "models/mcs_definition.py",
+    "models/tests/test_reassess_mcs.py",
+    "models/tests/test_mcs_definition.py",
+    "imgs/eval/mcs/20_size/forecasts.csv",
+    "imgs/eval/mcs/80_size/forecasts.csv",
+    "imgs/eval/mcs/all_windows/mcs_20.json",
+    "imgs/eval/mcs/all_windows/mcs_80.json",
+    "imgs/eval/mcs/all_windows/final_sets_20.md",
+    "imgs/eval/mcs/all_windows/final_sets_80.md",
+    "ref/final_report/thesis_structure.tex",
+    "judge/check_technical_evaluation.py",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "python -m pytest models/tests/test_reassess_mcs.py models/tests/test_mcs_definition.py -q",
+    "independent source-hash, candidate-count, shared-forecast, and MCS-trace reproduction checks",
+    "python judge/check_technical_evaluation.py"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 19,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "verification",
+      "severity": "minor",
+      "evidence": "python judge/check_technical_evaluation.py exits at line 116 because its fixed subsection-order assertion expects only Overall Result, Parameter Complexity, and Residual Structure; the thesis now also contains Model stastical significance. This prevents that existing broad thesis check from passing, although the two MCS tests pass and all ten saved MCS traces reproduced independently.",
+      "fix": "Update the subsection-order assertion to reflect the current thesis structure, then rerun the focused thesis check."
+    }
+  ],
+  "total": 99,
+  "pass": true
+}

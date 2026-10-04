@@ -1,0 +1,37 @@
+{
+  "task": "Cold review of equity-trained global model scoring on five retained cryptocurrency Garman-Klass histories",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/crypto_scoring.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git status --short and git diff for task files",
+    "inference/evaluate_crypto_global.py",
+    "inference/evaluate_volatility_test.py",
+    "inference/evaluate_local_global.py",
+    "inference/plot_global_residuals.py",
+    "models/support_scripts/raw_neural_data.py",
+    "models/training_blocks.py",
+    "models/variance_neural.py",
+    "models/tests/test_crypto_global_scoring.py",
+    "imgs/eval/crypto_eval/metrics.csv",
+    "imgs/eval/crypto_eval/per_stock.csv",
+    "imgs/eval/crypto_eval/run.log",
+    "imgs/eval/crypto_eval/residuals",
+    "read-only SQLite ranking query on D:/DBs/timeseries_analysis/history_coverage.db",
+    ".venv/Scripts/python.exe -m unittest models.tests.test_crypto_global_scoring",
+    "independent CSV aggregation and plot-count audit"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

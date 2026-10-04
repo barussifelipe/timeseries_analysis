@@ -1,0 +1,28 @@
+{
+  "task": "Cold review of dark-orange worst-value highlights in thesis Tables 5.2 and 5.3.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/technical_evaluation.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/validate.py",
+    "judge/check_technical_evaluation.py",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "imgs/eval/volatility_test_metrics.csv",
+    "imgs/eval/local_eval/metrics.csv",
+    "git diff -- ref/final_report/thesis_structure.tex judge/check_technical_evaluation.py"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

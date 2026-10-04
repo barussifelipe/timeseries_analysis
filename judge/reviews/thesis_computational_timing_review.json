@@ -1,0 +1,43 @@
+{
+  "task": "Cold review of the thesis Section 5.3 computational timing rewrite",
+  "sources": [
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "AGENTS.md (user-provided repository instructions)",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.aux",
+    "git diff -- ref/final_report/thesis_structure.tex CONTEXT.md judge/check_technical_evaluation.py",
+    "wandb/mlp_val_training/logs/*.log",
+    "wandb/lstm_val_training/logs/*.log",
+    "wandb/harnet_val_training/logs/*.log",
+    "wandb/local_training/logs/*.log",
+    "inference/checkpoints/*/garman-klass/{global,local}/**/fit.json",
+    "python judge/check_technical_evaluation.py"
+  ],
+  "scores": {
+    "requirements": 27,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 12,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "requirements",
+      "severity": "major",
+      "evidence": "Section 5.3 calls the table the recorded elapsed time for each final global fit, but it has 13 rows and omits the RFSV fit recorded in inference/checkpoints/rfsv/garman-klass/global/raw_history_full/fit.json (43.3 s). CONTEXT.md still says the table has 14 timed fits for 15 variants, including one shared RFSV fit.",
+      "fix": "Either restore the shared RFSV-20/80 row with 43 s, or narrow the table scope explicitly and update CONTEXT.md to match the intentional exclusion."
+    },
+    {
+      "category": "grounding",
+      "severity": "major",
+      "evidence": "The opening says at least 70 h 52 min across model selection, final fits and local fits, but no longer says this is summed recorded run elapsed time rather than calendar or GPU time, nor that measured failed/interrupted attempts contribute. CONTEXT.md says both caveats apply. Some final segments lack final elapsed markers, so the total's coverage is material to interpreting it.",
+      "fix": "State that the number is a cumulative lower bound of recorded elapsed run durations, identify failed/interrupted contributions and unmeasured segments, and keep CONTEXT.md synchronized with the final wording."
+    }
+  ],
+  "total": 94,
+  "pass": false
+}

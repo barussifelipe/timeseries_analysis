@@ -1,0 +1,25 @@
+{
+  "task": "Keep all of Table 5.2, including its caption, on one PDF page",
+  "sources": [
+    "Original user request: Fix the table 5.2 to be on the same page",
+    "AGENTS.md instructions supplied in the user turn",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.tex lines 838-881",
+    "ref/final_report/thesis_structure.log",
+    "pdftotext -f 33 -l 35 -layout ref/final_report/thesis_structure.pdf -"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

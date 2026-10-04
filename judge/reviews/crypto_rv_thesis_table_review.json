@@ -1,0 +1,35 @@
+{
+  "task": "Add the cryptocurrency Realized Variance evaluation table (Table 5.5, tab:crypto-rv-results) following the same format after the Garman--Klass crypto table (Table 5.4) in Section 5.4.1 of ref/final_report/thesis_structure.tex, along with accompanying framing and discussion text.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/crypto_rv_thesis_table.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/check_technical_evaluation.py",
+    "judge/check_data_selection_text.py",
+    "imgs/eval/crypto_rv_eval/metrics.csv",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf",
+    "git diff ref/final_report/thesis_structure.tex judge/check_technical_evaluation.py"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 14,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "grounding",
+      "severity": "minor",
+      "evidence": "Section 5.4.1 discussion states that 'models without floor activations maintain stable QLIKE values between 0.39 and 2.09', but MLP-80 has 0.0% floor hits and a QLIKE of 84.6598, which exceeds 2.09.",
+      "fix": "Qualify that the 0.39 to 2.09 range applies to 10 of the 11 non-floor-activated specifications, noting MLP-80 as an intermediate specification at 84.66 (e.g. 'whereas non-floor-activated specifications generally maintain stable QLIKE values between 0.39 and 2.09, with MLP-80 at 84.66')."
+    }
+  ],
+  "total": 99,
+  "pass": true
+}
