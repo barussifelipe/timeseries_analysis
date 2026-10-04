@@ -1,6 +1,68 @@
-# Models in all five final sets
+# Final models by stock
 
 Window and bootstrap block: 20 observations. Each stock has 1,760 dated forecasts per candidate.
+
+## AAPL
+
+- Base LSTM-20 GLOBAL
+- HARNet-20 GLOBAL
+- HARNet-20 LOCAL
+- MLP-20 GLOBAL
+- RFSV-20 GLOBAL
+- RFSV-20 LOCAL
+- SARIMA GLOBAL
+- SARIMA LOCAL
+
+## AMZN
+
+- Base LSTM-20 GLOBAL
+- Base LSTM-20 LOCAL
+- HARNet-20 GLOBAL
+- HARNet-20 LOCAL
+- MLP-20 GLOBAL
+- MLP-20 LOCAL
+- RFSV-20 LOCAL
+- SARIMA GLOBAL
+- SARIMA LOCAL
+
+## GOOG
+
+- Base LSTM-20 GLOBAL
+- Base LSTM-20 LOCAL
+- GARCH(1,1) LOCAL
+- HAR-20 LOCAL
+- HARNet-20 GLOBAL
+- HARNet-20 LOCAL
+- MLP-20 GLOBAL
+- MLP-20 LOCAL
+- RFSV-20 LOCAL
+- SARIMA GLOBAL
+- SARIMA LOCAL
+
+## NFLX
+
+- Base LSTM-20 GLOBAL
+- Base LSTM-20 LOCAL
+- HARNet-20 GLOBAL
+- HARNet-20 LOCAL
+- MLP-20 GLOBAL
+- RFSV-20 LOCAL
+- SARIMA GLOBAL
+
+## NVDA
+
+- Base LSTM-20 GLOBAL
+- Base LSTM-20 LOCAL
+- HAR-20 LOCAL
+- HARNet-20 GLOBAL
+- HARNet-20 LOCAL
+- MLP-20 GLOBAL
+- MLP-20 LOCAL
+- RFSV-20 LOCAL
+- SiLU-LSTM-20 GLOBAL
+- SiLU-LSTM-20 LOCAL
+
+## Models in all five final sets
 
 - Base LSTM-20 GLOBAL
 - HARNet-20 GLOBAL

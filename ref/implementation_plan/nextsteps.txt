@@ -1,7 +1,7 @@
 Steps: 
 1. Finish MCS evaluation. Ok
 2. Adjust MCS to 20 and 80 window as well as adjusting the RFSV scoring and respective tables. Check the claim of the 5 models that could not've been ruled out and then give the one with the better performance among then. We will put the MCS check after the result tables and then give another table after with only the results from those models and then do our claims. I need the model set by each stock and then the final set. 
-3. Remove the old claims and add the new observations: eror minimal, MASE high; SiLU with MSE not being the best; comparison between window size; local x global models and other evidences. Adjust the MSE being 10-7.
+3. Remove the old claims and add the new observations: eror minimal, MASE high; SiLU with MSE not being the best; comparison between window size; local x global models and other evidences, practicality of RFSV. Adjust the MSE being 10-7.
 3.5. Add the crypto evaluation by checking top 5 volume within our database and using those. 
 4. Parameter complexity review 
 5. Residual analysis per model to identify difference in architecture regarding the residuals distribution and format.

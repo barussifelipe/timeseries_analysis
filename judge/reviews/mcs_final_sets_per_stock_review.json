@@ -1,0 +1,28 @@
+{
+  "task": "Add per-stock final model lists to both window-matched MCS summaries before the existing all-five intersection",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/rfsv_adjustment_scoring.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/validate.py",
+    "imgs/eval/mcs/20_size/final_sets.md",
+    "imgs/eval/mcs/80_size/final_sets.md",
+    "imgs/eval/mcs/20_size/results.json",
+    "imgs/eval/mcs/80_size/results.json",
+    "git diff -- imgs/eval/mcs/20_size/final_sets.md imgs/eval/mcs/80_size/final_sets.md",
+    "Independent Python comparison of Markdown sections with results.json stock members, intersections, counts, and block lengths"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}
