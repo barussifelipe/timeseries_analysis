@@ -1,0 +1,33 @@
+{
+  "task": "Add residual underprediction and overprediction percentages and best metric rankings to Table 6.6 at the end of the Residual Structure section in the thesis report",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/validate.py",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.pdf",
+    "imgs/eval/mcs/20_size/forecasts.csv",
+    "imgs/eval/mcs/80_size/forecasts.csv",
+    "judge/check_residual_percentages.py"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 9
+  },
+  "findings": [
+    {
+      "category": "maintainability",
+      "severity": "minor",
+      "evidence": "CONTEXT.md currently states that underprediction and overprediction percentages are in each model's brief description, which reflects initial request 1 but was superseded by requests 2 and 3 that moved them into Table 6.6 (tab:residual-prediction-bias) at the end of Section 6.4 with a Best Metric column.",
+      "fix": "Update the latest entry in CONTEXT.md to record that under/overprediction percentages and best metric rankings are presented in Table 6.6 at the end of Section 6.4 rather than in the individual model brief descriptions."
+    }
+  ],
+  "total": 99,
+  "pass": true
+}

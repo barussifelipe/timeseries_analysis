@@ -39,7 +39,7 @@ def main():
     parser.add_argument('--output', type=Path, default=Path('imgs/eval/local_eval/test_data'))
     args = parser.parse_args()
     days, variance = test_targets(args.database)
-    plot(days, variance, args.output, 'Five-stock test targets')
+    plot(days, variance, args.output, 'Five-stock test targets', full_only=True)
     print(f'Plotted {len(variance):,} targets on {np.unique(days).size:,} dates')
 
 

@@ -1,0 +1,33 @@
+{
+  "task": "Add a normal curve to each of the eight Table 1 moment histograms using only the ten displayed values for each metric and residual transform.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/validate.py",
+    "imgs/eval/local_eval/residuals/moments.md",
+    "imgs/eval/local_eval/residuals/plot_moment_histograms.py",
+    "imgs/eval/local_eval/residuals/moments_raw_mean.png",
+    "imgs/eval/local_eval/residuals/moments_raw_std_dev.png",
+    "imgs/eval/local_eval/residuals/moments_raw_skewness.png",
+    "imgs/eval/local_eval/residuals/moments_raw_excess_kurtosis.png",
+    "imgs/eval/local_eval/residuals/moments_log_mean.png",
+    "imgs/eval/local_eval/residuals/moments_log_std_dev.png",
+    "imgs/eval/local_eval/residuals/moments_log_skewness.png",
+    "imgs/eval/local_eval/residuals/moments_log_excess_kurtosis.png",
+    "git status --short",
+    "git diff -- CONTEXT.md"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

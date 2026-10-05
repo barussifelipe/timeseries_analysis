@@ -1,0 +1,33 @@
+{
+  "task": "Rebuild the concluding residual box plot as a conventional single-panel full raw residual distribution for all ten retained variants, with 1.5-times-IQR whiskers and all fliers visible.",
+  "sources": [
+    "Original user request and supplied AGENTS.md instructions",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/residual_plot.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git status --short and git diff for CONTEXT.md and ref/final_report/thesis_structure.tex",
+    "inference/plot_thesis_residual_boxplot.py",
+    "imgs/eval/mcs/20_size/forecasts.csv",
+    "imgs/eval/mcs/80_size/forecasts.csv",
+    "imgs/eval/local_eval/residuals/moments.md",
+    "imgs/eval/local_eval/residuals/residual_boxplot_raw.png",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.pdf, rendered page 55",
+    "judge/check_residual_percentages.py and its successful run",
+    "Independent matched-key and finite-value check across all ten saved forecast variants; passed",
+    "https://arxiv.org/html/2205.07719, Figures 4 and 5",
+    "https://arxiv.org/html/2607.05291, Figure 2"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

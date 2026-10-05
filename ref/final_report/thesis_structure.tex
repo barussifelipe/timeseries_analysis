@@ -1088,7 +1088,7 @@ NVDA & 22 & 22 & None\\\hline
 \subsection{Residual Structure}
 We inspect residual timelines and histograms for the model variants shared by all five stock-level final MCS sets. The evaluation uses the same five stocks and forecast targets as Table~\ref{tab:matched-results}.
 
-First, the observed test targets provide a common reference for the model residuals. Write $v_i(t)$ for the observed adjusted Garman--Klass variance of ticker $i$ on test date $t$. The 8,800 positive variances comprise 1,760 dates for each of NVDA, AAPL, NFLX, GOOG, and AMZN from 2019 through 2025. The raw timeline plots the daily mean across the five stocks; the log timeline plots the natural logarithm of that mean. The histograms pool the individual targets, with an orange normal curve fitted to all 8,800 observations using their mean and population variance. The central 99.5\% panel changes only the displayed range. The raw histogram is strongly right-skewed, whereas the log histogram is more symmetric. The descriptive normal fit for the pooled log variances is $\log v_i(t)\sim\mathcal N(\mu=-8.472,\sigma^2=0.9996)$. 
+First, the observed test targets provide a common reference for the model residuals. Write $v_i(t)$ for the observed adjusted Garman--Klass variance of ticker $i$ on test date $t$. The 8,800 positive variances comprise 1,760 dates for each of NVDA, AAPL, NFLX, GOOG, and AMZN from 2019 through 2025. The raw timeline plots the daily mean across the five stocks; the log timeline plots the natural logarithm of that mean. The histograms pool the individual targets, with an orange normal curve fitted to all 8,800 observations using their mean and population variance. The raw histogram is strongly right-skewed, whereas the log histogram is more symmetric. The descriptive normal fit for the pooled log variances is $\log v_i(t)\sim\mathcal N(\mu=-8.472,\sigma^2=0.9996)$, with its data approximating this normal. 
 
 The timeline also shows a pronounced volatility spike in April 2025, coinciding with market turmoil following the April 2 US tariff announcement \cite{ecb2025fsr}. 
 
@@ -1104,7 +1104,7 @@ The timeline also shows a pronounced volatility spike in April 2025, coinciding 
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/test_data/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/test_data/histogram_log.png}\par
-\caption{Five-stock test targets: pooled raw and log variance histograms (left and right). Each shows the full distribution and a central 99.5\% display panel; the orange curve is fitted to all 8,800 targets.}
+\caption{Five-stock test targets: pooled raw and log variance histograms (left and right). Each shows all 8,800 targets; the orange curve is a full-sample normal fit.}
 \label{fig:local-test-target-histograms}
 \end{figure}
 \FloatBarrier
@@ -1128,7 +1128,7 @@ Positive values indicate underprediction and negative values overprediction.
 The following ten variants are the intersection of all five stock-level final MCS sets under both bootstrap block lengths (Table~\ref{tab:mcs-cross-window}). Each variant uses the same 8,800 five-stock forecast targets. A separately numbered timeline figure shows daily cross-ticker mean errors, followed by a separately numbered histogram figure showing individual-error distributions. Each histogram has an orange normal curve fitted to all 8,800 pooled residuals using their mean and population variance.
 
 \subsubsection{Base LSTM}
-\textbf{Base LSTM-20 Global.} The saved 20-observation global forecast is summarized in the following timeline and histogram figures. 
+\textbf{Base LSTM-20 Global.} The saved 20-observation global forecast is summarized in the following timeline and histogram figures.
 
 \begin{figure}[htbp]
 \centering
@@ -1142,12 +1142,12 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_log.png}\par
-\caption{Base LSTM-20 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\caption{Base LSTM-20 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
 \label{fig:residual-base-lstm-20-global-histograms}
 \end{figure}
 \FloatBarrier
 
-\textbf{Base LSTM-80 Global.} The saved 80-observation global forecast is summarized in the following timeline and histogram figures. 
+\textbf{Base LSTM-80 Global.} The saved 80-observation global forecast is summarized in the following timeline and histogram figures.
 
 \begin{figure}[htbp]
 \centering
@@ -1161,7 +1161,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_log.png}\par
-\caption{Base LSTM-80 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\caption{Base LSTM-80 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
 \label{fig:residual-base-lstm-80-global-histograms}
 \end{figure}
 \FloatBarrier
@@ -1180,7 +1180,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_log.png}\par
-\caption{Base LSTM-80 Local: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\caption{Base LSTM-80 Local: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
 \label{fig:residual-base-lstm-80-local-histograms}
 \end{figure}
 \FloatBarrier
@@ -1200,7 +1200,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_log.png}\par
-\caption{HARNet-20 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\caption{HARNet-20 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
 \label{fig:residual-harnet-20-global-histograms}
 \end{figure}
 \FloatBarrier
@@ -1219,7 +1219,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_log.png}\par
-\caption{HARNet-80 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\caption{HARNet-80 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
 \label{fig:residual-harnet-80-global-histograms}
 \end{figure}
 \FloatBarrier
@@ -1238,7 +1238,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_log.png}\par
-\caption{HARNet-80 Local: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\caption{HARNet-80 Local: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
 \label{fig:residual-harnet-80-local-histograms}
 \end{figure}
 \FloatBarrier
@@ -1258,7 +1258,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_log.png}\par
-\caption{MLP-20 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\caption{MLP-20 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
 \label{fig:residual-mlp-20-global-histograms}
 \end{figure}
 \FloatBarrier
@@ -1277,7 +1277,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_log.png}\par
-\caption{MLP-80 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\caption{MLP-80 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
 \label{fig:residual-mlp-80-global-histograms}
 \end{figure}
 \FloatBarrier
@@ -1297,7 +1297,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_log.png}\par
-\caption{RFSV-20 Local: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\caption{RFSV-20 Local: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
 \label{fig:residual-rfsv-20-local-histograms}
 \end{figure}
 \FloatBarrier
@@ -1316,10 +1316,56 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_log.png}\par
-\caption{RFSV-80 Local: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\caption{RFSV-80 Local: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
 \label{fig:residual-rfsv-80-local-histograms}
 \end{figure}
 \FloatBarrier
+
+Table~\ref{tab:residual-prediction-bias} reports the direction of one-step variance forecast errors across all 8,800 test predictions (1,760 daily observations across the five local stocks NVDA, AAPL, NFLX, GOOG, and AMZN) for each of the ten retained model variants. The Best Metric column indicates each model's highest-ranking loss metric among the 30 candidates in the five-stock Local and Global comparison (Table~\ref{tab:matched-results}), with its corresponding rank in parentheses. With residual defined as $e_i(t)=v_i(t)-\widehat v_i(t)$ per Equation~\eqref{eq:individual-residuals}, positive errors indicate underprediction and negative errors indicate overprediction. Across all variants, overprediction represents between 65.39\% and 74.99\% of predictions, with zero exact ties.
+
+\begin{table}[htbp]
+\centering\small\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llrrrr}
+\hline
+Model Variant & Best Metric & Under & Under (\%) & Over & Over (\%) \\
+\hline
+  Base LSTM-20 Global & QLIKE (2nd) & 2,477 & 28.15\% & 6,323 & 71.85\% \\
+  Base LSTM-80 Global & QLIKE (4th) & 2,635 & 29.94\% & 6,165 & 70.06\% \\
+  Base LSTM-80 Local & MASE (5th) & 2,829 & 32.15\% & 5,971 & 67.85\% \\
+  HARNet-20 Global & QLIKE (6th) & 2,657 & 30.19\% & 6,143 & 69.81\% \\
+  HARNet-80 Global & MSE (3rd) & 2,767 & 31.44\% & 6,033 & 68.56\% \\
+  HARNet-80 Local & MAE/MASE (2nd) & 2,879 & 32.72\% & 5,921 & 67.28\% \\
+  MLP-20 Global & QLIKE (8th) & 2,201 & 25.01\% & 6,599 & 74.99\% \\
+  MLP-80 Global & MSE/QLIKE (1st) & 2,609 & 29.65\% & 6,191 & 70.35\% \\
+  RFSV-20 Local & MSE (7th) & 3,046 & 34.61\% & 5,754 & 65.39\% \\
+  RFSV-80 Local & MSE (2nd) & 3,039 & 34.53\% & 5,761 & 65.47\% \\
+\hline
+\end{tabular}
+\caption{Direction of one-step variance forecast errors across all 8,800 test predictions per model variant and best-performing metric in the Local and Global comparison.}
+\label{tab:residual-prediction-bias}
+\end{table}
+\FloatBarrier
+
+In conclusion, our final model selection posses an accurate capacity of overpredicting instead of underpredicting, which is expected when modeling volatility. The ML models have been enforced by QLIKE, while RFSV manages to represent this behaviour by its architecture. Furthermore, the residual behaviour is similar across all models, with their histograms and timelines having alike structures. The only models that falls behind when comparing moments are: 
+
+\begin{table}[htbp]
+\centering\small\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lll}
+\hline
+Metric & Raw residuals & Log residuals \\
+\hline
+Mean & MLP-20 Global & MLP-20 Global \\
+Standard deviation & Base LSTM-80 Local & None \\
+Skewness & None & Base LSTM-20 Global \\
+Excess kurtosis & None & RFSV-20 Local, RFSV-80 Local \\
+\hline
+\end{tabular}
+\caption{Model variants outside Tukey-style 1.5-times-IQR fences~\cite{tukey1977} for each residual moment.}
+\label{tab:residual-moment-outliers}
+\end{table}
+\FloatBarrier
+
+
 
 \subsection{Parameter Complexity}
 For the idealized comparison in \cite{monteromanso2021}, take $B=2^{64}$ possible encodings per scalar parameter and $K=2,714$ tickers. For a model with $p$ fitted scalars, the parameter-combination budgets are
@@ -1376,6 +1422,7 @@ Counts include fitted coefficients and neural weights and biases, excluding opti
 \bibitem{pennstate508} The Pennsylvania State University. (n.d.). Linear regression, Gauss--Markov theorem. \emph{STAT 508: Applied Data Mining and Statistical Learning}, Lesson 4.
 \bibitem{nistskewkurt} National Institute of Standards and Technology. (n.d.). Measures of skewness and kurtosis. \emph{Engineering Statistics Handbook}, Section 1.3.5.11. \url{https://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm}.
 \bibitem{who2019anthro} World Health Organization and United Nations Children's Fund. (2019). \emph{Recommendations for data collection, analysis and reporting on anthropometric indicators in children under 5 years old}, p. 71. \url{https://iris.who.int/bitstream/handle/10665/324791/9789241515559-eng.pdf}.
+\bibitem{tukey1977} Tukey, J. W. (1977). \emph{Exploratory data analysis}. Addison-Wesley.
 
 \bibitem{engle1982} Engle, R. F. (1982). Autoregressive conditional heteroscedasticity with estimates of the variance of United Kingdom inflation. \emph{Econometrica}, 50(4), 987--1007.
 \bibitem{bollerslev1986} Bollerslev, T. (1986). Generalized autoregressive conditional heteroskedasticity. \emph{Journal of Econometrics}, 31(3), 307--327.

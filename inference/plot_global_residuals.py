@@ -34,8 +34,8 @@ def mean_variances_by_date(dates, actual, predicted):
             np.bincount(inverse, weights=predicted) / counts)
 
 
-def plot_residual_histogram(label, name, residuals, xlabel, output):
-    """Plot full and central residual counts with one pooled normal fit."""
+def plot_residual_histogram(label, name, residuals, xlabel, output, full_only=False):
+    """Plot residual counts with a normal fit to all observations."""
     residuals = np.asarray(residuals, dtype=float)
     if not len(residuals) or not np.isfinite(residuals).all():
         raise ValueError(f'{label}: missing or nonfinite {name} residuals')
@@ -46,11 +46,14 @@ def plot_residual_histogram(label, name, residuals, xlabel, output):
     standardized = (residuals - mean) / std
     skewness = float(np.mean(standardized ** 3))
     excess_kurtosis = float(np.mean(standardized ** 4) - 3)
-    low, high = np.quantile(residuals, [.0025, .9975])
-    central = residuals[(residuals >= low) & (residuals <= high)]
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
-    for ax, values, title in zip(axes, (residuals, central),
-                                 ('All residuals', 'Central 99.5%')):
+    if full_only:
+        panels = ((residuals, 'All residuals'),)
+    else:
+        low, high = np.quantile(residuals, [.0025, .9975])
+        panels = ((residuals, 'All residuals'),
+                  (residuals[(residuals >= low) & (residuals <= high)], 'Central 99.5%'))
+    fig, axes = plt.subplots(1, len(panels), figsize=(7 if full_only else 14, 5.5))
+    for ax, (values, title) in zip(np.atleast_1d(axes), panels):
         counts, edges = np.histogram(values, bins=120)
         ax.stairs(counts, edges, fill=True, color='#236c93', label='Observed')
         x = np.linspace(edges[0], edges[-1], 1000)
@@ -62,10 +65,17 @@ def plot_residual_histogram(label, name, residuals, xlabel, output):
         ax.set_ylabel('Forecast count')
         ax.grid(axis='y', alpha=.25)
         ax.legend()
-    fig.suptitle(f'{label} | {name.title()} test residuals | N = {len(residuals):,}\n'
-                 f'Normal fit: mean = {mean:.4g}, standard deviation = {std:.4g}, '
-                 f'skewness = {skewness:.4g}, excess kurtosis = {excess_kurtosis:.4g}')
-    fig.tight_layout()
+    if full_only:
+        fig.suptitle(f'{label} | {name.title()} residuals | N = {len(residuals):,}\n'
+                     f'Mean = {mean:.4g}, SD = {std:.4g}\n'
+                     f'Skewness = {skewness:.4g}, excess kurtosis = {excess_kurtosis:.4g}',
+                     fontsize=10)
+        fig.tight_layout(rect=(0, 0, 1, .88))
+    else:
+        fig.suptitle(f'{label} | {name.title()} test residuals | N = {len(residuals):,}\n'
+                     f'Normal fit: mean = {mean:.4g}, standard deviation = {std:.4g}, '
+                     f'skewness = {skewness:.4g}, excess kurtosis = {excess_kurtosis:.4g}')
+        fig.tight_layout()
     fig.savefig(output, dpi=150)
     plt.close(fig)
     return mean, std

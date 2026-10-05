@@ -1,3 +1,96 @@
+## Tukey citation for residual-moment table (2026-10-05)
+
+Table 6.7's caption now cites Tukey (1977) for the 1.5-times-spread boxplot
+convention while retaining the project's linearly interpolated quartile method
+and descriptive interpretation. The source was added to the thesis bibliography
+and working references, with the convention-versus-rationale distinction in
+thesis notes. No outlier classifications, data, forecasts, or scores changed.
+Next: interpret the residual patterns alongside matched QLIKE and MCS results.
+
+## Thesis residual-moment outlier table (2026-10-05)
+
+Section 6.4 now places a raw/log residual-moment outlier summary immediately
+after the concluding residual-structure sentence. The 1.5-times-IQR fences use
+linearly interpolated quartiles of the ten rounded model-level values displayed
+in `imgs/eval/local_eval/residuals/moments.md`, separately for each metric and
+transform. Raw mean flags MLP-20 Global; raw standard deviation flags Base
+LSTM-80 Local; log mean flags MLP-20 Global; log skewness flags Base LSTM-20
+Global; log excess kurtosis flags RFSV-20 Local and RFSV-80 Local. The other
+groups have no flagged model. This is descriptive; no individual residuals,
+forecasts, targets, splits, or scores changed. The eight-group arithmetic check
+passed; two in-place SyncTeX LaTeX passes rebuilt the 60-page PDF, and page 54
+was visually inspected. Next: interpret these patterns alongside matched QLIKE
+and MCS results.
+
+## Table 1 moment histograms across variants (2026-10-05)
+
+`imgs/eval/local_eval/residuals/moments.md` now embeds eight histograms: mean,
+standard deviation, skewness, and excess kurtosis separately for raw and log
+residual plots. Each uses only the ten displayed Table 1 model-summary values,
+with five equal-width bins; no individual residuals or source forecasts were
+loaded, and no training, target, split, or score changed. Each histogram has a
+normal curve fitted to its ten displayed values and scaled to expected bin
+counts; it is descriptive, not a normality test. The companion plotting script
+reads the Markdown table and regenerates the PNGs. Next: interpret the
+cross-variant dispersion alongside matched QLIKE and MCS results.
+
+## Thesis residual box plot: full distribution only (2026-10-05)
+
+The box plot closing Section 6.4 now has one panel for the full raw residual
+distribution of each of the ten retained variants. It uses the same 8,800
+matched one-step adjusted GK variance errors per variant; all fliers remain
+visible in a horizontal standard box plot. Whiskers use the standard
+1.5-times-IQR rule and end at the most extreme observation within each fence;
+the user-requested redesign removed the earlier legend, mean markers, and
+IQR-focused second panel. The thesis caption and
+`imgs/eval/local_eval/residuals/moments.md` describe the single panel.
+Forecasts, targets, splits, and scores did not change. The PNG
+was regenerated from saved MCS forecasts, the focused residual-percentage
+check passed, and two in-place SyncTeX LaTeX passes rebuilt the PDF; page 55
+was visually inspected. Next: interpret residual patterns alongside matched
+QLIKE and MCS results, then revisit stale RFSV prose.
+
+## Thesis residual forecast error direction and best metric table (2026-10-05)
+
+Section 6.4 (Residual Structure) concludes with Table 6.6 (`tab:residual-prediction-bias`),
+which reports one-step variance forecast error direction (under- and overprediction counts
+and percentages) alongside each variant's best-performing metric from the matched Local
+and Global comparison (Table 6.2 / `tab:matched-results`). The brief descriptions of
+the ten individual variants remain clean without inline percentages. The introductory
+prose before Table 6.6 explains the total of 8,800 test predictions (1,760 daily dates
+across the five local assets NVDA, AAPL, NFLX, GOOG, and AMZN), omitting the `Total (N)`
+column from the table, and defines errors as $e_i(t) = v_i(t) - \widehat v_i(t)$.
+Every variant exhibited zero exact ties. The Best Metric column lists each model's
+highest-ranking metric and rank across the 30 candidates:
+Base LSTM-20 Global (QLIKE, 2nd; 28.15% under, 71.85% over),
+Base LSTM-80 Global (QLIKE, 4th; 29.94% under, 70.06% over),
+Base LSTM-80 Local (MASE, 5th; 32.15% under, 67.85% over),
+HARNet-20 Global (QLIKE, 6th; 30.19% under, 69.81% over),
+HARNet-80 Global (MSE, 3rd; 31.44% under, 68.56% over),
+HARNet-80 Local (MAE/MASE, 2nd; 32.72% under, 67.28% over),
+MLP-20 Global (QLIKE, 8th; 25.01% under, 74.99% over),
+MLP-80 Global (MSE/QLIKE, 1st; 29.65% under, 70.35% over),
+RFSV-20 Local (MSE, 7th; 34.61% under, 65.39% over), and
+RFSV-80 Local (MSE, 2nd; 34.53% under, 65.47% over).
+Two in-place SyncTeX-enabled pdflatex passes rebuilt the 60-page PDF; rendered pages 53-56
+were inspected via pdftotext. Focused verification script `judge/check_residual_percentages.py`
+passed, and fresh-context cold review `judge/reviews/thesis_residual_percentages_review.json`
+passed 99/100 and validated. Next: interpret residual patterns alongside matched QLIKE and
+MCS results, then revisit stale RFSV prose.
+
+## Thesis residual histograms: full observations only (2026-10-05)
+
+The ten Residual Structure variants retain side-by-side raw and log histogram
+images, each now showing only its full 8,800-observation distribution. The 20
+residual histogram PNGs were regenerated from the saved window-matched MCS
+forecast CSVs. The two five-stock test-target histograms in the same section
+were also regenerated with only their full 8,800-observation distribution;
+the orange normal fit and displayed mean, standard deviation, skewness, and
+excess kurtosis use each full set. The corresponding captions and target prose
+changed in `thesis_structure.tex`. Forecasts, targets, losses, and timelines did
+not change. Focused residual and target plot checks passed. Next: interpret residual patterns alongside
+matched QLIKE and MCS results, then revisit stale RFSV prose.
+
 ## Thesis moment interpretation bands (2026-10-05)
 
 Section 2 now has bullet interpretations immediately after Equations 2.6 and

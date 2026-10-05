@@ -1,0 +1,26 @@
+{
+  "task": "Create one histogram for each Table 1 metric (mean, standard deviation, skewness, excess kurtosis) for raw and log residuals using only displayed table values, and embed them in moments.md.",
+  "sources": [
+    "User task as supplied to the cold reviewer",
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "imgs/eval/local_eval/residuals/moments.md",
+    "imgs/eval/local_eval/residuals/plot_moment_histograms.py",
+    "imgs/eval/local_eval/residuals/moments_*.png (all eight files checked for existence and dimensions; raw mean and log excess kurtosis visually inspected)",
+    "Direct run: .venv/Scripts/python.exe imgs/eval/local_eval/residuals/plot_moment_histograms.py",
+    "Direct parser check: ten displayed rows and four numeric values per raw and log group"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

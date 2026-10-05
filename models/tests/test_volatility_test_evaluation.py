@@ -7,7 +7,8 @@ import pandas as pd
 
 from inference.evaluate_volatility_test import (Totals, save_table, scales_from_test,
                                                 score_statistical, statistical_predictions)
-from inference.plot_global_residuals import mean_variances_by_date, plot_residuals
+from inference.plot_global_residuals import (mean_variances_by_date, plot_residual_histogram,
+                                             plot_residuals)
 from models.rfsv import RFSV
 from models.training_blocks import TimeSeriesDataset, variance_metrics
 
@@ -56,6 +57,14 @@ def test_one_step_statistical_and_output(tmp_path):
     for figure in figures:
         original_close(figure)
     assert len(list(folder.glob('*.png'))) == 6
+    full_figures = []
+    with patch('inference.plot_global_residuals.plt.close', side_effect=full_figures.append):
+        plot_residual_histogram('HAR-20', 'raw', np.array([1., 2., 3., 4., 10.]),
+                                'Residual', folder / 'full_only.png', full_only=True)
+    assert len(full_figures[0].axes) == 1
+    assert full_figures[0].axes[0].get_xlim()[1] >= 10
+    assert 'Central 99.5%' not in full_figures[0].axes[0].get_title()
+    original_close(full_figures[0])
     days, mean_actual, mean_predicted = mean_variances_by_date(
         np.array(['2025-01-02', '2025-01-01', '2025-01-02', '2025-01-01'],
                  dtype='datetime64[D]'),

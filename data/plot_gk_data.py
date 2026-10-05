@@ -71,7 +71,7 @@ def observations(conn):
     return result, counts, floors, names
 
 
-def plot(days, variance, output, title):
+def plot(days, variance, output, title, full_only=False):
     output.mkdir(parents=True, exist_ok=True)
     unique, daily = daily_mean(days, variance)
     for scale, series, ylabel in (('raw', daily, 'Daily unannualized GK variance'),
@@ -91,10 +91,14 @@ def plot(days, variance, output, title):
         standardized = (values - mean) / std
         skewness = np.mean(standardized ** 3)
         excess_kurtosis = np.mean(standardized ** 4) - 3
-        lo, hi = np.quantile(values, [.0025, .9975])
-        fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
-        for ax, shown, label in zip(axes, (values, values[(values >= lo) & (values <= hi)]),
-                                    ('All observations', 'Central 99.5%')):
+        if full_only:
+            panels = ((values, 'All observations'),)
+        else:
+            lo, hi = np.quantile(values, [.0025, .9975])
+            panels = ((values, 'All observations'),
+                      (values[(values >= lo) & (values <= hi)], 'Central 99.5%'))
+        fig, axes = plt.subplots(1, len(panels), figsize=(7 if full_only else 14, 5.5))
+        for ax, (shown, label) in zip(np.atleast_1d(axes), panels):
             counts, edges = np.histogram(shown, bins=120)
             ax.stairs(counts, edges, fill=True, color='#236c93', label='Observed')
             x = np.linspace(edges[0], edges[-1], 1000)
@@ -104,10 +108,17 @@ def plot(days, variance, output, title):
             ax.set(xlabel=xlabel, ylabel='Observation count', title=label)
             ax.grid(axis='y', alpha=.25)
             ax.legend()
-        fig.suptitle(f'{title}: {scale} GK variance | N = {len(values):,}\n'
-                     f'Normal fit: mean = {mean:.4g}, standard deviation = {std:.4g}, '
-                     f'skewness = {skewness:.4g}, excess kurtosis = {excess_kurtosis:.4g}')
-        fig.tight_layout()
+        if full_only:
+            fig.suptitle(f'{title}: {scale} GK variance | N = {len(values):,}\n'
+                         f'Mean = {mean:.4g}, SD = {std:.4g}\n'
+                         f'Skewness = {skewness:.4g}, excess kurtosis = {excess_kurtosis:.4g}',
+                         fontsize=10)
+            fig.tight_layout(rect=(0, 0, 1, .88))
+        else:
+            fig.suptitle(f'{title}: {scale} GK variance | N = {len(values):,}\n'
+                         f'Normal fit: mean = {mean:.4g}, standard deviation = {std:.4g}, '
+                         f'skewness = {skewness:.4g}, excess kurtosis = {excess_kurtosis:.4g}')
+            fig.tight_layout()
         fig.savefig(output / f'histogram_{scale}.png', dpi=150)
         plt.close(fig)
 

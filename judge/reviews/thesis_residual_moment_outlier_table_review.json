@@ -1,0 +1,26 @@
+{
+  "task": "Add the 1.5-times-IQR residual-moment model-outlier table immediately after the residual-structure conclusion in the thesis",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "imgs/eval/local_eval/residuals/moments.md",
+    "git diff -- ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.pdf, page 54 (rendered image and pdftotext)",
+    "ref/final_report/thesis_structure.log",
+    "Independent NumPy linear-percentile check of the eight displayed moment groups"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

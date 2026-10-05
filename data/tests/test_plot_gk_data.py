@@ -28,5 +28,11 @@ def test_ticker_date_pooling():
             assert f'excess kurtosis = {np.mean(standardized ** 4) - 3:.4g}' in title
         for figure in figures:
             plt.close(figure)
+        full_figures = []
+        with patch('data.plot_gk_data.plt.close', side_effect=full_figures.append):
+            plot(days, variance, Path(root), 'Known example', full_only=True)
+        assert all(len(figure.axes) == 1 for figure in full_figures[2:])
+        for figure in full_figures:
+            plt.close(figure)
         assert {p.name for p in Path(root).glob('*.png')} == {
             'timeline_raw.png', 'timeline_log.png', 'histogram_raw.png', 'histogram_log.png'}
