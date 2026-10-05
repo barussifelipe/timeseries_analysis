@@ -2,6 +2,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage{url}
 \usepackage{xcolor}
 \usepackage{longtable}
 \usepackage{array}
@@ -567,6 +568,30 @@ History length & Training & Validation & Test \\
 \end{tabular}
 \end{center}
 
+\subsubsection{Global Data}
+The following descriptive figures use the full 2,714-ticker forecasting cohort through December 31, 2025. They plot valid adjusted-OHLC Garman--Klass observations, independently of forecast-window eligibility. The raw daily timeline averages the available tickers on each date.
+
+The timeline shows elevated variance around late 1987 and early 1988, near the October 19, 1987 Black Monday crash \cite{bernhardt1987crash}; in 2008, during the financial crisis linked to subprime mortgages \cite{weinberg2008crisis}; and in 2020, during the COVID-19 pandemic \cite{fed2020mpr}. 
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{../../imgs/gk_data/global/full/timeline_raw.png}\hfill
+\caption{Global full-history adjusted Garman--Klass variance, until December 31, 2025: daily cross-ticker mean.}
+\label{fig:gk-global-full-timeline}
+\end{figure}
+\FloatBarrier
+
+\subsubsection{Local Data}
+The local view pools NVDA, AAPL, NFLX, GOOG, and AMZN across their full available histories through December 31, 2025. The timeline shows elevated variance around the 2000--2001 dot-com collapse \cite{fed2001mpr} and after the September 11, 2001 attacks \cite{fomc2001oct} with greater 
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{../../imgs/gk_data/local/full/timeline_raw.png}\hfill
+\caption{Five-stock full-history adjusted Garman--Klass variance through December 31, 2025: daily available-ticker mean.}
+\label{fig:gk-local-full-timeline}
+\end{figure}
+\FloatBarrier
+
 \subsection{Models}
  Each sample consists of one ticker's history and one next-observation target. Local models use their own parameter vector $\theta_i$, whereas global models share one vector $\theta$ across these separate samples, as in \eqref{eq:local-global-forecasts}. 
 
@@ -719,18 +744,38 @@ $w_\ell$ are scalar readout weights and $b_{\mathrm{out}}$ is its intercept.
 \subsection{Input data}
 The configurations below describe the experiments selected by the current evaluation scripts. Global fits pool the 2,714-ticker forecasting dataset; local fits estimate parameters separately for the five tickers with the highest average daily trading volume before 2016: NVDA, AAPL, NFLX, GOOG, and AMZN. Each target is next-recorded-observation, daily, unannualized adjusted Garman--Klass variance, with the zero-target adjustment defined in \eqref{eq:methods-target-floor}.
 
+The four training-history figures below describe valid observed variances before January 1, 2016, using the same ticker set as section 3.1. Daily timelines average available tickers, then take the natural log of that mean for the log panel. The logarithm compresses large variance values and gives equal distances to equal ratios: $0.001 \rightarrow 0.0001$ spans the same distance as $0.0001 \rightarrow 0.00001$ on the log scale. Valid zero observations use the floor $f_{\mathrm{target}}=3.396062419686545\times10^{-13}$ before logarithms because $\log(0)$ is undefined. Box and Jenkins recommend using log-transform to stabilize the heteroscedasticity on variance \cite{boxjenkins1970}. Our data is not stationary in mean neither in variance. We can't find evidences of cycles as well.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/gk_data/global/train/timeline_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/gk_data/global/train/timeline_log.png}
+\caption{Global pre-2016 training-history adjusted Garman--Klass observations: daily available-ticker mean (left, daily unannualized variance) and its natural logarithm (right, dimensionless). Valid zeros use the positive pre-2016 cohort floor.}
+\label{fig:gk-global-train-timeline}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/gk_data/local/train/timeline_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/gk_data/local/train/timeline_log.png}
+\caption{NVDA, AAPL, NFLX, GOOG, and AMZN pre-2016 training-history adjusted Garman--Klass observations: daily available-ticker mean (left, daily unannualized variance) and its natural logarithm (right, dimensionless). Valid zeros use each ticker's pre-2016 floor.}
+\label{fig:gk-local-train-timeline}
+\end{figure}
+\FloatBarrier
+
 \begin{itemize}
     \item \textbf{AR:} uses as input the latest estimator variance. At each possible training target, AR checks the preceding 20 recorded observations. If all are valid and positive and the target is valid, it adds the latest variance–target pair to least squares.
     \item \textbf{SARIMA:} uses the variance observations as input. It divides each ticker's training history into segments, with at least 21 observations, of consecutive valid, positive-variance observations. An invalid observation ends the segment and is excluded; a valid zero-variance observation is floored, included as the final observation, and ends the segment.
     \item \textbf{GARCH:} uses the within-session log returns. It uses the same training segment rules as SARIMA. Its conditional mean is an expanding average of preceding returns within that segment. 
     \item \textbf{HAR:} uses the raw variance histories. HAR-20 uses variance histories of 20 observations; HAR-80 uses 80. Their inputs are the variance averages for the corresponding horizons.
-    \item \textbf{RFSV:} uses log variance history. Here $T$ is the number of all preceding valid positive observations within the forecast ticker, excluding the target and future observations. Invalid and zero inputs are omitted from this full history, so $T$ varies by ticker and forecast date. 
+    \item \textbf{RFSV:} uses log variance history following \cite{gatheral2018} setup. Here $T$ is the number of all preceding valid positive observations within the forecast ticker, excluding the target and future observations. Invalid and zero inputs are omitted from this full history, so $T$ varies by ticker and forecast date. 
     \item \textbf{MLP:} \textbf{Input:} the 20- and 80-observation variants use two features per observation: log volatility $= \tfrac12\log v(t)$ and log return. The scalar output is log variance, exponentiated for a variance forecast.
     \item \textbf{LSTM:} log volatility and log return. The 20- and 80-observation variants process these features in chronological sequence order and output log variance.
     \item \textbf{SiLU-LSTM:} \textbf{Input:} raw variance and log return. The 20- and 80-observation variants produce a direct variance output.
     \item \textbf{HARNet:} \textbf{Input:} HARNet-20 and HARNet-80 receive variance alone, in 20- and 80-observation histories respectively, and produce direct variance outputs.
 \end{itemize}
- Training-derived positive prediction floors are applied after the output mapping in \eqref{eq:methods-output-map}; each local fit derives its floor from its own ticker's training history.
+ Training-derived positive prediction floors are applied after the output mapping in \eqref{eq:methods-output-map}; each local fit derives its floor from its own ticker's training history. We've observed during fitting that log scaled inputs responded better for MLPs and LSTM. We've used log returns since $\log(1) = 0$ and explore the property where $\log\left(\frac{\mathrm{Close}}{\mathrm{Open}}\right) = \log(\mathrm{Close})-\log(\mathrm{Open})$.
 
 \subsection{Hyperparameters}
 The neural model hyperparameters were selected by comparing baseline LSTM configurations with a fixed input window of 20 observations. Hidden sizes of $\{4,16,32,64,128\}$ were evaluated, with 128 yielding the best performance in these comparisons. This choice is also consistent with Zhang et al., who used 128 units in the first hidden layer of their LSTM architectures \cite{zhang2022}. Learning rates of $10^{-3}$ and $10^{-4}$ were compared, and $10^{-3}$ was selected for its better convergence performance.
@@ -842,7 +887,7 @@ The Base LSTM-20 and MLP-80 entries cover only their resumed runs. Earlier runs 
 The five-stock local comparison required 49 minutes and 5 seconds for all 70 local fits. 
 
 \section{Technical Evaluation}
-\subsubsection{Overall Result}
+\subsection{Overall Result}
 The equity tables report saved one-step forecasts of daily, unannualized adjusted Garman--Klass variance; Table~\ref{tab:crypto-results} instead uses daily vendor crypto OHLC without equity adjustment. Forecasts are mapped back from any model-specific output transformation. MAE and RMSE have variance units, MSE has squared variance units, and MASE and QLIKE are dimensionless. Smaller losses are better. The equity source dataset has 2,714 tickers. 
 
 On \ref{tab:global-results}, it's clear to observe that models who used longer periods per forecast performed better than their counterparts. MLP-80 and Base LSTM-80 presented the best results. MLP-80 had the lowest MAE, MASE and second lowest MSE (RMSE follows), demonstrating an overall capacity to reconstruct actual values, while avoiding larger errors which would bring MSE up and keeping a better performance compared to the naive mean absolute change between observations. Base LSTM-80 had the lowest QLIKE and second best MAE and MASE, translating to a model which behaved best accordingly to practical standards where predicting lower values are worse than higher values. SiLU-LSTM-80 had the best performance for MSE, which was expected due to its fitting process, however had the second worse QLIKE value due to its inherently forecasting instability. 
@@ -929,7 +974,7 @@ RFSV-80 Global & 2.80188 & 1.15992 & 2.25784 & 4.751670 & 0.322797\\
 \end{longtable}
 \endgroup
 
-\subsubsection{Crypto Evaluation}
+\subsection{Crypto Evaluation}
 The saved equity-trained Global fits were also evaluated without refitting on the five dollar-volume-selected cryptocurrencies (BTC, ETH, SOL, XRP, and DOGE). Table \ref{tab:crypto-results} uses the same 1,760 positive target dates per crypto at both input windows, or 8,800 ticker/date forecasts per row. Each forecast targets the next recorded vendor daily, unannualized Garman--Klass variance. 
 
 Base LSTM-20 has the smallest crypto MAE and MASE, SiLU-LSTM-80 the smallest MSE and RMSE, and Base LSTM-80 the smallest QLIKE under daily Garman--Klass variance. Compared to the equities Global comparison, we can't affirm that a longer window is better. Furthermore, MLP-80 dropped from the top, having the 4th largest QLIKE score. However, RFSV-80 entered the leaderboard with the second lowest QLIKE score. 
@@ -1004,7 +1049,7 @@ RFSV-80 & \textcolor{blue}{7.07342} & 1.065548 & \textcolor{red}{0.96381} & \tex
 \end{longtable}
 \endgroup
 
-\subsubsection{Model statistical significance}
+\subsection{Model Statistical Significance}
 As described in Section 2.5, we compare all 30 distinct local and global candidates on the same 1,760 test observations per stock using QLIKE and a 90\% model confidence set. We run the procedure separately with moving bootstrap blocks of 20 and 80 retained observations. Both comparisons include the 20- and 80-observation forecast variants. 
 
 Each stock produces its own final set. Table~\ref{tab:mcs-cross-window} reports its size under each block length and the models appearing in only one of those sets. The intersection across the five stock-level final sets is identical for \emph{both} block lengths: Base LSTM-20 Global; Base LSTM-80 Global; Base LSTM-80 Local; HARNet-20 Global; HARNet-80 Global; HARNet-80 Local; MLP-20 Global; MLP-80 Global; RFSV-20 Local; and RFSV-80 Local. Retention means the procedure did not reject a model from the remaining set at the chosen level; it does not establish equal expected loss.
@@ -1023,12 +1068,222 @@ NVDA & 22 & 22 & None\\\hline
 \end{table}
 \FloatBarrier 
 
-\subsubsection{Residual Structure}
-With the purpose of analyzing the structure of residuals and providing a further understading of the prediction behaviour of each model, we will provide residuals histogram and timelines for each model type and their local/global variants present in the final MCS set. 
+\subsection{Residual Structure}
+We inspect residual timelines and histograms for the model variants shared by all five stock-level final MCS sets. The evaluation uses the same five stocks and forecast targets as Table~\ref{tab:matched-results}.
 
-Raw residuals are actual minus predicted variance; individual log residuals are $\log v(t)-\log\widehat v(t)$. Positive values indicate underprediction and negative values overprediction. Raw daily timelines show the cross-ticker mean actual minus mean predicted variance. Log daily timelines instead show $\log(\overline v(t))-\log(\overline{\widehat v}(t))$, not the mean of individual log residuals. Cross-ticker averaging can conceal offsetting errors. Each histogram has an all-residual panel and a central-99.5\% panel trimmed at the 0.25\% and 99.75\% quantiles for display only; the daily mean timelines and saved losses use all observations. Existing axis scales and histogram bins differ, so compare numeric axes rather than apparent panel widths or peak heights.
+Let $v_i(t)$ be the realized Garman--Klass variance and $\widehat v_i(t)$ its one-step forecast for ticker $i$ on retained target date $t$. The individual raw and log residuals are
+\begin{equation}\label{eq:individual-residuals}
+e_i(t)=v_i(t)-\widehat v_i(t),\qquad
+e_i^{\log}(t)=\log v_i(t)-\log\widehat v_i(t).
+\end{equation}
+For a fixed model variant, let $I(t)$ be the set of tickers with a valid actual--forecast pair on target date $t$; here $|I(t)|=5$. The plotted daily cross-ticker quantities are
+\begin{equation}\label{eq:daily-mean-residuals}
+\begin{aligned}
+\overline v(t)&=\frac{1}{|I(t)|}\sum_{j\in I(t)}v_j(t), &
+\overline{\widehat v}(t)&=\frac{1}{|I(t)|}\sum_{j\in I(t)}\widehat v_j(t),\\
+\overline e(t)&=\overline v(t)-\overline{\widehat v}(t), &
+e_{\mathrm{mean}}^{\log}(t)&=\log\overline v(t)-\log\overline{\widehat v}(t).
+\end{aligned}
+\end{equation}
+Positive values indicate underprediction and negative values overprediction.
 
-\subsubsection{Parameter Complexity}
+The following ten variants are the intersection of all five stock-level final MCS sets under both bootstrap block lengths (Table~\ref{tab:mcs-cross-window}). Each variant uses the same 8,800 five-stock forecast targets. A separately numbered timeline figure shows daily cross-ticker mean errors, followed by a separately numbered histogram figure showing individual-error distributions. Each histogram has an orange normal curve fitted to all 8,800 pooled residuals using their mean and population variance.
+
+\subsubsection{Base LSTM}
+\textbf{Base LSTM-20 Global.} The saved 20-observation global forecast is summarized in the following timeline and histogram figures. 
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_log.png}\par
+\caption{Base LSTM-20 Global: raw and log daily cross-ticker mean residual timelines (left and right).}
+\label{fig:residual-base-lstm-20-global-timeline}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_log.png}\par
+\caption{Base LSTM-20 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\label{fig:residual-base-lstm-20-global-histograms}
+\end{figure}
+\FloatBarrier
+
+\textbf{Base LSTM-80 Global.} The saved 80-observation global forecast is summarized in the following timeline and histogram figures.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_log.png}\par
+\caption{Base LSTM-80 Global: raw and log daily cross-ticker mean residual timelines (left and right).}
+\label{fig:residual-base-lstm-80-global-timeline}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_log.png}\par
+\caption{Base LSTM-80 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\label{fig:residual-base-lstm-80-global-histograms}
+\end{figure}
+\FloatBarrier
+
+\textbf{Base LSTM-80 Local.} The saved 80-observation local forecast is summarized in the following timeline and histogram figures.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_log.png}\par
+\caption{Base LSTM-80 Local: raw and log daily cross-ticker mean residual timelines (left and right).}
+\label{fig:residual-base-lstm-80-local-timeline}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_log.png}\par
+\caption{Base LSTM-80 Local: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\label{fig:residual-base-lstm-80-local-histograms}
+\end{figure}
+\FloatBarrier
+
+\subsubsection{HARNet}
+\textbf{HARNet-20 Global.} The saved 20-observation global forecast is summarized in the following timeline and histogram figures.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_log.png}\par
+\caption{HARNet-20 Global: raw and log daily cross-ticker mean residual timelines (left and right).}
+\label{fig:residual-harnet-20-global-timeline}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_log.png}\par
+\caption{HARNet-20 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\label{fig:residual-harnet-20-global-histograms}
+\end{figure}
+\FloatBarrier
+
+\textbf{HARNet-80 Global.} The saved 80-observation global forecast is summarized in the following timeline and histogram figures.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_log.png}\par
+\caption{HARNet-80 Global: raw and log daily cross-ticker mean residual timelines (left and right).}
+\label{fig:residual-harnet-80-global-timeline}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_log.png}\par
+\caption{HARNet-80 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\label{fig:residual-harnet-80-global-histograms}
+\end{figure}
+\FloatBarrier
+
+\textbf{HARNet-80 Local.} The saved 80-observation local forecast is summarized in the following timeline and histogram figures.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_log.png}\par
+\caption{HARNet-80 Local: raw and log daily cross-ticker mean residual timelines (left and right).}
+\label{fig:residual-harnet-80-local-timeline}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_log.png}\par
+\caption{HARNet-80 Local: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\label{fig:residual-harnet-80-local-histograms}
+\end{figure}
+\FloatBarrier
+
+\subsubsection{MLP}
+\textbf{MLP-20 Global.} The saved 20-observation global forecast is summarized in the following timeline and histogram figures.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/mlp_20/global/timeline_mean_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/mlp_20/global/timeline_mean_log.png}\par
+\caption{MLP-20 Global: raw and log daily cross-ticker mean residual timelines (left and right).}
+\label{fig:residual-mlp-20-global-timeline}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_log.png}\par
+\caption{MLP-20 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\label{fig:residual-mlp-20-global-histograms}
+\end{figure}
+\FloatBarrier
+
+\textbf{MLP-80 Global.} The saved 80-observation global forecast is summarized in the following timeline and histogram figures.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/mlp_80/global/timeline_mean_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/mlp_80/global/timeline_mean_log.png}\par
+\caption{MLP-80 Global: raw and log daily cross-ticker mean residual timelines (left and right).}
+\label{fig:residual-mlp-80-global-timeline}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_log.png}\par
+\caption{MLP-80 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\label{fig:residual-mlp-80-global-histograms}
+\end{figure}
+\FloatBarrier
+
+\subsubsection{RFSV}
+\textbf{RFSV-20 Local.} The saved 20-observation local forecast is summarized in the following timeline and histogram figures.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/rfsv_20/local/timeline_mean_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/rfsv_20/local/timeline_mean_log.png}\par
+\caption{RFSV-20 Local: raw and log daily cross-ticker mean residual timelines (left and right).}
+\label{fig:residual-rfsv-20-local-timeline}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_log.png}\par
+\caption{RFSV-20 Local: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\label{fig:residual-rfsv-20-local-histograms}
+\end{figure}
+\FloatBarrier
+
+\textbf{RFSV-80 Local.} The saved 80-observation local forecast is summarized in the following timeline and histogram figures.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/rfsv_80/local/timeline_mean_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/rfsv_80/local/timeline_mean_log.png}\par
+\caption{RFSV-80 Local: raw and log daily cross-ticker mean residual timelines (left and right).}
+\label{fig:residual-rfsv-80-local-timeline}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_log.png}\par
+\caption{RFSV-80 Local: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals and a display-trimmed central 99.5\% panel; the orange curve is a full-sample normal fit.}
+\label{fig:residual-rfsv-80-local-histograms}
+\end{figure}
+\FloatBarrier
+
+\subsection{Parameter Complexity}
 For the idealized comparison in \cite{monteromanso2021}, take $B=2^{64}$ possible encodings per scalar parameter and $K=2,714$ tickers. For a model with $p$ fitted scalars, the parameter-combination budgets are
 \begin{equation}\label{eq:technical-combinations}
 C_{\mathrm{local}}=B^{2,714p},\qquad C_{\mathrm{global}}=B^p.
@@ -1064,6 +1319,11 @@ Counts include fitted coefficients and neural weights and biases, excluding opti
 % Summarize the work and outline possible future developments.
 
 \begin{thebibliography}{99}
+\bibitem{bernhardt1987crash} Bernhardt, D., and Eckblad, M. (n.d.). Stock market crash of 1987. \emph{Federal Reserve History}. \url{https://www.federalreservehistory.org/essays/stock-market-crash-of-1987}.
+\bibitem{weinberg2008crisis} Weinberg, J. (n.d.). The Great Recession and its aftermath. \emph{Federal Reserve History}. \url{https://www.federalreservehistory.org/essays/great-recession-and-its-aftermath}.
+\bibitem{fed2020mpr} Board of Governors of the Federal Reserve System. (2020). \emph{Monetary Policy Report}, June 12, Part 1: Recent economic and financial developments. \url{https://www.federalreserve.gov/monetarypolicy/2020-06-mpr-part1.htm}.
+\bibitem{fed2001mpr} Board of Governors of the Federal Reserve System. (2001). \emph{Monetary Policy Report to the Congress}, July 18, Section 2: Economic and financial developments in 2001. \url{https://www.federalreserve.gov/boarddocs/hh/2001/july/ReportSection2.htm}.
+\bibitem{fomc2001oct} Federal Open Market Committee. (2001). \emph{Minutes of the Federal Open Market Committee}, October 2. \url{https://www.federalreserve.gov/fomc/minutes/20011002.htm}.
 \bibitem{euronext2015} Euronext. (2015). Gong marks exchange anniversary and exchange history website launch. Euronext Amsterdam.
 \bibitem{bloombergterminal} Bloomberg Professional Services. (n.d.). Bloomberg Terminal: Real-time data, news, and analytics.
 \bibitem{nasdaqtotalview} Nasdaq. (n.d.). Nasdaq TotalView: Direct market-data feed.

@@ -1,0 +1,28 @@
+{
+  "task": "Split each model variant's residual plots into separately numbered timeline and histogram figures",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/residual_plot.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- CONTEXT.md judge/check_technical_evaluation.py ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.tex",
+    "judge/check_technical_evaluation.py",
+    "ref/final_report/thesis_structure.aux",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf (pdftotext pages 40-46)",
+    "python judge/check_technical_evaluation.py"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

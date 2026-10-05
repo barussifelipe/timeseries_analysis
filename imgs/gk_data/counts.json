@@ -1,0 +1,42 @@
+{
+  "cohort_tickers": 2714,
+  "local_tickers": [
+    "AAPL",
+    "AMZN",
+    "GOOG",
+    "NFLX",
+    "NVDA"
+  ],
+  "end_date": "2025-12-31",
+  "train_end_exclusive": "2016-01-01",
+  "global_floor": 3.396062419686545e-13,
+  "local_floors": {
+    "AAPL": 1.4346749840017278e-06,
+    "AMZN": 1.6514549371501217e-05,
+    "GOOG": 7.183749465642971e-06,
+    "NFLX": 5.220344092297364e-06,
+    "NVDA": 2.159315941011296e-05
+  },
+  "counts": {
+    "global": {
+      "raw": 19220867,
+      "invalid": 176432,
+      "zeros": 1254289,
+      "train_raw": 12397872,
+      "train_invalid": 165479,
+      "train_zeros": 1078857,
+      "plotted": 19044435,
+      "train_plotted": 12232393
+    },
+    "local": {
+      "raw": 36654,
+      "invalid": 16,
+      "zeros": 28,
+      "train_raw": 24084,
+      "train_invalid": 16,
+      "train_zeros": 28,
+      "plotted": 36638,
+      "train_plotted": 24068
+    }
+  }
+}

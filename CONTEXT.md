@@ -1,3 +1,64 @@
+## Garman--Klass data figures (2026-10-05)
+
+`data/plot_gk_data.py` reads the existing 2,714-ticker raw-history cohort read-only
+and writes 16 adjusted-OHLC GK PNGs plus `imgs/gk_data/counts.json`. Section 3.1
+now shows full-history global and five-stock data; Section 4.1 shows their
+pre-2016 observations before model inputs. Full-history global rows: 19,220,867
+raw, 176,432 invalid, 19,044,435 plotted, including 1,254,289 valid zeros
+replaced by the cohort training floor 3.396062419686545e-13. Pre-2016 global:
+12,397,872 raw, 165,479 invalid, 12,232,393 plotted, including 1,078,857
+floored zeros. Full-history local: 36,654 raw, 16 invalid, 36,638 plotted,
+including 28 zeros; pre-2016 local: 24,084 raw, 16 invalid, 24,068 plotted,
+including the same 28 zeros. Local floors come from each stock's positive
+pre-2016 observations. Timelines show the daily mean and natural log of that
+mean; histograms pool observations and fit one normal curve per full plotted
+population, with a central 99.5% display zoom. These are descriptive rows,
+not eligible forecast windows. The tiny GK formula and daily-mean checks passed;
+all 16 PNGs were checked; two in-place SyncTeX-enabled LaTeX passes produced a
+readable 56-page PDF and the new pages were inspected. No source data, training,
+forecast, or score file changed. The broader data-selection and technical-
+evaluation checkers still fail older assertions outside this GK work. Next:
+interpret residual patterns alongside matched QLIKE and MCS results, then
+revisit stale RFSV prose.
+
+## Thesis residual normal overlays (2026-10-05)
+
+The 20 raw/log histogram PNGs used by the ten Residual Structure variants now
+have in-place orange normal overlays. For each variant and residual scale, the
+curve uses the unconditional mean and population variance of its 8,800 pooled
+five-stock test residuals from the saved window-matched MCS forecasts. The same
+full-sample fit appears on the full and central-99.5% panels, scaled to expected
+bin counts. `inference/plot_global_residuals.py` now preserves this overlay on
+future histogram regeneration; the thesis captions and explanatory prose state
+the method and its descriptive limit. The earlier standalone Base LSTM-80 Local
+diagnostic files were removed. Forecasts, targets, and timelines did not change.
+The technical-evaluation checker and a three-point normal-fit arithmetic check
+passed. Two in-place SyncTeX-enabled pdflatex passes produced the 51-page PDF;
+the first and last residual pages were visually inspected without new layout
+warnings or unresolved references. A fresh-context cold review independently
+reproduced all 20 PNGs pixel for pixel from saved forecasts and passed 100/100;
+its validated JSON is `judge/reviews/thesis_residual_normal_overlays_review.json`.
+Next: interpret residual patterns alongside matched QLIKE and MCS results,
+then revisit stale RFSV prose.
+
+## Thesis residual figure numbering (2026-10-04)
+
+Residual Structure now gives each of the ten shared MCS model variants two
+separately numbered figures: one with raw/log daily mean timelines and one with
+raw/log individual-residual histograms. The same 40 saved PNGs and 8,800 matched
+targets per variant are used; forecasts and residual values did not change.
+The technical-evaluation checker verifies all 20 figure labels and image pairs.
+Two in-place SyncTeX-enabled pdflatex passes produced the 51-page PDF; first
+and last residual pages were visually checked, and no unresolved references
+were reported. The fresh-context cold review
+`judge/reviews/residual_figure_split_review.json` passed 100/100 and validated.
+Next: interpret the residual patterns alongside matched QLIKE
+and MCS results, then revisit stale RFSV prose.
+
+## Thesis Technical Evaluation residual plots (2026-10-04)
+
+Technical Evaluation now uses subsections in the agreed order. Residual Structure defines individual raw/log errors and the distinct daily cross-ticker raw mean and log-of-means, with variance units and sign interpretation. Four model subsubsections show the ten variants shared by all five final MCS sets under both bootstrap block lengths. Ten four-panel figures reuse 40 saved five-stock residual PNGs; no forecasts or plots were regenerated. The focused technical-evaluation checker passes. Two in-place SyncTeX-enabled pdflatex passes built the 54-page thesis PDF; sampled residual pages show the intended panel order and section numbering, with no new overfull warning. The implementation plan is `ref/implementation_plan/residual_plot.md`. Next: interpret the residual patterns alongside matched QLIKE and MCS results, then revisit stale RFSV prose.
+
 ## Thesis cross-window MCS table (2026-10-04)
 
 Section 5.4.3 now reports the five stock-level final-set sizes for both

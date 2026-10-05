@@ -1,0 +1,28 @@
+{
+  "task": "Equation 6.2 two-row layout and daily residual notation",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/residual_plot.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "ref/final_report/thesis_structure.tex (Equations 4.2, 6.1, and 6.2)",
+    "ref/final_report/thesis_structure.pdf (page 39)",
+    "ref/final_report/thesis_structure.log",
+    "inference/plot_global_residuals.py",
+    "judge/check_technical_evaluation.py (PASS)",
+    "git diff --check -- ref/final_report/thesis_structure.tex (no findings)",
+    "git diff and git status"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -1,0 +1,37 @@
+{
+  "task": "Review adjusted Garman–Klass data figures for the 2,714-ticker cohort and five stocks",
+  "sources": [
+    "AGENTS.md instructions supplied in user prompt",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/raw_gk_roughness.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- CONTEXT.md ref/final_report/thesis_structure.tex",
+    "data/plot_gk_data.py",
+    "data/tests/test_plot_gk_data.py",
+    "models/support_scripts/raw_neural_data.py",
+    "ref/final_report/thesis_structure.tex",
+    "imgs/gk_data/counts.json",
+    "imgs/gk_data/global/full/histogram_raw.png",
+    "python -m pytest data/tests/test_plot_gk_data.py -q (1 passed)",
+    "16 PNG file count and byte-size check (all nonempty)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 12,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "grounding",
+      "severity": "major",
+      "evidence": "The new Global Data paragraph in ref/final_report/thesis_structure.tex says the log plot visualizes 'the residual as the ratio between actual and prediction'. The plotted arrays in data/plot_gk_data.py are observed GK variances and their logarithms; there are no predictions or residuals in these figures.",
+      "fix": "Replace the residual and actual/prediction wording with an explanation of log observed variance and the distinction between log of the daily mean and pooled individual log observations."
+    }
+  ],
+  "total": 97,
+  "pass": true
+}

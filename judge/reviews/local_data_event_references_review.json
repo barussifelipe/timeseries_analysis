@@ -1,0 +1,28 @@
+{
+  "task": "Add references in Local Data for the dot-com collapse and September 11 attacks",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.aux",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf (pdftotext)",
+    "imgs/gk_data/local/full/timeline_raw.png",
+    "https://www.federalreserve.gov/boarddocs/hh/2001/july/ReportSection2.htm",
+    "https://www.federalreserve.gov/fomc/minutes/20011002.htm"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

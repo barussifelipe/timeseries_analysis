@@ -1,0 +1,36 @@
+{
+  "task": "Extend pooled normal-fit overlays to all thesis residual histograms and update the thesis explanation and in-place PNGs",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/residual_plot.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git status --short and git diff --numstat",
+    "git diff -- inference/plot_global_residuals.py",
+    "inference/plot_global_residuals.py",
+    "inference/evaluate_local_global.py",
+    "judge/check_technical_evaluation.py",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.aux",
+    "ref/final_report/thesis_structure.pdf metadata",
+    "ref/final_report/thesis_structure.synctex.gz metadata",
+    "imgs/eval/mcs/20_size/forecasts.csv",
+    "imgs/eval/mcs/80_size/forecasts.csv",
+    "20 thesis-referenced imgs/eval/local_eval/residuals/*/*/histogram_{raw,log}.png",
+    "python judge/check_technical_evaluation.py result",
+    "independent venv pixel comparison of all 20 PNGs against saved forecast CSVs"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

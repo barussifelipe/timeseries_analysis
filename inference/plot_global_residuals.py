@@ -34,6 +34,39 @@ def mean_variances_by_date(dates, actual, predicted):
             np.bincount(inverse, weights=predicted) / counts)
 
 
+def plot_residual_histogram(label, name, residuals, xlabel, output):
+    """Plot full and central residual counts with one pooled normal fit."""
+    residuals = np.asarray(residuals, dtype=float)
+    if not len(residuals) or not np.isfinite(residuals).all():
+        raise ValueError(f'{label}: missing or nonfinite {name} residuals')
+    mean = float(residuals.mean())
+    std = float(residuals.std(ddof=0))
+    if not np.isfinite(std) or std <= 0:
+        raise ValueError(f'{label}: invalid {name} normal fit')
+    low, high = np.quantile(residuals, [.0025, .9975])
+    central = residuals[(residuals >= low) & (residuals <= high)]
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
+    for ax, values, title in zip(axes, (residuals, central),
+                                 ('All residuals', 'Central 99.5%')):
+        counts, edges = np.histogram(values, bins=120)
+        ax.stairs(counts, edges, fill=True, color='#236c93', label='Observed')
+        x = np.linspace(edges[0], edges[-1], 1000)
+        normal = np.exp(-.5 * ((x - mean) / std) ** 2) / (std * np.sqrt(2 * np.pi))
+        ax.plot(x, len(residuals) * (edges[1] - edges[0]) * normal,
+                color='#bc4b2f', linewidth=2, label='Normal fit to all residuals')
+        ax.set_title(title)
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel('Forecast count')
+        ax.grid(axis='y', alpha=.25)
+        ax.legend()
+    fig.suptitle(f'{label} | {name.title()} test residuals | N = {len(residuals):,}\n'
+                 f'Normal fit: mean = {mean:.4g}, standard deviation = {std:.4g}')
+    fig.tight_layout()
+    fig.savefig(output, dpi=150)
+    plt.close(fig)
+    return mean, std
+
+
 def plot_residuals(label, dates, actuals, predictions, output, variance_label='adjusted GK variance'):
     dates = np.concatenate(dates).astype('datetime64[D]')
     actual = np.concatenate(actuals)
@@ -49,20 +82,8 @@ def plot_residuals(label, dates, actuals, predictions, output, variance_label='a
             ('log', np.log(actual) - np.log(predicted), 'Log(actual variance) - log(predicted variance)')):
         low, high = np.quantile(residuals, [.0025, .9975])
         central = (residuals >= low) & (residuals <= high)
-        counts, edges = np.histogram(residuals, bins=120)
-        central_counts, central_edges = np.histogram(residuals[central], bins=120)
-        fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
-        for ax, values, bins, title in zip(axes, (counts, central_counts),
-                                           (edges, central_edges), ('All residuals', 'Central 99.5%')):
-            ax.stairs(values, bins, fill=True, color='#236c93')
-            ax.set_title(title)
-            ax.set_xlabel(xlabel)
-            ax.set_ylabel('Forecast count')
-            ax.grid(axis='y', alpha=.25)
-        fig.suptitle(f'{label} | {name.title()} test residuals | N = {len(residuals):,}')
-        fig.tight_layout()
-        fig.savefig(output / f'histogram_{name}.png', dpi=150)
-        plt.close(fig)
+        plot_residual_histogram(label, name, residuals, xlabel,
+                                output / f'histogram_{name}.png')
         fig, ax = plt.subplots(figsize=(12, 5.5))
         ax.plot(dates[central], residuals[central], ',', color='#236c93', alpha=.2, rasterized=True)
         ax.axhline(0, color='#a03d3d', linewidth=.8)

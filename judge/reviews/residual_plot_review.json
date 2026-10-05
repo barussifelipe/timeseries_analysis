@@ -1,0 +1,33 @@
+{
+  "task": "Technical Evaluation residual plots and subsection hierarchy",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/residual_plot.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/check_technical_evaluation.py",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf (pages 40 and 49)",
+    "imgs/eval/mcs/all_windows/mcs_20.json",
+    "imgs/eval/mcs/all_windows/mcs_80.json",
+    "imgs/eval/mcs/all_windows/final_sets_20.md",
+    "imgs/eval/mcs/all_windows/final_sets_80.md",
+    "imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_raw.png",
+    "inference/plot_global_residuals.py",
+    "inference/evaluate_local_global.py",
+    "git diff and git status"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

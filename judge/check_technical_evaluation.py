@@ -13,7 +13,7 @@ crypto_scales = [1e3, 1, 1e4, 1e2, 1]
 counts = {20: 4479681, 80: 4295773}
 rows = []
 displayed = {}
-result_tables = source.split(r'\subsection{Technical Evaluation}', 1)[1]
+result_tables = source.split(r'\section{Technical Evaluation}', 1)[1]
 for file in ['imgs/eval/volatility_test_metrics.csv', 'imgs/eval/local_eval/metrics.csv']:
     scales = global_scales if file.endswith('volatility_test_metrics.csv') else local_scales
     for row in csv.DictReader((root / file).open()):
@@ -112,12 +112,38 @@ for index in range(5):
         assert crypto_rv_displayed[name][index].startswith(r'\textcolor{' + color + '}{')
         assert sum(r'\textcolor{' + color + '}{' in cells[index] for cells in crypto_rv_displayed.values()) == 1
 
-section = source.split(r'\subsection{Technical Evaluation}')[1].split(r'\section{Conclusions}')[0]
-assert re.findall(r'\\subsubsection\{([^}]+)\}', section) == ['Overall Result', 'Crypto Evaluation', 'Model statistical significance', 'Parameter Complexity', 'Residual Structure']
+section = source.split(r'\section{Technical Evaluation}')[1].split(r'\section{Conclusions}')[0]
+assert re.findall(r'\\subsection\{([^}]+)\}', section) == ['Overall Result', 'Crypto Evaluation', 'Model Statistical Significance', 'Residual Structure', 'Parameter Complexity']
+assert re.findall(r'\\subsubsection\{([^}]+)\}', section) == ['Base LSTM', 'HARNet', 'MLP', 'RFSV']
 paths = re.findall(r'\\includegraphics\[[^]]+\]\{([^}]+)\}', section)
-assert len(paths) == len(set(paths)) == 16
-assert all('/local_eval/' in s and '/timeline_raw.' not in s and '/timeline_log.' not in s for s in paths)
+variants = [('base_lstm_20', 'global'), ('base_lstm_80', 'global'), ('base_lstm_80', 'local'),
+            ('harnet_20', 'global'), ('harnet_80', 'global'), ('harnet_80', 'local'),
+            ('mlp_20', 'global'), ('mlp_80', 'global'), ('rfsv_20', 'local'), ('rfsv_80', 'local')]
+expected_paths = [f'../../imgs/eval/local_eval/residuals/{model}/{scope}/{plot}.png'
+                  for model, scope in variants
+                  for plot in ('timeline_mean_raw', 'timeline_mean_log', 'histogram_raw', 'histogram_log')]
+assert paths == expected_paths
+assert len(paths) == len(set(paths)) == 40
 assert all((root / 'ref/final_report' / s).is_file() for s in paths)
+assert section.count(r'\begin{figure}[htbp]') == 20
+assert section.count('the orange curve is a full-sample normal fit.') == 10
+assert 'The curve is scaled to expected bin counts; the central 99.5\\% panel shows the same full-sample fit without refitting.' in section
+for model, scope in variants:
+    family, window = model.rsplit('_', 1)
+    name = f'{dict(base_lstm="Base LSTM", harnet="HARNet", mlp="MLP", rfsv="RFSV")[family]}-{window} {scope.title()}'
+    assert section.count(r'\textbf{' + name + '.}') == 1
+    slug = model.replace('_', '-') + '-' + scope
+    assert section.count(r'\caption{' + name + ': raw and log daily cross-ticker mean residual timelines') == 1
+    assert section.count(r'\caption{' + name + ': raw and log individual-residual histograms') == 1
+    assert section.count(r'\label{fig:residual-' + slug + '-timeline}') == 1
+    assert section.count(r'\label{fig:residual-' + slug + '-histograms}') == 1
+figures = re.findall(r'\\begin\{figure\}\[htbp\](.*?)\\end\{figure\}', section, re.S)
+assert len(figures) == 20
+for index, figure in enumerate(figures):
+    image_names = re.findall(r'/([^/]+\.png)\}', figure)
+    expected_names = (['timeline_mean_raw.png', 'timeline_mean_log.png'] if index % 2 == 0
+                      else ['histogram_raw.png', 'histogram_log.png'])
+    assert image_names == expected_names
 complexity_table = section.split(r'\label{tab:parameter-combinations}')[0].split(r'\begin{tabular}')[-1]
 assert complexity_table.startswith('{lrrr}')
 assert 'Model & $p$ & Global & Local (extrapolated)' in complexity_table
@@ -128,7 +154,7 @@ assert '$(2^{64})' not in complexity_table
 assert 'Global/Local' not in complexity_table
 assert all(row.count('&') == 3 for row in complexity_table.splitlines() if '&' in row)
 assert re.search(r'\\label\{tab:parameter-combinations\}\s*\\end\{table\}\s*\\FloatBarrier\s*Counts include fitted coefficients', section)
-assert '\\clearpage\n\\subsubsection{Residual Structure}' in section
+assert '\\subsection{Residual Structure}' in section
 assert '\\numberwithin{table}{section}' in source
 assert '\\numberwithin{figure}{section}' in source
 before_file = root / 'judge/technical_evaluation_before.tex'
@@ -139,4 +165,4 @@ if before_file.exists():
     assert prefix == before.split(r'\subsection{Evaluation Setup}')[0]
     assert source.split(r'\section{Conclusions}')[1] == before.split(r'\section{Conclusions}')[1]
     assert source.split(r'\section{Experimental Results}')[1].split(r'\subsection{Computational Evaluation}')[0] == before.split(r'\section{Experimental Results}')[1].split(r'\subsection{Computational Evaluation}')[0]
-print('PASS: all 60 saved metric rows, color rankings, precision, RMSE identities; four-column complexity table and exponents; 16 unique matched plots; subsection order; unrelated source preserved when snapshot available.')
+print('PASS: saved metric rows, rankings, precision, RMSE identities; complexity exponents; 20 labeled figures with 40 ordered residual plots for ten MCS variants; subsection order.')
