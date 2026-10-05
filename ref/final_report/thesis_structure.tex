@@ -1071,7 +1071,26 @@ NVDA & 22 & 22 & None\\\hline
 \subsection{Residual Structure}
 We inspect residual timelines and histograms for the model variants shared by all five stock-level final MCS sets. The evaluation uses the same five stocks and forecast targets as Table~\ref{tab:matched-results}.
 
-Let $v_i(t)$ be the realized Garman--Klass variance and $\widehat v_i(t)$ its one-step forecast for ticker $i$ on retained target date $t$. The individual raw and log residuals are
+First, the observed test targets provide a common reference for the model residuals. Write $v_i(t)$ for the observed adjusted Garman--Klass variance of ticker $i$ on test date $t$. The 8,800 positive variances comprise 1,760 dates for each of NVDA, AAPL, NFLX, GOOG, and AMZN from 2019 through 2025. The raw timeline plots the daily mean across the five stocks; the log timeline plots the natural logarithm of that mean. The histograms pool the individual targets, with an orange normal curve fitted to all 8,800 observations using their mean and population variance. The central 99.5\% panel changes only the displayed range. The raw histogram is strongly right-skewed, whereas the log histogram is more symmetric. The descriptive normal fit for the pooled log variances is $\log v_i(t)\sim\mathcal N(\mu=-8.472,\sigma^2=0.9996)$.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/test_data/timeline_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/test_data/timeline_log.png}\par
+\caption{Five-stock test targets: daily mean unannualized adjusted Garman--Klass variance (left) and its natural logarithm (right).}
+\label{fig:local-test-target-timeline}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/test_data/histogram_raw.png}\hfill
+\includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/test_data/histogram_log.png}\par
+\caption{Five-stock test targets: pooled raw and log variance histograms (left and right). Each shows the full distribution and a central 99.5\% display panel; the orange curve is fitted to all 8,800 targets.}
+\label{fig:local-test-target-histograms}
+\end{figure}
+\FloatBarrier
+
+Let $\widehat v_i(t)$ be its one-step forecast. The individual raw and log residuals are
 \begin{equation}\label{eq:individual-residuals}
 e_i(t)=v_i(t)-\widehat v_i(t),\qquad
 e_i^{\log}(t)=\log v_i(t)-\log\widehat v_i(t).

@@ -1,9 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.16)  5 OCT 2026 14:25
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.16)  5 OCT 2026 15:07
 entering extended mode
  restricted \write18 enabled.
+ file:line:error style messages enabled.
  %&-line parsing enabled.
-**./thesis_structure.tex
-(thesis_structure.tex
+**c:/Users/benga/Documents/Documentos/Programming/PYTHON/timeseries_analysis/ref/final_report/thesis_structure.tex
+(c:/Users/benga/Documents/Documentos/Programming/PYTHON/timeseries_analysis/ref/final_report/thesis_structure.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
 (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
@@ -22,25 +23,21 @@ File: size12.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
 \abovecaptionskip=\skip49
 \belowcaptionskip=\skip50
 \bibindent=\dimen148
-)
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsmath.sty
+) (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsmath.sty
 Package: amsmath 2025/07/09 v2.17z AMS math features
 \@mathmargin=\skip51
 
 For additional information on amsmath, use the `?' option.
 (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amstext.sty
 Package: amstext 2024/11/17 v2.01 AMS text
-
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsgen.sty
+ (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsgen.sty
 File: amsgen.sty 1999/11/30 v2.0 generic functions
 \@emptytoks=\toks17
 \ex@=\dimen149
-))
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsbsy.sty
+)) (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsbsy.sty
 Package: amsbsy 1999/11/29 v1.2d Bold Symbols
 \pmbraise@=\dimen150
-)
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsopn.sty
+) (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsopn.sty
 Package: amsopn 2022/04/08 v2.04 operator names
 )
 \inf@bad=\count283
@@ -90,38 +87,29 @@ LaTeX Info: Redefining \Relbar on input line 970.
 \mathdisplay@stack=\toks21
 LaTeX Info: Redefining \[ on input line 2950.
 LaTeX Info: Redefining \] on input line 2951.
-)
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amssymb.sty
+) (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amssymb.sty
 Package: amssymb 2013/01/14 v3.01 AMS font symbols
-
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amsfonts.sty
+ (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amsfonts.sty
 Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
 \symAMSa=\mathgroup4
 \symAMSb=\mathgroup5
 LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
 LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
-)) (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.st
-y
+)) (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
 Package: graphicx 2024/12/31 v1.2e Enhanced LaTeX Graphics (DPC,SPQR)
-
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
+ (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
 Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
 \KV@toks@=\toks22
-)
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
+) (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
 Package: graphics 2024/08/06 v1.4g Standard LaTeX Graphics (DPC,SPQR)
-
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty
+ (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty
 Package: trig 2023/12/02 v1.11 sin cos tan (DPC)
-)
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.c
-fg
+) (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.cfg
 File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
 Package graphics Info: Driver file: pdftex.def on input line 106.
-
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
+ (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
 File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
 ))
 \Gin@req@height=\dimen158
@@ -129,15 +117,13 @@ File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
 ) (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty
 \Urlmuskip=\muskip18
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
-)
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/xcolor\xcolor.sty
+) (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/xcolor\xcolor.sty
 Package: xcolor 2024/09/29 v3.02 LaTeX color extensions (UK)
-
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg
+ (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg
 File: color.cfg 2016/01/02 v1.6 sample color configuration
 )
 Package xcolor Info: Driver file: pdftex.def on input line 274.
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/graphics\mathcolor.ltx)
+ (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/graphics\mathcolor.ltx)
 Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1349.
 Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1353.
 Package xcolor Info: Model `RGB' extended on input line 1365.
@@ -165,8 +151,7 @@ Package: longtable 2025-10-13 v4.24 Multi-page Table package (DPC)
 \c@LT@tables=\count298
 \c@LT@chunks=\count299
 \LT@p@ftn=\toks23
-)
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/tools\array.sty
+) (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/tools\array.sty
 Package: array 2025/09/25 v2.6n Tabular extension package (FMi)
 \col@sep=\dimen161
 \ar@mcellbox=\box60
@@ -175,12 +160,9 @@ Package: array 2025/09/25 v2.6n Tabular extension package (FMi)
 \extratabsurround=\skip58
 \backup@length=\skip59
 \ar@cellbox=\box61
-)
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/placeins\placeins.sty
+) (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/placeins\placeins.sty
 Package: placeins 2005/04/18  v 2.2
-)
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdf
-tex.def
+) (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count300
 ) (thesis_structure.aux)
@@ -200,9 +182,7 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 23.
 LaTeX Font Info:    ... okay on input line 23.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 23.
 LaTeX Font Info:    ... okay on input line 23.
-
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mk
-ii
+ (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count301
 \scratchdimen=\dimen163
@@ -215,35 +195,24 @@ ii
 \MPnumerator=\count305
 \makeMPintoPDFobject=\count306
 \everyMPtoPDFconversion=\toks26
-)
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-b
-ase.sty
+) (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
-Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
-85.
-
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.c
-fg
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
+ (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
 LaTeX Font Info:    Trying to load font information for U+msa on input line 25.
-
  (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
 LaTeX Font Info:    Trying to load font information for U+msb on input line 25.
-
-
-(C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
+ (C:\Users\benga\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-[1
+) [1
 
-{C:/Users/benga/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [2]
-[3] [4]
+{C:/Users/benga/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [2] [3] [4]
 Overfull \hbox (24.8721pt too wide) in paragraph at lines 90--91
-\OT1/cmr/m/n/12 In this pa-per, we present the com-par-i-son be-tween AR(1), SA
-RIMA(1,0,1)(1,0,1,5),
+\OT1/cmr/m/n/12 In this pa-per, we present the com-par-i-son be-tween AR(1), SARIMA(1,0,1)(1,0,1,5),
  []
 
 [5] [6] [7] [8] [9] [10] [11]
@@ -255,57 +224,44 @@ Overfull \hbox (17.56009pt too wide) detected at line 272
 <../../imgs/gk_data/global/full/timeline_raw.png, id=86, 867.24pt x 361.35pt>
 File: ../../imgs/gk_data/global/full/timeline_raw.png Graphic file (type png)
 <use ../../imgs/gk_data/global/full/timeline_raw.png>
-Package pdftex.def Info: ../../imgs/gk_data/global/full/timeline_raw.png  used 
-on input line 578.
+Package pdftex.def Info: ../../imgs/gk_data/global/full/timeline_raw.png  used on input line 578.
 (pdftex.def)             Requested size: 390.0pt x 162.50124pt.
  [23]
 <../../imgs/gk_data/local/full/timeline_raw.png, id=91, 867.24pt x 361.35pt>
 File: ../../imgs/gk_data/local/full/timeline_raw.png Graphic file (type png)
 <use ../../imgs/gk_data/local/full/timeline_raw.png>
-Package pdftex.def Info: ../../imgs/gk_data/local/full/timeline_raw.png  used o
-n input line 589.
+Package pdftex.def Info: ../../imgs/gk_data/local/full/timeline_raw.png  used on input line 589.
 (pdftex.def)             Requested size: 390.0pt x 162.50124pt.
- [24 <../../imgs/gk_data/global/full/timeline_raw.png> <../../imgs/gk_data/loca
-l/full/timeline_raw.png>] [25] [26] [27] [28]
+ [24 <../../imgs/gk_data/global/full/timeline_raw.png> <../../imgs/gk_data/local/full/timeline_raw.png>] [25] [26] [27] [28]
 <../../imgs/gk_data/global/train/timeline_raw.png, id=110, 867.24pt x 361.35pt>
-
 File: ../../imgs/gk_data/global/train/timeline_raw.png Graphic file (type png)
 <use ../../imgs/gk_data/global/train/timeline_raw.png>
-Package pdftex.def Info: ../../imgs/gk_data/global/train/timeline_raw.png  used
- on input line 751.
+Package pdftex.def Info: ../../imgs/gk_data/global/train/timeline_raw.png  used on input line 751.
 (pdftex.def)             Requested size: 191.10214pt x 79.62405pt.
 <../../imgs/gk_data/global/train/timeline_log.png, id=111, 867.24pt x 361.35pt>
-
 File: ../../imgs/gk_data/global/train/timeline_log.png Graphic file (type png)
 <use ../../imgs/gk_data/global/train/timeline_log.png>
-Package pdftex.def Info: ../../imgs/gk_data/global/train/timeline_log.png  used
- on input line 752.
+Package pdftex.def Info: ../../imgs/gk_data/global/train/timeline_log.png  used on input line 752.
 (pdftex.def)             Requested size: 191.10214pt x 79.62405pt.
  [29]
 <../../imgs/gk_data/local/train/timeline_raw.png, id=115, 867.24pt x 361.35pt>
 File: ../../imgs/gk_data/local/train/timeline_raw.png Graphic file (type png)
 <use ../../imgs/gk_data/local/train/timeline_raw.png>
-Package pdftex.def Info: ../../imgs/gk_data/local/train/timeline_raw.png  used 
-on input line 760.
+Package pdftex.def Info: ../../imgs/gk_data/local/train/timeline_raw.png  used on input line 760.
 (pdftex.def)             Requested size: 191.10214pt x 79.62405pt.
 <../../imgs/gk_data/local/train/timeline_log.png, id=116, 867.24pt x 361.35pt>
 File: ../../imgs/gk_data/local/train/timeline_log.png Graphic file (type png)
 <use ../../imgs/gk_data/local/train/timeline_log.png>
-Package pdftex.def Info: ../../imgs/gk_data/local/train/timeline_log.png  used 
-on input line 761.
+Package pdftex.def Info: ../../imgs/gk_data/local/train/timeline_log.png  used on input line 761.
 (pdftex.def)             Requested size: 191.10214pt x 79.62405pt.
- [30 <../../imgs/gk_data/global/train/timeline_raw.png> <../../imgs/gk_data/glo
-bal/train/timeline_log.png> <../../imgs/gk_data/local/train/timeline_raw.png> <
-../../imgs/gk_data/local/train/timeline_log.png>]
+ [30 <../../imgs/gk_data/global/train/timeline_raw.png> <../../imgs/gk_data/global/train/timeline_log.png> <../../imgs/gk_data/local/train/timeline_raw.png> <../../imgs/gk_data/local/train/timeline_log.png>]
 Overfull \hbox (1.34975pt too wide) in paragraph at lines 776--777
-[]\OT1/cmr/bx/n/12 HARNet: In-put: \OT1/cmr/m/n/12 HARNet-20 and HARNet-80 re-c
-eive vari-ance alone,
+[]\OT1/cmr/bx/n/12 HARNet: In-put: \OT1/cmr/m/n/12 HARNet-20 and HARNet-80 re-ceive vari-ance alone,
  []
 
 
 Overfull \hbox (5.27924pt too wide) in paragraph at lines 781--782
-\OT1/cmr/m/n/12 The neu-ral model hy-per-pa-ram-e-ters were se-lected by com-pa
-r-ing base-line LSTM
+\OT1/cmr/m/n/12 The neu-ral model hy-per-pa-ram-e-ters were se-lected by com-par-ing base-line LSTM
  []
 
 [31] [32] [33] [34] [35] [36] [37] [38
@@ -317,464 +273,288 @@ r-ing base-line LSTM
 ] [41
 
 ]
-<../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_raw.png
-, id=160, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_ra
-w.png Graphic file (type png)
-<use ../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_raw
-.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_20/glob
-al/timeline_mean_raw.png  used on input line 1097.
-(pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_log.png
-, id=161, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_lo
-g.png Graphic file (type png)
-<use ../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_log
-.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_20/glob
-al/timeline_mean_log.png  used on input line 1098.
-(pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_raw.png, id
-=162, 1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_raw.pn
-g Graphic file (type png)
-<use ../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_raw.png
->
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_20/glob
-al/histogram_raw.png  used on input line 1105.
+<../../imgs/eval/local_eval/test_data/timeline_raw.png, id=160, 867.24pt x 361.35pt>
+File: ../../imgs/eval/local_eval/test_data/timeline_raw.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/test_data/timeline_raw.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/test_data/timeline_raw.png  used on input line 1078.
+(pdftex.def)             Requested size: 191.10214pt x 79.62405pt.
+<../../imgs/eval/local_eval/test_data/timeline_log.png, id=161, 867.24pt x 361.35pt>
+File: ../../imgs/eval/local_eval/test_data/timeline_log.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/test_data/timeline_log.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/test_data/timeline_log.png  used on input line 1079.
+(pdftex.def)             Requested size: 191.10214pt x 79.62405pt.
+<../../imgs/eval/local_eval/test_data/histogram_raw.png, id=162, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/test_data/histogram_raw.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/test_data/histogram_raw.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/test_data/histogram_raw.png  used on input line 1086.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
-<../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_log.png, id
-=163, 1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_log.pn
-g Graphic file (type png)
-<use ../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_log.png
->
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_20/glob
-al/histogram_log.png  used on input line 1106.
+<../../imgs/eval/local_eval/test_data/histogram_log.png, id=163, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/test_data/histogram_log.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/test_data/histogram_log.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/test_data/histogram_log.png  used on input line 1087.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
- [42]
-<../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_raw.png
-, id=167, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_ra
-w.png Graphic file (type png)
-<use ../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_raw
-.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_80/glob
-al/timeline_mean_raw.png  used on input line 1116.
+ [42 <../../imgs/eval/local_eval/test_data/timeline_raw.png> <../../imgs/eval/local_eval/test_data/timeline_log.png>]
+<../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_raw.png, id=169, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_raw.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_raw.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_raw.png  used on input line 1116.
 (pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_log.png
-, id=168, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_lo
-g.png Graphic file (type png)
-<use ../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_log
-.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_80/glob
-al/timeline_mean_log.png  used on input line 1117.
+<../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_log.png, id=170, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_log.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_log.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_log.png  used on input line 1117.
 (pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_raw.png, id
-=169, 1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_raw.pn
-g Graphic file (type png)
-<use ../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_raw.png
->
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_80/glob
-al/histogram_raw.png  used on input line 1124.
+<../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_raw.png, id=171, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_raw.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_raw.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_raw.png  used on input line 1124.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
-<../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_log.png, id
-=170, 1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_log.pn
-g Graphic file (type png)
-<use ../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_log.png
->
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_80/glob
-al/histogram_log.png  used on input line 1125.
+<../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_log.png, id=172, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_log.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_log.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_log.png  used on input line 1125.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
- [43 <../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_ra
-w.png> <../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_
-log.png> <../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_ra
-w.png> <../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_log.
-png> <../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_ra
-w.png> <../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_
-log.png>]
-<../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_raw.png,
- id=181, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_raw
-.png Graphic file (type png)
-<use ../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_raw.
-png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_80/loca
-l/timeline_mean_raw.png  used on input line 1135.
+ [43 <../../imgs/eval/local_eval/test_data/histogram_raw.png> <../../imgs/eval/local_eval/test_data/histogram_log.png>]
+<../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_raw.png, id=179, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_raw.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_raw.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_raw.png  used on input line 1135.
 (pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_log.png,
- id=182, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_log
-.png Graphic file (type png)
-<use ../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_log.
-png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_80/loca
-l/timeline_mean_log.png  used on input line 1136.
+<../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_log.png, id=180, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_log.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_log.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_log.png  used on input line 1136.
 (pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_raw.png, id=
-183, 1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_raw.png
- Graphic file (type png)
+<../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_raw.png, id=181, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_raw.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_raw.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_raw.png  used on input line 1143.
+(pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
+<../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_log.png, id=182, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_log.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_log.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_log.png  used on input line 1144.
+(pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
+ [44 <../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_raw.png> <../../imgs/eval/local_eval/residuals/base_lstm_20/global/timeline_mean_log.png> <../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_raw.png> <../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_log.png> <../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_raw.png> <../../imgs/eval/local_eval/residuals/base_lstm_80/global/timeline_mean_log.png>]
+<../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_raw.png, id=192, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_raw.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_raw.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_raw.png  used on input line 1154.
+(pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
+<../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_log.png, id=193, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_log.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_log.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_log.png  used on input line 1155.
+(pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
+<../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_raw.png, id=194, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_raw.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_raw.png>
-
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_80/loca
-l/histogram_raw.png  used on input line 1143.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_raw.png  used on input line 1162.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
-<../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_log.png, id=
-184, 1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_log.png
- Graphic file (type png)
+<../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_log.png, id=195, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_log.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_log.png>
-
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_80/loca
-l/histogram_log.png  used on input line 1144.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_log.png  used on input line 1163.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
-<../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_raw.png, i
-d=185, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_raw.p
-ng Graphic file (type png)
-<use ../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_raw.pn
-g>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_20/global/
-timeline_mean_raw.png  used on input line 1155.
+<../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_raw.png, id=196, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_raw.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_raw.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_raw.png  used on input line 1174.
 (pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_log.png, i
-d=186, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_log.p
-ng Graphic file (type png)
-<use ../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_log.pn
-g>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_20/global/
-timeline_mean_log.png  used on input line 1156.
+<../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_log.png, id=197, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_log.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_log.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_log.png  used on input line 1175.
 (pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_raw.png, id=18
-7, 1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_raw.png G
-raphic file (type png)
+<../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_raw.png, id=198, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_raw.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_raw.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_20/global/
-histogram_raw.png  used on input line 1163.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_raw.png  used on input line 1182.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
-<../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_log.png, id=18
-8, 1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_log.png G
-raphic file (type png)
+<../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_log.png, id=199, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_log.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_log.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_20/global/
-histogram_log.png  used on input line 1164.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_log.png  used on input line 1183.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
- [44 <../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_raw.pn
-g> <../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_log.png>
- <../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_raw.png
-> <../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_log.pn
-g> <../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_raw.png> 
-<../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_log.png>]
-<../../imgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_raw.png, i
-d=198, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_raw.p
-ng Graphic file (type png)
-<use ../../imgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_raw.pn
-g>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_80/global/
-timeline_mean_raw.png  used on input line 1174.
+ [45 <../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_raw.png> <../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_log.png> <../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_raw.png> <../../imgs/eval/local_eval/residuals/base_lstm_80/local/timeline_mean_log.png> <../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_raw.png> <../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_log.png>]
+<../../imgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_raw.png, id=209, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_raw.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_raw.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_raw.png  used on input line 1193.
 (pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_log.png, i
-d=199, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_log.p
-ng Graphic file (type png)
-<use ../../imgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_log.pn
-g>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_80/global/
-timeline_mean_log.png  used on input line 1175.
+<../../imgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_log.png, id=210, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_log.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_log.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_log.png  used on input line 1194.
 (pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_raw.png, id=20
-0, 1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_raw.png G
-raphic file (type png)
+<../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_raw.png, id=211, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_raw.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_raw.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_80/global/
-histogram_raw.png  used on input line 1182.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_raw.png  used on input line 1201.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
-<../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_log.png, id=20
-1, 1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_log.png G
-raphic file (type png)
+<../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_log.png, id=212, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_log.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_log.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_80/global/
-histogram_log.png  used on input line 1183.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_log.png  used on input line 1202.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
- [45 <../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_raw.p
-ng> <../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_log.pn
-g> <../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_raw.png> <.
-./../imgs/eval/local_eval/residuals/harnet_20/global/histogram_log.png> <../../
-imgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_raw.png> <../../i
-mgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_log.png>]
-<../../imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_raw.png, id
-=211, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_raw.pn
-g Graphic file (type png)
-<use ../../imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_raw.png
->
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_80/local/t
-imeline_mean_raw.png  used on input line 1193.
+ [46 <../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_raw.png> <../../imgs/eval/local_eval/residuals/harnet_20/global/timeline_mean_log.png> <../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_raw.png> <../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_log.png> <../../imgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_raw.png> <../../imgs/eval/local_eval/residuals/harnet_80/global/timeline_mean_log.png>]
+<../../imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_raw.png, id=222, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_raw.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_raw.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_raw.png  used on input line 1212.
 (pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_log.png, id
-=212, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_log.pn
-g Graphic file (type png)
-<use ../../imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_log.png
->
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_80/local/t
-imeline_mean_log.png  used on input line 1194.
+<../../imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_log.png, id=223, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_log.png Graphic file (type png)
+<use ../../imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_log.png>
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_log.png  used on input line 1213.
 (pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_raw.png, id=213
-, 1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_raw.png Gr
-aphic file (type png)
+<../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_raw.png, id=224, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_raw.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_raw.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_80/local/h
-istogram_raw.png  used on input line 1201.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_raw.png  used on input line 1220.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
-<../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_log.png, id=214
-, 1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_log.png Gr
-aphic file (type png)
+<../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_log.png, id=225, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_log.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_log.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_80/local/h
-istogram_log.png  used on input line 1202.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_log.png  used on input line 1221.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
-<../../imgs/eval/local_eval/residuals/mlp_20/global/timeline_mean_raw.png, id=2
-15, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/mlp_20/global/timeline_mean_raw.png 
-Graphic file (type png)
+<../../imgs/eval/local_eval/residuals/mlp_20/global/timeline_mean_raw.png, id=226, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/mlp_20/global/timeline_mean_raw.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/mlp_20/global/timeline_mean_raw.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/mlp_20/global/tim
-eline_mean_raw.png  used on input line 1213.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/mlp_20/global/timeline_mean_raw.png  used on input line 1232.
 (pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/mlp_20/global/timeline_mean_log.png, id=2
-16, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/mlp_20/global/timeline_mean_log.png 
-Graphic file (type png)
+<../../imgs/eval/local_eval/residuals/mlp_20/global/timeline_mean_log.png, id=227, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/mlp_20/global/timeline_mean_log.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/mlp_20/global/timeline_mean_log.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/mlp_20/global/tim
-eline_mean_log.png  used on input line 1214.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/mlp_20/global/timeline_mean_log.png  used on input line 1233.
 (pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_raw.png, id=217, 
-1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_raw.png Grap
-hic file (type png)
+<../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_raw.png, id=228, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_raw.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_raw.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/mlp_20/global/his
-togram_raw.png  used on input line 1221.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_raw.png  used on input line 1240.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
-<../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_log.png, id=218, 
-1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_log.png Grap
-hic file (type png)
+<../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_log.png, id=229, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_log.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_log.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/mlp_20/global/his
-togram_log.png  used on input line 1222.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_log.png  used on input line 1241.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
- [46 <../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_raw.png> 
-<../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_log.png> <../.
-./imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_raw.png> <../../
-imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_log.png> <../../im
-gs/eval/local_eval/residuals/harnet_80/local/histogram_raw.png> <../../imgs/eva
-l/local_eval/residuals/harnet_80/local/histogram_log.png>]
-<../../imgs/eval/local_eval/residuals/mlp_80/global/timeline_mean_raw.png, id=2
-28, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/mlp_80/global/timeline_mean_raw.png 
-Graphic file (type png)
+ [47 <../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_raw.png> <../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_log.png> <../../imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_raw.png> <../../imgs/eval/local_eval/residuals/harnet_80/local/timeline_mean_log.png> <../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_raw.png> <../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_log.png>]
+<../../imgs/eval/local_eval/residuals/mlp_80/global/timeline_mean_raw.png, id=239, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/mlp_80/global/timeline_mean_raw.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/mlp_80/global/timeline_mean_raw.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/mlp_80/global/tim
-eline_mean_raw.png  used on input line 1232.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/mlp_80/global/timeline_mean_raw.png  used on input line 1251.
 (pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/mlp_80/global/timeline_mean_log.png, id=2
-29, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/mlp_80/global/timeline_mean_log.png 
-Graphic file (type png)
+<../../imgs/eval/local_eval/residuals/mlp_80/global/timeline_mean_log.png, id=240, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/mlp_80/global/timeline_mean_log.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/mlp_80/global/timeline_mean_log.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/mlp_80/global/tim
-eline_mean_log.png  used on input line 1233.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/mlp_80/global/timeline_mean_log.png  used on input line 1252.
 (pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_raw.png, id=230, 
-1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_raw.png Grap
-hic file (type png)
+<../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_raw.png, id=241, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_raw.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_raw.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/mlp_80/global/his
-togram_raw.png  used on input line 1240.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_raw.png  used on input line 1259.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
-<../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_log.png, id=231, 
-1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_log.png Grap
-hic file (type png)
+<../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_log.png, id=242, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_log.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_log.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/mlp_80/global/his
-togram_log.png  used on input line 1241.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_log.png  used on input line 1260.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
- [47 <../../imgs/eval/local_eval/residuals/mlp_20/global/timeline_mean_raw.png>
- <../../imgs/eval/local_eval/residuals/mlp_20/global/timeline_mean_log.png> <..
-/../imgs/eval/local_eval/residuals/mlp_20/global/histogram_raw.png> <../../imgs
-/eval/local_eval/residuals/mlp_20/global/histogram_log.png> <../../imgs/eval/lo
-cal_eval/residuals/mlp_80/global/timeline_mean_raw.png> <../../imgs/eval/local_
-eval/residuals/mlp_80/global/timeline_mean_log.png>]
-<../../imgs/eval/local_eval/residuals/rfsv_20/local/timeline_mean_raw.png, id=2
-41, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/rfsv_20/local/timeline_mean_raw.png 
-Graphic file (type png)
+ [48 <../../imgs/eval/local_eval/residuals/mlp_20/global/timeline_mean_raw.png> <../../imgs/eval/local_eval/residuals/mlp_20/global/timeline_mean_log.png> <../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_raw.png> <../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_log.png> <../../imgs/eval/local_eval/residuals/mlp_80/global/timeline_mean_raw.png> <../../imgs/eval/local_eval/residuals/mlp_80/global/timeline_mean_log.png>]
+<../../imgs/eval/local_eval/residuals/rfsv_20/local/timeline_mean_raw.png, id=252, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/rfsv_20/local/timeline_mean_raw.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/rfsv_20/local/timeline_mean_raw.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/rfsv_20/local/tim
-eline_mean_raw.png  used on input line 1252.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/rfsv_20/local/timeline_mean_raw.png  used on input line 1271.
 (pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/rfsv_20/local/timeline_mean_log.png, id=2
-42, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/rfsv_20/local/timeline_mean_log.png 
-Graphic file (type png)
+<../../imgs/eval/local_eval/residuals/rfsv_20/local/timeline_mean_log.png, id=253, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/rfsv_20/local/timeline_mean_log.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/rfsv_20/local/timeline_mean_log.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/rfsv_20/local/tim
-eline_mean_log.png  used on input line 1253.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/rfsv_20/local/timeline_mean_log.png  used on input line 1272.
 (pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_raw.png, id=243, 
-1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_raw.png Grap
-hic file (type png)
+<../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_raw.png, id=254, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_raw.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_raw.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/rfsv_20/local/his
-togram_raw.png  used on input line 1260.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_raw.png  used on input line 1279.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
-<../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_log.png, id=244, 
-1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_log.png Grap
-hic file (type png)
+<../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_log.png, id=255, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_log.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_log.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/rfsv_20/local/his
-togram_log.png  used on input line 1261.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_log.png  used on input line 1280.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
-<../../imgs/eval/local_eval/residuals/rfsv_80/local/timeline_mean_raw.png, id=2
-45, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/rfsv_80/local/timeline_mean_raw.png 
-Graphic file (type png)
+<../../imgs/eval/local_eval/residuals/rfsv_80/local/timeline_mean_raw.png, id=256, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/rfsv_80/local/timeline_mean_raw.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/rfsv_80/local/timeline_mean_raw.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/rfsv_80/local/tim
-eline_mean_raw.png  used on input line 1271.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/rfsv_80/local/timeline_mean_raw.png  used on input line 1290.
 (pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/rfsv_80/local/timeline_mean_log.png, id=2
-46, 867.24pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/rfsv_80/local/timeline_mean_log.png 
-Graphic file (type png)
+<../../imgs/eval/local_eval/residuals/rfsv_80/local/timeline_mean_log.png, id=257, 867.24pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/rfsv_80/local/timeline_mean_log.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/rfsv_80/local/timeline_mean_log.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/rfsv_80/local/tim
-eline_mean_log.png  used on input line 1272.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/rfsv_80/local/timeline_mean_log.png  used on input line 1291.
 (pdftex.def)             Requested size: 191.10214pt x 87.58646pt.
-<../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_raw.png, id=247, 
-1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_raw.png Grap
-hic file (type png)
+<../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_raw.png, id=258, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_raw.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_raw.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/rfsv_80/local/his
-togram_raw.png  used on input line 1279.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_raw.png  used on input line 1298.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
-<../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_log.png, id=248, 
-1011.78pt x 397.485pt>
-File: ../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_log.png Grap
-hic file (type png)
+<../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_log.png, id=259, 1011.78pt x 397.485pt>
+File: ../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_log.png Graphic file (type png)
 <use ../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_log.png>
-Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/rfsv_80/local/his
-togram_log.png  used on input line 1280.
+Package pdftex.def Info: ../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_log.png  used on input line 1299.
 (pdftex.def)             Requested size: 191.10214pt x 75.07411pt.
- [48 <../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_raw.png> <..
-/../imgs/eval/local_eval/residuals/mlp_80/global/histogram_log.png> <../../imgs
-/eval/local_eval/residuals/rfsv_20/local/timeline_mean_raw.png> <../../imgs/eva
-l/local_eval/residuals/rfsv_20/local/timeline_mean_log.png> <../../imgs/eval/lo
-cal_eval/residuals/rfsv_20/local/histogram_raw.png> <../../imgs/eval/local_eval
-/residuals/rfsv_20/local/histogram_log.png>] [49 <../../imgs/eval/local_eval/re
-siduals/rfsv_80/local/timeline_mean_raw.png> <../../imgs/eval/local_eval/residu
-als/rfsv_80/local/timeline_mean_log.png> <../../imgs/eval/local_eval/residuals/
-rfsv_80/local/histogram_raw.png> <../../imgs/eval/local_eval/residuals/rfsv_80/
-local/histogram_log.png>] [50]
-Underfull \hbox (badness 2443) in paragraph at lines 1324--1325
-\OT1/cmr/m/n/12 de-vel-op-ments. $\OT1/cmtt/m/n/12 https : / / www . federalres
-erve . gov / monetarypolicy /
+ [49 <../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_raw.png> <../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_log.png> <../../imgs/eval/local_eval/residuals/rfsv_20/local/timeline_mean_raw.png> <../../imgs/eval/local_eval/residuals/rfsv_20/local/timeline_mean_log.png> <../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_raw.png> <../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_log.png>] [50 <../../imgs/eval/local_eval/residuals/rfsv_80/local/timeline_mean_raw.png> <../../imgs/eval/local_eval/residuals/rfsv_80/local/timeline_mean_log.png> <../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_raw.png> <../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_log.png>] [51]
+Underfull \hbox (badness 2443) in paragraph at lines 1343--1344
+\OT1/cmr/m/n/12 de-vel-op-ments. $\OT1/cmtt/m/n/12 https : / / www . federalreserve . gov / monetarypolicy /
  []
 
-[51
+[52
 
 ]
-Underfull \hbox (badness 1867) in paragraph at lines 1339--1340
-[]\OT1/cmr/m/n/12 Bollerslev, T. (1986). Gen-er-al-ized au-tore-gres-sive con-d
-i-tional het-
+Underfull \hbox (badness 1867) in paragraph at lines 1358--1359
+[]\OT1/cmr/m/n/12 Bollerslev, T. (1986). Gen-er-al-ized au-tore-gres-sive con-di-tional het-
  []
 
-[52]
-Underfull \hbox (badness 1917) in paragraph at lines 1358--1359
+[53]
+Underfull \hbox (badness 1917) in paragraph at lines 1377--1378
 []\OT1/cmr/m/n/12 Reisenhofer, R., Bayer, X., and Hautsch, N. (2022). HAR-Net:
  []
 
 
-Underfull \hbox (badness 1178) in paragraph at lines 1358--1359
-\OT1/cmr/m/n/12 A con-vo-lu-tional neu-ral net-work for re-al-ized volatil-ity 
-fore-cast-ing.
- []
-
-[53]
-Underfull \hbox (badness 1460) in paragraph at lines 1372--1373
-\OT1/cmr/m/n/12 ity fore-cast-ing with ma-chine learn-ing and in-tra-day com-mo
-n-al-ity.
+Underfull \hbox (badness 1178) in paragraph at lines 1377--1378
+\OT1/cmr/m/n/12 A con-vo-lu-tional neu-ral net-work for re-al-ized volatil-ity fore-cast-ing.
  []
 
 [54]
-Underfull \hbox (badness 1616) in paragraph at lines 1375--1376
-[]\OT1/cmr/m/n/12 Brini, A. (2026). Fore-cast-ing re-al-ized volatil-ity with t
-ime se-ries
+Underfull \hbox (badness 1460) in paragraph at lines 1391--1392
+\OT1/cmr/m/n/12 ity fore-cast-ing with ma-chine learn-ing and in-tra-day com-mon-al-ity.
+ []
+
+[55]
+Underfull \hbox (badness 1616) in paragraph at lines 1394--1395
+[]\OT1/cmr/m/n/12 Brini, A. (2026). Fore-cast-ing re-al-ized volatil-ity with time se-ries
  []
 
 
-Underfull \hbox (badness 1205) in paragraph at lines 1375--1376
-\OT1/cmr/m/n/12 foun-da-tion mod-els: A com-par-i-son with econo-met-ric bench-
-marks.
+Underfull \hbox (badness 1205) in paragraph at lines 1394--1395
+\OT1/cmr/m/n/12 foun-da-tion mod-els: A com-par-i-son with econo-met-ric bench-marks.
  []
 
-[55] (thesis_structure.aux)
+[56] (thesis_structure.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 3879 strings out of 467870
- 78046 string characters out of 5418355
- 496556 words of memory out of 5000000
- 32732 multiletter control sequences out of 15000+600000
+ 3911 strings out of 467870
+ 80078 string characters out of 5418355
+ 496614 words of memory out of 5000000
+ 32762 multiletter control sequences out of 15000+600000
  638590 words of font info for 82 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 57i,13n,65p,2033b,301s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\benga\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm
-1200.pk><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfon
-ts/cm/cmbx10.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/publ
-ic/amsfonts/cm/cmbx12.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/t
-ype1/public/amsfonts/cm/cmex10.pfb><C:/Users/benga/AppData/Local/Programs/MiKTe
-X/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/benga/AppData/Local/Progr
-ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/benga/AppData/Loc
-al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/benga/App
-Data/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/b
-enga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:
-/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.
-pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
-m/cmr8.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
-fonts/cm/cmsy10.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/p
-ublic/amsfonts/cm/cmsy6.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts
-/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/benga/AppData/Local/Programs/MiKT
-eX/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/benga/AppData/Local/Prog
-rams/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb><C:/Users/benga/AppData/L
-ocal/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on thesis_structure.pdf (55 pages, 7471117 bytes).
+ 57i,13n,65p,2123b,301s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\benga\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb><C:/Users/benga/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on thesis_structure.pdf (56 pages, 8045006 bytes).
 PDF statistics:
- 358 PDF objects out of 1000 (max. 8388607)
+ 369 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 231 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 251 words of extra memory for PDF output out of 10000 (max. 10000000)
 

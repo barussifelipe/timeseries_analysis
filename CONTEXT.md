@@ -2055,3 +2055,21 @@ of estimator comparisons. The synthetic RV boundary/window checks passed; aggreg
 arithmetic, counts, floors, and plots were reconciled. Next: fresh-context
 review, then decide how to present the matched GK/RV transfer comparison in
 the thesis without implying a causal estimator ranking.
+## Five-stock test data before residuals (2026-10-05)
+
+Section 6.4 now opens with raw/log daily mean timelines and raw/log pooled
+histograms of the 8,800 adjusted GK test targets shared by the local/global
+residual comparisons: five stocks on each of 1,760 dates, 2019-01-02 through
+2025-12-31. `data/plot_local_test_gk.py` loads the same eligible targets as
+the window-20 and window-80 evaluation and verifies their dates and values
+match; it reuses `data/plot_gk_data.py` for the four PNGs in
+`imgs/eval/local_eval/test_data/`. The plots use daily unannualized variance,
+log of each date's cross-ticker mean for the log timeline, and pooled individual
+log variances for the log histogram. The normal overlays use each full pooled
+distribution. No data selection, fits, forecasts, or scores changed. The
+technical-evaluation check passed; two in-place SyncTeX LaTeX passes produced
+the 56-page PDF, and both new pages were visually checked. A fresh-context
+cold review validated at 100/100 with no findings in
+`judge/reviews/local_test_target_figures_review.json`. Next: interpret
+residual patterns alongside matched QLIKE and MCS results, then revisit stale
+RFSV prose.

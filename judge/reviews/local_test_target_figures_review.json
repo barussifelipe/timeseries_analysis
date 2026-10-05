@@ -1,0 +1,34 @@
+{
+  "task": "Add five-stock local test-target raw and log timelines and histograms before Section 6.4 model residuals",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/residual_plot.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git status --short and git diff for CONTEXT.md, ref/final_report/thesis_structure.tex, and judge/check_technical_evaluation.py",
+    "data/plot_local_test_gk.py",
+    "data/plot_gk_data.py",
+    "models/support_scripts/raw_neural_data.py",
+    "models/training_blocks.py",
+    "inference/evaluate_local_global.py",
+    "inference/run_mcs.py",
+    "imgs/eval/mcs/20_size/forecasts.csv and imgs/eval/mcs/80_size/forecasts.csv",
+    "imgs/eval/local_eval/test_data/*.png",
+    "ref/final_report/thesis_structure.pdf pages 42-43 and ref/final_report/thesis_structure.log",
+    "independent rerun of .venv/Scripts/python.exe -m data.plot_local_test_gk",
+    "independent rerun of .venv/Scripts/python.exe judge/check_technical_evaluation.py",
+    "independent ticker/date and target-value comparison with saved MCS-20 forecast CSV"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

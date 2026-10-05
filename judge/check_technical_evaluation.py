@@ -119,15 +119,17 @@ paths = re.findall(r'\\includegraphics\[[^]]+\]\{([^}]+)\}', section)
 variants = [('base_lstm_20', 'global'), ('base_lstm_80', 'global'), ('base_lstm_80', 'local'),
             ('harnet_20', 'global'), ('harnet_80', 'global'), ('harnet_80', 'local'),
             ('mlp_20', 'global'), ('mlp_80', 'global'), ('rfsv_20', 'local'), ('rfsv_80', 'local')]
-expected_paths = [f'../../imgs/eval/local_eval/residuals/{model}/{scope}/{plot}.png'
+test_paths = [f'../../imgs/eval/local_eval/test_data/{plot}.png'
+              for plot in ('timeline_raw', 'timeline_log', 'histogram_raw', 'histogram_log')]
+expected_paths = test_paths + [f'../../imgs/eval/local_eval/residuals/{model}/{scope}/{plot}.png'
                   for model, scope in variants
                   for plot in ('timeline_mean_raw', 'timeline_mean_log', 'histogram_raw', 'histogram_log')]
 assert paths == expected_paths
-assert len(paths) == len(set(paths)) == 40
+assert len(paths) == len(set(paths)) == 44
 assert all((root / 'ref/final_report' / s).is_file() for s in paths)
-assert section.count(r'\begin{figure}[htbp]') == 20
+assert section.count(r'\begin{figure}[htbp]') == 22
 assert section.count('the orange curve is a full-sample normal fit.') == 10
-assert 'The curve is scaled to expected bin counts; the central 99.5\\% panel shows the same full-sample fit without refitting.' in section
+assert 'Each histogram has an orange normal curve fitted to all 8,800 pooled residuals using their mean and population variance.' in section
 for model, scope in variants:
     family, window = model.rsplit('_', 1)
     name = f'{dict(base_lstm="Base LSTM", harnet="HARNet", mlp="MLP", rfsv="RFSV")[family]}-{window} {scope.title()}'
@@ -138,10 +140,11 @@ for model, scope in variants:
     assert section.count(r'\label{fig:residual-' + slug + '-timeline}') == 1
     assert section.count(r'\label{fig:residual-' + slug + '-histograms}') == 1
 figures = re.findall(r'\\begin\{figure\}\[htbp\](.*?)\\end\{figure\}', section, re.S)
-assert len(figures) == 20
+assert len(figures) == 22
 for index, figure in enumerate(figures):
     image_names = re.findall(r'/([^/]+\.png)\}', figure)
-    expected_names = (['timeline_mean_raw.png', 'timeline_mean_log.png'] if index % 2 == 0
+    expected_names = (['timeline_raw.png', 'timeline_log.png'] if index == 0 else
+                      ['timeline_mean_raw.png', 'timeline_mean_log.png'] if index % 2 == 0
                       else ['histogram_raw.png', 'histogram_log.png'])
     assert image_names == expected_names
 complexity_table = section.split(r'\label{tab:parameter-combinations}')[0].split(r'\begin{tabular}')[-1]
@@ -165,4 +168,4 @@ if before_file.exists():
     assert prefix == before.split(r'\subsection{Evaluation Setup}')[0]
     assert source.split(r'\section{Conclusions}')[1] == before.split(r'\section{Conclusions}')[1]
     assert source.split(r'\section{Experimental Results}')[1].split(r'\subsection{Computational Evaluation}')[0] == before.split(r'\section{Experimental Results}')[1].split(r'\subsection{Computational Evaluation}')[0]
-print('PASS: saved metric rows, rankings, precision, RMSE identities; complexity exponents; 20 labeled figures with 40 ordered residual plots for ten MCS variants; subsection order.')
+print('PASS: saved metric rows, rankings, precision, RMSE identities; complexity exponents; two test-target figures and 20 labeled residual figures; subsection order.')
