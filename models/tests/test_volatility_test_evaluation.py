@@ -41,6 +41,16 @@ def test_one_step_statistical_and_output(tmp_path):
     with patch('inference.plot_global_residuals.plt.close', side_effect=figures.append):
         assert plot_residuals('HAR-20', [pd.date_range('2019-01-01', periods=1000).to_numpy()],
                               [np.exp(log_values)], [np.ones(1000)], folder) == 1000
+    raw = np.expm1(log_values)
+    raw_skewness = np.mean(((raw - raw.mean()) / raw.std(ddof=0)) ** 3)
+    assert f'skewness = {raw_skewness:.4g}' in figures[0]._suptitle.get_text()
+    raw_kurtosis = np.mean(((raw - raw.mean()) / raw.std(ddof=0)) ** 4) - 3
+    assert f'excess kurtosis = {raw_kurtosis:.4g}' in figures[0]._suptitle.get_text()
+    log_residuals = np.log(np.exp(log_values))
+    log_skewness = np.mean(((log_residuals - log_residuals.mean()) / log_residuals.std(ddof=0)) ** 3)
+    assert f'skewness = {log_skewness:.4g}' in figures[3]._suptitle.get_text()
+    log_kurtosis = np.mean(((log_residuals - log_residuals.mean()) / log_residuals.std(ddof=0)) ** 4) - 3
+    assert f'excess kurtosis = {log_kurtosis:.4g}' in figures[3]._suptitle.get_text()
     assert np.allclose(figures[1].axes[0].lines[0].get_ydata(), np.expm1(log_values[3:-3]))
     assert np.allclose(figures[4].axes[0].lines[0].get_ydata(), log_values[3:-3])
     for figure in figures:

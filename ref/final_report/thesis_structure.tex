@@ -112,7 +112,7 @@ Let $Y(t)$ be a random variable observed over time, and let $\mathcal{F}(t-1)$ c
 \begin{equation}\label{eq:conditional-mean}
 \mu=\mathrm{E}[Y(t)],\qquad \mu(t)=\mathrm{E}[Y(t)\mid\mathcal{F}(t-1)].
 \end{equation}
-A moment summarizes an aspect of a distribution: its first moment concerns location, its second central moment dispersion, and its third central moment asymmetry.
+A moment summarizes an aspect of a distribution: the first raw moment is the mean, the second central moment is variance, the standardized third central moment is skewness, and the standardized fourth central moment is kurtosis. Subtracting 3 from kurtosis gives excess kurtosis, which is zero for a normal distribution.
 
 For $n$ observations, the sample mean estimates the population mean:
 \begin{equation}\label{eq:sample-mean}
@@ -135,6 +135,28 @@ s^2=\frac{1}{n-1}\sum_{t=1}^{n}(y(t)-\bar{y})^2.
 \end{equation}
 The estimator $s^2$ is unbiased for independent, identically distributed observations with finite variance: across repeated samples, its expected value equals the population variance. Dividing by $n-1$ compensates for estimating $\mu$ with the same sample's mean; dividing by $n$ would underestimate variance on average. With dependent time-series observations, $s^2$ remains descriptive, but that unbiasedness is not automatic.
 
+For $\sigma^2=\mathrm{Var}(Y(t))>0$ and finite fourth moment, population skewness and excess kurtosis are
+\begin{equation}\label{eq:skewness}
+\operatorname{Skew}(Y(t))=\frac{\mathrm{E}[(Y(t)-\mu)^3]}{\sigma^3}.
+\end{equation}
+For descriptive screening, use the following skewness bands \cite{who2019anthro}:
+\begin{itemize}
+    \item $-0.5\leq\operatorname{Skew}(Y(t))\leq 0.5$: approximately symmetric, as a normal distribution is.
+    \item $\operatorname{Skew}(Y(t))<-0.5$: left-skewed, with a longer left tail.
+    \item $\operatorname{Skew}(Y(t))>0.5$: right-skewed, with a longer right tail \cite{nistskewkurt}.
+\end{itemize}
+\begin{equation}\label{eq:excess-kurtosis}
+\operatorname{ExKurt}(Y(t))=\frac{\mathrm{E}[(Y(t)-\mu)^4]}{\sigma^4}-3.
+\end{equation}
+For kurtosis \cite{nistskewkurt}:
+\begin{itemize}
+    \item $\operatorname{ExKurt}(Y(t))=0$: the standardized fourth moment equals the normal reference of 3.
+    \item $\operatorname{ExKurt}(Y(t))<0$: lighter tails than the normal reference; a flatter central peak can accompany them. 
+    \item $\operatorname{ExKurt}(Y(t))>0$: heavier tails than the normal reference; a more concentrated central peak can accompany them. 
+\end{itemize}
+
+Skewness helps describe which side has the extended tail. Excess kurtosis helps describe tail extremity overall.
+
 Conditional variance describes uncertainty left after observing the past. For $\varepsilon(t)=Y(t)-\mu(t)$, its conditional mean is zero, so
 \begin{equation}\label{eq:conditional-variance}
 v(t)=\mathrm{Var}(Y(t)\mid\mathcal{F}(t-1))
@@ -154,12 +176,7 @@ Covariance generalizes variance to two variables:
 \mathrm{Cov}(X,Y)=\mathrm{E}[(X-\mathrm{E}[X])(Y-\mathrm{E}[Y])],
 \qquad \mathrm{Var}(X)=\mathrm{Cov}(X,X).
 \end{equation}
-Applied to $Y(t)$ and $Y(t-k)$, it measures linear dependence across a lag $k$. The standardized third central moment is skewness, when the variance is positive and the third moment exists:
-\begin{equation}\label{eq:skewness}
-\operatorname{Skew}(Y(t))=
-\frac{\mathrm{E}[(Y(t)-\mu)^3]}{\mathrm{Var}(Y(t))^{3/2}}.
-\end{equation}
-Its sign indicates the direction of asymmetry.
+Applied to $Y(t)$ and $Y(t-k)$, it measures linear dependence across a lag $k$.
 
 Homoscedasticity means that error variance is constant across observations; conditional homoscedasticity specifically means the variance given past information stays fixed. Heteroscedasticity means it changes. Thus a homoscedastic model has
 \begin{equation}\label{eq:homoscedasticity}
@@ -1071,7 +1088,9 @@ NVDA & 22 & 22 & None\\\hline
 \subsection{Residual Structure}
 We inspect residual timelines and histograms for the model variants shared by all five stock-level final MCS sets. The evaluation uses the same five stocks and forecast targets as Table~\ref{tab:matched-results}.
 
-First, the observed test targets provide a common reference for the model residuals. Write $v_i(t)$ for the observed adjusted Garman--Klass variance of ticker $i$ on test date $t$. The 8,800 positive variances comprise 1,760 dates for each of NVDA, AAPL, NFLX, GOOG, and AMZN from 2019 through 2025. The raw timeline plots the daily mean across the five stocks; the log timeline plots the natural logarithm of that mean. The histograms pool the individual targets, with an orange normal curve fitted to all 8,800 observations using their mean and population variance. The central 99.5\% panel changes only the displayed range. The raw histogram is strongly right-skewed, whereas the log histogram is more symmetric. The descriptive normal fit for the pooled log variances is $\log v_i(t)\sim\mathcal N(\mu=-8.472,\sigma^2=0.9996)$.
+First, the observed test targets provide a common reference for the model residuals. Write $v_i(t)$ for the observed adjusted Garman--Klass variance of ticker $i$ on test date $t$. The 8,800 positive variances comprise 1,760 dates for each of NVDA, AAPL, NFLX, GOOG, and AMZN from 2019 through 2025. The raw timeline plots the daily mean across the five stocks; the log timeline plots the natural logarithm of that mean. The histograms pool the individual targets, with an orange normal curve fitted to all 8,800 observations using their mean and population variance. The central 99.5\% panel changes only the displayed range. The raw histogram is strongly right-skewed, whereas the log histogram is more symmetric. The descriptive normal fit for the pooled log variances is $\log v_i(t)\sim\mathcal N(\mu=-8.472,\sigma^2=0.9996)$. 
+
+The timeline also shows a pronounced volatility spike in April 2025, coinciding with market turmoil following the April 2 US tariff announcement \cite{ecb2025fsr}. 
 
 \begin{figure}[htbp]
 \centering
@@ -1128,7 +1147,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \end{figure}
 \FloatBarrier
 
-\textbf{Base LSTM-80 Global.} The saved 80-observation global forecast is summarized in the following timeline and histogram figures.
+\textbf{Base LSTM-80 Global.} The saved 80-observation global forecast is summarized in the following timeline and histogram figures. 
 
 \begin{figure}[htbp]
 \centering
@@ -1341,6 +1360,7 @@ Counts include fitted coefficients and neural weights and biases, excluding opti
 \bibitem{bernhardt1987crash} Bernhardt, D., and Eckblad, M. (n.d.). Stock market crash of 1987. \emph{Federal Reserve History}. \url{https://www.federalreservehistory.org/essays/stock-market-crash-of-1987}.
 \bibitem{weinberg2008crisis} Weinberg, J. (n.d.). The Great Recession and its aftermath. \emph{Federal Reserve History}. \url{https://www.federalreservehistory.org/essays/great-recession-and-its-aftermath}.
 \bibitem{fed2020mpr} Board of Governors of the Federal Reserve System. (2020). \emph{Monetary Policy Report}, June 12, Part 1: Recent economic and financial developments. \url{https://www.federalreserve.gov/monetarypolicy/2020-06-mpr-part1.htm}.
+\bibitem{ecb2025fsr} European Central Bank. (2025). \emph{Financial Stability Review}, May, Section 2.1: Financial markets have been volatile. \url{https://www.ecb.europa.eu/press/financial-stability-publications/fsr/pdf/ecb.fsr202505~0cde5244f6.en.pdf}.
 \bibitem{fed2001mpr} Board of Governors of the Federal Reserve System. (2001). \emph{Monetary Policy Report to the Congress}, July 18, Section 2: Economic and financial developments in 2001. \url{https://www.federalreserve.gov/boarddocs/hh/2001/july/ReportSection2.htm}.
 \bibitem{fomc2001oct} Federal Open Market Committee. (2001). \emph{Minutes of the Federal Open Market Committee}, October 2. \url{https://www.federalreserve.gov/fomc/minutes/20011002.htm}.
 \bibitem{euronext2015} Euronext. (2015). Gong marks exchange anniversary and exchange history website launch. Euronext Amsterdam.
@@ -1354,6 +1374,9 @@ Counts include fitted coefficients and neural weights and biases, excluding opti
 \bibitem{boxjenkins1970} Box, G. E. P., and Jenkins, G. M. (1970). \emph{Time series analysis: Forecasting and control}. Holden-Day.
 \bibitem{kalman1960} Kalman, R. E. (1960). A new approach to linear filtering and prediction problems. \emph{Journal of Basic Engineering}, 82(1), 35--45.
 \bibitem{pennstate508} The Pennsylvania State University. (n.d.). Linear regression, Gauss--Markov theorem. \emph{STAT 508: Applied Data Mining and Statistical Learning}, Lesson 4.
+\bibitem{nistskewkurt} National Institute of Standards and Technology. (n.d.). Measures of skewness and kurtosis. \emph{Engineering Statistics Handbook}, Section 1.3.5.11. \url{https://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm}.
+\bibitem{who2019anthro} World Health Organization and United Nations Children's Fund. (2019). \emph{Recommendations for data collection, analysis and reporting on anthropometric indicators in children under 5 years old}, p. 71. \url{https://iris.who.int/bitstream/handle/10665/324791/9789241515559-eng.pdf}.
+
 \bibitem{engle1982} Engle, R. F. (1982). Autoregressive conditional heteroscedasticity with estimates of the variance of United Kingdom inflation. \emph{Econometrica}, 50(4), 987--1007.
 \bibitem{bollerslev1986} Bollerslev, T. (1986). Generalized autoregressive conditional heteroskedasticity. \emph{Journal of Econometrics}, 31(3), 307--327.
 \bibitem{corsi2009} Corsi, F. (2009). A simple approximate long-memory model of realized volatility. \emph{Journal of Financial Econometrics}, 7(2), 174--196.

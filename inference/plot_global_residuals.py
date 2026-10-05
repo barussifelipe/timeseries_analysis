@@ -43,6 +43,9 @@ def plot_residual_histogram(label, name, residuals, xlabel, output):
     std = float(residuals.std(ddof=0))
     if not np.isfinite(std) or std <= 0:
         raise ValueError(f'{label}: invalid {name} normal fit')
+    standardized = (residuals - mean) / std
+    skewness = float(np.mean(standardized ** 3))
+    excess_kurtosis = float(np.mean(standardized ** 4) - 3)
     low, high = np.quantile(residuals, [.0025, .9975])
     central = residuals[(residuals >= low) & (residuals <= high)]
     fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
@@ -60,7 +63,8 @@ def plot_residual_histogram(label, name, residuals, xlabel, output):
         ax.grid(axis='y', alpha=.25)
         ax.legend()
     fig.suptitle(f'{label} | {name.title()} test residuals | N = {len(residuals):,}\n'
-                 f'Normal fit: mean = {mean:.4g}, standard deviation = {std:.4g}')
+                 f'Normal fit: mean = {mean:.4g}, standard deviation = {std:.4g}, '
+                 f'skewness = {skewness:.4g}, excess kurtosis = {excess_kurtosis:.4g}')
     fig.tight_layout()
     fig.savefig(output, dpi=150)
     plt.close(fig)

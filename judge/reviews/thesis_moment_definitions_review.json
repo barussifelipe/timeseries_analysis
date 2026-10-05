@@ -1,0 +1,28 @@
+{
+  "task": "After thesis Equation 2.5 add skewness and kurtosis definitions; after Equation 2.1 name each moment",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git status --short and git diff -- ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.aux",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf page 9 via pdftotext",
+    "inference/plot_global_residuals.py",
+    "data/plot_gk_data.py",
+    "python judge/check_technical_evaluation.py"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

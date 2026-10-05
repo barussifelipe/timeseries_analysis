@@ -9,7 +9,7 @@ Steps:
 7. Mean Reversion, x = days; y = variance - unconditinional mean 
 8. Rewrite the goals after finishing the results 
 
-8. Conclusion with the 3 sections: 1. Results with our final conclusion regarding better model; 2. Limitations regarding computing power, data 3. Further work based on the limitations and additional comparisons.  
+8. Conclusion with the 3 sections: 1. Results with our final conclusion regarding better model; 2. Limitations regarding computing power, data 3. Further work based on the limitations and additional comparisons. 4. Appendix containing the estimation of Hurst component and nu. 
 
 Structure: 
 5.4.1 Overall result

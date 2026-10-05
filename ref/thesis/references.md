@@ -194,3 +194,9 @@ independently verified; confirm the thesis year and publication details before s
 - statsmodels, `SARIMAX.loglike` (sum per-ticker likelihoods for shared SARIMA parameters): https://www.statsmodels.org/stable/generated/statsmodels.tsa.statespace.sarimax.SARIMAX.loglike.html
 - `arch` documentation, *ARCH Modeling* (GARCH(1,1) likelihood and fixed-parameter forecasting): https://arch.readthedocs.io/en/stable/univariate/univariate_volatility_modeling.html
 - Gatheral, J., Jaisson, T., & Rosenbaum, M., *Volatility is rough* (RFSV roughness motivation): https://arxiv.org/abs/1410.3394
+
+## Descriptive shape statistics
+
+- National Institute of Standards and Technology. (n.d.). *Measures of skewness and kurtosis*. Engineering Statistics Handbook, Section 1.3.5.11. https://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm
+- World Health Organization & United Nations Children's Fund. (2019). *Recommendations for data collection, analysis and reporting on anthropometric indicators in children under 5 years old* (p. 71). https://iris.who.int/bitstream/handle/10665/324791/9789241515559-eng.pdf
+- Westfall, P. H. (2014). Kurtosis as peakedness, 1905--2014. R.I.P. *The American Statistician, 68*(3), 191--195. https://doi.org/10.1080/00031305.2014.917055

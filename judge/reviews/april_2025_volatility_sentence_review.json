@@ -1,0 +1,28 @@
+{
+  "task": "Review the April 2025 volatility-spike interpretation and citation in the thesis Residual Structure section",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/residual_plot.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf",
+    "imgs/eval/local_eval/test_data/timeline_raw.png",
+    "https://www.ecb.europa.eu/press/financial-stability-publications/fsr/pdf/ecb.fsr202505~0cde5244f6.en.pdf",
+    "python judge/check_technical_evaluation.py"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -88,6 +88,9 @@ def plot(days, variance, output, title):
         mean, std = values.mean(), values.std(ddof=0)
         if not np.isfinite(std) or std <= 0:
             raise ValueError(f'{title}: invalid normal fit')
+        standardized = (values - mean) / std
+        skewness = np.mean(standardized ** 3)
+        excess_kurtosis = np.mean(standardized ** 4) - 3
         lo, hi = np.quantile(values, [.0025, .9975])
         fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
         for ax, shown, label in zip(axes, (values, values[(values >= lo) & (values <= hi)]),
@@ -102,7 +105,8 @@ def plot(days, variance, output, title):
             ax.grid(axis='y', alpha=.25)
             ax.legend()
         fig.suptitle(f'{title}: {scale} GK variance | N = {len(values):,}\n'
-                     f'Normal fit: mean = {mean:.4g}, standard deviation = {std:.4g}')
+                     f'Normal fit: mean = {mean:.4g}, standard deviation = {std:.4g}, '
+                     f'skewness = {skewness:.4g}, excess kurtosis = {excess_kurtosis:.4g}')
         fig.tight_layout()
         fig.savefig(output / f'histogram_{scale}.png', dpi=150)
         plt.close(fig)

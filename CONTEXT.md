@@ -1,3 +1,49 @@
+## Thesis moment interpretation bands (2026-10-05)
+
+Section 2 now has bullet interpretations immediately after Equations 2.6 and
+2.7. WHO/UNICEF's survey-data rules of thumb supply the descriptive skewness
+band [-0.5, 0.5] and excess-kurtosis band [-1, 1]; NIST supplies the left/right
+and lighter/heavier-tail readings. The thesis states that these are neither
+normality tests nor validated cutoffs for financial data. Following Westfall
+(2014), it notes that heavier tails can coincide with a more concentrated
+center and lighter tails with a flatter one, but peak height does not follow
+from kurtosis alone. The excess-kurtosis bullets now separate the sign from
+the screening band: positive values indicate heavier-tail direction and
+negative values lighter-tail direction even within [-1, 1]. The sources were
+added to the working references and
+thesis bibliography and summarized in thesis notes. Two in-place SyncTeX
+LaTeX passes rebuilt the PDF, pages 9-10 were inspected, and the technical
+evaluation checker passed. Next: interpret residual patterns alongside matched
+QLIKE and MCS results, then revisit stale RFSV prose.
+
+## Thesis moment definitions (2026-10-05)
+
+Section 2 now names the mean, variance, skewness, and kurtosis after Equation
+2.1. Population skewness and excess kurtosis are Equations 2.6 and 2.7
+immediately after variance Equation 2.5; the former skewness definition after
+covariance was moved. The text distinguishes these population moments from
+the pooled histograms' descriptive sample moments, which use n in their
+standardizing variance. Two in-place SyncTeX-enabled LaTeX passes rebuilt the
+PDF; page 9 was inspected and both equations are readable. Next: interpret
+residual patterns alongside matched QLIKE and MCS results, then revisit stale
+RFSV prose.
+
+## Thesis histogram shape statistics (2026-10-05)
+
+The 20 raw/log residual histograms referenced by the ten Residual Structure
+variants and both target histograms in Figure 6.2 display pooled full-sample
+skewness and excess kurtosis beside mean and population standard deviation.
+They use the mean cubed and mean fourth-power standardized observation,
+respectively, with 3 subtracted from the fourth moment; a normal distribution
+has zero excess kurtosis. Each full and central-99.5% panel shows the same
+8,800-observation statistics. The 22 PNGs were regenerated from saved matched
+forecast CSVs, without changing forecasts, targets, splits, or values. Shared
+plotting code labels future regenerated figures. Focused target and residual
+checks passed; two in-place SyncTeX-enabled LaTeX passes rebuilt the PDF. The
+Base LSTM-20 prose agrees with the positive raw and log skewness shown in its
+figures. Next: interpret residual patterns alongside matched QLIKE and MCS
+results, then revisit stale RFSV prose.
+
 ## Garman--Klass data figures (2026-10-05)
 
 `data/plot_gk_data.py` reads the existing 2,714-ticker raw-history cohort read-only

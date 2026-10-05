@@ -1,0 +1,36 @@
+{
+  "task": "Add full-sample excess kurtosis to 20 thesis residual histograms and skewness plus excess kurtosis to Figure 6.2 target histograms",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/residual_plot.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git status --short and focused git diffs",
+    "inference/plot_global_residuals.py",
+    "data/plot_gk_data.py",
+    "data/plot_local_test_gk.py",
+    "models/tests/test_volatility_test_evaluation.py",
+    "data/tests/test_plot_gk_data.py",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf metadata",
+    "ref/final_report/thesis_structure.synctex.gz metadata",
+    "imgs/eval/mcs/20_size/forecasts.csv",
+    "imgs/eval/mcs/80_size/forecasts.csv",
+    "22 thesis-referenced imgs/eval/local_eval residual and test target histogram PNGs",
+    "independent regeneration and pixel comparison of 22 histograms from saved forecast CSVs",
+    "direct focused test and technical-evaluation checker results"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

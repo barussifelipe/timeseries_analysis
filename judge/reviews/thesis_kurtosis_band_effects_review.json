@@ -1,0 +1,30 @@
+{
+  "task": "Clarify that the sign of excess kurtosis describes tail direction even inside the WHO/UNICEF [-1, 1] screening band, while kurtosis alone does not determine peak height",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- ref/final_report/thesis_structure.tex ref/thesis/thesis_notes.md ref/thesis/references.md",
+    "ref/final_report/thesis_structure.tex lines 138-158 and bibliography entries",
+    "ref/final_report/thesis_structure.pdf pages 9-10 via pdftotext",
+    "ref/final_report/thesis_structure.log",
+    "ref/thesis/references.md",
+    "ref/thesis/thesis_notes.md",
+    "python judge/check_technical_evaluation.py",
+    "WHO/UNICEF (2019), Recommendations for data collection, analysis and reporting on anthropometric indicators in children under 5 years old, printed page 71, official UNICEF PDF https://data.unicef.org/wp-content/uploads/2019/05/Anthropometry-children-under-5-guidance-English_2019.pdf",
+    "NIST Engineering Statistics Handbook, Section 1.3.5.11, https://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm",
+    "Westfall (2014), Kurtosis as Peakedness, 1905-2014. R.I.P., author manuscript at https://pmc.ncbi.nlm.nih.gov/articles/PMC4321753/"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}
