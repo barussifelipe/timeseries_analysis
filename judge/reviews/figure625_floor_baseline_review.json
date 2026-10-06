@@ -1,0 +1,40 @@
+{
+  "task": "Use the saved global forecast floor as the shared Figure 6.25 NIC baseline and update its artifacts and Section 6.5 description",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "data/plot_news_impact_curve.py",
+    "data/tests/test_plot_news_impact_curve.py",
+    "models/support_scripts/raw_neural_data.py",
+    "inference/evaluate_volatility_test.py",
+    "inference/checkpoints/base_lstm_vol/garman-klass/global/raw_gk_logvol_return_w20_h128_lr0p001_30e/fit.pth",
+    "imgs/data_properties/mcs_news_impact_curve.csv",
+    "imgs/data_properties/mcs_news_impact_curve.png",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.pdf",
+    "ref/final_report/thesis_structure.log",
+    "ref/thesis/thesis_notes.md",
+    "git status and diff",
+    "python -m unittest data.tests.test_plot_news_impact_curve -v"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 12,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "grounding",
+      "severity": "minor",
+      "evidence": "ref/thesis/thesis_notes.md lines 36-38 preserve pre-correction NIC values and shape claims immediately below the new floor statement. For example, they report Base LSTM-20 Global 2.23e-4 at -5%, whereas the regenerated CSV gives 4.8989413888118346e-5 at -5% and 7.763594760334575e-5 at +5%. The note still describes the old negative-shock-dominant response as the current result.",
+      "fix": "Replace the old NIC numerical and shape descriptions with values from the regenerated CSV, or explicitly mark those descriptions as superseded historical results."
+    }
+  ],
+  "total": 97,
+  "pass": true
+}

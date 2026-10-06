@@ -1,0 +1,28 @@
+{
+  "task": "Cold review of the tranquil NIC baseline value correction and Figure 6.25 construction-only presentation",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff and worktree status",
+    "data/plot_news_impact_curve.py",
+    "data/tests/test_plot_news_impact_curve.py",
+    "ref/thesis/thesis_notes.md",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.pdf (pdftotext extraction)",
+    "imgs/data_properties/mcs_news_impact_curve.png (visual inspection)",
+    "Independent Python calculation and assertion against BASELINE_VARIANCE"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

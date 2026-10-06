@@ -1,0 +1,26 @@
+{
+  "task": "Split thesis Table 6.7 into separate raw and log residual-moment tables, matching Table 6.6 width and font size while preserving values and requested scaling.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "imgs/eval/local_eval/residuals/moments.md",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.pdf pages 54-55",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.aux",
+    "git diff -- ref/final_report/thesis_structure.tex CONTEXT.md",
+    "judge/prompt.md",
+    "judge/score.schema.json"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

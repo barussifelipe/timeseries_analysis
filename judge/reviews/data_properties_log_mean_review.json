@@ -1,0 +1,34 @@
+{
+  "task": "Cold review of Section 6.5 Figures 6.23 and 6.24 using log-scaled five-stock mean variance",
+  "sources": [
+    "User request: use log scale for both plots and average between stocks",
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/nextsteps.txt",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "data/plot_data_properties.py",
+    "data/tests/test_plot_data_properties.py",
+    "models/support_scripts/raw_neural_data.py",
+    "data/plot_gk_data.py",
+    "imgs/eval/mcs/80_size/forecasts.csv",
+    "D:/DBs/timeseries_analysis/history_coverage.db (read-only via series())",
+    "imgs/data_properties/volatility_clustering.png",
+    "imgs/data_properties/mean_reversion.png",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.pdf, pages 56-57",
+    "git status --short and git diff for CONTEXT.md and thesis_structure.tex",
+    "Direct execution of two focused tests and series()/average_stocks() on saved data"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

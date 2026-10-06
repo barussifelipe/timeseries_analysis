@@ -1,6 +1,262 @@
+## Background volatility properties (2026-10-06)
+
+Section 2.3 now includes 2.3.5 Volatility Clustering and 2.3.6 Mean Reversion
+after the Garman--Klass proxy. The first defines persistence in return magnitude
+and conditional variance, then distinguishes the asymmetric negative/positive
+shock response conventionally called the leverage effect. The second explains
+conditional return toward a long-run level using the stationary GARCH(1,1)
+identity and the slow fOU restoring drift; it distinguishes the later 252-day
+rolling reference from a fixed long-run mean. Engle (1982), Bollerslev (1986),
+Engle and Ng (1993), Corsi (2009), and Gatheral et al. (2018) support the
+claims. Corresponding source notes are in `ref/thesis/thesis_notes.md`; no new
+references were needed. The GARCH identity passed a small arithmetic check;
+two in-place SyncTeX LaTeX passes built the 68-page PDF, pages 19--20 were
+visually checked, and no new overfull lines occur in the added text. The
+independent cold review passed 100/100 with no findings in
+`judge/reviews/background_volatility_properties_review.json`. Next: user-authored
+interpretation of the Section 6.5 figures.
+
+## Section 6.5 plot construction and NIC baseline (2026-10-06)
+
+Section 6.5 gives equations and sampling rules before the two return-bin
+figures, the NIC, and the two rolling-reference figures. Plot interpretation
+was removed for the user to write. Figure 6.25 shows eight variants without
+the RFSV curves; its saved ten-series CSV remains for audit. The NIC now uses
+the saved global pre-2016 variance floor 3.396062419686545e-13 as its shared
+input baseline, with log-volatility 0.5 * log(floor) = -14.35549. The 20- and
+80-observation windows match the saved model configurations. The simulated NIC
+predictions, CSV, and PNG changed; saved test observations, forecasts, split
+counts, and scores did not. Focused NIC tests passed; two in-place SyncTeX
+LaTeX passes rebuilt the PDF; the prior
+section rewrite passed independent review 100/100 in
+`judge/reviews/section65_construction_review.json`; the baseline correction
+passed a second cold review 100/100 in
+`judge/reviews/nic_baseline_correction_review.json`. The floor-baseline
+update passed a new cold review 100/100 in
+`judge/reviews/figure625_floor_baseline_final_review.json`. Next: user-authored
+interpretation of the Section 6.5 figures.
+
+## Thesis residual histograms and Models Summary layout (2026-10-06)
+
+Removed the repetitive caption phrasing ("Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.") across the ten 6.4 model histogram figures in `ref/final_report/thesis_structure.tex`. Placed `\clearpage` before `\subsubsection{Models Summary}` so the subsubsection heading starts at the top of Page 54. Combined Table 6.6 (`tab:residual-moments-raw`) and Table 6.7 (`tab:residual-moments-log`) with reduced vertical space (`\vspace{1.2em}`) inside a single float followed by `\clearpage`. Page 54 now contains exclusively `\subsubsection{Models Summary}`, Table 6.6, and Table 6.7, with Table 6.8 and its intro paragraph starting cleanly on Page 55. Compiled with two `pdflatex -synctex=1` passes; pages 53, 54, and 55 were visually inspected. Next: present the updated layout and PDF to the user.
+
+## Earlier MCS News Impact Curve evaluation and thesis integration (2026-10-06)
+
+Evaluated the News Impact Curve (NIC) across all ten model variants retained in
+the Model Confidence Set (MCS) intersection under both 20- and 80-observation
+block lengths, following reference 1.2 (arXiv:2309.02072 Section 4.3.1) and
+Engle & Ng (1993). Shocks use exclusively percentage returns defined as
+s = 100 * log(Close/Open) with s in {-5, ..., +5} percentage points (steps of
+1%), decimal return r = s / 100 in [-0.05, +0.05], under historical training
+initial tranquil baseline log-volatility -4.7974 (baseline variance ~6.808e-5),
+superseded in Figure 6.25 by the saved global training floor.
+
+Key findings across the ten MCS models:
+1. Base LSTM Global models autonomously capture the asymmetric leverage effect
+   (asymmetric V-shape): for Base LSTM-20 Global, variance rises to 2.23e-4 at
+   -5% vs 1.39e-4 at +5% (minimum 8.7e-5 at +1%); for Base LSTM-80 Global,
+   variance rises to 1.67e-4 at -5% vs 0.91e-4 at +5% (minimum 6.5e-5 at +1%).
+2. Feedforward neural models exhibit diverse functional shapes: MLP-20 Global
+   shows an asymmetric U-response (1.78e-4 at -5% to 1.49e-4 at +5%), while
+   MLP-80 Global displays a mild monotonic downward slope (1.01e-4 to 0.91e-4).
+   Base LSTM-80 Local (5-ticker mean) displays a damped response (~1.46e-4).
+3. Pure variance-history models (HARNet-20/80 Global/Local and RFSV-20/80 Local)
+   do not receive return innovations (d(sigma^2)/d(r) = 0), yielding invariant
+   horizontal NIC responses at their tranquil predictions (7.3e-5 to 8.9e-5).
+
+Artifacts are saved in `data/plot_news_impact_curve.py`,
+`imgs/data_properties/mcs_news_impact_curve.csv`, and
+`imgs/data_properties/mcs_news_impact_curve.png`.
+Section 6.5 of `ref/final_report/thesis_structure.tex` was updated with Figure
+6.25 (fig:data-property-nic) and discussion immediately following Figure 6.24.
+Reference `engle1993` was added to the thesis bibliography and
+`ref/thesis/references.md`, and findings recorded in `ref/thesis/thesis_notes.md`.
+The thesis was compiled with two `pdflatex -synctex=1` passes. Unit tests in
+`data/tests/test_plot_news_impact_curve.py` and
+`data/tests/test_plot_data_properties.py` pass. Next: present the complete
+findings and figure to the user.
+
+## Removal of LOWESS from Figure 6.23/6.24 (2026-10-06)
+
+Figure 6.23 and Figure 6.24 have removed all LOWESS smoothing fits and the lower
+local R2 panel. They now display exclusively the 88 consecutive return-sorted
+bin averages of 20 observations each (blue for actual, red for forecast).
+`volatility_clustering_bins.csv` saves the 88 five-stock mean bin coordinates;
+`volatility_clustering_lowess.csv` has been removed. Thesis Section 6.5 and
+captions for Figures 6.23 and 6.24 were updated and compiled.
+
+## Figure 6.23 piecewise LOWESS bandwidth (2026-10-06)
+
+Figure 6.23 now replaces the count-scaled dynamic radius with a piecewise
+constant return radius: 0.006125 for |return| > 0.02 (the 13 outer tail bin
+centers, n from 3 to 186, median 87) and 0.0030625 for |return| <= 0.02 (the 75
+central bin centers, n from 85 to 373, median 280). Binned means continue to use
+the arithmetic mean of each 20 sorted observations across the 88 bins. Actual
+and saved MLP-80 Global curves use tricube WLS on the original 1,760 date-level
+pairs within that piecewise bandwidth; local in-sample R2 compares against each
+neighborhood's arithmetic mean log variance. Figure 6.24 retains its fixed
++/-0.0125 radius, and volatility_clustering_dots.pkl/.png remain unchanged.
+Thesis Section 6.5 caption and description are updated and compiled. Next:
+inspect whether this piecewise bandwidth strikes the intended balance between
+tail coverage and central locality.
+
+## Inspectable Figure 6.23 dot plot (2026-10-06)
+
+`imgs/data_properties/volatility_clustering_dots.pkl` is a backend-independent
+Matplotlib Figure of the preserved dot plot: 1,760 five-stock mean test-date
+points each for actual and saved MLP-80 Global log variance against mean
+preceding signed return. Load it in Python to change the axes limits for zoom.
+The PNG and current LOWESS Figure 6.23 are unchanged. Next: inspect the dot
+plot at chosen return and log-variance ranges.
+
+## Figure 6.23 count-scaled LOWESS radius (2026-10-06)
+
+Figure 6.23 now uses the 88 mean-return centers from 20 sorted test dates per
+bin. For each center, count original date pairs within +/-0.006125 return,
+then set the tricube WLS fit radius to that count times 0.00204167. Actual and
+saved MLP-80 Global fits use the same neighborhood and local in-sample R2 uses
+that neighborhood's arithmetic mean log variance as baseline. The plotted
+20-date bin means and source 1,760 five-stock shared-date pairs are unchanged.
+The fit CSV includes initial count, final count, and radius. On this sample,
+the median initial count is 509.5, median final radius is about 1.04 return
+units, and median final fit includes all 1,760 pairs: the rule often makes
+the fit effectively global. Figure 6.24 retains its fixed +/-0.0125 radius.
+Next: inspect whether this count-scaled rule expresses the desired locality.
+
+## Figure 6.23 ten-neighbor LOWESS (2026-10-06)
+
+Figure 6.23 keeps the same 1,760 five-stock mean test-date pairs and the thin
+88-bin averages of 20 sorted dates. Its thick actual and MLP-80 Global curves
+now evaluate at 176 mean-return centers, each from ten consecutive sorted
+dates. At each center, tricube-weighted local linear WLS uses the ten nearest
+original date pairs; the return radius adapts to their distances. The lower
+panel's in-sample R2 compares the fitted line with the arithmetic mean log
+variance of those same ten pairs. The figure description names WLS and notes
+that distance weights are not an inverse-error-variance correction for
+possible heteroscedasticity. Exact local fits, R2, n=10, and adaptive radii
+are saved in `imgs/data_properties/volatility_clustering_lowess.csv`.
+Figure 6.24 still uses its original fixed +/-0.0125 neighborhood. Data,
+forecasts, targets, splits, and model scores are unchanged. Next: inspect
+whether this highly local ten-neighbor curve is useful or too variable for
+the descriptive comparison.
+
+## Figure 6.23 previous narrower LOWESS neighborhood (2026-10-06)
+
+Figure 6.23's five-stock actual and saved MLP-80 Global LOWESS curves then used
+the original 1,760 date-level pairs within +/-0.006125 return of each of 88
+bin centers; the 20-date bin averages are unchanged. The local in-sample R2
+panel uses the same neighborhood mean baseline. Neighborhood sizes range from
+3 to 681 pairs, so extreme-return R2 values can be unstable. Figure 6.24's
+full-cohort Base LSTM-80 Global plot still uses +/-0.0125; forecasts, target
+dates, splits, and model scores did not change. Next: inspect whether the
+narrower curve and its tail R2 behavior improve Section 6.5's presentation.
+
+## Global Base LSTM-80 return/variance figure (2026-10-06)
+
+Section 6.5 now adds a separate full-cohort counterpart to the five-stock
+Figure 6.23, using the saved Base LSTM-80 Global fit without retraining. The
+current window-80 global test evaluator scores 4,295,773 ticker-date targets
+from the 2,714-ticker equity cohort, then averages adjusted GK actual and
+predicted daily variances and preceding valid signed adjusted returns across
+eligible stocks on each of 1,760 test dates (2,273--2,588 stocks per date).
+The figure uses log of each daily cross-stock mean variance, 88 sorted bins
+of 20 date pairs, fixed-width tricube local-linear fits to the original
+date-level pairs within +/-0.0125 return, and local in-sample R2 against each
+window's arithmetic mean log variance. Its PNG and auditable daily means are
+`imgs/data_properties/global_base_lstm80_return_lowess.png` and
+`global_base_lstm80_daily_means.csv`. The earlier global-residual handoff count
+of 4,295,635 is stale for the current evaluator; its current eligible count
+is 138 larger. Figure 6.23 and its original dot copy remain intact. The two
+figures use different ticker populations and models; neither is a matched
+forecast-skill comparison. Next: inspect the global curve and local R2 panel,
+then decide how to interpret the return asymmetry descriptively.
+
+## Figure 6.23 initial 20-return bins and local LOWESS (2026-10-06)
+
+Figure 6.23 first sorted the same 1,760 shared-date five-stock mean pairs by
+preceding signed return into 88 consecutive bins of 20 dates. Thin blue/red
+lines join bin means of return and log(mean adjusted GK actual/saved MLP-80
+Global forecast variance). Thick lines are separate fixed-width tricube
+local-linear LOWESS fits to the original 1,760 pairs, evaluated at the 88 bin
+mean returns. Each fit initially used raw pairs within +/-0.0125 return units. The lower
+panel gives each local regression's in-sample R2 against the arithmetic mean
+log variance in that same return range; negative local R2 is possible. The
+previous 1,760-date dot plot is preserved as
+`imgs/data_properties/volatility_clustering_dots.png`. Figure 6.24, source
+observations, splits, forecasts, and model scores are unchanged. This plot
+remains descriptive. Next: inspect the 20-return/LOWESS presentation in
+Section 6.5 before drawing conclusions about return asymmetry.
+
+## Figure 6.23 binned mean-return line (2026-10-06)
+
+Figure 6.23 now sorts its 1,760 shared-date pairs by the five-stock mean
+preceding signed return and groups them into 20 equal-count bins of 88 dates.
+Within each bin it averages the return and the already log-transformed
+five-stock mean adjusted GK actual and saved MLP-80 Global forecast variances.
+The two lines join those bin means on the same return bins; no regression or
+model refit is involved. This descriptive aggregation can mask within-bin
+spread and does not alone establish leverage. Figure 6.24, source data,
+targets, splits, forecasts, and scores are unchanged. Next: inspect whether
+this first binned version serves the Section 6.5 interpretation.
+
+## Section 6.5 five-stock log-mean figures (2026-10-06)
+
+Figures 6.23 and 6.24 now aggregate the five local stocks on their 1,760
+shared 2019--2025 test dates. For each date, take the arithmetic mean of the
+five positive daily unannualized adjusted GK actual variances, saved MLP-80
+Global forecasts, and preceding valid signed adjusted open-to-close returns.
+Figure 6.23 plots mean return against the natural log of mean actual (blue)
+or forecast (red) variance. Figure 6.24 plots log(mean actual/mean reference)
+and log(mean forecast/mean reference) by target date. Each reference is first
+the stock-specific mean of 252 preceding observed variances, then averaged
+across stocks; pre-2019 history supplies the first test references. These are
+descriptive plots, not evidence alone of leverage or statistical mean
+reversion. Displayed points changed from five 1,760-point panels to one
+1,760-date series in each figure; source observations, target eligibility,
+splits, saved forecasts, and model scores did not change. Next: interpret
+these figures alongside matched QLIKE and MCS results in Section 6.5.
+The two focused checks and direct first/last-date mean checks passed. Both
+PNGs and PDF pages 56--57 were inspected after two in-place SyncTeX LaTeX
+passes. Fresh-context review `judge/reviews/data_properties_log_mean_review.json`
+validated at 100/100 with no findings.
+
+## Thesis residual-moment tables (2026-10-06)
+
+Section 6.4 now places separate raw and log residual-moment tables (Tables 6.6
+and 6.7) from `imgs/eval/local_eval/residuals/moments.md` before the prediction-
+direction table and concluding paragraph. Both span the text width and use the
+small font size of the direction table. Their captions define mu as the mean
+and sigma as the standard deviation. The log table's mu and sigma headings are
+left-aligned. The raw columns carry factors of 10^-5 and 10^-4 in their
+headings; log moments remain unscaled.
+The two raw means originally shown with 10^-6
+exponents are -0.5121 and -0.6461 in the scaled column.
+The ten variants, four rounded moments, and 8,800 matched observations per
+variant are unchanged; the existing outlier summary is now Table 6.9 after the
+paragraph.
+No data, forecasts, or scores changed. Next: interpret residual patterns
+alongside matched QLIKE and MCS results.
+
+## Data Properties first plots (2026-10-05)
+
+Section 6.5 now contains first descriptive five-stock plots for 2016--2025:
+daily absolute adjusted within-session log return beside adjusted GK variance,
+and adjusted GK variance minus its own inclusive trailing 252-valid-observation
+mean. There are 2,514 valid dates and 2,263 complete-window deviations per
+stock. The return and variance panels use log axes; the signed deviation uses
+a symmetric log axis. The rolling reference is not a constant unconditional
+mean, and these plots alone do not establish statistical mean reversion. Eleven
+exact-zero returns are omitted from the log display; valid zero GK values use
+stock-specific pre-2016 positive floors. Source data, target eligibility,
+splits, model forecasts, and scores did not change. The small rolling-window
+check passed, the plotting script regenerated two PNGs, and two in-place
+SyncTeX-enabled LaTeX passes produced a 62-page PDF; pages 55--56 were visually
+inspected. Next: refine the two figure definitions if requested, then continue
+interpreting residual patterns alongside matched QLIKE and MCS results.
+
 ## Tukey citation for residual-moment table (2026-10-05)
 
-Table 6.7's caption now cites Tukey (1977) for the 1.5-times-spread boxplot
+Table 6.9's caption cites Tukey (1977) for the 1.5-times-spread boxplot
 convention while retaining the project's linearly interpolated quartile method
 and descriptive interpretation. The source was added to the thesis bibliography
 and working references, with the convention-versus-rationale distinction in
@@ -2212,3 +2468,23 @@ cold review validated at 100/100 with no findings in
 `judge/reviews/local_test_target_figures_review.json`. Next: interpret
 residual patterns alongside matched QLIKE and MCS results, then revisit stale
 RFSV prose.
+## Global rolling-reference Figure 6.27 (2026-10-06)
+
+Added the full global test-cohort counterpart to the five-stock rolling-reference
+figure in Section 6.5. The saved Base LSTM-80 Global fit was rescored on its
+4,295,773 eligible window-80 test targets; its full daily actual, forecast, and
+count means matched the existing global artifact. Each stock's reference is
+the arithmetic mean of exactly 252 preceding valid observed adjusted GK
+variances, using training/validation history where available. There are 344
+otherwise eligible targets with shorter valid history; they are omitted only
+from this descriptive figure, leaving 4,295,429 plotted forecasts on 1,760
+dates (2,273--2,588 per date). CBIO and VATE have no valid pre-2019 rows
+because their stored adjusted OHLC is negative, despite passing the raw-row
+cohort filter. The rolling reference is not an unconditional mean, and the
+plot does not establish statistical mean reversion. Artifacts:
+`data/plot_global_mean_reversion.py`,
+`imgs/data_properties/global_base_lstm80_rolling_daily_means.csv`, and
+`imgs/data_properties/global_base_lstm80_mean_reversion.png`. The tiny
+known-example reference check passed, the plot was visually inspected, and
+two in-place `pdflatex -synctex=1` passes generated the 66-page PDF with
+Figure 6.27 on page 60. Next: continue the Data Properties discussion.

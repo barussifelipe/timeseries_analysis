@@ -1,0 +1,24 @@
+{
+  "task": "Verify removal of redundant caption phrasing from Section 6.4 model histograms, verify that Models Summary, Table 6.6, and Table 6.7 fit cleanly on Page 54 of thesis_structure.pdf with reduced spacing, and verify pdflatex compilation and PDF visual layout across pages 53-55.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/validate.py",
+    "ref/final_report/thesis_structure.pdf",
+    "ref/final_report/thesis_structure.tex",
+    "ref/implementation_plan/nextsteps.txt",
+    "ref/thesis/plan.md"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

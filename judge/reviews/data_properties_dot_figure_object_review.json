@@ -1,0 +1,28 @@
+{
+  "task": "Cold review of inspectable volatility-clustering dot-plot Matplotlib Figure",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "data/plot_data_properties.py",
+    "data/tests/test_plot_data_properties.py",
+    "imgs/data_properties/volatility_clustering_dots.pkl",
+    "imgs/data_properties/volatility_clustering_dots.png",
+    "imgs/eval/mcs/80_size/forecasts.csv",
+    "D:/DBs/timeseries_analysis/history_coverage.db",
+    "git status --short",
+    ".venv/Scripts/python.exe exact-coordinate and zoomed-render checks"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

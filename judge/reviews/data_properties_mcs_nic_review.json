@@ -1,0 +1,33 @@
+{
+  "task": "Simulate News Impact Curves (NIC) across all 10 models inside the Model Confidence Set (MCS) using return shocks defined strictly as 100 * log(Close/Open) in percentage points (-5% to +5% in steps of 1%). Save the plot to imgs/data_properties/mcs_news_impact_curve.png and table to imgs/data_properties/mcs_news_impact_curve.csv. Update Section 6.5 of ref/final_report/thesis_structure.tex to include Figure 6.25 (fig:data-property-nic) and its economic/architectural discussion immediately after Figure 6.24. Recompile the thesis PDF with two passes of pdflatex -synctex=1 from ref/final_report/. Add engle1993 to the bibliography and ref/thesis/references.md, and notes to ref/thesis/thesis_notes.md. Add unit tests in data/tests/test_plot_news_impact_curve.py.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "data/plot_news_impact_curve.py",
+    "data/tests/test_plot_news_impact_curve.py",
+    "data/tests/test_plot_data_properties.py",
+    "imgs/data_properties/mcs_news_impact_curve.png",
+    "imgs/data_properties/mcs_news_impact_curve.csv",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.pdf",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.aux",
+    "ref/thesis/references.md",
+    "ref/thesis/thesis_notes.md",
+    "Engle & Ng (1993), Measuring and testing the impact of news on volatility, Journal of Finance, 48(5), 1749-1778",
+    "Liu et al. (2023), Global neural networks and the data scaling effect in financial time series forecasting, arXiv:2309.02072 Section 4.3.1"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

@@ -472,6 +472,22 @@ Under the same continuous, zero-drift Brownian model, the open-to-close return h
 
 Garman and Klass selected this practical form by dropping small cross-product terms from their more efficient quadratic estimator \cite{garmanklass1980}. Like Parkinson's proxy, it uses prices within the observed session and can be biased by discrete trading or departures from the assumed price process. 
 
+\subsubsection{Volatility Clustering}
+Volatility clustering is the tendency for large return magnitudes and high-variance periods to be followed by further large magnitudes and high variance, while quiet periods also tend to persist. It concerns the scale of returns rather than the predictability of their signs. In the ARCH and GARCH specifications of Equation~\eqref{eq:arch}, a large squared shock raises the next conditional variance, and the lagged-variance term in GARCH carries part of that increase forward \cite{engle1982,bollerslev1986}. Persistence across daily and longer horizons also motivates the heterogeneous volatility components in the HAR model \cite{corsi2009}.
+
+The \emph{leverage effect} names a different, asymmetric pattern: a negative equity-return shock can be associated with higher subsequent volatility than a positive shock of equal magnitude at the same initial volatility. Engle and Ng compare these responses with a news impact curve and find the negative-shock response larger in their Japanese-stock sample \cite{engle1993}. This empirical asymmetry does not by itself establish that changes in a firm's financial leverage cause it; ``leverage effect'' is the conventional name for the pattern.
+
+\subsubsection{Mean Reversion}
+Mean reversion means that an unusually high volatility level tends to move down and an unusually low level tends to move up toward a reference level over time. It is a statement about the conditional tendency, not a promise that every next observation reverses direction.
+
+For stationary GARCH(1,1) in Equation~\eqref{eq:arch}, with standardized innovations and $0\leq\alpha+\beta<1$, the long-run variance and one-step conditional tendency are
+\begin{equation}\label{eq:garch-mean-reversion}
+\bar v=\frac{\omega}{1-\alpha-\beta},\qquad
+\mathrm E\!\left[v(t+1)-\bar v\mid\mathcal F(t-1)\right]
+=(\alpha+\beta)\bigl(v(t)-\bar v\bigr).
+\end{equation}
+Thus a value of $\alpha+\beta$ close to one permits prolonged volatility clusters even though deviations from $\bar v$ eventually decay \cite{bollerslev1986}. The fractional Ornstein--Uhlenbeck log-volatility model in Equation~\eqref{eq:fou-dynamics} instead includes the restoring drift $-\alpha(X(t)-m)$, where this $\alpha$ is its separate reversion-rate parameter. Gatheral, Jaisson, and Rosenbaum choose a very long reversion time scale while retaining rough short-scale fluctuations \cite{gatheral2018}. The preceding 252-observation reference plotted later in Figure~\ref{fig:data-property-rolling} is a moving descriptive benchmark, not an estimate of either model's fixed long-run level.
+
 \subsection{Local and Global complexity}
 Following Montero-Manso and Hyndman, let $S=\{X_i\in\mathbb{R}^{T}:i=1,\ldots,K\}$ contain $K$ observed series, and let each forecast cover $H$ future observations. A local algorithm fits a separate forecasting function $f_{\theta_i}$, with its own parameter vector $\theta_i$, to each series. A global algorithm fits one function $g_{\theta}$ and one shared parameter vector $\theta$ across the set. For an observed series $X_i$, their forecasts are
 \begin{equation}\label{eq:local-global-forecasts}
@@ -1069,7 +1085,7 @@ RFSV-80 & \textcolor{blue}{7.07342} & 1.065548 & \textcolor{red}{0.96381} & \tex
 \subsection{Model Statistical Significance}
 As described in Section 2.5, we compare all 30 distinct local and global candidates on the same 1,760 test observations per stock using QLIKE and a 90\% model confidence set. We run the procedure separately with moving bootstrap blocks of 20 and 80 retained observations. Both comparisons include the 20- and 80-observation forecast variants. 
 
-Each stock produces its own final set. Table~\ref{tab:mcs-cross-window} reports its size under each block length and the models appearing in only one of those sets. The intersection across the five stock-level final sets is identical for \emph{both} block lengths: Base LSTM-20 Global; Base LSTM-80 Global; Base LSTM-80 Local; HARNet-20 Global; HARNet-80 Global; HARNet-80 Local; MLP-20 Global; MLP-80 Global; RFSV-20 Local; and RFSV-80 Local. Retention means the procedure did not reject a model from the remaining set at the chosen level; it does not establish equal expected loss.
+Each stock produces its own final set. Table~\ref{tab:mcs-cross-window} reports its size under each block length and the models appearing in only one of those sets. The intersection across the five stock-level final sets is identical for \emph{both} block lengths: Base LSTM-20 Global; Base LSTM-80 Global; Base LSTM-80 Local; HARNet-20 Global; HARNet-80 Global; HARNet-80 Local; MLP-20 Global; MLP-80 Global; RFSV-20 Local; and RFSV-80 Local. Retention means the procedure did not reject a model from the remaining set at the chosen level. We'll be focusing further analysis on this subset of models.
 
 \begin{table}[htbp]
 \centering
@@ -1142,7 +1158,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_20/global/histogram_log.png}\par
-\caption{Base LSTM-20 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
+\caption{Base LSTM-20 Global: raw and log individual-residual histograms (left and right).}
 \label{fig:residual-base-lstm-20-global-histograms}
 \end{figure}
 \FloatBarrier
@@ -1161,7 +1177,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_80/global/histogram_log.png}\par
-\caption{Base LSTM-80 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
+\caption{Base LSTM-80 Global: raw and log individual-residual histograms (left and right).}
 \label{fig:residual-base-lstm-80-global-histograms}
 \end{figure}
 \FloatBarrier
@@ -1180,7 +1196,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/base_lstm_80/local/histogram_log.png}\par
-\caption{Base LSTM-80 Local: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
+\caption{Base LSTM-80 Local: raw and log individual-residual histograms (left and right).}
 \label{fig:residual-base-lstm-80-local-histograms}
 \end{figure}
 \FloatBarrier
@@ -1200,7 +1216,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_20/global/histogram_log.png}\par
-\caption{HARNet-20 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
+\caption{HARNet-20 Global: raw and log individual-residual histograms (left and right).}
 \label{fig:residual-harnet-20-global-histograms}
 \end{figure}
 \FloatBarrier
@@ -1219,7 +1235,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_80/global/histogram_log.png}\par
-\caption{HARNet-80 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
+\caption{HARNet-80 Global: raw and log individual-residual histograms (left and right).}
 \label{fig:residual-harnet-80-global-histograms}
 \end{figure}
 \FloatBarrier
@@ -1238,7 +1254,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/harnet_80/local/histogram_log.png}\par
-\caption{HARNet-80 Local: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
+\caption{HARNet-80 Local: raw and log individual-residual histograms (left and right).}
 \label{fig:residual-harnet-80-local-histograms}
 \end{figure}
 \FloatBarrier
@@ -1258,7 +1274,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/mlp_20/global/histogram_log.png}\par
-\caption{MLP-20 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
+\caption{MLP-20 Global: raw and log individual-residual histograms (left and right).}
 \label{fig:residual-mlp-20-global-histograms}
 \end{figure}
 \FloatBarrier
@@ -1277,7 +1293,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/mlp_80/global/histogram_log.png}\par
-\caption{MLP-80 Global: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
+\caption{MLP-80 Global: raw and log individual-residual histograms (left and right).}
 \label{fig:residual-mlp-80-global-histograms}
 \end{figure}
 \FloatBarrier
@@ -1297,7 +1313,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/rfsv_20/local/histogram_log.png}\par
-\caption{RFSV-20 Local: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
+\caption{RFSV-20 Local: raw and log individual-residual histograms (left and right).}
 \label{fig:residual-rfsv-20-local-histograms}
 \end{figure}
 \FloatBarrier
@@ -1316,9 +1332,72 @@ The following ten variants are the intersection of all five stock-level final MC
 \centering
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_raw.png}\hfill
 \includegraphics[width=.49\textwidth]{../../imgs/eval/local_eval/residuals/rfsv_80/local/histogram_log.png}\par
-\caption{RFSV-80 Local: raw and log individual-residual histograms (left and right). Each histogram shows all 8,800 residuals; the orange curve is a full-sample normal fit.}
+\caption{RFSV-80 Local: raw and log individual-residual histograms (left and right).}
 \label{fig:residual-rfsv-80-local-histograms}
 \end{figure}
+\clearpage
+
+\subsubsection{Models Summary}
+Tables \ref{tab:residual-moments-raw} and \ref{tab:residual-moments-log} display the moments for each model variant, while Table \ref{tab:residual-moment-outliers} gives the outliers for each moment. An outlier is defined following Tukey in \cite{tukey1977} by a value outside of $1.5\ X\ IQR$ range. We identify MLP-20 Global as an outliers in both mean scales. Base LSTM-80 Local in raw standard deviation. Base LSTM-20 Global in log-scale skewness and RFSV-20 Local, RFSV-80 Local both in log-scaled excess kurtosis. 
+
+\begin{table}[htbp]
+\centering\small\setlength{\tabcolsep}{4pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrr@{}}
+\hline
+Model variant & \shortstack[l]{$\mu$($\times10^{-5}$)} & \shortstack[l]{$\sigma$($\times10^{-4}$)} & Skewness & Excess kurtosis \\
+\hline
+Base LSTM-20 Global & $-4.293$ & $4.298$ & $+6.217$ & $+87.18$ \\
+Base LSTM-80 Global & $-1.970$ & $4.257$ & $+6.317$ & $+84.83$ \\
+Base LSTM-80 Local & $-0.5121$ & $4.425$ & $+6.951$ & $+91.60$ \\
+HARNet-20 Global & $-3.377$ & $4.293$ & $+5.594$ & $+78.27$ \\
+HARNet-80 Global & $-1.628$ & $4.252$ & $+6.511$ & $+88.19$ \\
+HARNet-80 Local & $-0.6461$ & $4.256$ & $+6.297$ & $+84.53$ \\
+MLP-20 Global & $-7.972$ & $4.321$ & $+5.074$ & $+72.93$ \\
+MLP-80 Global & $-3.030$ & $4.223$ & $+6.316$ & $+87.24$ \\
+RFSV-20 Local & $-3.193$ & $4.285$ & $+4.732$ & $+67.96$ \\
+RFSV-80 Local & $-2.679$ & $4.237$ & $+5.091$ & $+73.15$ \\
+\hline
+\end{tabular*}
+\caption{Raw one-step residual moments for each model variant's 8,800 matched test predictions. Here $\mu$ is the mean and $\sigma$ is the standard deviation.}
+\label{tab:residual-moments-raw}
+
+\vspace{1.2em}
+
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrr@{}}
+\hline
+Model variant & \multicolumn{1}{l}{$\mu$} & \multicolumn{1}{l}{$\sigma$} & Skewness & Excess kurtosis \\
+\hline
+Base LSTM-20 Global & $-0.3789$ & $0.7141$ & $+0.2870$ & $+0.2424$ \\
+Base LSTM-80 Global & $-0.3454$ & $0.7235$ & $+0.2425$ & $+0.2711$ \\
+Base LSTM-80 Local & $-0.3122$ & $0.7410$ & $+0.2391$ & $+0.2311$ \\
+HARNet-20 Global & $-0.3387$ & $0.7258$ & $+0.2509$ & $+0.1991$ \\
+HARNet-80 Global & $-0.3160$ & $0.7280$ & $+0.2355$ & $+0.2152$ \\
+HARNet-80 Local & $-0.2895$ & $0.7266$ & $+0.2342$ & $+0.1999$ \\
+MLP-20 Global & $-0.4488$ & $0.7147$ & $+0.2748$ & $+0.2272$ \\
+MLP-80 Global & $-0.3514$ & $0.7186$ & $+0.2571$ & $+0.2295$ \\
+RFSV-20 Local & $-0.2664$ & $0.7498$ & $+0.2390$ & $+0.1116$ \\
+RFSV-80 Local & $-0.2679$ & $0.7483$ & $+0.2298$ & $+0.1101$ \\
+\hline
+\end{tabular*}
+\caption{Dimensionless log-variance residual moments for each model variant's 8,800 matched test predictions. Here $\mu$ is the mean and $\sigma$ is the standard deviation; all values are unscaled.}
+\label{tab:residual-moments-log}
+\end{table}
+\clearpage
+\begin{table}[htbp]
+\centering\small\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lll}
+\hline
+Metric & Raw residuals & Log residuals \\
+\hline
+Mean & MLP-20 Global & MLP-20 Global \\
+Standard deviation & Base LSTM-80 Local & None \\
+Skewness & None & Base LSTM-20 Global \\
+Excess kurtosis & None & RFSV-20 Local, RFSV-80 Local \\
+\hline
+\end{tabular}
+\caption{Model variants outside Tukey-style 1.5-times-IQR fences~\cite{tukey1977} for each residual moment.}
+\label{tab:residual-moment-outliers}
+\end{table}
 \FloatBarrier
 
 Table~\ref{tab:residual-prediction-bias} reports the direction of one-step variance forecast errors across all 8,800 test predictions (1,760 daily observations across the five local stocks NVDA, AAPL, NFLX, GOOG, and AMZN) for each of the ten retained model variants. The Best Metric column indicates each model's highest-ranking loss metric among the 30 candidates in the five-stock Local and Global comparison (Table~\ref{tab:matched-results}), with its corresponding rank in parentheses. With residual defined as $e_i(t)=v_i(t)-\widehat v_i(t)$ per Equation~\eqref{eq:individual-residuals}, positive errors indicate underprediction and negative errors indicate overprediction. Across all variants, overprediction represents between 65.39\% and 74.99\% of predictions, with zero exact ties.
@@ -1346,26 +1425,92 @@ Model Variant & Best Metric & Under & Under (\%) & Over & Over (\%) \\
 \end{table}
 \FloatBarrier
 
-In conclusion, our final model selection posses an accurate capacity of overpredicting instead of underpredicting, which is expected when modeling volatility. The ML models have been enforced by QLIKE, while RFSV manages to represent this behaviour by its architecture. Furthermore, the residual behaviour is similar across all models, with their histograms and timelines having alike structures. The only models that falls behind when comparing moments are: 
+\subsubsection{Conclusion}
+Our final model selection favours overprediction over underprediction, which is expected when modeling volatility, as demonstrated in Table \ref{tab:residual-moment-outliers}. The ML models have been enforced by QLIKE, while RFSV manages to represent this behaviour by its architecture. Furthermore, the residual behaviour is similar across all models, with their histograms and timelines having alike structures. As shown in Table \ref{tab:residual-moment-outliers}, five of the ten models are identified as outliers, each for only one residual moment. For every moment except excess kurtosis, with eight out of ten, nine of the ten models fall within the non-outlier range.
 
-\begin{table}[htbp]
-\centering\small\setlength{\tabcolsep}{5pt}
-\begin{tabular}{lll}
-\hline
-Metric & Raw residuals & Log residuals \\
-\hline
-Mean & MLP-20 Global & MLP-20 Global \\
-Standard deviation & Base LSTM-80 Local & None \\
-Skewness & None & Base LSTM-20 Global \\
-Excess kurtosis & None & RFSV-20 Local, RFSV-80 Local \\
-\hline
-\end{tabular}
-\caption{Model variants outside Tukey-style 1.5-times-IQR fences~\cite{tukey1977} for each residual moment.}
-\label{tab:residual-moment-outliers}
-\end{table}
+
+\subsection{Data Properties}
+For Figures~\ref{fig:data-property-return} and~\ref{fig:data-property-global-return}, we are interested in checking the leverage effect in both actual and predicted data. We'll be using the models with best QLIKE for prediction purposes, MLP-80 Global for local test subset and Base LSTM-80 Global for global test subset.
+
+Let $S(t)$ contain the stocks with an eligible forecast on test date $t$, let $v_i(t)$ and $\widehat v_i(t)$ be the observed and saved forecast daily adjusted Garman--Klass variances, and let $O_i$ and $C_i$ be adjusted open and close prices. Here $t-1$ denotes stock $i$'s preceding valid observation. The date-level coordinates are:
+\begin{equation}\label{eq:property-return-coordinates}
+\begin{aligned}
+x(t)&=\frac{1}{|S(t)|}\sum_{i\in S(t)}\log\frac{C_i(t-1)}{O_i(t-1)},\\
+V(t)&=\frac{1}{|S(t)|}\sum_{i\in S(t)}v_i(t),\qquad
+\widehat V(t)=\frac{1}{|S(t)|}\sum_{i\in S(t)}\widehat v_i(t),\\
+y(t)&=\log V(t),\qquad \widehat y(t)=\log\widehat V(t).
+\end{aligned}
+\end{equation}
+Sort the 1,760 date coordinates by $x(t)$ and divide them into 88 consecutive sets $B_k$ of 20 dates. Each plotted point is $(\bar x_k,\bar y_k)$ or $(\bar x_k,\overline{\widehat y}_k)$, where each bar is the arithmetic mean over $t\in B_k$; lines join consecutive points. 
+
+Figure~\ref{fig:data-property-return} uses $S(t)=\{\mathrm{AAPL,AMZN,GOOG,NFLX,NVDA}\}$ and the saved MLP-80 Global forecasts on their shared test dates.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\textwidth]{../../imgs/data_properties/volatility_clustering.png}
+\caption{Log five-stock mean observed (blue) and MLP-80 Global forecast (red) daily adjusted Garman--Klass variance against mean preceding signed adjusted open-to-close log return, averaged across 88 consecutive bins of 20 return-sorted test dates.}
+\label{fig:data-property-return}
+\end{figure}
 \FloatBarrier
 
+Figure~\ref{fig:data-property-global-return} uses the same coordinates and 20-date bins from Equation~\ref{eq:property-return-coordinates}, with $S(t)$ drawn from the eligible window-80 global test cohort and $\widehat v_i(t)$ from the Base LSTM-80 Global fit.
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\textwidth]{../../imgs/data_properties/global_base_lstm80_return_lowess.png}
+\caption{Global equity date-level mean adjusted Garman--Klass variance (blue) and saved Base LSTM-80 Global forecast (red) against the mean preceding signed adjusted open-to-close log return on 1,760 test dates, averaged across 88 bins of 20 dates.}
+\label{fig:data-property-global-return}
+\end{figure}
+\FloatBarrier
+
+For Figure~\ref{fig:data-property-nic}, the News Impact Curve (NIC) follows the synthetic-input protocol in \cite{liu2023} based on \cite{engle1993}. We focus our analysis for the eight ML models in our final MCS. Our objective is to check if the model effectively reproduces the leverage effect. Set the shared reference variance to the saved global equity fitting-history floor $v_0=3.396062419686545\times10^{-13}$, which is fixed before test evaluation, and the matching log-volatility input to $\ell_0=\frac{1}{2}\log(v_0)\approx-14.3555$. For window $w\in\{20,80\}$ and shock $s\in\{-5,-4,\ldots,5\}$ percentage points, the log-volatility/return inputs for the Base LSTM and MLP fits are
+\begin{equation}\label{eq:property-nic-input}
+z_j(s)=\begin{cases}(\ell_0,0),&1\leq j<w,\\(\ell_0,s/100),&j=w,\end{cases}
+\qquad s=100\log\frac{C(t)}{O(t)}.
+\end{equation}
+Their log-variance outputs are exponentiated to obtain the one-step variance forecasts. HARNet instead receives $(v_0,\ldots,v_0)$ at every shock. Each Local curve is the arithmetic mean of the five stock-specific forecasts at that shock. 
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\textwidth]{../../imgs/data_properties/mcs_news_impact_curve.png}
+\caption{One-step forecast daily adjusted Garman--Klass variance against the synthetic signed return shock for eight MCS variants; the two RFSV variants are omitted.}
+\label{fig:data-property-nic}
+\end{figure}
+\FloatBarrier
+
+For Figures~\ref{fig:data-property-rolling} and~\ref{fig:data-property-global-rolling}, we're interested in observing the mean reversion process and the volatility clustering on the actual \textit{versus} predicted data. We'll be using the same models and datasets as Figures~\ref{fig:data-property-return} and~\ref{fig:data-property-global-return}. 
+
+Let $m_i(t)$ be stock $i$'s mean of the 252 preceding \emph{observed} valid variances, where $t-j$ indexes valid observations rather than calendar days. For the stocks $S(t)$ included on date $t$, the plotted observed and forecast coordinates are
+\begin{equation}\label{eq:property-rolling-coordinates}
+\begin{aligned}
+m_i(t)&=\frac{1}{252}\sum_{j=1}^{252}v_i(t-j),\qquad
+R(t)=\frac{1}{|S(t)|}\sum_{i\in S(t)}m_i(t),\\
+q(t)&=\log\frac{V(t)}{R(t)},\qquad
+\widehat q(t)=\log\frac{\widehat V(t)}{R(t)}.
+\end{aligned}
+\end{equation}
+where $V(t)$ and $\widehat V(t)$ are the cross-stock variance means in Equation~\ref{eq:property-return-coordinates}. Figure~\ref{fig:data-property-rolling} uses the five shared-date stocks and the saved MLP-80 Global forecasts on 1,760 test dates; pre-2019 observations supply the initial 252-observation references.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\textwidth]{../../imgs/data_properties/mean_reversion.png}
+\caption{Natural log ratio of the five-stock mean observed (blue) or MLP-80 Global forecast (red) daily adjusted Garman--Klass variance to the mean of the five stock-specific preceding 252-observation rolling references, on 1,760 shared 2019--2025 test dates.}
+\label{fig:data-property-rolling}
+\end{figure}
+\FloatBarrier
+
+Figure~\ref{fig:data-property-global-rolling} applies Equation~\ref{eq:property-rolling-coordinates} to the global window-80 dataset with Base LSTM-80 Global forecasts. 
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\textwidth]{../../imgs/data_properties/global_base_lstm80_mean_reversion.png}
+\caption{Natural log ratio of the global test-cohort mean observed (blue) or Base LSTM-80 Global forecast (red) daily adjusted Garman--Klass variance to the mean of the same stocks' preceding 252-observation references, on 1,760 global test dates.}
+\label{fig:data-property-global-rolling}
+\end{figure}
+\FloatBarrier
+
+\subsection{Price Reconstruction}
+\subsection{Sharpe, Utility and Portfolio Estimation}
 
 \subsection{Parameter Complexity}
 For the idealized comparison in \cite{monteromanso2021}, take $B=2^{64}$ possible encodings per scalar parameter and $K=2,714$ tickers. For a model with $p$ fitted scalars, the parameter-combination budgets are
@@ -1425,6 +1570,7 @@ Counts include fitted coefficients and neural weights and biases, excluding opti
 \bibitem{tukey1977} Tukey, J. W. (1977). \emph{Exploratory data analysis}. Addison-Wesley.
 
 \bibitem{engle1982} Engle, R. F. (1982). Autoregressive conditional heteroscedasticity with estimates of the variance of United Kingdom inflation. \emph{Econometrica}, 50(4), 987--1007.
+\bibitem{engle1993} Engle, R. F., and Ng, V. K. (1993). Measuring and testing the impact of news on volatility. \emph{Journal of Finance}, 48(5), 1749--1778.
 \bibitem{bollerslev1986} Bollerslev, T. (1986). Generalized autoregressive conditional heteroskedasticity. \emph{Journal of Econometrics}, 31(3), 307--327.
 \bibitem{corsi2009} Corsi, F. (2009). A simple approximate long-memory model of realized volatility. \emph{Journal of Financial Econometrics}, 7(2), 174--196.
 \bibitem{muller1993} M\"uller, U. A., Dacorogna, M. M., Dav\'e, R. D., Pictet, O. V., Olsen, R. B., and Ward, J. R. (1993). \emph{Fractals and intrinsic time: A challenge to econometricians}. Olsen \& Associates working paper.

@@ -1,0 +1,24 @@
+{
+  "task": "Update Figure 6.23 LOWESS to use a piecewise constant return radius (0.006125 for |return| > 0.02 and 0.0030625 for |return| <= 0.02) across the 88 mean-return centers of 20 sorted dates, while preserving the five-stock test sample, Figure 6.24, and the inspectable dot plot.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "data/plot_data_properties.py",
+    "data/tests/test_plot_data_properties.py",
+    "imgs/data_properties/volatility_clustering.png",
+    "imgs/data_properties/volatility_clustering_lowess.csv",
+    "ref/final_report/thesis_structure.tex",
+    "ref/implementation_plan/nextsteps.txt",
+    "ref/thesis/plan.md"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

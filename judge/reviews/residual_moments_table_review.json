@@ -1,0 +1,26 @@
+{
+  "task": "Insert the 20-row residual-moment table from moments.md before the Section 6.4 conclusion, match Table 6.6 width, and place raw mean and standard-deviation scales in the headings while leaving log moments unscaled.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "imgs/eval/local_eval/residuals/moments.md",
+    "git diff -- ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.aux",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf, page 54"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

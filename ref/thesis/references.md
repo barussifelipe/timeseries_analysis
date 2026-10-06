@@ -96,6 +96,9 @@ of Econometrics, 31*(3), 307–327. https://doi.org/10.1016/0304-4076(86)90063-1
 Nelson, D. B. (1991). Conditional heteroskedasticity in asset returns: A new approach.
 *Econometrica, 59*(2), 347–370. https://doi.org/10.2307/2938260
 
+Engle, R. F., & Ng, V. K. (1993). Measuring and testing the impact of news on volatility.
+*The Journal of Finance, 48*(5), 1749–1778. https://doi.org/10.1111/j.1540-6261.1993.tb05127.x
+
 Glosten, L. R., Jagannathan, R., & Runkle, D. E. (1993). On the relation between the
 expected value and the volatility of the nominal excess return on stocks. *The Journal of
 Finance, 48*(5), 1779–1801. https://doi.org/10.1111/j.1540-6261.1993.tb05128.x

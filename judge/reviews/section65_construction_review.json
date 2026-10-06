@@ -1,0 +1,34 @@
+{
+  "task": "Remove RFSV curves from Figure 6.25 and make Section 6.5 describe only plot construction, with equations before plot types and no repeated shock equation in the Figure 6.25 caption",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff and worktree status",
+    "data/plot_news_impact_curve.py",
+    "data/tests/test_plot_news_impact_curve.py",
+    "data/plot_data_properties.py",
+    "data/plot_global_return_lowess.py",
+    "data/plot_global_mean_reversion.py",
+    "imgs/data_properties/mcs_news_impact_curve.csv",
+    "imgs/data_properties/mcs_news_impact_curve.png",
+    "imgs/data_properties/global_base_lstm80_daily_means.csv",
+    "imgs/data_properties/global_base_lstm80_rolling_daily_means.csv",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.pdf",
+    "ref/final_report/thesis_structure.log",
+    "Focused unittest and saved CSV count checks run during review"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

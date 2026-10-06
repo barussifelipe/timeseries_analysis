@@ -1,0 +1,26 @@
+{
+  "task": "Left-align mu and sigma headings in thesis Table 6.7 and define both symbols in the captions of the raw and log residual-moment tables.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/roughness_analysis.md",
+    "imgs/eval/local_eval/residuals/moments.md",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.pdf page 54, visually inspected and extracted with pdftotext",
+    "ref/final_report/thesis_structure.log",
+    "git diff -- ref/final_report/thesis_structure.tex",
+    "judge/prompt.md",
+    "judge/score.schema.json"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

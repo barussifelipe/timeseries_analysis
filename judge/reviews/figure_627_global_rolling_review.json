@@ -1,0 +1,33 @@
+{
+  "task": "Add Figure 6.27 using Base LSTM-80 Global forecasts and the full global test cohort",
+  "sources": [
+    "User-provided AGENTS.md repository instructions",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "data/plot_global_mean_reversion.py",
+    "data/tests/test_plot_global_mean_reversion.py",
+    "data/plot_global_return_lowess.py",
+    "data/plot_data_properties.py",
+    "inference/evaluate_volatility_test.py",
+    "models/training_blocks.py",
+    "models/support_scripts/raw_neural_data.py",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.aux",
+    "imgs/data_properties/global_base_lstm80_daily_means.csv",
+    "imgs/data_properties/global_base_lstm80_rolling_daily_means.csv",
+    "imgs/data_properties/global_base_lstm80_mean_reversion.png",
+    "Direct .venv Python reference test and CSV integrity checks passed"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

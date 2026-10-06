@@ -1,0 +1,39 @@
+{
+  "task": "Remove all LOWESS fitting and their plots from Figure 6.23/6.24, keeping only the 88 return-sorted bin averages of 20 observations each. Implement the News Impact Curve (NIC) simulation following reference 1.2 (arXiv:2309.02072, Section 4.3.1) with steps of 1 for MLP-80 Global and Base LSTM-80 Global, checking their volatility responses.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "data/plot_data_properties.py",
+    "data/tests/test_plot_data_properties.py",
+    "data/plot_global_return_lowess.py",
+    "data/plot_news_impact_curve.py",
+    "imgs/data_properties/volatility_clustering.png",
+    "imgs/data_properties/volatility_clustering_bins.csv",
+    "imgs/data_properties/news_impact_curve.png",
+    "imgs/data_properties/news_impact_curve_percent.csv",
+    "imgs/data_properties/news_impact_curve_integer.csv",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.pdf",
+    "ref/thesis/thesis_notes.md",
+    "https://arxiv.org/html/2309.02072"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 9
+  },
+  "findings": [
+    {
+      "category": "maintainability",
+      "severity": "minor",
+      "evidence": "In ref/final_report/thesis_structure.tex line 1414, the prose states that Figure 6.24 applies the return-curve structure 'with its separately stated neighborhood width'. However, all LOWESS fitting and neighborhood parameters were removed from Figure 6.24 in favor of discrete 88-bin return averages.",
+      "fix": "Remove the stale clause ', with its separately stated neighborhood width' from Section 6.5 in ref/final_report/thesis_structure.tex and recompile the thesis PDF."
+    }
+  ],
+  "total": 99,
+  "pass": true
+}

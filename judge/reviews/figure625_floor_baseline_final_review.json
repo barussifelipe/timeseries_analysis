@@ -1,0 +1,37 @@
+{
+  "task": "Use the saved global forecast floor as the shared Figure 6.25 NIC input baseline, regenerate its artifacts, and update Section 6.5 and research notes",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/nextsteps.txt",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/reviews/figure625_floor_baseline_review.json",
+    "data/plot_news_impact_curve.py",
+    "data/tests/test_plot_news_impact_curve.py",
+    "models/support_scripts/raw_neural_data.py",
+    "inference/evaluate_volatility_test.py",
+    "inference/checkpoints/base_lstm_vol/garman-klass/global/raw_gk_logvol_return_w20_h128_lr0p001_30e/fit.pth",
+    "imgs/data_properties/mcs_news_impact_curve.csv",
+    "imgs/data_properties/mcs_news_impact_curve.png",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.pdf",
+    "ref/final_report/thesis_structure.log",
+    "ref/thesis/thesis_notes.md",
+    "git status and diff",
+    ".venv Python unittest data.tests.test_plot_news_impact_curve (3 passed)",
+    "saved checkpoint floor and CSV finite-value checks",
+    "pdftotext Figure 6.25 caption"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

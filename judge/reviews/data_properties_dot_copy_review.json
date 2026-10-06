@@ -1,0 +1,29 @@
+{
+  "task": "Cold review of saved Figure 6.23 dot-plot copy",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "data/plot_data_properties.py",
+    "data/tests/test_plot_data_properties.py",
+    "ref/final_report/thesis_structure.tex",
+    "imgs/data_properties/volatility_clustering.png",
+    "imgs/data_properties/volatility_clustering_dots.png",
+    "imgs/eval/mcs/80_size/forecasts.csv",
+    "D:/DBs/timeseries_analysis/history_coverage.db",
+    "git status --short",
+    "git diff -- ref/final_report/thesis_structure.tex"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

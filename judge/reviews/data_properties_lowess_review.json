@@ -1,0 +1,30 @@
+{
+  "task": "Cold review of Figure 6.23 20-return bins and fixed-width local LOWESS",
+  "sources": [
+    "AGENTS.md (user-provided repository instructions)",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "data/plot_data_properties.py",
+    "data/tests/test_plot_data_properties.py",
+    "models/support_scripts/raw_neural_data.py",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.pdf (page 57)",
+    "ref/final_report/thesis_structure.log",
+    "imgs/data_properties/volatility_clustering.png",
+    "imgs/data_properties/volatility_clustering_dots.png",
+    "imgs/eval/mcs/80_size/forecasts.csv",
+    "D:/DBs/timeseries_analysis/history_coverage.db"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

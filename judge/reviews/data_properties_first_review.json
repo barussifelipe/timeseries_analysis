@@ -1,0 +1,33 @@
+{
+  "task": "Add first-version volatility clustering and mean-reversion plots to the Data Properties subsection using log visibility scales.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/nextsteps.txt",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "git diff -- CONTEXT.md ref/final_report/thesis_structure.tex",
+    "data/plot_data_properties.py",
+    "data/tests/test_plot_data_properties.py",
+    "models/support_scripts/raw_neural_data.py",
+    "data/plot_gk_data.py",
+    "ref/final_report/thesis_structure.tex",
+    "imgs/data_properties/volatility_clustering.png",
+    "imgs/data_properties/mean_reversion.png",
+    "ref/final_report/thesis_structure.pdf pages 55-56 via pdftotext",
+    "python -m data.plot_data_properties output",
+    "test_trailing_deviation() output",
+    "git diff --check -- CONTEXT.md ref/final_report/thesis_structure.tex output"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}
