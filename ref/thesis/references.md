@@ -198,6 +198,10 @@ independently verified; confirm the thesis year and publication details before s
 - `arch` documentation, *ARCH Modeling* (GARCH(1,1) likelihood and fixed-parameter forecasting): https://arch.readthedocs.io/en/stable/univariate/univariate_volatility_modeling.html
 - Gatheral, J., Jaisson, T., & Rosenbaum, M., *Volatility is rough* (RFSV roughness motivation): https://arxiv.org/abs/1410.3394
 
+## Price reconstruction source
+
+- Wheeler Real Estate Investment Trust, Inc. (2025). *2024 Form 10-K*, Reverse Stock Splits note (August 2023, May/June/September/November 2024, and January 2025 splits): https://www.sec.gov/Archives/edgar/data/1527541/000152754125000038/whlr-20241231.htm
+
 ## Descriptive shape statistics
 
 - Tukey, J. W. (1977). *Exploratory data analysis*. Addison-Wesley. https://search.worldcat.org/title/3058187

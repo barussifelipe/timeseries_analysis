@@ -376,16 +376,34 @@
 \newlabel{eq:property-rolling-coordinates}{{6.5}{60}{}{equation.6.5}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {6.26}{\ignorespaces Natural log ratio of the five-stock mean observed (blue) or MLP-80 Global forecast (red) daily adjusted Garman--Klass variance to the mean of the five stock-specific preceding 252-observation rolling references, on 1,760 shared 2019--2025 test dates.}}{61}{}\protected@file@percent }
 \newlabel{fig:data-property-rolling}{{6.26}{61}{}{figure.6.26}{}}
-\citation{monteromanso2021}
-\citation{zhou2023}
 \@writefile{lof}{\contentsline {figure}{\numberline {6.27}{\ignorespaces Natural log ratio of the global test-cohort mean observed (blue) or Base LSTM-80 Global forecast (red) daily adjusted Garman--Klass variance to the mean of the same stocks' preceding 252-observation references, on 1,760 global test dates.}}{62}{}\protected@file@percent }
 \newlabel{fig:data-property-global-rolling}{{6.27}{62}{}{figure.6.27}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.6}Price Reconstruction}{62}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.7}Sharpe, Utility and Portfolio Estimation}{62}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.8}Parameter Complexity}{62}{}\protected@file@percent }
-\newlabel{eq:technical-combinations}{{6.6}{62}{}{equation.6.6}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {6.10}{\ignorespaces Parameter-combination budgets for the selected model specifications, with $B = 2^{64}$ possible encodings per scalar parameter. The local column assumes one parameter vector per ticker across the full cohort.}}{63}{}\protected@file@percent }
-\newlabel{tab:parameter-combinations}{{6.10}{63}{}{table.6.10}{}}
+\newlabel{eq:price-reconstruction-drift}{{6.6}{62}{}{equation.6.6}{}}
+\newlabel{eq:price-reconstruction-simulation}{{6.7}{62}{}{equation.6.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.28}{\ignorespaces Five-stock test-date mean adjusted Close: observed (blue) and one-shock simulation using saved MLP-80 Global daily variance forecasts (red).}}{63}{}\protected@file@percent }
+\newlabel{fig:price-reconstruction-local}{{6.28}{63}{}{figure.6.28}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.29}{\ignorespaces Global equity test-date mean adjusted Close, excluding WHLR, on a logarithmic vertical scale: observed (blue) and one-shock simulation using Base LSTM-80 Global daily variance forecasts (red).}}{64}{}\protected@file@percent }
+\newlabel{fig:price-reconstruction-global}{{6.29}{64}{}{figure.6.29}{}}
+\newlabel{eq:price-reconstruction-log-mean}{{6.8}{64}{}{equation.6.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.30}{\ignorespaces Natural log of the five-stock test-date arithmetic mean adjusted Close: observed (blue) and MLP-80 Global variance-based simulation (red).}}{65}{}\protected@file@percent }
+\newlabel{fig:price-reconstruction-local-log}{{6.30}{65}{}{figure.6.30}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.31}{\ignorespaces Natural log of the global equity test-date arithmetic mean adjusted Close, excluding WHLR: observed (blue) and Base LSTM-80 Global variance-based simulation (red).}}{65}{}\protected@file@percent }
+\newlabel{fig:price-reconstruction-global-log}{{6.31}{65}{}{figure.6.31}{}}
+\newlabel{eq:price-reconstruction-gross-return}{{6.9}{66}{}{equation.6.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.32}{\ignorespaces Five-stock daily mean adjusted Open-to-Close gross return: observed (blue) and MLP-80 Global forecast-conditioned simulation (red).}}{66}{}\protected@file@percent }
+\newlabel{fig:price-reconstruction-local-gross}{{6.32}{66}{}{figure.6.32}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.33}{\ignorespaces WHLR-excluded global equity daily mean adjusted Open-to-Close gross return: observed (blue) and Base LSTM-80 Global forecast-conditioned simulation (red).}}{67}{}\protected@file@percent }
+\newlabel{fig:price-reconstruction-global-gross}{{6.33}{67}{}{figure.6.33}{}}
+\citation{monteromanso2021}
+\citation{zhou2023}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.34}{\ignorespaces WHLR-excluded global equity daily mean adjusted Open-to-Close gross return: observed (blue) and MLP-80 Global forecast-conditioned simulation (red).}}{68}{}\protected@file@percent }
+\newlabel{fig:price-reconstruction-global-mlp-gross}{{6.34}{68}{}{figure.6.34}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.7}Sharpe, Utility and Portfolio Estimation}{68}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.8}Parameter Complexity}{68}{}\protected@file@percent }
+\newlabel{eq:technical-combinations}{{6.10}{68}{}{equation.6.10}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6.10}{\ignorespaces Parameter-combination budgets for the selected model specifications, with $B = 2^{64}$ possible encodings per scalar parameter. The local column assumes one parameter vector per ticker across the full cohort.}}{69}{}\protected@file@percent }
+\newlabel{tab:parameter-combinations}{{6.10}{69}{}{table.6.10}{}}
 \bibcite{bernhardt1987crash}{1}
 \bibcite{weinberg2008crisis}{2}
 \bibcite{fed2020mpr}{3}
@@ -398,7 +416,7 @@
 \bibcite{zuckerman2019}{10}
 \bibcite{fama1970}{11}
 \bibcite{yule1927}{12}
-\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusions}{64}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusions}{70}{}\protected@file@percent }
 \bibcite{slutsky1927}{13}
 \bibcite{wold1938}{14}
 \bibcite{boxjenkins1970}{15}
@@ -447,4 +465,4 @@
 \bibcite{tang2023}{58}
 \bibcite{brini2026}{59}
 \bibcite{zhou2023}{60}
-\gdef \@abspage@last{68}
+\gdef \@abspage@last{74}

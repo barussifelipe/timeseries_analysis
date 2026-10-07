@@ -1,0 +1,43 @@
+{
+  "task": "One-day adjusted price reconstruction figures for Section 6.6",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/price_reconstruction.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "data/plot_price_reconstruction.py",
+    "data/tests/test_plot_price_reconstruction.py",
+    "models/support_scripts/raw_neural_data.py",
+    "models/training_blocks.py",
+    "inference/evaluate_volatility_test.py",
+    "data/plot_gk_data.py",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.aux",
+    "imgs/data_properties/local_mlp80_price_reconstruction.csv",
+    "imgs/data_properties/global_base_lstm80_price_reconstruction.csv",
+    "imgs/data_properties/local_mlp80_price_reconstruction.png",
+    "imgs/data_properties/global_base_lstm80_price_reconstruction.png",
+    "git diff and status",
+    "direct .venv known-example run and independent CSV reconciliation"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 19,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [
+    {
+      "category": "verification",
+      "severity": "minor",
+      "evidence": "The implementation plan calls for a small check of shared shocks and forecast-key alignment. The focused test checks drift, simulation, invalid inputs, and daily averaging, while shared-shock/key alignment is checked only through inspection of the merge and one successful full-artifact run; there is no direct small assertion that overlapping local and global keys retain identical sampled shocks.",
+      "fix": "Add one tiny overlapping-key assertion to the focused test if this mapping changes; keep the existing full-run key checks."
+    }
+  ],
+  "total": 99,
+  "pass": true
+}

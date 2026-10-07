@@ -1,0 +1,27 @@
+{
+  "task": "Add an option to open the price reconstruction plots in Matplotlib windows",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/price_reconstruction.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "data/plot_price_reconstruction.py",
+    "data/tests/test_plot_price_reconstruction.py",
+    "git status and relevant caller search",
+    "direct .venv focused checks",
+    "direct .venv TkAgg switch check",
+    "direct .venv CLI help check"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

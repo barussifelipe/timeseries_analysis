@@ -1510,6 +1510,91 @@ Figure~\ref{fig:data-property-global-rolling} applies Equation~\ref{eq:property-
 \FloatBarrier
 
 \subsection{Price Reconstruction}
+The objective here is to display a one-day simulated adjusted Close alongside the observed adjusted Close on the 2019--2025 test dates. For stock $i$ and target date $t$, let $O_i(t)$ and $C_i(t)$ be adjusted Open and Close. Index $t-j$ over the preceding valid observations of that stock, so the target day's Close never enters its drift estimate:
+\begin{equation}\label{eq:price-reconstruction-drift}
+\mu_i(t)=\frac{1}{252}\sum_{j=1}^{252}\log\!\left(\frac{C_i(t-j)}{O_i(t-j)}\right).
+\end{equation}
+The following one-day, post-open simulation is adapted from Equation~\eqref{eq:log-price-diffusion} (Equation 2.48). Its $\mu_i(t)$ is already the mean adjusted open-to-close \emph{log return}; the forecast $\widehat v_i(t)$ is positive daily, unannualized adjusted Garman--Klass variance:
+\begin{equation}\label{eq:price-reconstruction-simulation}
+\widehat C_i(t)=O_i(t)\exp\!\left(\mu_i(t)+\sqrt{\widehat v_i(t)}\,Z_i(t)\right),
+\qquad Z_i(t)\sim\mathrm N(0,1).
+\end{equation}
+Independent standard-normal shocks use seed 0; a stock-date present in both populations receives the same shock. The red line is a \emph{forecast-conditioned single-draw simulation}: the predicted variance sets its dispersion, while the sampled shock determines one scenario rather than a unique directional point forecast. Stock-dates without 252 preceding valid observations are excluded: zero of 8,800 five-stock forecast rows and 344 of 4,295,773 global forecast rows. WHLR is also excluded from the global price plots: its stored split-adjusted Close exceeds $10^{11}$ USD on some dates, and zero Garman--Klass variance days make it leave and re-enter the model's 80-observation forecast set. Those 1,510 otherwise eligible WHLR rows would dominate the arithmetic cross-stock mean when present. This is a display-population decision only; the saved global model and its evaluation are unchanged. On each date, the blue and red lines average respectively $C_i(t)$ and $\widehat C_i(t)$ across the same remaining stocks.
+
+Figure~\ref{fig:price-reconstruction-local} uses the five-stock local test subset (AAPL, AMZN, GOOG, NFLX, NVDA) and saved MLP-80 Global variance forecasts. The horizontal axis is test date; the vertical axis is the arithmetic mean adjusted Close in USD per stock. The blue line is the observed mean and the red line is the simulated mean.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\textwidth]{../../imgs/data_properties/local_mlp80_price_reconstruction.png}
+\caption{Five-stock test-date mean adjusted Close: observed (blue) and one-shock simulation using saved MLP-80 Global daily variance forecasts (red).}
+\label{fig:price-reconstruction-local}
+\end{figure}
+\FloatBarrier
+
+Figure~\ref{fig:price-reconstruction-global} uses the eligible global equity test cohort excluding WHLR and the saved Base LSTM-80 Global variance model. After the 344 short-history and 1,510 WHLR exclusions, it plots 4,293,919 ticker-dates. The horizontal axis is test date and the vertical axis is the arithmetic mean adjusted Close in USD per stock, shown on a logarithmic scale to accommodate the remaining range of source adjusted price levels. Blue and red retain the observed and simulated meanings, respectively.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\textwidth]{../../imgs/data_properties/global_base_lstm80_price_reconstruction.png}
+\caption{Global equity test-date mean adjusted Close, excluding WHLR, on a logarithmic vertical scale: observed (blue) and one-shock simulation using Base LSTM-80 Global daily variance forecasts (red).}
+\label{fig:price-reconstruction-global}
+\end{figure}
+\FloatBarrier
+
+For the separate log-Close view, first compute the same arithmetic cross-stock mean on each date, then take its natural logarithm. With $S(t)$ denoting the plotted stocks on date $t$, the coordinates are
+\begin{equation}\label{eq:price-reconstruction-log-mean}
+\begin{aligned}
+\bar C(t)&=\frac{1}{|S(t)|}\sum_{i\in S(t)}C_i(t),
+&L(t)&=\log\!\left(\frac{\bar C(t)}{1\,\mathrm{USD}}\right),\\
+\widehat{\bar C}(t)&=\frac{1}{|S(t)|}\sum_{i\in S(t)}\widehat C_i(t),
+&\widehat L(t)&=\log\!\left(\frac{\widehat{\bar C}(t)}{1\,\mathrm{USD}}\right).
+\end{aligned}
+\end{equation}
+This transforms the already plotted daily means, preserving the exact stock-date populations; it does not average the individual stocks' log Closes. The vertical axes in Figures~\ref{fig:price-reconstruction-local-log} and~\ref{fig:price-reconstruction-global-log} show $L(t)$ and $\widehat L(t)$ on linear scales, with test date horizontally. Blue remains observed and red remains simulated. The former uses the five-stock MLP-80 Global forecasts; the latter uses the WHLR-excluded global Base LSTM-80 Global forecasts.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\textwidth]{../../imgs/data_properties/local_mlp80_price_reconstruction_log.png}
+\caption{Natural log of the five-stock test-date arithmetic mean adjusted Close: observed (blue) and MLP-80 Global variance-based simulation (red).}
+\label{fig:price-reconstruction-local-log}
+\end{figure}
+\FloatBarrier
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\textwidth]{../../imgs/data_properties/global_base_lstm80_price_reconstruction_log.png}
+\caption{Natural log of the global equity test-date arithmetic mean adjusted Close, excluding WHLR: observed (blue) and Base LSTM-80 Global variance-based simulation (red).}
+\label{fig:price-reconstruction-global-log}
+\end{figure}
+\FloatBarrier
+
+The gross Open-to-Close return view instead divides each stock's adjusted Close by its adjusted Open before averaging across the same stocks. The observed and simulated date coordinates are
+\begin{equation}\label{eq:price-reconstruction-gross-return}
+\begin{aligned}
+G(t)&=\frac{1}{|S(t)|}\sum_{i\in S(t)}\frac{C_i(t)}{O_i(t)},\\
+\widehat G(t)&=\frac{1}{|S(t)|}\sum_{i\in S(t)}\frac{\widehat C_i(t)}{O_i(t)}\\
+&=\frac{1}{|S(t)|}\sum_{i\in S(t)}\exp\!\left(\mu_i(t)+\sqrt{\widehat v_i(t)}Z_i(t)\right).
+\end{aligned}
+\end{equation}
+These dimensionless gross returns equal one when Close equals Open; subtracting one gives the mean net simple return. The operation averages stock-level Close/Open ratios, not a ratio of cross-stock price means. Figures~\ref{fig:price-reconstruction-local-gross} and~\ref{fig:price-reconstruction-global-gross} plot $G(t)$ in blue and $\widehat G(t)$ in red against test date, using respectively the five-stock MLP-80 Global forecasts and the WHLR-excluded global Base LSTM-80 Global forecasts.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\textwidth]{../../imgs/data_properties/local_mlp80_price_reconstruction_gross_return.png}
+\caption{Five-stock daily mean adjusted Open-to-Close gross return: observed (blue) and MLP-80 Global forecast-conditioned simulation (red).}
+\label{fig:price-reconstruction-local-gross}
+\end{figure}
+\FloatBarrier
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\textwidth]{../../imgs/data_properties/global_base_lstm80_price_reconstruction_gross_return.png}
+\caption{WHLR-excluded global equity daily mean adjusted Open-to-Close gross return: observed (blue) and Base LSTM-80 Global forecast-conditioned simulation (red).}
+\label{fig:price-reconstruction-global-gross}
+\end{figure}
+\FloatBarrier
+Figure~\ref{fig:price-reconstruction-global-mlp-gross} uses the same WHLR-excluded global ticker-dates, adjusted Opens, and seed-0 shocks as Figure~\ref{fig:price-reconstruction-global-gross}, replacing only the Base LSTM-80 Global variance forecasts with MLP-80 Global forecasts. Its horizontal axis is test date and its vertical axis is the dimensionless daily mean adjusted Close/Open gross return. Blue is observed and red is the forecast-conditioned simulation.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\textwidth]{../../imgs/data_properties/global_mlp80_price_reconstruction_gross_return.png}
+\caption{WHLR-excluded global equity daily mean adjusted Open-to-Close gross return: observed (blue) and MLP-80 Global forecast-conditioned simulation (red).}
+\label{fig:price-reconstruction-global-mlp-gross}
+\end{figure}
+\FloatBarrier
 \subsection{Sharpe, Utility and Portfolio Estimation}
 
 \subsection{Parameter Complexity}

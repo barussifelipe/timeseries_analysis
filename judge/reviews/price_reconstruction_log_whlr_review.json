@@ -1,0 +1,41 @@
+{
+  "task": "Exclude WHLR from the global price reconstruction display and add log of daily arithmetic mean Close views",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/price_reconstruction.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "data/plot_price_reconstruction.py",
+    "data/tests/test_plot_price_reconstruction.py",
+    "data/plot_gk_data.py",
+    "models/support_scripts/raw_neural_data.py",
+    "models/training_blocks.py",
+    "inference/evaluate_volatility_test.py",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.aux",
+    "ref/final_report/thesis_structure.log",
+    "ref/thesis/thesis_notes.md",
+    "ref/thesis/references.md",
+    "imgs/data_properties/local_mlp80_price_reconstruction.csv",
+    "imgs/data_properties/global_base_lstm80_price_reconstruction.csv",
+    "imgs/data_properties/local_mlp80_price_reconstruction_log.csv",
+    "imgs/data_properties/global_base_lstm80_price_reconstruction_log.csv",
+    "four corresponding PNG figures",
+    "read-only raw_history WHLR rows for 2022-08-03, 2022-11-28, 2022-11-30, and 2023-08-08",
+    "Wheeler Real Estate Investment Trust 2024 Form 10-K at https://www.sec.gov/Archives/edgar/data/1527541/000152754125000038/whlr-20241231.htm",
+    "git diff and status",
+    "direct .venv focused assertions and independent CSV reconciliation"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

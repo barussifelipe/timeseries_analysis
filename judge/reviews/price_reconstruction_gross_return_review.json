@@ -1,0 +1,41 @@
+{
+  "task": "Add local and global daily mean adjusted Open-to-Close gross-return plots and document them in thesis Section 6.6",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/price_reconstruction.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "data/plot_price_reconstruction.py",
+    "data/tests/test_plot_price_reconstruction.py",
+    "models/support_scripts/raw_neural_data.py",
+    "models/training_blocks.py",
+    "inference/evaluate_volatility_test.py",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.aux",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf pages 66-67",
+    "imgs/data_properties/local_mlp80_price_reconstruction.csv",
+    "imgs/data_properties/global_base_lstm80_price_reconstruction.csv",
+    "imgs/data_properties/local_mlp80_price_reconstruction_log.csv",
+    "imgs/data_properties/global_base_lstm80_price_reconstruction_log.csv",
+    "imgs/data_properties/local_mlp80_price_reconstruction_gross_return.csv",
+    "imgs/data_properties/global_base_lstm80_price_reconstruction_gross_return.csv",
+    "imgs/data_properties/local_mlp80_price_reconstruction_gross_return.png",
+    "imgs/data_properties/global_base_lstm80_price_reconstruction_gross_return.png",
+    "read-only raw_history rows for five local tickers on 2019-01-02",
+    "git status and diff",
+    "direct project-virtual-environment test assertions and independent CSV reconciliation"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}
