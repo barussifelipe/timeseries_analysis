@@ -1,0 +1,34 @@
+{
+  "task": "Keep the floor-based News Impact Curve graph and add a second graph using mean estimated variance.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "data/plot_news_impact_curve.py",
+    "data/tests/test_plot_news_impact_curve.py",
+    "models/support_scripts/raw_neural_data.py",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.aux",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf page 61",
+    "ref/thesis/thesis_notes.md",
+    "imgs/data_properties/mcs_news_impact_curve.csv",
+    "imgs/data_properties/mcs_news_impact_curve_mean.csv",
+    "imgs/data_properties/mcs_news_impact_curve_mean.png",
+    "git diff and git status --short",
+    "python -m unittest data.tests.test_plot_news_impact_curve: 4 tests passed",
+    "independent training_mean_variance run: (0.0009982285049505847, 12232393)"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

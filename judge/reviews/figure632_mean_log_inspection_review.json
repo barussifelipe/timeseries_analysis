@@ -1,0 +1,31 @@
+{
+  "task": "Inspection-only mean-of-stock-log adjusted Close counterpart to thesis Figure 6.32",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/price_reconstruction.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/validate.py",
+    "data/plot_price_reconstruction.py",
+    "data/tests/test_plot_price_reconstruction.py",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.aux",
+    "imgs/data_properties/global_base_lstm80_price_reconstruction_mean_log.csv",
+    "imgs/data_properties/global_base_lstm80_price_reconstruction_mean_log.png",
+    "imgs/data_properties/global_base_lstm80_price_reconstruction_log.csv",
+    "git status --short and git diff -- data/plot_price_reconstruction.py data/tests/test_plot_price_reconstruction.py ref/final_report/thesis_structure.tex",
+    ".venv/Scripts/python.exe known-example test and independent CSV reconciliation"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

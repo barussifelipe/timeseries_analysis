@@ -1,0 +1,36 @@
+{
+  "task": "Five-stock frictionless realized utility setup and ten-model thesis table",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/utility_setup.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "inference/calculate_realized_utility.py",
+    "inference/tests/test_calculate_realized_utility.py",
+    "inference/run_mcs.py",
+    "inference/reassess_mcs.py",
+    "imgs/eval/mcs/20_size/forecasts.csv",
+    "imgs/eval/mcs/all_windows/final_sets_20.md",
+    "imgs/eval/mcs/all_windows/final_sets_80.md",
+    "imgs/eval/utility/realized_utility.csv",
+    "D:/DBs/timeseries_analysis/history_coverage.db",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "ref/thesis/references.md",
+    "ref/thesis/thesis_notes.md",
+    "https://arxiv.org/pdf/2202.08962",
+    "https://ycharts.com/indicators/10_year_treasury_rate"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

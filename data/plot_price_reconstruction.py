@@ -22,15 +22,31 @@ PLOTS = (
     ('global_base_lstm80_price_reconstruction', 'Global equity adjusted Close simulation (excluding WHLR) | Base LSTM-80 Global'),
 )
 MLP_GLOBAL = ('global_mlp80_price_reconstruction_gross_return',
-              'Global equity adjusted Close simulation (excluding WHLR) | MLP-80 Global | gross Open-to-Close return')
+              'Global equity adjusted Close simulation (including WHLR) | MLP-80 Global | gross Open-to-Close return')
 
 
-def preceding_drift(frame, targets, window=252):
-    """Mean of the preceding valid adjusted intraday returns per ticker."""
-    valid = frame.loc[frame.Valid, ['Ticker', 'IntradayLogReturn']].copy()
-    valid['drift'] = valid.groupby('Ticker', observed=True).IntradayLogReturn.transform(
-        lambda x: x.shift().rolling(window, min_periods=window).mean())
-    return valid.reindex(targets).drift.to_numpy(dtype=float)
+def preceding_ar1_mean(frame, targets, window=252):
+    """Rolling per-ticker OLS AR(1) mean from preceding valid log returns."""
+    means = np.full(len(frame), np.nan)
+    for _, group in frame.loc[frame.Valid].groupby('Ticker', observed=True, sort=False):
+        x = group.IntradayLogReturn.to_numpy(dtype=float)
+        if len(x) <= window:
+            continue
+        p = np.arange(window, len(x))
+        n = window - 1
+        sums = np.r_[0., np.cumsum(x)]
+        squares = np.r_[0., np.cumsum(x * x)]
+        products = np.r_[0., np.cumsum(x[:-1] * x[1:])]
+        sx = sums[p - 1] - sums[p - window]
+        sy = sums[p] - sums[p - window + 1]
+        sxx = squares[p - 1] - squares[p - window]
+        sxy = products[p - 1] - products[p - window]
+        denominator = sxx - sx * sx / n
+        slope = np.divide(sxy - sx * sy / n, denominator,
+                          out=np.zeros(len(p)), where=denominator > 1e-12 * sxx)
+        intercept = (sy - slope * sx) / n
+        means[group.index.to_numpy()[p]] = intercept + slope * x[p - 1]
+    return means[targets]
 
 
 def adjusted_prices(database, frame, targets):
@@ -90,6 +106,20 @@ def log_daily_means(values):
     return result
 
 
+def daily_mean_logs(values):
+    """Inspection view: average stock-level log adjusted Closes by date."""
+    closes = values[['actual_close', 'simulated_close']].to_numpy(dtype=float)
+    if not np.isfinite(closes).all() or (closes <= 0).any():
+        raise ValueError('mean log closes need finite positive prices')
+    logged = pd.DataFrame(np.log(closes), columns=['mean_log_actual_close',
+                                                   'mean_log_simulated_close'])
+    logged['date'] = values['date'].to_numpy()
+    grouped = logged.groupby('date', sort=True)
+    result = grouped[['mean_log_actual_close', 'mean_log_simulated_close']].mean()
+    result['count'] = grouped.size()
+    return result
+
+
 def daily_gross_returns(values):
     """Average each stock's adjusted Close/Open on the same eligible dates."""
     opened = values['open'].to_numpy(dtype=float)
@@ -144,6 +174,8 @@ def main():
     parser.add_argument('--output', type=Path, default=Path('imgs/data_properties'))
     parser.add_argument('--show', action='store_true',
                         help='open price, log-mean, and gross-return plots from saved CSVs')
+    parser.add_argument('--mean-log-only', action='store_true',
+                        help='save inspection-only global mean-of-stock-logs view')
     args = parser.parse_args()
 
     if args.show:
@@ -151,7 +183,8 @@ def main():
         for name, title in PLOTS:
             for suffix in ('', '_log', '_gross_return'):
                 values = pd.read_csv(args.output / f'{name}{suffix}.csv', parse_dates=['date']).set_index('date')
-                plot(values, None, title + (' | log of daily mean' if suffix == '_log' else
+                plot(values, None, (title.replace('excluding WHLR', 'including WHLR')
+                                    if suffix == '_gross_return' else title) + (' | log of daily mean' if suffix == '_log' else
                                             ' | gross Open-to-Close return' if suffix else ''),
                      log_y=name.startswith('global_') and not suffix,
                      log_values=suffix == '_log', gross_returns=suffix == '_gross_return')
@@ -174,10 +207,10 @@ def main():
     targets = data.target_indices.numpy()[eligible[ids]]
     tickers = frame.Ticker.to_numpy()[targets]
     dates = frame.Date.to_numpy()[targets]
-    drift = preceding_drift(frame, targets)
+    drift = preceding_ar1_mean(frame, targets)
     opened, closed = adjusted_prices(args.database, frame, targets)
     shocks = np.random.default_rng(0).standard_normal(len(targets))
-    usable = np.isfinite(drift) & (tickers != 'WHLR')
+    usable = np.isfinite(drift)
     if not np.isfinite(shocks).all():
         raise ValueError('nonfinite sampled shock')
     chunks = []
@@ -192,6 +225,7 @@ def main():
             raise ValueError('global forecast target alignment failed')
         mask = usable[sl]
         chunks.append(pd.DataFrame({'date': batch_dates[mask], 'open': opened[sl][mask],
+                                    'price_eligible': tickers[sl][mask] != 'WHLR',
                                     'actual_close': closed[sl][mask],
                                     'simulated_close': simulate(opened[sl][mask], predicted[mask],
                                                                 drift[sl][mask], shocks[sl][mask])}))
@@ -202,7 +236,29 @@ def main():
     if offset != len(targets) or scored['N'] != offset:
         raise ValueError('global forecast count mismatch')
     global_values = pd.concat(chunks, ignore_index=True)
-    global_daily = daily(global_values)
+    global_daily = daily(global_values.loc[global_values.price_eligible])
+    if args.mean_log_only:
+        logged = daily_mean_logs(global_values.loc[global_values.price_eligible])
+        if not logged['count'].equals(global_daily['count']):
+            raise ValueError('mean-of-logs population differs from Figure 6.32')
+        args.output.mkdir(parents=True, exist_ok=True)
+        stem = 'global_base_lstm80_price_reconstruction_mean_log'
+        logged.to_csv(args.output / f'{stem}.csv')
+        fig, ax = plt.subplots(figsize=(10, 5))
+        ax.plot(logged.index, logged.mean_log_actual_close, color='#236c93', lw=.8,
+                label='Mean log observed adjusted Close')
+        ax.plot(logged.index, logged.mean_log_simulated_close, color='#bc4b2f', lw=.8,
+                label='Mean log simulated adjusted Close')
+        ax.set(xlabel='Test target date', ylabel='Mean log(adjusted Close / USD)',
+               title='Global equity adjusted Close (excluding WHLR) | Base LSTM-80 Global | mean of stock logs')
+        ax.legend()
+        ax.grid(alpha=.2)
+        fig.tight_layout()
+        fig.savefig(args.output / f'{stem}.png', dpi=150)
+        plt.close(fig)
+        print({'plotted': int(logged['count'].sum()), 'dates': len(logged),
+               'csv': str(args.output / f'{stem}.csv'), 'png': str(args.output / f'{stem}.png')})
+        return
     global_gross = daily_gross_returns(global_values)
     chunks = []
     offset = 0
@@ -247,14 +303,16 @@ def main():
         plot(logged, args.output / f'{name}_log.png', title + ' | log of daily mean', log_values=True)
         gross.to_csv(args.output / f'{name}_gross_return.csv')
         plot(gross, args.output / f'{name}_gross_return.png',
-             title + ' | gross Open-to-Close return', gross_returns=True)
+             title.replace('excluding WHLR', 'including WHLR') + ' | gross Open-to-Close return',
+             gross_returns=True)
     mlp_gross.to_csv(args.output / f'{MLP_GLOBAL[0]}.csv')
     plot(mlp_gross, args.output / f'{MLP_GLOBAL[0]}.png', MLP_GLOBAL[1], gross_returns=True)
     print({'local': {'forecasts': len(local), 'excluded_short_history': len(local) - len(complete),
                      'plotted': len(complete), 'dates': len(local_daily)},
            'global': {'forecasts': len(targets), 'excluded_short_history': int((~np.isfinite(drift)).sum()),
-                      'excluded_whlr': int((np.isfinite(drift) & (tickers == 'WHLR')).sum()),
-                      'plotted': int(usable.sum()), 'dates': len(global_daily),
+                      'excluded_whlr_from_price': int((usable & (tickers == 'WHLR')).sum()),
+                      'plotted_price': int(global_daily['count'].sum()),
+                      'plotted_gross_return': int(global_gross['count'].sum()), 'dates': len(global_daily),
                       'stocks_per_date': (int(global_daily['count'].min()), int(global_daily['count'].max()))}})
 
 

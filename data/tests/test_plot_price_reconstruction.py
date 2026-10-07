@@ -6,8 +6,8 @@ from tempfile import TemporaryDirectory
 from pathlib import Path
 from unittest.mock import patch
 
-from data.plot_price_reconstruction import (MLP_GLOBAL, PLOTS, daily, daily_gross_returns,
-                                            log_daily_means, main, preceding_drift, simulate)
+from data.plot_price_reconstruction import (MLP_GLOBAL, PLOTS, daily, daily_mean_logs, daily_gross_returns,
+                                            log_daily_means, main, preceding_ar1_mean, simulate)
 
 
 def test_price_reconstruction():
@@ -16,13 +16,22 @@ def test_price_reconstruction():
                           'Date': list(dates) * 2,
                           'Valid': [True] * 254 + [False] + [True] * 255,
                           'IntradayLogReturn': [0.01] * 254 + [np.nan] + [0.02] * 255})
-    drift = preceding_drift(frame, np.array([251, 252, 253, 254, 255, 507]))
+    drift = preceding_ar1_mean(frame, np.array([251, 252, 253, 254, 255, 507]))
     assert np.isnan(drift[[0, 3, 4]]).all()
     np.testing.assert_allclose(drift[[1, 2, 5]], [0.01, 0.01, 0.02])
     frame.loc[100, 'Valid'] = False
     frame.loc[100, 'IntradayLogReturn'] = np.nan
-    assert np.isnan(preceding_drift(frame, np.array([252]))[0])
-    np.testing.assert_allclose(preceding_drift(frame, np.array([253]))[0], 0.01)
+    assert np.isnan(preceding_ar1_mean(frame, np.array([252]))[0])
+    np.testing.assert_allclose(preceding_ar1_mean(frame, np.array([253]))[0], 0.01)
+    returns = np.random.default_rng(0).normal(0, 0.02, 255)
+    ar_frame = pd.DataFrame({'Ticker': pd.Categorical(['A'] * 255),
+                             'Valid': True, 'IntradayLogReturn': returns})
+    coefficients = np.linalg.lstsq(np.column_stack((np.ones(251), returns[:251])),
+                                    returns[1:252], rcond=None)[0]
+    expected_ar = coefficients[0] + coefficients[1] * returns[251]
+    np.testing.assert_allclose(preceding_ar1_mean(ar_frame, np.array([252])), [expected_ar])
+    ar_frame.loc[252, 'IntradayLogReturn'] = 99.
+    np.testing.assert_allclose(preceding_ar1_mean(ar_frame, np.array([252])), [expected_ar])
     expected = 100 * np.exp(0.01 + 0.2 * 0.5)
     np.testing.assert_allclose(simulate(np.array([100.]), np.array([0.04]),
                                         np.array([0.01]), np.array([0.5])), [expected])
@@ -45,6 +54,12 @@ def test_price_reconstruction():
     np.testing.assert_allclose(logged.log_simulated_mean_close.iloc[0],
                                np.log((expected + 100) / 2))
     assert logged['count'].equals(result['count'])
+    mean_logged = daily_mean_logs(values)
+    np.testing.assert_allclose(mean_logged.mean_log_actual_close.iloc[0],
+                               (np.log(110) + np.log(90)) / 2)
+    np.testing.assert_allclose(mean_logged.mean_log_simulated_close.iloc[0],
+                               (np.log(expected) + np.log(100)) / 2)
+    assert mean_logged['count'].equals(result['count'])
     gross = daily_gross_returns(values)
     np.testing.assert_allclose(gross.actual_gross_return.iloc[0], (1.1 + 0.45) / 2)
     np.testing.assert_allclose(gross.simulated_gross_return.iloc[0], (expected / 100 + 0.5) / 2)

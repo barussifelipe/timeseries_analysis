@@ -1,6 +1,9 @@
 """Unit tests for News Impact Curve (NIC) simulation and plotting for MCS models."""
 
 from pathlib import Path
+from contextlib import closing
+import sqlite3
+from tempfile import TemporaryDirectory
 import unittest
 import numpy as np
 import pandas as pd
@@ -52,6 +55,30 @@ class TestPlotNewsImpactCurve(unittest.TestCase):
             self.assertIn(col, df.columns)
             self.assertTrue((df[col] > 0).all())
             self.assertTrue(np.isfinite(df[col]).all())
+
+        mean_df = pd.read_csv('imgs/data_properties/mcs_news_impact_curve_mean.csv')
+        self.assertTrue(Path('imgs/data_properties/mcs_news_impact_curve_mean.png').exists())
+        self.assertEqual(list(mean_df.shock_pct), list(df.shock_pct))
+        np.testing.assert_allclose(mean_df.baseline_variance, 0.00099822850495058469)
+
+    def test_training_mean_variance_uses_valid_training_cohort(self):
+        from data.plot_news_impact_curve import training_mean_variance
+
+        with TemporaryDirectory() as directory:
+            database = Path(directory) / 'history.db'
+            with closing(sqlite3.connect(database)) as conn:
+                conn.execute('CREATE TABLE raw_history (Ticker TEXT, Date TEXT, Open REAL, High REAL, Low REAL, Close REAL, Volume REAL)')
+                for ticker in ('A', 'B'):
+                    for i in range(81):
+                        high = 3. if i == 0 else 1. if i == 1 else 0.5 if i == 2 else 2.
+                        conn.execute('INSERT INTO raw_history VALUES (?, ?, 1, ?, 1, 1, 10)',
+                                     (ticker, str((pd.Timestamp('2015-01-01') + pd.Timedelta(days=i)).date()), high))
+                conn.execute("INSERT INTO raw_history VALUES ('A', '2025-12-31', 1, 100, 1, 1, 10)")
+                conn.commit()
+            floor = 0.5 * np.log(2.) ** 2
+            mean, count = training_mean_variance(database, floor)
+            self.assertEqual(count, 80)
+            self.assertAlmostEqual(mean, (79 * floor + 0.5 * np.log(3.) ** 2) / 80)
 
     def test_simulate_mcs_nic_structure(self):
         try:

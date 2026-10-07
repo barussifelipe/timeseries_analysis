@@ -1,13 +1,15 @@
 """Simulate News Impact Curves (NIC) for all 10 models in the Model Confidence Set (MCS).
 
 Follows the simulation protocol in reference 1.2 (arXiv:2309.02072, Section 4.3.1):
-an input sequence of history length (window=20 or 80) with floor baseline history,
+an input sequence of history length (window=20 or 80) with constant variance history,
 varying the final observation across return shocks s in {-5, ..., +5} percentage points
 (s = 100 * log(Close/Open), r = s / 100) to measure asymmetric volatility response (leverage effect).
 """
 
 import argparse
 import json
+import sqlite3
+from contextlib import closing
 from math import gamma
 from pathlib import Path
 import sys
@@ -26,11 +28,36 @@ import torch
 
 from models.training_blocks import load_fit
 from models.variance_neural import make_model
+from models.support_scripts.raw_neural_data import raw_frame
 
 
 LOCAL_TICKERS = ('AAPL', 'AMZN', 'GOOG', 'NFLX', 'NVDA')
 
 CHECKPOINT_ROOT = Path('inference/checkpoints')
+DEFAULT_DATABASE = 'D:/DBs/timeseries_analysis/history_coverage.db'
+
+
+def training_mean_variance(database, floor):
+    """Arithmetic mean of valid adjusted GK variance in the global pre-2016 cohort."""
+    query = """SELECT Ticker, Date, Open, High, Low, Close, Volume FROM raw_history
+        WHERE Date < '2016-01-01' AND Ticker IN (
+            SELECT Ticker FROM raw_history GROUP BY Ticker
+            HAVING SUM(Date < '2016-01-01') > 80
+               AND SUM(Date = '2025-12-31') > 0)"""
+    total = count = 0
+    minimum = np.inf
+    with closing(sqlite3.connect(database)) as conn:
+        for chunk in pd.read_sql_query(query, conn, chunksize=100000):
+            frame = raw_frame(chunk)
+            values = frame.loc[frame.Valid, 'RawVariance'].to_numpy()
+            total += float(np.maximum(values, floor).sum())
+            count += len(values)
+            positive = values[values > 0]
+            if len(positive):
+                minimum = min(minimum, float(positive.min()))
+    if not count or minimum != floor:
+        raise ValueError('NIC training cohort is empty or differs from the saved floor')
+    return total / count, count
 
 
 def load_mcs_models(root=CHECKPOINT_ROOT):
@@ -203,7 +230,7 @@ def simulate_mcs_nic(models, shock_percents=np.arange(-5, 6, 1)):
     return pd.DataFrame(rows)
 
 
-def plot_mcs_nic(df, output_path):
+def plot_mcs_nic(df, output_path, baseline_name='Global Training Variance Floor'):
     """Plot News Impact Curves for the eight non-RFSV MCS models.
 
     Uses a clean, high-clarity layout showing eight models with consistent
@@ -237,7 +264,7 @@ def plot_mcs_nic(df, output_path):
     ax.set_xticks(np.arange(-5, 6, 1))
     ax.set_xlabel('Preceding Return Shock (%) [100 * log(Close / Open)]', fontsize=11)
     ax.set_ylabel('Forecast Daily Garman–Klass Variance', fontsize=11)
-    ax.set_title('News Impact Curves at the Global Training Variance Floor', fontsize=12)
+    ax.set_title(f'News Impact Curves at the {baseline_name}', fontsize=12)
     ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left', frameon=True, fontsize=9.5)
     ax.grid(alpha=0.25)
 
@@ -250,6 +277,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output-dir', type=Path, default=Path('imgs/data_properties'))
     parser.add_argument('--checkpoints', type=Path, default=CHECKPOINT_ROOT)
+    parser.add_argument('--database', default=DEFAULT_DATABASE)
     args = parser.parse_args()
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -263,6 +291,16 @@ def main():
     # Save Plot
     png_path = args.output_dir / 'mcs_news_impact_curve.png'
     plot_mcs_nic(df, png_path)
+
+    mean_var, count = training_mean_variance(args.database, models['Baseline Variance'])
+    models['Baseline Variance'] = mean_var
+    mean_df = simulate_mcs_nic(models)
+    mean_df.to_csv(args.output_dir / 'mcs_news_impact_curve_mean.csv', index=False)
+    plot_mcs_nic(mean_df, args.output_dir / 'mcs_news_impact_curve_mean.png',
+                 'Global Training Mean Variance')
+    print(f'Mean NIC reference: {mean_var:.17g} across {count} valid pre-2016 stock-dates')
+    print(f'Saved mean NIC table to {args.output_dir / "mcs_news_impact_curve_mean.csv"}')
+    print(f'Saved mean NIC plot to {args.output_dir / "mcs_news_impact_curve_mean.png"}')
 
     print(f'Saved MCS NIC table to {csv_path}')
     print(f'Saved MCS NIC plot to {png_path}')

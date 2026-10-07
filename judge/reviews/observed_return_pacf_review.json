@@ -1,0 +1,30 @@
+{
+  "task": "Create inspection-only PACF plots for observed adjusted Open-to-Close simple and log returns, assuming stationarity and without thesis edits",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/validate.py",
+    "data/plot_return_pacf.py",
+    "data/tests/test_plot_return_pacf.py",
+    "data/plot_price_reconstruction.py",
+    "imgs/data_properties/local_mlp80_price_reconstruction_gross_return.csv",
+    "imgs/data_properties/global_base_lstm80_price_reconstruction_gross_return.csv",
+    "imgs/data_properties/observed_simple_return_pacf.png",
+    "imgs/data_properties/observed_log_return_pacf.png",
+    "git status and diff",
+    "direct focused AR(1) check, conditional-covariance check, source CSV checks, and plot generation"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

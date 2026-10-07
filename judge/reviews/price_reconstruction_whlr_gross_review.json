@@ -1,0 +1,37 @@
+{
+  "task": "Include WHLR in both global adjusted Close/Open gross-return figures while retaining its exclusion from the global price and log-price figures, and review the earlier global MLP gross-return addition",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/price_reconstruction.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "data/plot_price_reconstruction.py",
+    "data/tests/test_plot_price_reconstruction.py",
+    "inference/evaluate_volatility_test.py",
+    "models/training_blocks.py",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.aux",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf pages 67-68",
+    "imgs/data_properties/global_base_lstm80_price_reconstruction.csv",
+    "imgs/data_properties/global_base_lstm80_price_reconstruction_log.csv",
+    "imgs/data_properties/global_base_lstm80_price_reconstruction_gross_return.csv",
+    "imgs/data_properties/global_mlp80_price_reconstruction_gross_return.csv",
+    "imgs/data_properties/global_base_lstm80_price_reconstruction_gross_return.png",
+    "imgs/data_properties/global_mlp80_price_reconstruction_gross_return.png",
+    "git status, diff, and prior gross-return CSVs at HEAD",
+    "direct project-virtual-environment focused assertions and independent CSV reconciliation"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

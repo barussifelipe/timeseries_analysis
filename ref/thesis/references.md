@@ -198,6 +198,11 @@ independently verified; confirm the thesis year and publication details before s
 - `arch` documentation, *ARCH Modeling* (GARCH(1,1) likelihood and fixed-parameter forecasting): https://arch.readthedocs.io/en/stable/univariate/univariate_volatility_modeling.html
 - Gatheral, J., Jaisson, T., & Rosenbaum, M., *Volatility is rough* (RFSV roughness motivation): https://arxiv.org/abs/1410.3394
 
+## Realized utility sources
+
+- Zhang, C., Zhang, Y., Cucuringu, M., & Qian, Z. (2022). *Volatility forecasting with machine learning and intraday commonality*, Section 5.4, Equation (21). https://arxiv.org/pdf/2202.08962
+- YCharts. (n.d.). *10 Year Treasury Rate*, reported long-term average 4.26%. https://ycharts.com/indicators/10_year_treasury_rate
+
 ## Price reconstruction source
 
 - Wheeler Real Estate Investment Trust, Inc. (2025). *2024 Form 10-K*, Reverse Stock Splits note (August 2023, May/June/September/November 2024, and January 2025 splits): https://www.sec.gov/Archives/edgar/data/1527541/000152754125000038/whlr-20241231.htm

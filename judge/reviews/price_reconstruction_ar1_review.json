@@ -1,0 +1,28 @@
+{
+  "task": "Replace the price-reconstruction conditional mean with per-stock rolling AR(1) OLS on 252 preceding valid adjusted log(Close/Open) returns, regenerate seven views, and update Section 6.6.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "ref/implementation_plan/price_reconstruction.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "data/plot_price_reconstruction.py",
+    "data/tests/test_plot_price_reconstruction.py",
+    "git diff for implementation, plan, context, and thesis source",
+    "seven regenerated price-reconstruction CSV and PNG files under imgs/data_properties/",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

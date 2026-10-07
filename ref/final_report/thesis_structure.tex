@@ -1463,7 +1463,7 @@ Figure~\ref{fig:data-property-global-return} uses the same coordinates and 20-da
 \end{figure}
 \FloatBarrier
 
-For Figure~\ref{fig:data-property-nic}, the News Impact Curve (NIC) follows the synthetic-input protocol in \cite{liu2023} based on \cite{engle1993}. We focus our analysis for the eight ML models in our final MCS. Our objective is to check if the model effectively reproduces the leverage effect. Set the shared reference variance to the saved global equity fitting-history floor $v_0=3.396062419686545\times10^{-13}$, which is fixed before test evaluation, and the matching log-volatility input to $\ell_0=\frac{1}{2}\log(v_0)\approx-14.3555$. For window $w\in\{20,80\}$ and shock $s\in\{-5,-4,\ldots,5\}$ percentage points, the log-volatility/return inputs for the Base LSTM and MLP fits are
+For Figures~\ref{fig:data-property-nic} and~\ref{fig:data-property-nic-mean}, the News Impact Curve (NIC) follows the synthetic-input protocol in \cite{liu2023} based on \cite{engle1993}. We focus our analysis for the eight ML models in our final MCS. Our objective is to check if the model effectively reproduces the leverage effect. Figure~\ref{fig:data-property-nic} sets the shared reference variance to the saved global equity fitting-history floor $v_0\approx3.39606242\times10^{-13}$, which is fixed before test evaluation, and the matching log-volatility input to $\ell_0=\frac{1}{2}\log(v_0)\approx-14.3555$. For window $w\in\{20,80\}$ and shock $s\in\{-5,-4,\ldots,5\}$ percentage points, the log-volatility/return inputs for the Base LSTM and MLP fits are
 \begin{equation}\label{eq:property-nic-input}
 z_j(s)=\begin{cases}(\ell_0,0),&1\leq j<w,\\(\ell_0,s/100),&j=w,\end{cases}
 \qquad s=100\log\frac{C(t)}{O(t)}.
@@ -1475,6 +1475,16 @@ Their log-variance outputs are exponentiated to obtain the one-step variance for
 \includegraphics[width=0.88\textwidth]{../../imgs/data_properties/mcs_news_impact_curve.png}
 \caption{One-step forecast daily adjusted Garman--Klass variance against the synthetic signed return shock for eight MCS variants; the two RFSV variants are omitted.}
 \label{fig:data-property-nic}
+\end{figure}
+\FloatBarrier
+
+Figure~\ref{fig:data-property-nic-mean} repeats the same simulation with $v_0=\overline v_{\mathrm{train}}\approx9.98228505\times10^{-4}$ and $\ell_0=\frac{1}{2}\log(\overline v_{\mathrm{train}})\approx-3.4548$. This is the arithmetic mean of the 12,232,393 valid pre-2016 adjusted Garman--Klass variances in the same global training cohort; zero estimates are replaced by the saved floor, as in model training. Both figures use identical saved models, return shocks, and window lengths.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\textwidth]{../../imgs/data_properties/mcs_news_impact_curve_mean.png}
+\caption{One-step forecast daily adjusted Garman--Klass variance against the synthetic signed return shock for eight MCS variants at the global training mean variance; the two RFSV variants are omitted.}
+\label{fig:data-property-nic-mean}
 \end{figure}
 \FloatBarrier
 
@@ -1510,11 +1520,16 @@ Figure~\ref{fig:data-property-global-rolling} applies Equation~\ref{eq:property-
 \FloatBarrier
 
 \subsection{Price Reconstruction}
-The objective here is to display a one-day simulated adjusted Close alongside the observed adjusted Close on the 2019--2025 test dates. For stock $i$ and target date $t$, let $O_i(t)$ and $C_i(t)$ be adjusted Open and Close. Index $t-j$ over the preceding valid observations of that stock, so the target day's Close never enters its drift estimate:
+The objective here is to display a one-day simulated adjusted Close alongside the observed adjusted Close on the 2019--2025 test dates. For stock $i$ and target date $t$, let $O_i(t)$ and $C_i(t)$ be adjusted Open and Close, and set $r_i(t)=\log(C_i(t)/O_i(t))$. Index $t-j$ over the preceding valid observations of that stock. At each target, fit an AR(1) intercept and slope by ordinary least squares on the 251 consecutive lagged pairs from the 252 preceding valid returns, then use the latest observed log return for its conditional mean:
 \begin{equation}\label{eq:price-reconstruction-drift}
-\mu_i(t)=\frac{1}{252}\sum_{j=1}^{252}\log\!\left(\frac{C_i(t-j)}{O_i(t-j)}\right).
+\begin{aligned}
+(\widehat a_i(t),\widehat b_i(t))
+&=\underset{a,b}{\operatorname{argmin}}\sum_{j=1}^{251}
+\left[r_i(t-j)-a-b\,r_i(t-j-1)\right]^2,\\
+\mu_i(t)&=\widehat a_i(t)+\widehat b_i(t)r_i(t-1).
+\end{aligned}
 \end{equation}
-The following one-day, post-open simulation is adapted from Equation~\eqref{eq:log-price-diffusion} (Equation 2.48). Its $\mu_i(t)$ is already the mean adjusted open-to-close \emph{log return}; the forecast $\widehat v_i(t)$ is positive daily, unannualized adjusted Garman--Klass variance:
+The target day's return never enters the fit. If the 251 lagged inputs have zero sample variation, set the slope to zero and the intercept to the mean of the 251 dependent returns. The following one-day, post-open simulation is adapted from Equation~\eqref{eq:log-price-diffusion}. Its $\mu_i(t)$ is the fitted conditional adjusted open-to-close \emph{log return}; the forecast $\widehat v_i(t)$ is positive daily, unannualized adjusted Garman--Klass variance:
 \begin{equation}\label{eq:price-reconstruction-simulation}
 \widehat C_i(t)=O_i(t)\exp\!\left(\mu_i(t)+\sqrt{\widehat v_i(t)}\,Z_i(t)\right),
 \qquad Z_i(t)\sim\mathrm N(0,1).
@@ -1564,7 +1579,7 @@ This transforms the already plotted daily means, preserving the exact stock-date
 \end{figure}
 \FloatBarrier
 
-The gross Open-to-Close return view instead divides each stock's adjusted Close by its adjusted Open before averaging across the same stocks. The observed and simulated date coordinates are
+The gross Open-to-Close return view instead divides each stock's adjusted Close by its adjusted Open before averaging. Its global population includes WHLR's 1,510 otherwise eligible ticker-dates; $S(t)$ in the following equation denotes the stocks eligible for the particular return plot. The observed and simulated date coordinates are
 \begin{equation}\label{eq:price-reconstruction-gross-return}
 \begin{aligned}
 G(t)&=\frac{1}{|S(t)|}\sum_{i\in S(t)}\frac{C_i(t)}{O_i(t)},\\
@@ -1572,7 +1587,7 @@ G(t)&=\frac{1}{|S(t)|}\sum_{i\in S(t)}\frac{C_i(t)}{O_i(t)},\\
 &=\frac{1}{|S(t)|}\sum_{i\in S(t)}\exp\!\left(\mu_i(t)+\sqrt{\widehat v_i(t)}Z_i(t)\right).
 \end{aligned}
 \end{equation}
-These dimensionless gross returns equal one when Close equals Open; subtracting one gives the mean net simple return. The operation averages stock-level Close/Open ratios, not a ratio of cross-stock price means. Figures~\ref{fig:price-reconstruction-local-gross} and~\ref{fig:price-reconstruction-global-gross} plot $G(t)$ in blue and $\widehat G(t)$ in red against test date, using respectively the five-stock MLP-80 Global forecasts and the WHLR-excluded global Base LSTM-80 Global forecasts.
+These dimensionless gross returns equal one when Close equals Open; subtracting one gives the mean net simple return. The operation averages stock-level Close/Open ratios, not a ratio of cross-stock price means. Figures~\ref{fig:price-reconstruction-local-gross} and~\ref{fig:price-reconstruction-global-gross} plot $G(t)$ in blue and $\widehat G(t)$ in red against test date, using respectively the five-stock MLP-80 Global forecasts and the WHLR-inclusive global Base LSTM-80 Global forecasts.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.88\textwidth]{../../imgs/data_properties/local_mlp80_price_reconstruction_gross_return.png}
@@ -1583,19 +1598,65 @@ These dimensionless gross returns equal one when Close equals Open; subtracting 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.88\textwidth]{../../imgs/data_properties/global_base_lstm80_price_reconstruction_gross_return.png}
-\caption{WHLR-excluded global equity daily mean adjusted Open-to-Close gross return: observed (blue) and Base LSTM-80 Global forecast-conditioned simulation (red).}
+\caption{WHLR-inclusive global equity daily mean adjusted Open-to-Close gross return: observed (blue) and Base LSTM-80 Global forecast-conditioned simulation (red).}
 \label{fig:price-reconstruction-global-gross}
 \end{figure}
 \FloatBarrier
-Figure~\ref{fig:price-reconstruction-global-mlp-gross} uses the same WHLR-excluded global ticker-dates, adjusted Opens, and seed-0 shocks as Figure~\ref{fig:price-reconstruction-global-gross}, replacing only the Base LSTM-80 Global variance forecasts with MLP-80 Global forecasts. Its horizontal axis is test date and its vertical axis is the dimensionless daily mean adjusted Close/Open gross return. Blue is observed and red is the forecast-conditioned simulation.
+Figure~\ref{fig:price-reconstruction-global-mlp-gross} uses the same WHLR-inclusive global ticker-dates, adjusted Opens, and seed-0 shocks as Figure~\ref{fig:price-reconstruction-global-gross}, replacing only the Base LSTM-80 Global variance forecasts with MLP-80 Global forecasts. Its horizontal axis is test date and its vertical axis is the dimensionless daily mean adjusted Close/Open gross return. Blue is observed and red is the forecast-conditioned simulation.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.88\textwidth]{../../imgs/data_properties/global_mlp80_price_reconstruction_gross_return.png}
-\caption{WHLR-excluded global equity daily mean adjusted Open-to-Close gross return: observed (blue) and MLP-80 Global forecast-conditioned simulation (red).}
+\caption{WHLR-inclusive global equity daily mean adjusted Open-to-Close gross return: observed (blue) and MLP-80 Global forecast-conditioned simulation (red).}
 \label{fig:price-reconstruction-global-mlp-gross}
 \end{figure}
 \FloatBarrier
 \subsection{Sharpe, Utility and Portfolio Estimation}
+
+We evaluate the ten model variants retained across both five-stock MCS runs with the frictionless realized utility (RU) of Zhang et al. \cite[Section~5.4, Eq.~(21)]{zhang2022}. Each model uses the same 1,760 test dates in 2019--2025 for AAPL, AMZN, GOOG, NFLX, and NVDA, giving 8,800 matched ticker-date observations. Let $O_i(t)$ and $C_i(t)$ be adjusted session prices, $V_i(t)>0$ the saved daily, unannualized adjusted Garman--Klass target, and $\widehat V_{i,m}(t)>0$ model $m$'s saved one-step forecast. The adjusted session net simple return is
+\begin{equation}\label{eq:utility-return}
+r_i(t)=\exp\!\left(\log\frac{C_i(t)}{O_i(t)}\right)-1.
+\end{equation}
+We use the 4.26\% long-term average 10-year Treasury yield reported by YCharts \cite{ycharts10y} as a fixed annual risk-free proxy. With 252 trading days, its effective daily rate is
+\begin{equation}\label{eq:utility-risk-free}
+r^f=(1+0.0426)^{1/252}-1\approx0.00016556.
+\end{equation}
+Writing $T_i$ for ticker $i$'s 1,760 shared test dates and $\mathcal I$ for the five stocks, we first average returns and GK variances within each ticker and then across stocks. The common, unannualized Sharpe input is
+\begin{equation}\label{eq:utility-sharpe}
+\begin{aligned}
+\overline r&=\frac{1}{|\mathcal I|}\sum_{i\in\mathcal I}\frac{1}{|T_i|}\sum_{t\in T_i}r_i(t),\\
+\overline V&=\frac{1}{|\mathcal I|}\sum_{i\in\mathcal I}\frac{1}{|T_i|}\sum_{t\in T_i}V_i(t),\\
+SR&=\frac{\overline r-r^f}{\sqrt{\overline V}}\approx0.03447937.
+\end{aligned}
+\end{equation}
+With risk aversion $\gamma=2$, our adaptation of Zhang et al.'s Equation~(21) is
+\begin{equation}\label{eq:utility-ru}
+\begin{aligned}
+RU_{i,m}(t)&=\frac{SR^2}{\gamma}\sqrt{\frac{V_i(t)}{\widehat V_{i,m}(t)}}
+-\frac{SR^2}{2\gamma}\frac{V_i(t)}{\widehat V_{i,m}(t)},\\
+\overline{RU}_m&=\frac{100}{5}\sum_{i\in\mathcal I}\frac{1}{|T_i|}\sum_{t\in T_i}RU_{i,m}(t).
+\end{aligned}
+\end{equation}
+The factor 100 expresses the table values as daily percent of wealth. The test-sample $SR$ is a retrospective experiment input: its test returns were unknown when forecasts were made. The Treasury rate is a fixed proxy converted to a daily rate, not an observed daily cash return. No model was refitted and no transaction costs were deducted.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lr}\hline
+Model variant & Mean RU (daily \% of wealth)\\\hline
+Base LSTM-20 Global & \textcolor{blue}{0.025743}\\
+Base LSTM-80 Global & 0.025650\\
+Base LSTM-80 Local & 0.025399\\
+HARNet-20 Global & 0.025628\\
+HARNet-80 Global & 0.025588\\
+HARNet-80 Local & 0.025569\\
+MLP-20 Global & \textcolor{red}{0.025759}\\
+MLP-80 Global & 0.025710\\
+RFSV-20 Local & 0.025226\\
+RFSV-80 Local & 0.025266\\\hline
+\end{tabular}
+\caption{Frictionless mean realized utility on the same 8,800 adjusted-GK test targets per model. Each value is averaged within ticker and then across the five tickers. Red marks the greatest RU and blue the second greatest.}
+\label{tab:realized-utility}
+\end{table}
+\FloatBarrier
 
 \subsection{Parameter Complexity}
 For the idealized comparison in \cite{monteromanso2021}, take $B=2^{64}$ possible encodings per scalar parameter and $K=2,714$ tickers. For a model with $p$ fitted scalars, the parameter-combination budgets are
@@ -1690,6 +1751,7 @@ Counts include fitted coefficients and neural weights and biases, excluding opti
 \bibitem{monteromanso2021} Montero-Manso, P., and Hyndman, R. J. (2021). Principles and algorithms for forecasting groups of time series: Locality and globality. \emph{International Journal of Forecasting}, 37(4), 1632--1653.
 \bibitem{liu2023} Liu, C., Tran, M.-N., Wang, C., Gerlach, R., and Kohn, R. (2023). Global neural networks and the data scaling effect in financial time series forecasting. arXiv:2309.02072.
 \bibitem{zhang2022} Zhang, C., Zhang, Y., Cucuringu, M., and Qian, Z. (2022). Volatility forecasting with machine learning and intraday commonality. arXiv:2202.08962.
+\bibitem{ycharts10y} YCharts. (n.d.). 10 Year Treasury Rate. Long Term Average: 4.26\%. \url{https://ycharts.com/indicators/10_year_treasury_rate}.
 \bibitem{mouti2023} Mouti, S. (2023). Rough volatility: Evidence from range volatility estimators. arXiv:2312.01426.
 \bibitem{tang2023} Tang, S. H., Rosenbaum, M., and Zhou, C. (2023). Forecasting volatility with machine learning and rough volatility: Example from the crypto-winter. arXiv:2311.04727.
 \bibitem{brini2026} Brini, A. (2026). Forecasting realized volatility with time series foundation models: A comparison with econometric benchmarks. arXiv:2607.05291.
