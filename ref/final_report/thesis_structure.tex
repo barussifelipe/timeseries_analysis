@@ -1108,8 +1108,9 @@ NVDA & 22 & 22 & None\\\hline
 \subsection{Residual Structure}
 We inspect residual timelines and histograms for the model variants shared by all five stock-level final MCS sets. The evaluation uses the same five stocks and forecast targets as Table~\ref{tab:matched-results}.
 
-First, the observed test targets provide a common reference for the model residuals. Write $v_i(t)$ for the observed adjusted Garman--Klass variance of ticker $i$ on test date $t$. The 8,800 positive variances comprise 1,760 dates for each of NVDA, AAPL, NFLX, GOOG, and AMZN from 2019 through 2025. The raw timeline plots the daily mean across the five stocks; the log timeline plots the natural logarithm of that mean. The histograms pool the individual targets, with an orange normal curve fitted to all 8,800 observations using their mean and population variance. The raw histogram is strongly right-skewed, whereas the log histogram is more symmetric. The descriptive normal fit for the pooled log variances is $\log v_i(t)\sim\mathcal N(\mu=-8.472,\sigma^2=0.9996)$, with its data approximating this normal. 
+First, the observed test targets provide a common reference for the model residuals. Write $v_i(t)$ for the observed adjusted Garman--Klass variance of ticker $i$ on test date $t$. The 8,800 positive variances comprise 1,760 dates for each of NVDA, AAPL, NFLX, GOOG, and AMZN from 2019 through 2025. The raw timeline plots the daily mean across the five stocks; the log timeline plots the natural logarithm of that mean. The histograms pool the individual targets, with an orange normal curve fitted to all 8,800 observations using their mean and population variance. 
 
+On \ref{fig:local-test-target-timeline} and \ref{fig:local-test-target-histograms} we present the timeline and histograms of our target data. The raw histogram is strongly right-skewed, whereas the log histogram is more symmetric. The descriptive normal fit for the pooled log variances is $\log v_i(t)\sim\mathcal N(\mu=-8.472,\sigma^2=0.9996)$, with its data approximating this normal. 
 The timeline also shows a pronounced volatility spike in April 2025, coinciding with market turmoil following the April 2 US tariff announcement \cite{ecb2025fsr}. 
 
 \begin{figure}[htbp]
@@ -1434,7 +1435,8 @@ Our final model selection favours overprediction over underprediction, which is 
 
 
 \subsection{Data Properties}
-For Figures~\ref{fig:data-property-return} and~\ref{fig:data-property-global-return}, we are interested in checking the leverage effect in both actual and predicted data. We'll be using the models with best QLIKE for prediction purposes, MLP-80 Global for local test subset and Base LSTM-80 Global for global test subset.
+\subsubsection{Leverage Effect}
+For Figures~\ref{fig:data-property-return} and~\ref{fig:data-property-global-return}, we are interested in checking the leverage effect in both actual and predicted data. We'll be using the models with best QLIKE for prediction purposes: MLP-80 Global for local test subset and Base LSTM-80 Global for global test subset.
 
 Let $S(t)$ contain the stocks with an eligible forecast on test date $t$, let $v_i(t)$ and $\widehat v_i(t)$ be the observed and saved forecast daily adjusted Garman--Klass variances, and let $O_i$ and $C_i$ be adjusted open and close prices. Here $t-1$ denotes stock $i$'s preceding valid observation. The date-level coordinates are:
 \begin{equation}\label{eq:property-return-coordinates}
@@ -1447,7 +1449,7 @@ y(t)&=\log V(t),\qquad \widehat y(t)=\log\widehat V(t).
 \end{equation}
 Sort the 1,760 date coordinates by $x(t)$ and divide them into 88 consecutive sets $B_k$ of 20 dates. Each plotted point is $(\bar x_k,\bar y_k)$ or $(\bar x_k,\overline{\widehat y}_k)$, where each bar is the arithmetic mean over $t\in B_k$; lines join consecutive points. 
 
-Figure~\ref{fig:data-property-return} uses $S(t)=\{\mathrm{AAPL,AMZN,GOOG,NFLX,NVDA}\}$ and the saved MLP-80 Global forecasts on their shared test dates.
+Figure~\ref{fig:data-property-return} uses $S(t)=\{\mathrm{AAPL,AMZN,GOOG,NFLX,NVDA}\}$ and the saved MLP-80 Global forecasts on their shared test dates. We are unable to verify a clear evidence of the leverage effect neither in the actual as the predicted data. Both extremities lies in the similar heights. The only difference we are able to observe is the mean GK predicted variance being higher than actual throughout the graph. 
 
 \begin{figure}[htbp]
 \centering
@@ -1457,7 +1459,7 @@ Figure~\ref{fig:data-property-return} uses $S(t)=\{\mathrm{AAPL,AMZN,GOOG,NFLX,N
 \end{figure}
 \FloatBarrier
 
-Figure~\ref{fig:data-property-global-return} uses the same coordinates and 20-date bins from Equation~\ref{eq:property-return-coordinates}, with $S(t)$ drawn from the eligible window-80 global test cohort and $\widehat v_i(t)$ from the Base LSTM-80 Global fit.
+Figure~\ref{fig:data-property-global-return} uses the same coordinates and 20-date bins from Equation~\ref{eq:property-return-coordinates}, with $S(t)$ drawn from the eligible window-80 global test cohort and $\widehat v_i(t)$ from the Base LSTM-80 Global fit. On this subset, we observe similar levels of variance between predicted and actual. We are able to observe a more extended extremity on the negative returns, indicating a small leverage effect, being more pronounced in the actual data compared to the model forecast. 
 
 \begin{figure}[htbp]
 \centering
@@ -1467,34 +1469,44 @@ Figure~\ref{fig:data-property-global-return} uses the same coordinates and 20-da
 \end{figure}
 \FloatBarrier
 
-For Figures~\ref{fig:data-property-nic} and~\ref{fig:data-property-nic-mean}, the News Impact Curve (NIC) follows the synthetic-input protocol in \cite{liu2023} based on \cite{engle1993}. We focus our analysis for the eight ML models in our final MCS. Our objective is to check if the model effectively reproduces the leverage effect. Figure~\ref{fig:data-property-nic} sets the shared reference variance to the saved global equity fitting-history floor $v_0\approx3.39606242\times10^{-13}$, which is fixed before test evaluation, and the matching log-volatility input to $\ell_0=\frac{1}{2}\log(v_0)\approx-14.3555$. For window $w\in\{20,80\}$ and shock $s\in\{-5,-4,\ldots,5\}$ percentage points, the log-volatility/return inputs for the Base LSTM and MLP fits are
+For Figures~\ref{fig:data-property-nic} and~\ref{fig:data-property-nic-mean}, the News Impact Curve (NIC) follows the synthetic-input protocol in \cite{liu2023} based on \cite{engle1993}. We focus our analysis for the eight ML models in our final MCS to understand the capacity of those models to learn usual properties of volatility. Our objective is to check if the model effectively reproduces the leverage effect. In addition to the returns, we use variance as input due to how our models were fitted. For log definability purposes and to match the paper when using zero net returns input, which configures a zero volatility process, on Figure~\ref{fig:data-property-nic} we set the shared reference variance to the saved global equity fitting-history floor $v_0\approx3.39606242\times10^{-13}$, which is fixed before test evaluation, and the matching log-volatility input to $\ell_0=\frac{1}{2}\log(v_0)\approx-14.3555$. For window $w\in\{20,80\}$ and shock $s\in\{-5,-4,\ldots,5\}$ percentage points, the log-volatility/return inputs for the Base LSTM and MLP fits are:
 \begin{equation}\label{eq:property-nic-input}
 z_j(s)=\begin{cases}(\ell_0,0),&1\leq j<w,\\(\ell_0,s/100),&j=w,\end{cases}
 \qquad s=100\log\frac{C(t)}{O(t)}.
 \end{equation}
 Their log-variance outputs are exponentiated to obtain the one-step variance forecasts. HARNet instead receives $(v_0,\ldots,v_0)$ at every shock. Each Local curve is the arithmetic mean of the five stock-specific forecasts at that shock. 
 
+We observe a inverse leverage effect, conditioned by the extremely low values of volatility. Base LSTM-20 Global presents the highest inversed leverage effect, while Base LSTM-80 Global a mild effect. The rest presents an almost constant response. Having constant returns doesn't mean there isn't intraday movement. In fact, it's known that using High and Low for estimating variance is useful because it captures the movements within a Open/Close range. 
+
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.88\textwidth]{../../imgs/data_properties/mcs_news_impact_curve.png}
-\caption{One-step forecast daily adjusted Garman--Klass variance against the synthetic signed return shock for eight MCS variants; the two RFSV variants are omitted.}
+\caption{One-step forecast daily adjusted Garman--Klass variance against the synthetic signed return shock for eight MCS variants.}
 \label{fig:data-property-nic}
 \end{figure}
 \FloatBarrier
 
-Figure~\ref{fig:data-property-nic-mean} repeats the same simulation with $v_0=\overline v_{\mathrm{train}}\approx9.98228505\times10^{-4}$ and $\ell_0=\frac{1}{2}\log(\overline v_{\mathrm{train}})\approx-3.4548$. This is the arithmetic mean of the 12,232,393 valid pre-2016 adjusted Garman--Klass variances in the same global training cohort; zero estimates are replaced by the saved floor, as in model training. Both figures use identical saved models, return shocks, and window lengths.
+
+
+On Figure~\ref{fig:data-property-nic-mean} we repeat the same simulation, but using the arithmetic mean of the 12,232,393 valid pre-2016 adjusted Garman--Klass variances in the same global training cohort. Let $v_0=\overline v_{\mathrm{train}}\approx9.98228505\times10^{-4}$ and $\ell_0=\frac{1}{2}\log(\overline v_{\mathrm{train}})\approx-3.4548$. Both figures use identical saved models, return shocks, and window lengths.
+
+On this setup, we observe the leverage effect clearly. The typical assymetric curve is presented on MLP-20 Global, Base LSTM-20 Global, Base LSTM-80 Global, whereas we have MLP-80 Global and Base LSTM-80 Local presenting assymetric linear responses. The rest of the models showed constant reactions. 
+
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.88\textwidth]{../../imgs/data_properties/mcs_news_impact_curve_mean.png}
-\caption{One-step forecast daily adjusted Garman--Klass variance against the synthetic signed return shock for eight MCS variants at the global training mean variance; the two RFSV variants are omitted.}
+\caption{One-step forecast daily adjusted Garman--Klass variance against the synthetic signed return shock for eight MCS variants at the global training mean variance.}
 \label{fig:data-property-nic-mean}
 \end{figure}
 \FloatBarrier
 
+We suppose that by using the floor we conditioned our model to present a inverse leverage effect to compensate the impact of not-frequent floor-valued inputs as constant volatility. By using the unconditional mean, our model recovered its original behaviour and in this case the usual leverage effect. 
+
+\subsubsection{Mean Reversion and Volatility Clustering}
 For Figures~\ref{fig:data-property-rolling} and~\ref{fig:data-property-global-rolling}, we're interested in observing the mean reversion process and the volatility clustering on the actual \textit{versus} predicted data. We'll be using the same models and datasets as Figures~\ref{fig:data-property-return} and~\ref{fig:data-property-global-return}. 
 
-Let $m_i(t)$ be stock $i$'s mean of the 252 preceding \emph{observed} valid variances, where $t-j$ indexes valid observations rather than calendar days. For the stocks $S(t)$ included on date $t$, the plotted observed and forecast coordinates are
+Let $m_i(t)$ be stock $i$'s mean of the 252 preceding \emph{observed} valid variances, where $t-j$ indexes valid observations rather than calendar days. For the stocks $S(t)$ included on date $t$, the plotted observed and forecast coordinates are:
 \begin{equation}\label{eq:property-rolling-coordinates}
 \begin{aligned}
 m_i(t)&=\frac{1}{252}\sum_{j=1}^{252}v_i(t-j),\qquad
@@ -1503,7 +1515,11 @@ q(t)&=\log\frac{V(t)}{R(t)},\qquad
 \widehat q(t)=\log\frac{\widehat V(t)}{R(t)}.
 \end{aligned}
 \end{equation}
-where $V(t)$ and $\widehat V(t)$ are the cross-stock variance means in Equation~\ref{eq:property-return-coordinates}. Figure~\ref{fig:data-property-rolling} uses the five shared-date stocks and the saved MLP-80 Global forecasts on 1,760 test dates; pre-2019 observations supply the initial 252-observation references.
+where $V(t)$ and $\widehat V(t)$ are the cross-stock variance means in Equation~\ref{eq:property-return-coordinates}. 
+
+Figure~\ref{fig:data-property-rolling} uses the five shared-date stocks and the saved MLP-80 Global forecasts on 1,760 test dates; pre-2019 observations supply the initial 252-observation references. Zero is the point where $v_i(t) = m_i(t)$. Negative values represents $v_i(t) < m_i(t)$ where positive values $v_i(t) < m_i(t)$.  
+
+We are able to observe both properties here. We have few spikes, periods of low and high variance tend to cluster. Furthermore, each cluster is consistent of spikes which tend to reverse the trend, reverting to the 0. The magnitude of negative spikes go past -2 where positive arrive close to 3.
 
 \begin{figure}[htbp]
 \centering
@@ -1513,7 +1529,7 @@ where $V(t)$ and $\widehat V(t)$ are the cross-stock variance means in Equation~
 \end{figure}
 \FloatBarrier
 
-Figure~\ref{fig:data-property-global-rolling} applies Equation~\ref{eq:property-rolling-coordinates} to the global window-80 dataset with Base LSTM-80 Global forecasts. 
+Figure~\ref{fig:data-property-global-rolling} applies Equation~\ref{eq:property-rolling-coordinates} to the global window-80 dataset with Base LSTM-80 Global forecasts. On this figure, we perceive less pronounced spikes, with negative values reaching -1 and positive values reaching up to 3, but most staying below 1. Moreover, we observe both effects present in the actual and predicted points, similarly to Figure \ref{fig:data-property-rolling}. 
 
 \begin{figure}[htbp]
 \centering
@@ -1523,8 +1539,12 @@ Figure~\ref{fig:data-property-global-rolling} applies Equation~\ref{eq:property-
 \end{figure}
 \FloatBarrier
 
+The models, in Local and Global scope are able to retrieve the data properties expected by variance in financial timeseries. Even while using the models with lowest QLIKE to produce the predicted values, it wasn't able to accurately match the actual demeaned data. We attribute this as difference in metric construction. We build our final error metrics after averaging the individual values per dates and then across the stocks, while on Figures ~\ref{fig:data-property-rolling} and \ref{fig:data-property-global-rolling}, the graphs average the values across stocks first, meaning that overpredictions and underpredictions can cancel themselves before the gap is shown. 
+
 \subsection{Price Reconstruction}
-The objective here is to display a one-day simulated adjusted Close alongside the observed adjusted Close on the 2019--2025 test dates. For stock $i$ and target date $t$, let $O_i(t)$ and $C_i(t)$ be adjusted Open and Close, and set $r_i(t)=\log(C_i(t)/O_i(t))$. Index $t-j$ over the preceding valid observations of that stock. At each target, fit an AR(1) intercept and slope by ordinary least squares on the 251 consecutive lagged pairs from the 252 preceding valid returns, then use the latest observed log return for its conditional mean:
+The objective here is to display a one-day simulated adjusted Close alongside the observed adjusted Close on the 2019--2025 test dates as well as forecasted returns with actual returns. We'll be using the MLP-80 Global for Local test data and Base LSTM-80 Global for Global test data. 
+
+For stock $i$ and target date $t$, let $O_i(t)$ and $C_i(t)$ be adjusted Open and Close, and set $r_i(t)=\log(C_i(t)/O_i(t))$. Index $t-j$ over the preceding valid observations of that stock. At each target, fit an AR(1) intercept and slope by ordinary least squares on the 251 consecutive lagged pairs from the 252 preceding valid returns, then use the latest observed log return for its conditional mean:
 \begin{equation}\label{eq:price-reconstruction-drift}
 \begin{aligned}
 (\widehat a_i(t),\widehat b_i(t))
@@ -1533,41 +1553,25 @@ The objective here is to display a one-day simulated adjusted Close alongside th
 \mu_i(t)&=\widehat a_i(t)+\widehat b_i(t)r_i(t-1).
 \end{aligned}
 \end{equation}
-The target day's return never enters the fit. If the 251 lagged inputs have zero sample variation, set the slope to zero and the intercept to the mean of the 251 dependent returns. The following one-day, post-open simulation is adapted from Equation~\eqref{eq:log-price-diffusion}. Its $\mu_i(t)$ is the fitted conditional adjusted open-to-close \emph{log return}; the forecast $\widehat v_i(t)$ is positive daily, unannualized adjusted Garman--Klass variance:
+The following one-day, post-open simulation is adapted from Equation~\eqref{eq:log-price-diffusion}. Its $\mu_i(t)$ is the fitted conditional adjusted open-to-close \emph{log return}; the forecast $\widehat v_i(t)$ is positive daily, unannualized adjusted Garman--Klass variance:
 \begin{equation}\label{eq:price-reconstruction-simulation}
 \widehat C_i(t)=O_i(t)\exp\!\left(\mu_i(t)+\sqrt{\widehat v_i(t)}\,Z_i(t)\right),
 \qquad Z_i(t)\sim\mathrm N(0,1).
 \end{equation}
-Independent standard-normal shocks use seed 0; a stock-date present in both populations receives the same shock. The red line is a \emph{forecast-conditioned single-draw simulation}: the predicted variance sets its dispersion, while the sampled shock determines one scenario rather than a unique directional point forecast. Stock-dates without 252 preceding valid observations are excluded: zero of 8,800 five-stock forecast rows and 344 of 4,295,773 global forecast rows. WHLR is also excluded from the global price plots: its stored split-adjusted Close exceeds $10^{11}$ USD on some dates, and zero Garman--Klass variance days make it leave and re-enter the model's 80-observation forecast set. Those 1,510 otherwise eligible WHLR rows would dominate the arithmetic cross-stock mean when present. This is a display-population decision only; the saved global model and its evaluation are unchanged. On each date, the blue and red lines average respectively $C_i(t)$ and $\widehat C_i(t)$ across the same remaining stocks.
+This is a \emph{forecast-conditioned single-draw simulation}: the predicted variance sets its dispersion, while the sampled shock determines one scenario rather than a unique forecast. 
 
-Figure~\ref{fig:price-reconstruction-local} uses the five-stock local test subset (AAPL, AMZN, GOOG, NFLX, NVDA) and saved MLP-80 Global variance forecasts. The horizontal axis is test date; the vertical axis is the arithmetic mean adjusted Close in USD per stock. The blue line is the observed mean and the red line is the simulated mean.
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.88\textwidth]{../../imgs/data_properties/local_mlp80_price_reconstruction.png}
-\caption{Five-stock test-date mean adjusted Close: observed (blue) and one-shock simulation using saved MLP-80 Global daily variance forecasts (red).}
-\label{fig:price-reconstruction-local}
-\end{figure}
-\FloatBarrier
+WHLR, XXII, NUWE, ZNB, PPCB, JAGX, XTIA, and CETX are excluded from the global price plot because their retrospectively split-adjusted per-share prices can dominate the cross-stock mean. After a 1-for-100 reverse split, for example, an earlier \$0.50 Close is displayed as approximately \$50 on the new share basis, with repeated reverse splits multiplying this effect \cite{yahooAdjustedClose}. On each date, we average respectively $C_i(t)$ and $\widehat C_i(t)$ across the same remaining stocks before taking the logarithm. We use the log transformation to reduce the effect caused by adjustments along the years.
 
-Figure~\ref{fig:price-reconstruction-global} uses the eligible global equity test cohort excluding WHLR and the saved Base LSTM-80 Global variance model. After the 344 short-history and 1,510 WHLR exclusions, it plots 4,293,919 ticker-dates. The horizontal axis is test date and the vertical axis is the arithmetic mean adjusted Close in USD per stock, shown on a logarithmic scale to accommodate the remaining range of source adjusted price levels. Blue and red retain the observed and simulated meanings, respectively.
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.88\textwidth]{../../imgs/data_properties/global_base_lstm80_price_reconstruction.png}
-\caption{Global equity test-date mean adjusted Close, excluding WHLR, on a logarithmic vertical scale: observed (blue) and one-shock simulation using Base LSTM-80 Global daily variance forecasts (red).}
-\label{fig:price-reconstruction-global}
-\end{figure}
-\FloatBarrier
-
-For the separate log-Close view, first compute the same arithmetic cross-stock mean on each date, then take its natural logarithm. With $S(t)$ denoting the plotted stocks on date $t$, the coordinates are
+For the log-Close view, first compute the arithmetic cross-stock mean on each date, then take its natural logarithm. With $S(t)$ denoting the plotted stocks on date $t$ and adjusted Closes expressed numerically in USD, the coordinates are
 \begin{equation}\label{eq:price-reconstruction-log-mean}
 \begin{aligned}
 \bar C(t)&=\frac{1}{|S(t)|}\sum_{i\in S(t)}C_i(t),
-&L(t)&=\log\!\left(\frac{\bar C(t)}{1\,\mathrm{USD}}\right),\\
+&L(t)&=\log\!\left(\bar C(t)\right),\\
 \widehat{\bar C}(t)&=\frac{1}{|S(t)|}\sum_{i\in S(t)}\widehat C_i(t),
-&\widehat L(t)&=\log\!\left(\frac{\widehat{\bar C}(t)}{1\,\mathrm{USD}}\right).
+&\widehat L(t)&=\log\!\left(\widehat{\bar C}(t)\right).
 \end{aligned}
 \end{equation}
-This transforms the already plotted daily means, preserving the exact stock-date populations; it does not average the individual stocks' log Closes. The vertical axes in Figures~\ref{fig:price-reconstruction-local-log} and~\ref{fig:price-reconstruction-global-log} show $L(t)$ and $\widehat L(t)$ on linear scales, with test date horizontally. Blue remains observed and red remains simulated. The former uses the five-stock MLP-80 Global forecasts; the latter uses the WHLR-excluded global Base LSTM-80 Global forecasts.
+The vertical axes in Figures~\ref{fig:price-reconstruction-local-log} and~\ref{fig:price-reconstruction-global-log} show $L(t)$ and $\widehat L(t)$, with test date horizontally. Blue corresponds to observed and red simulated. The former uses the five-stock subset (AAPL, AMZN, GOOG, NFLX, NVDA) and MLP-80 Global forecasts. The latter uses the global subset excluding the eight stocks named above and Base LSTM-80 Global forecasts.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.88\textwidth]{../../imgs/data_properties/local_mlp80_price_reconstruction_log.png}
@@ -1578,45 +1582,43 @@ This transforms the already plotted daily means, preserving the exact stock-date
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.88\textwidth]{../../imgs/data_properties/global_base_lstm80_price_reconstruction_log.png}
-\caption{Natural log of the global equity test-date arithmetic mean adjusted Close, excluding WHLR: observed (blue) and Base LSTM-80 Global variance-based simulation (red).}
+\caption{Natural log of the global equity test-date arithmetic mean adjusted Close, excluding WHLR, XXII, NUWE, ZNB, PPCB, JAGX, XTIA, and CETX: observed (blue) and Base LSTM-80 Global variance-based simulation (red).}
 \label{fig:price-reconstruction-global-log}
 \end{figure}
 \FloatBarrier
 
-The gross Open-to-Close return view instead divides each stock's adjusted Close by its adjusted Open before averaging. Its global population includes WHLR's 1,510 otherwise eligible ticker-dates; $S(t)$ in the following equation denotes the stocks eligible for the particular return plot. The observed and simulated date coordinates are
+Both plots show an accurate reconstruction of the actual close prices from an overview. When we zoom in, we are able to perceive the difference between actual and predicted. However, it's satifies our expectations of having the predicted path similar to our actual. In order to assess the difference on each day, without the complications of stocks with prices that differ by several orders of magnitude, we will simulate the returns. 
+
+The net Open-to-Close return view instead divides each stock's adjusted Close by its adjusted Open and subtracts one before averaging. The full global test dataset is used. $S(t)$ in the following equation denotes the stocks eligible for the particular return plot. The observed and simulated date coordinates are
 \begin{equation}\label{eq:price-reconstruction-gross-return}
 \begin{aligned}
-G(t)&=\frac{1}{|S(t)|}\sum_{i\in S(t)}\frac{C_i(t)}{O_i(t)},\\
-\widehat G(t)&=\frac{1}{|S(t)|}\sum_{i\in S(t)}\frac{\widehat C_i(t)}{O_i(t)}\\
-&=\frac{1}{|S(t)|}\sum_{i\in S(t)}\exp\!\left(\mu_i(t)+\sqrt{\widehat v_i(t)}Z_i(t)\right).
+R(t)&=\frac{1}{|S(t)|}\sum_{i\in S(t)}\left(\frac{C_i(t)}{O_i(t)}-1\right),\\
+\widehat R(t)&=\frac{1}{|S(t)|}\sum_{i\in S(t)}\left(\frac{\widehat C_i(t)}{O_i(t)}-1\right)\\
+&=\frac{1}{|S(t)|}\sum_{i\in S(t)}\left[\exp\!\left(\mu_i(t)+\sqrt{\widehat v_i(t)}Z_i(t)\right)-1\right].
 \end{aligned}
 \end{equation}
-These dimensionless gross returns equal one when Close equals Open; subtracting one gives the mean net simple return. The operation averages stock-level Close/Open ratios, not a ratio of cross-stock price means. Figures~\ref{fig:price-reconstruction-local-gross} and~\ref{fig:price-reconstruction-global-gross} plot $G(t)$ in blue and $\widehat G(t)$ in red against test date, using respectively the five-stock MLP-80 Global forecasts and the WHLR-inclusive global Base LSTM-80 Global forecasts.
+These dimensionless net simple returns equal zero when Close equals Open.
+
+Figures~\ref{fig:price-reconstruction-local-gross} and~\ref{fig:price-reconstruction-global-gross} plot $R(t)$ in blue and $\widehat R(t)$ in red against test date, using respectively the five-stock MLP-80 Global forecasts and the global Base LSTM-80 Global forecasts.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.88\textwidth]{../../imgs/data_properties/local_mlp80_price_reconstruction_gross_return.png}
-\caption{Five-stock daily mean adjusted Open-to-Close gross return: observed (blue) and MLP-80 Global forecast-conditioned simulation (red).}
+\caption{Five-stock daily mean adjusted Open-to-Close net simple return: observed (blue) and MLP-80 Global forecast-conditioned simulation (red).}
 \label{fig:price-reconstruction-local-gross}
 \end{figure}
 \FloatBarrier
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.88\textwidth]{../../imgs/data_properties/global_base_lstm80_price_reconstruction_gross_return.png}
-\caption{WHLR-inclusive global equity daily mean adjusted Open-to-Close gross return: observed (blue) and Base LSTM-80 Global forecast-conditioned simulation (red).}
+\caption{Global equity daily mean adjusted Open-to-Close net simple return: observed (blue) and Base LSTM-80 Global forecast-conditioned simulation (red).}
 \label{fig:price-reconstruction-global-gross}
 \end{figure}
 \FloatBarrier
-Figure~\ref{fig:price-reconstruction-global-mlp-gross} uses the same WHLR-inclusive global ticker-dates, adjusted Opens, and seed-0 shocks as Figure~\ref{fig:price-reconstruction-global-gross}, replacing only the Base LSTM-80 Global variance forecasts with MLP-80 Global forecasts. Its horizontal axis is test date and its vertical axis is the dimensionless daily mean adjusted Close/Open gross return. Blue is observed and red is the forecast-conditioned simulation.
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.88\textwidth]{../../imgs/data_properties/global_mlp80_price_reconstruction_gross_return.png}
-\caption{WHLR-inclusive global equity daily mean adjusted Open-to-Close gross return: observed (blue) and MLP-80 Global forecast-conditioned simulation (red).}
-\label{fig:price-reconstruction-global-mlp-gross}
-\end{figure}
-\FloatBarrier
+
+As expected, the MLP-80 Global local forecast simulation matched significantly more the actual values compared to the Base LSTM-80 Global global prediction. We believe it's due to the order of errors and a low estimated $\mu_i(t)$. In the Global prediction is $10^{2}$ greater compared to the Local. Furthermore, converting the average implied unconditional log-return means from the rolling AR(1) fits using $\exp(m)-1$ gives daily simple-return equivalents of $4.998\times10^{-4}$ for the five-stock subset and $-7.254\times10^{-4}$ for the full global return subset. The predicted returns are driven mainly by the variance shocks compared to the unconditional mean, supporting our belief. 
 \subsection{Sharpe, Utility and Portfolio Estimation}
 
-We evaluate the ten model variants retained across both five-stock MCS runs with the frictionless realized utility (RU) of Zhang et al. \cite[Section~5.4, Eq.~(21)]{zhang2022}. Each model uses the same 1,760 test dates in 2019--2025 for AAPL, AMZN, GOOG, NFLX, and NVDA, giving 8,800 matched ticker-date observations. Let $O_i(t)$ and $C_i(t)$ be adjusted session prices, $V_i(t)>0$ the saved daily, unannualized adjusted Garman--Klass target, and $\widehat V_{i,m}(t)>0$ model $m$'s saved one-step forecast. The adjusted session net simple return is
+We evaluate the ten model variants retained across both five-stock MCS runs with the frictionless realized utility (RU) of Zhang et al. \cite[Section~5.4, Eq.~(21)]{zhang2022}. Each model uses the same 1,760 test dates in 2019--2025 for AAPL, AMZN, GOOG, NFLX, and NVDA, giving 8,800 matched ticker-date observations. Let $O_i(t)$ and $C_i(t)$ be adjusted session prices, $v_i(t)>0$ the saved daily, unannualized adjusted Garman--Klass target, and $\widehat v_{i,m}(t)>0$ model $m$'s saved one-step forecast. The adjusted session net simple return is
 \begin{equation}\label{eq:utility-return}
 r_i(t)=\exp\!\left(\log\frac{C_i(t)}{O_i(t)}\right)-1.
 \end{equation}
@@ -1628,15 +1630,15 @@ Writing $T_i$ for ticker $i$'s 1,760 shared test dates and $\mathcal I$ for the 
 \begin{equation}\label{eq:utility-sharpe}
 \begin{aligned}
 \overline r&=\frac{1}{|\mathcal I|}\sum_{i\in\mathcal I}\frac{1}{|T_i|}\sum_{t\in T_i}r_i(t),\\
-\overline V&=\frac{1}{|\mathcal I|}\sum_{i\in\mathcal I}\frac{1}{|T_i|}\sum_{t\in T_i}V_i(t),\\
+\overline V&=\frac{1}{|\mathcal I|}\sum_{i\in\mathcal I}\frac{1}{|T_i|}\sum_{t\in T_i}v_i(t),\\
 SR&=\frac{\overline r-r^f}{\sqrt{\overline V}}\approx0.03447937.
 \end{aligned}
 \end{equation}
 With risk aversion $\gamma=2$, our adaptation of Zhang et al.'s Equation~(21) is
 \begin{equation}\label{eq:utility-ru}
 \begin{aligned}
-RU_{i,m}(t)&=\frac{SR^2}{\gamma}\sqrt{\frac{V_i(t)}{\widehat V_{i,m}(t)}}
--\frac{SR^2}{2\gamma}\frac{V_i(t)}{\widehat V_{i,m}(t)},\\
+RU_{i,m}(t)&=\frac{SR^2}{\gamma}\sqrt{\frac{v_i(t)}{\widehat v_{i,m}(t)}}
+-\frac{SR^2}{2\gamma}\frac{v_i(t)}{\widehat v_{i,m}(t)},\\
 \overline{RU}_m&=\frac{100}{5}\sum_{i\in\mathcal I}\frac{1}{|T_i|}\sum_{t\in T_i}RU_{i,m}(t).
 \end{aligned}
 \end{equation}
@@ -1756,6 +1758,7 @@ Counts include fitted coefficients and neural weights and biases, excluding opti
 \bibitem{liu2023} Liu, C., Tran, M.-N., Wang, C., Gerlach, R., and Kohn, R. (2023). Global neural networks and the data scaling effect in financial time series forecasting. arXiv:2309.02072.
 \bibitem{zhang2022} Zhang, C., Zhang, Y., Cucuringu, M., and Qian, Z. (2022). Volatility forecasting with machine learning and intraday commonality. arXiv:2202.08962.
 \bibitem{ycharts10y} YCharts. (n.d.). 10 Year Treasury Rate. Long Term Average: 4.26\%. \url{https://ycharts.com/indicators/10_year_treasury_rate}.
+\bibitem{yahooAdjustedClose} Yahoo Finance Help. (n.d.). What is the adjusted close? \url{https://help.yahoo.com/kb/SLN28256.html}.
 \bibitem{mouti2023} Mouti, S. (2023). Rough volatility: Evidence from range volatility estimators. arXiv:2312.01426.
 \bibitem{tang2023} Tang, S. H., Rosenbaum, M., and Zhou, C. (2023). Forecasting volatility with machine learning and rough volatility: Example from the crypto-winter. arXiv:2311.04727.
 \bibitem{rodikov2022} Rodikov, G., and Antulov-Fantulin, N. (2022). Volatility-inspired $\sigma$-LSTM cell. arXiv:2205.07022.

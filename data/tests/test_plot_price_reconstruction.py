@@ -87,5 +87,10 @@ def test_show_saved_plots():
               patch.object(plt, 'switch_backend'), patch.object(plt, 'show') as show):
             main()
             assert len(plt.get_fignums()) == 7
+            for figure_number in (3, 6):
+                ax = plt.figure(figure_number).axes[0]
+                np.testing.assert_allclose(ax.lines[0].get_ydata(), [0.01])
+                np.testing.assert_allclose(ax.lines[1].get_ydata(), [0.02])
+                np.testing.assert_allclose(ax.lines[2].get_ydata(), [0., 0.])
             show.assert_called_once()
     plt.close('all')

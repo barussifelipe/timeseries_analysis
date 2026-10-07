@@ -26,11 +26,14 @@
 14. Add a global gross-return plot using the fitted MLP-80 Global variance model. Match the global Base LSTM-80 return plot's eligible ticker-dates, adjusted Opens, drift, and shocks. This changes only the simulated line's variance forecast.
 15. Include WHLR's 1,510 eligible ticker-dates in both global gross-return plots while continuing to exclude it from global adjusted Close and log-mean Close plots. The return plot populations therefore differ from the price plot population; both return models still use identical observations.
 16. Apply the rolling AR(1) drift in decision 3 to all seven reconstructed views at the user's request. The variance models, target populations, adjusted prices, and seed-0 shocks stay fixed; simulated prices and gross returns change. This is a forecast-time rolling fit, not a retraining of the saved variance models.
+17. Exclude XXII's 1,760 eligible test ticker-dates from the global adjusted Close mean and its direct log-of-mean transform, alongside WHLR. Keep the 1,760 dates and 4,292,159 remaining stock-dates matched across both displays. Its very large retrospectively split-adjusted prices dominate the prior arithmetic price mean; this is a descriptive display decision, not a change to training, validation, saved forecasts, scored evaluations, or global gross-return plots. Refresh the standalone mean-of-stock-logs inspection on the same revised population.
+18. Show only the two log-of-daily-mean adjusted Close figures in the thesis; omit the two raw-price figures while retaining their saved CSVs and PNGs as audit artifacts. Write the log coordinates as `log(mean Close)` using numeric adjusted Close values in USD, without the explicit `1 USD` divisor. The coordinates, stock-date populations, model outputs, and gross-return figures remain unchanged; the log figures become Figures 6.29 and 6.30.
+19. Exclude NUWE, ZNB, PPCB, JAGX, XTIA, and CETX as well as WHLR and XXII from Figure 6.30's descriptive global price population. The six additional exclusions remove 8,992 stock-dates, leaving 4,283,167 on the same 1,760 dates. Rebuild its log-of-arithmetic-mean PNG and CSV from the saved variance fit and revise the thesis explanation of retrospective reverse-split adjustments. Leave the return figures, trained models, and scored evaluations unchanged.
 
 ## Plot and thesis work
 
 - Add `data/plot_price_reconstruction.py` and save seven PNGs and seven date-level CSVs under `imgs/data_properties/`.
-- Add displayed definitions and seven figure descriptions in Section 6.6. State axes, populations, models, and line meanings without interpretation, and document the WHLR diagnostic exclusion.
+- Add displayed definitions and five retained figure descriptions in Section 6.6. State axes, populations, models, and line meanings without interpretation, and document the WHLR and XXII diagnostic exclusions.
 - Record the observed exclusion counts and next task in `CONTEXT.md`.
 
 ## Verification
@@ -38,7 +41,7 @@
 - Check a small two-ticker example for rolling AR(1) OLS agreement, target-day exclusion, preceding-only 252-valid-observation windows, ticker boundaries, invalid-price rejection, key alignment, shared shocks, and equal plotted populations.
 - Run the script on saved artifacts; reconcile each CSV count with forecast and exclusion counts.
 - Check `log(mean Close)` against a known two-stock example and confirm that the two log CSVs retain the price-level date counts.
-- Check that mean ticker-level Close/Open differs from mean Close divided by mean Open on a two-stock example, and that the global return CSV counts exceed the global price CSV counts by the eligible WHLR rows.
+- Check that mean ticker-level Close/Open differs from mean Close divided by mean Open on a two-stock example, and that the global return CSV counts exceed the global price CSV counts by the eligible rows of all eight excluded stocks.
 - Match every date and stock count in the new global MLP-80 gross-return CSV to the global Base LSTM-80 gross-return CSV; confirm their actual lines match and their simulated lines use the same shocks.
 - Compile `thesis_structure.tex` twice in place with `pdflatex -synctex=1`.
 - Obtain fresh-context cold review, validate its JSON, and resolve findings.

@@ -1,0 +1,27 @@
+{
+  "task": "Use lowercase v_i(t) and forecast v-hat_{i,m}(t) for individual Garman-Klass variances throughout Section 6.7, consistent with the residual-structure notation, while retaining aggregate overline V.",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/validate.py",
+    "ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf (pdftotext extract of Section 6.7)",
+    "ref/final_report/thesis_structure.synctex.gz (file metadata)",
+    "git diff -- ref/final_report/thesis_structure.tex",
+    "git status --short"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

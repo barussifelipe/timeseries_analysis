@@ -22,6 +22,9 @@ def test_target_references():
                            ticker_names=['A', 'B'])
     result = target_references(frame, data, {'A': 1, 'B': 1})
     np.testing.assert_allclose(result, [126.5, 127.5, 226.5, 227.5])
+    updated = target_references(frame, data, {'A': 1, 'B': 1}, [999, 888, 777, 666])
+    np.testing.assert_allclose(updated, [126.5, 127.5 + (999 - 253) / 252,
+                                        226.5, 227.5 + (777 - 353) / 252])
 
     short = pd.DataFrame({'Ticker': pd.Categorical(['C'] * 82),
                           'Date': pd.date_range('2019-01-01', periods=82),

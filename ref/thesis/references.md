@@ -205,7 +205,22 @@ independently verified; confirm the thesis year and publication details before s
 
 ## Price reconstruction source
 
+- Yahoo Finance Help. (n.d.). *What is the adjusted close?* (reverse-split multiplier applied to pre-split prices): https://help.yahoo.com/kb/SLN28256.html
+
 - Wheeler Real Estate Investment Trust, Inc. (2025). *2024 Form 10-K*, Reverse Stock Splits note (August 2023, May/June/September/November 2024, and January 2025 splits): https://www.sec.gov/Archives/edgar/data/1527541/000152754125000038/whlr-20241231.htm
+
+- 22nd Century Group, Inc. (2025). *2024 Form 10-K*, Reverse Stock Split note (July 2023; April and December 2024): https://www.sec.gov/Archives/edgar/data/1347858/000155837025003345/xxii-20241231x10k.htm
+
+- 22nd Century Group, Inc. (2026). *2025 Form 10-K*, Reverse Stock Split note (April and December 2024; June 2025; January 2026): https://www.sec.gov/Archives/edgar/data/1347858/000110465926034814/xxii-20251231x10k.htm
+
+- Nasdaq Trader (2026). *Equity Corporate Actions Alert #2026-396* (XXII 1-for-20 reverse split effective June 12, 2026): https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-396
+
+- Nuwellis, Inc. (2024). *Form 8-K*, 1-for-35 reverse split effective June 27, 2024: https://www.sec.gov/Archives/edgar/data/1506492/000114036124031389/ef20031638_8k.htm
+- Zeta Network Group (2025). *Prospectus*, 1-for-25 reverse split and ADD-to-ZNB ticker change effective August 22, 2025: https://www.sec.gov/Archives/edgar/data/1747661/000121390025097615/ea0260776-424b5_zeta.htm
+- Propanc Biopharma, Inc. (2025). *Prospectus*, 1-for-60,000 reverse split processed January 29, 2025: https://www.sec.gov/Archives/edgar/data/1517681/000164117225024617/form424b3.htm
+- Jaguar Health, Inc. (2025). *2024 Form 10-K*, 1-for-60 in May 2024 and 1-for-25 in March 2025: https://www.sec.gov/Archives/edgar/data/1585608/000095017025047184/jagx-20241231.htm
+- XTI Aerospace, Inc. (2025). *2024 Form 10-K*, 1-for-100 in March 2024 and 1-for-250 in January 2025: https://www.sec.gov/Archives/edgar/data/1529113/000121390025032213/ea0235307-10k_xtiaerospace.htm
+- Cemtrex, Inc. (2025). *2025 Form 10-K*, 1-for-60 and 1-for-35 in 2024 and 1-for-15 in September 2025: https://www.sec.gov/Archives/edgar/data/1435064/000149315225029383/form10-k.htm
 
 ## Descriptive shape statistics
 

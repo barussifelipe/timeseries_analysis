@@ -19,8 +19,9 @@ from models.training_blocks import TimeSeriesDataset
 
 PLOTS = (
     ('local_mlp80_price_reconstruction', 'Five-stock adjusted Close simulation | MLP-80 Global'),
-    ('global_base_lstm80_price_reconstruction', 'Global equity adjusted Close simulation (excluding WHLR) | Base LSTM-80 Global'),
+    ('global_base_lstm80_price_reconstruction', 'Global adjusted Close | Base LSTM-80 Global | eight stocks excluded'),
 )
+PRICE_EXCLUSIONS = ('WHLR', 'XXII', 'NUWE', 'ZNB', 'PPCB', 'JAGX', 'XTIA', 'CETX')
 MLP_GLOBAL = ('global_mlp80_price_reconstruction_gross_return',
               'Global equity adjusted Close simulation (including WHLR) | MLP-80 Global | gross Open-to-Close return')
 
@@ -138,26 +139,28 @@ def daily_gross_returns(values):
     return result
 
 
-def plot(values, path, title, log_y=False, log_values=False, gross_returns=False):
+def plot(values, path, title, log_values=False, gross_returns=False, net_returns=False):
     fig, ax = plt.subplots(figsize=(10, 5))
     actual = 'actual_gross_return' if gross_returns else 'log_actual_mean_close' if log_values else 'actual_close'
     simulated = ('simulated_gross_return' if gross_returns else
                  'log_simulated_mean_close' if log_values else 'simulated_close')
-    ax.plot(values.index, values[actual], color='#236c93', lw=.8,
-            label=('Actual adjusted Close/Open' if gross_returns else
+    offset = 1 if net_returns else 0
+    ax.plot(values.index, values[actual] - offset, color='#236c93', lw=.8,
+            label=('Actual net simple return' if net_returns else
+                   'Actual adjusted Close/Open' if gross_returns else
                    'Log actual mean adjusted Close' if log_values else 'Actual adjusted Close'))
-    ax.plot(values.index, values[simulated], color='#bc4b2f', lw=.8,
-            label=('Simulated adjusted Close/Open' if gross_returns else
+    ax.plot(values.index, values[simulated] - offset, color='#bc4b2f', lw=.8,
+            label=('Simulated net simple return' if net_returns else
+                   'Simulated adjusted Close/Open' if gross_returns else
                    'Log simulated mean adjusted Close' if log_values else
                    'Simulated adjusted Close (one shock per stock-date)'))
-    if log_y:
-        ax.set_yscale('log')
     if gross_returns:
-        ax.axhline(1, color='#555555', lw=.6)
+        ax.axhline(0 if net_returns else 1, color='#555555', lw=.6)
     ax.set(xlabel='Test target date',
-           ylabel=('Mean adjusted Close/Open (gross return)' if gross_returns else
-                   'Log(mean adjusted Close / USD)' if log_values else
-                   'Mean adjusted Close (USD per stock' + (', log scale)' if log_y else ')')),
+           ylabel=('Mean net Open-to-Close return' if net_returns else
+                   'Mean adjusted Close/Open (gross return)' if gross_returns else
+                   'Log(mean adjusted Close)' if log_values else
+                   'Mean adjusted Close (USD per stock)'),
            title=title)
     ax.legend()
     ax.grid(alpha=.2)
@@ -176,18 +179,30 @@ def main():
                         help='open price, log-mean, and gross-return plots from saved CSVs')
     parser.add_argument('--mean-log-only', action='store_true',
                         help='save inspection-only global mean-of-stock-logs view')
+    parser.add_argument('--global-price-only', action='store_true',
+                        help='regenerate only the global price and log-mean figures')
+    parser.add_argument('--net-figures-only', action='store_true',
+                        help='redraw the five-stock and global net-return figures from saved gross-return CSVs')
     args = parser.parse_args()
+
+    if args.net_figures_only:
+        for name, title in PLOTS:
+            values = pd.read_csv(args.output / f'{name}_gross_return.csv', parse_dates=['date']).set_index('date')
+            plot(values, args.output / f'{name}_gross_return.png',
+                 title.replace(' | eight stocks excluded', '') + ' | net Open-to-Close return',
+                 gross_returns=True, net_returns=True)
+        return
 
     if args.show:
         plt.switch_backend('TkAgg')
         for name, title in PLOTS:
             for suffix in ('', '_log', '_gross_return'):
                 values = pd.read_csv(args.output / f'{name}{suffix}.csv', parse_dates=['date']).set_index('date')
-                plot(values, None, (title.replace('excluding WHLR', 'including WHLR')
+                plot(values, None, (title.replace(' | eight stocks excluded', '')
                                     if suffix == '_gross_return' else title) + (' | log of daily mean' if suffix == '_log' else
-                                            ' | gross Open-to-Close return' if suffix else ''),
-                     log_y=name.startswith('global_') and not suffix,
-                     log_values=suffix == '_log', gross_returns=suffix == '_gross_return')
+                                            ' | net Open-to-Close return' if suffix else ''),
+                     log_values=suffix == '_log', gross_returns=suffix == '_gross_return',
+                     net_returns=suffix == '_gross_return')
         values = pd.read_csv(args.output / f'{MLP_GLOBAL[0]}.csv', parse_dates=['date']).set_index('date')
         plot(values, None, MLP_GLOBAL[1], gross_returns=True)
         plt.show()
@@ -225,7 +240,7 @@ def main():
             raise ValueError('global forecast target alignment failed')
         mask = usable[sl]
         chunks.append(pd.DataFrame({'date': batch_dates[mask], 'open': opened[sl][mask],
-                                    'price_eligible': tickers[sl][mask] != 'WHLR',
+                                    'price_eligible': ~np.isin(tickers[sl][mask], PRICE_EXCLUSIONS),
                                     'actual_close': closed[sl][mask],
                                     'simulated_close': simulate(opened[sl][mask], predicted[mask],
                                                                 drift[sl][mask], shocks[sl][mask])}))
@@ -237,6 +252,16 @@ def main():
         raise ValueError('global forecast count mismatch')
     global_values = pd.concat(chunks, ignore_index=True)
     global_daily = daily(global_values.loc[global_values.price_eligible])
+    if args.global_price_only:
+        args.output.mkdir(parents=True, exist_ok=True)
+        name, title = PLOTS[1]
+        global_daily.to_csv(args.output / f'{name}.csv')
+        plot(global_daily, args.output / f'{name}.png', title)
+        logged = log_daily_means(global_daily)
+        logged.to_csv(args.output / f'{name}_log.csv')
+        plot(logged, args.output / f'{name}_log.png', title + ' | log of daily mean', log_values=True)
+        print({'plotted': int(global_daily['count'].sum()), 'dates': len(global_daily)})
+        return
     if args.mean_log_only:
         logged = daily_mean_logs(global_values.loc[global_values.price_eligible])
         if not logged['count'].equals(global_daily['count']):
@@ -250,7 +275,7 @@ def main():
         ax.plot(logged.index, logged.mean_log_simulated_close, color='#bc4b2f', lw=.8,
                 label='Mean log simulated adjusted Close')
         ax.set(xlabel='Test target date', ylabel='Mean log(adjusted Close / USD)',
-               title='Global equity adjusted Close (excluding WHLR) | Base LSTM-80 Global | mean of stock logs')
+               title='Global equity adjusted Close (eight split-affected stocks excluded) | Base LSTM-80 Global | mean of stock logs')
         ax.legend()
         ax.grid(alpha=.2)
         fig.tight_layout()
@@ -297,20 +322,21 @@ def main():
     args.output.mkdir(parents=True, exist_ok=True)
     for (name, title), values, gross in zip(PLOTS, (local_daily, global_daily), (local_gross, global_gross)):
         values.to_csv(args.output / f'{name}.csv')
-        plot(values, args.output / f'{name}.png', title, log_y=name.startswith('global_'))
+        plot(values, args.output / f'{name}.png', title)
         logged = log_daily_means(values)
         logged.to_csv(args.output / f'{name}_log.csv')
         plot(logged, args.output / f'{name}_log.png', title + ' | log of daily mean', log_values=True)
         gross.to_csv(args.output / f'{name}_gross_return.csv')
         plot(gross, args.output / f'{name}_gross_return.png',
-             title.replace('excluding WHLR', 'including WHLR') + ' | gross Open-to-Close return',
-             gross_returns=True)
+             title.replace(' | eight stocks excluded', '') + ' | net Open-to-Close return',
+             gross_returns=True, net_returns=True)
     mlp_gross.to_csv(args.output / f'{MLP_GLOBAL[0]}.csv')
     plot(mlp_gross, args.output / f'{MLP_GLOBAL[0]}.png', MLP_GLOBAL[1], gross_returns=True)
     print({'local': {'forecasts': len(local), 'excluded_short_history': len(local) - len(complete),
                      'plotted': len(complete), 'dates': len(local_daily)},
            'global': {'forecasts': len(targets), 'excluded_short_history': int((~np.isfinite(drift)).sum()),
                       'excluded_whlr_from_price': int((usable & (tickers == 'WHLR')).sum()),
+                      'excluded_xxii_from_price': int((usable & (tickers == 'XXII')).sum()),
                       'plotted_price': int(global_daily['count'].sum()),
                       'plotted_gross_return': int(global_gross['count'].sum()), 'dates': len(global_daily),
                       'stocks_per_date': (int(global_daily['count'].min()), int(global_daily['count'].max()))}})

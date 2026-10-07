@@ -23,7 +23,7 @@ def preceding_reference(variance, window=WINDOW):
     return pd.Series(variance).shift().rolling(window, min_periods=window).mean().to_numpy()
 
 
-def series(database, forecasts):
+def series(database, forecasts, forecast_reference=False):
     saved = pd.read_csv(forecasts)
     saved = saved.loc[saved.candidate == MODEL, ['ticker', 'date', 'actual', 'predicted']].copy()
     if (len(saved) != 8800 or saved.duplicated(['ticker', 'date']).any()
@@ -48,7 +48,12 @@ def series(database, forecasts):
                 raise ValueError(f'{ticker}: no positive pre-2016 variance')
             observed['variance'] = observed.RawVariance.mask(observed.RawVariance == 0, train.min())
             observed['preceding_return'] = observed.IntradayLogReturn.shift()
-            observed['reference'] = preceding_reference(observed.variance.to_numpy())
+            reference_values = observed.variance.copy()
+            if forecast_reference:
+                ticker_forecasts = saved.loc[saved.ticker == ticker].set_index('date').predicted
+                forecast_values = observed.Date.map(ticker_forecasts)
+                reference_values = forecast_values.fillna(reference_values)
+            observed['reference'] = preceding_reference(reference_values.to_numpy())
             selected = saved.loc[saved.ticker == ticker].merge(
                 observed[['Date', 'variance', 'preceding_return', 'reference']],
                 left_on='date', right_on='Date', validate='one_to_one', how='left').sort_values('date')
