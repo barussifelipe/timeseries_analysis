@@ -7,6 +7,8 @@
 \usepackage{longtable}
 \usepackage{array}
 \usepackage{placeins}
+\definecolor{sapred}{rgb}{0.5098039,0.1411765,0.2}
+\setcounter{tocdepth}{3}
 \setlength{\LTcapwidth}{\textwidth}
 \makeatletter
 \let\thesis@LTmakecaption\LT@makecaption
@@ -17,17 +19,69 @@
 \numberwithin{figure}{section}
 
 \title{Volatility Forecasting: A Statistical and Deep Learning Approach}
-\author{}
+\author{Felipe Sant' Anna Barussi}
 \date{}
 
 \begin{document}
 
-\maketitle
+\begin{titlepage}
+\thispagestyle{empty}
+\sffamily
+\noindent\includegraphics[width=5cm]{../sapthesis/sapienzalogo.pdf}
+
+\vspace*{3cm}
+\noindent\hspace*{1.5cm}\begin{minipage}{\dimexpr\textwidth-1.5cm\relax}
+{\LARGE\color{sapred}Volatility Forecasting: A Statistical and Deep Learning Approach\par}
+\end{minipage}
+
+\vfill
+\noindent\hspace*{1.5cm}\begin{minipage}{\dimexpr\textwidth-1.5cm\relax}
+{\color{sapred}Facolt\`a di Ingegneria dell'Informazione, Informatica e Statistica\\[1mm]
+Corso di Laurea in Applied Computer Science and Artificial Intelligence\par}
+
+\vspace{9mm}
+
+
+\vspace{9mm}
+\begin{minipage}[t]{0.48\linewidth}
+Advisor\\[1mm]
+Prof. Enrico Tronci\\[12mm]
+\rule{5cm}{0.4pt}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\linewidth}
+Student ID 2109113\\[1mm]
+Felipe Sant' Anna Barussi\\[12mm]
+\rule{5cm}{0.4pt}
+\end{minipage}
+
+\vspace{14mm}
+Academic Year 2025/2026
+\end{minipage}
+\end{titlepage}
+
+\begin{titlepage}
+\thispagestyle{empty}
+\sffamily
+\vspace*{\fill}
+\noindent\hrulefill\par\vspace{2mm}
+\noindent\textbf{Volatility Forecasting: A Statistical and Deep Learning Approach}\\[1mm]
+Felipe Sant' Anna Barussi\\[1mm]
+\copyright\ 2026 Felipe Sant' Anna Barussi\\[2mm]
+This thesis was typeset with \LaTeX~and sapthesis class.\\[2mm]
+\texttt{santannabarussi.2109113@studenti.uniroma1.it}
+\end{titlepage}
+
+\pagenumbering{roman}
+\addcontentsline{toc}{section}{Abstract}
 
 \begin{abstract}
-% Maximum one page. Write this section last.
+This thesis compares statistical and machine-learning methods for one-step forecasts of daily, unannualized adjusted Garman--Klass variance. The equity sample contains 2,714 NYSE and NASDAQ tickers. Models are fitted globally and separately for five selected stocks, with 20- and 80-observation input windows. Saved forecasts from the 2019--2025 test period are evaluated using MAE, MASE, MSE, RMSE, and QLIKE. On the larger global evaluation cohorts, MLP-80 has the lowest MAE and MASE, and Base LSTM-80 the lowest QLIKE. On 8,800 matched forecasts for the five selected stocks, SARIMA Local has the lowest MAE and MASE, while MLP-80 Global has the lowest MSE, RMSE, and QLIKE. Equity-trained global models are also evaluated without refitting on five cryptocurrencies using daily Garman--Klass variance and intraday realized variance. Ten variants are retained in the intersection of the five stock-level QLIKE model confidence sets, but retention does not identify a winner. Their no-cost utility values are close. Overall, model rankings depend on the metric and evaluation population, while a universal best model and realized portfolio benefit remain unestablished.
 \end{abstract}
 
+\clearpage
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
 
 \section{Introduction}
 % Write this section last.
@@ -848,7 +902,7 @@ Training batches are shuffled, while observations within each input sequence ret
 
 QLIKE is the neural training objective except for the selected SiLU-LSTM configuration, which uses MSE on direct variance outputs. Log-variance outputs are mapped back to variance before interpreting the loss. QLIKE, MSE, RMSE, MAE and MASE are the evaluation metrics for comparison. 
 
-Earlier SiLU-LSTM trials with QLIKE exhibited numerical instability, including rejected nonfinite or nonpositive validation forecasts. Elfwing, Uchibe, and Doya~\cite{elfwing2017} demonstrated that  $dSiLU(z)$ when large positive $z$, approaches 1, whereas $dtanh(z)$ approaches zero. Repeated recurrent transformations can therefore preserve sensitivity or, conditionally on learned weights and gate values, amplify it; amplification is not guaranteed. The successful SiLU configuration also changes the input from log volatility to variance and the output from log variance to direct variance, so its stability cannot be attributed solely to switching the loss.
+Earlier SiLU-LSTM trials with QLIKE exhibited numerical instability, including rejected nonfinite or nonpositive validation forecasts, which led to using MSE as objective loss function. Elfwing, Uchibe, and Doya~\cite{elfwing2017} demonstrated that  $dSiLU(z)$ when large positive $z$, approaches 1, whereas $dtanh(z)$ approaches zero. Repeated steps may preserve the effect of earlier inputs, and some learned weights and gate settings may increase that effect. The successful SiLU configuration also changes the input from log volatility to variance and the output from log variance to direct variance, so its stability cannot be attributed solely to switching the loss.
 
 \subsection{Evaluation Setup}
 
@@ -1076,7 +1130,7 @@ Overall, our global models possesses the ability of generalizing to unseen tartg
 \subsection{Model Statistical Significance}
 As described in Section 2.5, we compare all 30 distinct local and global candidates on the same 1,760 test observations per stock using QLIKE and a 90\% model confidence set. We run the procedure separately with moving bootstrap blocks of 20 and 80 retained observations. Both comparisons include the 20- and 80-observation forecast variants. 
 
-Each stock produces its own final set. Table~\ref{tab:mcs-cross-window} reports its size under each block length and the models appearing in only one of those sets. The intersection across the five stock-level final sets is identical for \emph{both} block lengths: Base LSTM-20 Global; Base LSTM-80 Global; Base LSTM-80 Local; HARNet-20 Global; HARNet-80 Global; HARNet-80 Local; MLP-20 Global; MLP-80 Global; RFSV-20 Local; and RFSV-80 Local. Retention means the procedure did not reject a model from the remaining set at the chosen level. We'll be focusing further analysis on this subset of models.
+Each stock produces its own final set. Table~\ref{tab:mcs-cross-window} reports its size under each block length and the models appearing in only one of those sets. The intersection across the five stock-level final sets is identical for \emph{both} block lengths: Base LSTM-20 Global; Base LSTM-80 Global; Base LSTM-80 Local; HARNet-20 Global; HARNet-80 Global; HARNet-80 Local; MLP-20 Global; MLP-80 Global; RFSV-20 Local; and RFSV-80 Local. Eight are ML models, and two are statistical RFSV models. Six are Global and four are Local. Retention means the procedure did not reject a model from the remaining set at the chosen level. We'll be focusing further analysis on this subset of models.
 
 \begin{table}[htbp]
 \centering
@@ -1718,10 +1772,48 @@ Counts include fitted coefficients and neural weights and biases, excluding opti
 \clearpage
 
 \section{Conclusions}
-\subsection{Results}
-\subsection{Limitations}
-\subsection{Further Work}
+This thesis reviews statistical and machine-learning approaches to volatility forecasting and compares their saved one-step forecasts of daily, unannualized adjusted Garman--Klass variance. The equity study draws on a 2,714-ticker NYSE and NASDAQ filter, with a matched comparison for NVDA, AAPL, NFLX, GOOG, and AMZN over the 2019--2025 test period (Section~3.1). The historical and methodological review provides the context for interpreting these empirical results.
 
+\subsection{Results}
+The comparison uses MAE, MASE, MSE, RMSE, and QLIKE on saved local and global forecasts. Where applicable, models use 20 or 80 preceding valid observations. Table~\ref{tab:global-results} evaluates the larger global cohort on 4,479,681 eligible targets per window-20 row and 4,295,773 per window-80 row. Table~\ref{tab:matched-results} instead evaluates every local/global variant on the same 8,800 five-stock ticker-date targets (1,760 dates per stock). 
+
+\begin{enumerate}
+    \item \textbf{QLIKE and forecast stability.} Extremely small positive forecasts can dominate QLIKE even when squared-error scores remain ordinary, exposing underprediction.
+    \item \textbf{Input-window length.} Models with 80-observation inputs tend to score better than their 20-observation counterparts in the global evaluation (Table~\ref{tab:global-results}).
+    \item \textbf{Local and global rankings.} Several local variants improve on their global counterpart on the matched five-stock targets.
+    \item \textbf{Transfer to cryptocurrencies.} The equity-trained fits have larger error magnitude order on crypto than on the five stocks and global data (Tables~\ref{tab:crypto-results}, ~\ref{tab:matched-results}, ~\ref{tab:global-results}). We hypothesize that intraday realized variance may better capture crypto's continuous trading than daily Garman--Klass variance. 
+    \item \textbf{Model confidence sets.} Six of the ten variants are global and four are local, whereas eight are ML models and two statistical. 
+    \item \textbf{Residual structure.} The ten retained variants show broadly similar residual timelines and distributions in the residual analysis. 
+    \item \textbf{Conditional data-property plots.} The signed-return bins, synthetic News Impact Curves, and rolling-reference plots show that some saved forecasts respond to return shocks with a leverage effect and track parts of the observed clustering and reversion patterns (Figures~\ref{fig:data-property-return}, \ref{fig:data-property-nic}, \ref{fig:data-property-nic-mean}, and~\ref{fig:data-property-rolling}). 
+    \item \textbf{Price and return simulations.} The simulated adjusted Close paths follow a similar broad visual direction to the observed paths (Figures~\ref{fig:price-reconstruction-local-log} and~\ref{fig:price-reconstruction-global-log}). The five-stock return simulation appears closer to the observed returns than the global simulation (Figures~\ref{fig:price-reconstruction-local-gross} and~\ref{fig:price-reconstruction-global-gross}). We believe the larger global gaps in the returns reflect its higher error scale and small estimated mean return, leaving sampled variance shocks more influential. 
+    \item \textbf{Realized utility.} The small differences in utility across the 10 model variants do not establish realized portfolio benefit for a single model. 
+    \item \textbf{Parameter budgets.} Table~\ref{tab:parameter-combinations} illustrates the storage and potential combination-space incentive for global fits.
+    \item \textbf{Overall Choice.} Across the reported metrics, populations, MCS results, and utility calculation, no variant is established as best overall. We believe dataset and proxy differences remain responsible for significant ranking changes.
+\end{enumerate}
+
+
+\subsection{Limitations}
+The following limits constrained the expected outcomes of our work.
+\begin{enumerate}
+    \item \textbf{Exchange-symbol selection.} The NYSE and NASDAQ lists provide candidate symbols rather than historical market indices. NYSE share-class and instrument-name filters differ from NASDAQ rules. Converting the indexes for yfinance notation was not fully accurate. 
+    \item \textbf{Observation validity and adjusted prices.} Missing or nonfinite OHLCV, nonpositive prices, inconsistent high/low bounds, and invalid variance remove observations or usable windows. The equity proxy uses vendor-adjusted OHLC, whose adjustments and source history can affect levels and simulated adjusted prices.
+    \item \textbf{Variance proxies and transfer.} We do not have the equity intraday observations needed for the RV proxy used here for crypto (Section~3.1) or for intraday RV measures in prior studies~\cite{reisenhofer2022,zhang2022}.
+    \item \textbf{Fitting and decision scope.} The computational power we had available for evaluating hyperparameter decisions and fitting models was not sufficient for a comprehensive comparison of hyperparameters within models or for extensive training beyond 20 epochs. (Section~5.2). 
+\end{enumerate}
+
+\subsection{Further Work}
+These are proposed extensions; none is evaluated in the present results.
+\begin{enumerate}
+    \item \textbf{Additional model families.} Test alternative fractional and HAR models, $\sigma$-LSTM, and selected fine-tuned or zero-shot Transformers-based models under the same target, split, and observation keys. 
+    \item \textbf{Proprietary Architecture.} Explore different architectural choices and develop our own model for the current dataset, focused on improving the baseline values established now. 
+    \item \textbf{QLIKE stability.} Diagnose extreme forecast-to-target ratios and gradient behavior in SiLU-LSTM and other unstable fits. Assess training-only winsorization, scaling, and positive forecast floors with their effects on every reported metric and ranking.
+    \item \textbf{Broader statistical comparison.} Extend the MCS procedure to the global models evaluated in Table~\ref{tab:global-results}. 
+    \item \textbf{Comparable variance proxies.} Obtain suitably adjusted equity intraday observations, then compare daily Garman--Klass and realized-variance targets on matched ticker-dates while holding other evaluation choices fixed. 
+    \item \textbf{Reverse transfer and practical use.} Test crypto-trained fits on equity targets with a matched proxy and horizon. 
+\end{enumerate}
+
+\clearpage
+\addcontentsline{toc}{section}{References}
 \begin{thebibliography}{99}
 \bibitem{bernhardt1987crash} Bernhardt, D., and Eckblad, M. (n.d.). Stock market crash of 1987. \emph{Federal Reserve History}. \url{https://www.federalreservehistory.org/essays/stock-market-crash-of-1987}.
 \bibitem{weinberg2008crisis} Weinberg, J. (n.d.). The Great Recession and its aftermath. \emph{Federal Reserve History}. \url{https://www.federalreservehistory.org/essays/great-recession-and-its-aftermath}.
