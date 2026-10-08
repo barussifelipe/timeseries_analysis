@@ -7,6 +7,9 @@
 \usepackage{longtable}
 \usepackage{array}
 \usepackage{placeins}
+\renewcommand{\topfraction}{.85}
+\renewcommand{\floatpagefraction}{.75}
+\renewcommand{\textfraction}{.1}
 \definecolor{sapred}{rgb}{0.5098039,0.1411765,0.2}
 \setcounter{tocdepth}{3}
 \setlength{\LTcapwidth}{\textwidth}
@@ -90,15 +93,15 @@ This thesis compares statistical and machine-learning methods for one-step forec
 % Briefly describe the context of the work.
 % Example: All human beings need food to survive.
 
-Modern share trading is often traced to Amsterdam in 1602, when the Dutch East India Company issued transferable shares and investors began trading them with one another \cite{euronext2015}. At that point in time, it originated the possibility to earn money by buying the paper at a lower price, hoping that the company would grow with its expansion. Or, if someone had privileged information, e.g. a failed expedition or a sucessfull one, would be in a better position than the others, being able to sell its position before it loses value or buy more before it gets a higher price.
+Modern share trading is often traced to Amsterdam in 1602, when the Dutch East India Company issued transferable shares and investors began trading them with one another \cite{euronext2015}. At that point in time, it originated the possibility to earn money by buying the paper at a lower price, hoping that the company would grow with its expansion. Or, if someone had privileged information, e.g. a failed expedition or a successful one, would be in a better position than the others, being able to sell its position before it loses value or buy more before it gets a higher price.
 
-The desire to obtain and interpret information that may affect stock prices remains central to financial markets. Services such as the Bloomberg Terminal give investors rapid access to news and data \cite{bloombergterminal}, while some traders use direct exchange feeds when even small delays matter \cite{nasdaqtotalview}. If you receive the information before every player, you have a leverage over them and can position yourself in a benefitial way. Jim Simons, the founder of Renaissance Technologies, whose fund Medallion had an average annual return of 66\% before investor fees, started his trading using news in early human trading decisions, before passing to models who studies historical market data as stated by Gregory Zuckerman in his Jim Simons biography, \emph{The Man Who Solved the Market} \cite{zuckerman2019}.
+The desire to obtain and interpret information that may affect stock prices remains central to financial markets. Services such as the Bloomberg Terminal give investors rapid access to news and data \cite{bloombergterminal}, while some traders use direct exchange feeds when even small delays matter \cite{nasdaqtotalview}. If you receive the information before every player, you have an advantage over them and can position yourself in a beneficial way. Jim Simons, the founder of Renaissance Technologies, whose fund Medallion had an average annual return of 66\% before investor fees, started his trading using news in early human trading decisions, before moving to models that study historical market data as stated by Gregory Zuckerman in his Jim Simons biography, \emph{The Man Who Solved the Market} \cite{zuckerman2019}.
 
 As competition for information increases, the opportunity to profit from that same information decreases. Fama's efficient-market hypothesis states that prices reflect available information; in its weak form, this includes information in past prices \cite{fama1970}. An efficient market is one where prices adjust quickly enough to available information such that an investor cannot reliably earn extra returns from it after accounting for risk and trading costs. Historical prices can still be studied for candidate patterns, but market efficiency gives no reason to assume that those patterns will yield profits. As described by Zuckerman, Simons searched historical price data for recurring patterns \cite{zuckerman2019}.
 
-A historical data is known as a time series. Time series analysis has been a widely explored field in statistics and ML (Machine Learning). Statistical analysis is focused on understanding the properties of the data (stationarity, mean reversion, seasonality, trend, cycles, etc.) and creating a model, based on such characteristics that sucessfully explains the movements observed in such data. ML, in the meanwhile, is interested in creating a model that efficiently explains the data without effectively needing its traits. 
+A historical dataset of observations over time is known as a time series. Time series analysis has been a widely explored field in statistics and ML (Machine Learning). Statistical analysis is focused on understanding the properties of the data (stationarity, mean reversion, seasonality, trend, cycles, etc.) and creating a model based on such characteristics that successfully explains the movements observed in such data. ML, meanwhile, is interested in creating a model that efficiently explains the data without effectively needing its traits. 
 
-\subsubsection{Stastical Models}
+\subsubsection{Statistical Models}
 An early landmark of time series statistical modelling is Yule's 1927 autoregressive analysis, where the current value depends on past values \cite{yule1927}. In 1927, Slutsky demonstrated that summing random values can produce smooth, apparently cyclical movements \cite{slutsky1927}, and in 1938, Wold showed that a weakly stationary time series can be split into a predictable component and another represented by current and past shocks \cite{wold1938}. Weak stationarity means a constant mean and finite variance, with covariance depending only on time lag. Both contributions served as foundations for moving-average representations.
 
 Box and Jenkins's 1970 treatment popularized ARIMA (Autoregressive Integrated Moving Average) modeling, combining AR and MA terms with differencing \cite{boxjenkins1970}. In ARIMA(p, d, q), p and q correspond to the orders of AR and MA, respectively, while d is the number of differences used to address some forms of non-stationarity, especially stochastic trends. Their framework also treats seasonal ARIMA models. SARIMA(p, d, q)(P, D, Q)s uses (p, d, q) for the nonseasonal component. Seasonality is a pattern that tends to recur every s observations; for monthly data with a yearly pattern, s = 12. P and Q are the orders of seasonal AR and MA parts, respectively, and D is the number of seasonal differences.
@@ -109,7 +112,7 @@ Volatility often stays elevated for many periods, so ARCH can require many past 
 
 In 2009, Fulvio Corsi presented the HAR (Heterogeneous Autoregressive) model. Market participants act over different time horizons, so realized volatility measured over a day, a week, and a month may help predict future realized volatility \cite{corsi2009}. Corsi drew on the heterogeneous-market hypothesis discussed by Ulrich A. M\"uller et al. in their 1993 working paper \emph{Fractals and Intrinsic Time: A Challenge to Econometricians} \cite{muller1993}.
 
-AR, MA, ARIMA and SARIMA models the conditional mean. HAR presents a Realized-volatility regression. ARCH and GARCH the conditional variance. All shocks were modeled as WN. However, there are models who assume that shocks behaves like a Brownian Motion, mostly in econometry. 
+AR, MA, ARIMA, and SARIMA model the conditional mean. HAR presents a realized-volatility regression. ARCH and GARCH model the conditional variance. All shocks were modeled as WN. However, there are models that assume shocks behave like Brownian motion, mostly in econometrics. 
 
 In 1900, Bachelier modeled speculative price changes using a Brownian-motion precursor \cite{bachelier1900}. In 1959, Osborne studied Brownian behavior in log price changes \cite{osborne1959}. Samuelson's 1965 warrant-pricing model used lognormal asset prices, corresponding to geometric Brownian motion \cite{samuelson1965}. In 1973, Fischer Black and Myron Scholes derived the theoretical price of a European call option on a non-dividend-paying stock under a geometric-Brownian-motion price model \cite{blackscholes1973}. In 1998, Fabienne Comte and Eric Renault presented a continuous-time stochastic-volatility model with long memory \cite{comterenault1998}. Gatheral, Jaisson, and Rosenbaum's 2014 preprint, published in 2018, proposed rough fractional stochastic volatility with a Hurst exponent below one half \cite{gatheral2018}.
 
@@ -124,22 +127,22 @@ In 2001, Breiman presented random forests, which aggregate predictions from rand
 
 Vaswani et al. introduced the Transformer in 2017. Its self-attention relates positions in a sequence without a recurrent pass; autoregressive forecasting additionally requires a causal attention mask \cite{vaswani2017}.
 
-Each of these models have been used to predict returns or volatility even if they are not explicitly built for that reason as a HAR model is, for example, and that's the main reason they are useful. They are not limited to one scope. One of the main benefits of ML models is generality. 
+Each of these models has been used to predict returns or volatility even if it was not explicitly built for that reason as a HAR model is, for example, and that's the main reason they are useful. They are not limited to one scope. One of the main benefits of ML models is generality. 
 
 \subsubsection{Estimating Volatility}
-Unlike prices and returns, volatility is latent. It describes the dispersion of possible returns, so a single observed return cannot reveal its value: a sigle return reflects both the prevailing volatility and the particular random shock that occurred. In a continuous-time model, instantaneous volatility may also change within a trading day. Consequently, neither a daily closing price nor one daily return identifies the variance accumulated over that day.
+Unlike prices and returns, volatility is latent. It describes the dispersion of possible returns, so a single observed return cannot reveal its value: a single return reflects both the prevailing volatility and the particular random shock that occurred. In a continuous-time model, instantaneous volatility may also change within a trading day. Consequently, neither a daily closing price nor one daily return identifies the variance accumulated over that day.
 
 Daily variance must therefore be estimated from observable prices. With sufficiently frequent observations and under suitable assumptions, the sum of squared intraday log returns approximates the day's integrated variance; this is known as realized variance \cite{andersen2003}. When intraday data are unavailable, range-based estimators use information in daily prices: Parkinson uses the high and low \cite{parkinson1980}, while Garman--Klass uses the open, high, low, and close \cite{garmanklass1980}. All are estimates rather than exact observations, and their accuracy depends on the available data and the assumptions behind each estimator.
 
 
 \subsection{Motivations}
-The main objective with this project is finding the better choice for predicting volatility. The potential capabilities of ML models in finance forecasting tasks are tremendous, although the stability and robustness of statistical models are extremely reliable. Several approaches have been presented as comparing both types of models. However, our objective is to extend these comparisons to include, besides the baseline models (AR, SARIMA, GARCH, HAR, MLP, LSTM), HARnet and RFSV models. We are interested in finding the best model by evaluating performance across evaluation metrics (MAE, MASE, MSE, RMSE and QLIKE) and using a model significance test. 
+The main objective of this project is finding the best choice for predicting volatility. The potential capabilities of ML models in financial forecasting tasks are tremendous, although the stability and robustness of statistical models are extremely reliable. Several approaches have been presented that compare both types of models. However, our objective is to extend these comparisons to include, besides the baseline models (AR, SARIMA, GARCH, HAR, MLP, LSTM), HARnet and RFSV models. We are interested in finding the best model by evaluating performance across evaluation metrics (MAE, MASE, MSE, RMSE and QLIKE) and using a model significance test. 
 
-Furthermore, we are intrigued regarding the evaluation scope of each model. We are curious about the effects of input length in the performance of the same model type. Additionally, we expected to find evidences supporting shared properties between a Global set and the Local subset \cite{monteromanso2021,tang2023,liu2023}, allowing a global model to forecast the behaviour of an individual ticker. Not only, but we are interested as well in the forecasting performance for unseen data (cryptocurrencies). 
+Furthermore, we are intrigued regarding the evaluation scope of each model. We are curious about the effects of input length on the performance of the same model type. Additionally, we expected to find evidence supporting shared properties between a Global set and the Local subset \cite{monteromanso2021,tang2023,liu2023}, allowing a global model to forecast the behaviour of an individual ticker. We are also interested in the forecasting performance for unseen data (cryptocurrencies). 
 
 We are interested in studying the behaviour of the significant models. We want to understand the residual structure across these models and how they relate one to another. Moreover, we aim to examine whether the models' responses reflect properties of the data such as mean reversion, volatility clustering and leverage effect. 
 
-Finally, our final objective is to investigate the practical benefits of each significant model by means of price and returns reconstructions as well as estimating sharpe ratio and utility. 
+Finally, our objective is to investigate the practical benefits of each significant model by means of price and return reconstructions and estimates of the Sharpe ratio and utility. 
 
 \subsection{Contributions}
 In this thesis, we compare statistical and machine-learning models for one-step forecasts of daily, unannualized adjusted Garman--Klass variance. The comparison includes AR(1), SARIMA, GARCH(1,1), HAR, RFSV, MLP, LSTM, SiLU-LSTM, and HARNet. We fit each model globally using 2,714 NYSE and NASDAQ tickers and locally for each of five selected stocks. We compare 20- and 80-observation variants where applicable, evaluate forecasts with MAE, MASE, MSE, RMSE, and QLIKE, and use Local model confidence sets to examine which variants remain in the comparison.
@@ -156,7 +159,7 @@ Rough-volatility studies provide a complementary statistical approach. Gatheral,
 Finally, Brini compares pretrained, zero-shot time-series foundation models with econometric realized-volatility benchmarks on the VOLARE evaluation set: 40 individual U.S. stocks from all 11 GICS sectors (2015--2026), five major foreign-exchange pairs, and five commodity or equity-index futures. VOLARE's five-minute realized measures are derived from Kibot tick data. The 50 assets are used for evaluation and for rolling estimation of the econometric benchmarks, not for task-specific training of the zero-shot foundation models. Brini finds that conclusions depend on how errors are aggregated across assets and whether forecasts are recalibrated \cite{brini2026}. The present thesis investigates models fitted on its own daily variance proxies, with local and global equity fits and matched forecast observations as the basis for eventual comparison. No result from the cited papers establishes the ranking of those models on this dataset.
 
 \subsection{Outline}
-On Section 2, we'll be explaining the concepts behind volatility prediction, starting from statistical theory until ML theory necessary to understand the paper. On Section 3, we'll be describing each model and our framework for evaluation. On Section 4, we'll focus on implementation and reproducibility. On Section 5, we present our results. On Section 6, conclusion and further work. 
+In Section 2, we'll be explaining the concepts behind volatility prediction, starting from statistical theory and moving to the ML theory necessary to understand the paper. In Section 3, we'll be describing each model and our framework for evaluation. In Section 4, we'll focus on implementation and reproducibility. In Section 5, we present our results. In Section 6, we present the conclusion and further work. 
 
 \section{Background}
 % Present all background knowledge required to understand the work.
@@ -337,15 +340,15 @@ Maximum likelihood instead chooses parameters that make the observed training se
 \begin{aligned}
 \log L(\theta)&=-\frac12\sum_{t\in\mathcal T_{\mathrm{train}}}
 \left[\log\!\bigl(2\pi\sigma_\theta^2(t)\bigr)
-+\frac{\bigl(y(t)-\mu_\theta(t)\bigr)^2}{\sigma_\theta^2(t)}\right],\
-\theta^*\in\operatorname*{arg\,max}_{\theta}\log L(\theta).
++\frac{\bigl(y(t)-\mu_\theta(t)\bigr)^2}{\sigma_\theta^2(t)}\right],\\
+\theta^*&\in\operatorname*{arg\,max}_{\theta}\log L(\theta).
 \end{aligned}
 \end{equation}
 The negative log likelihood defines a loss for a minimizing optimizer:
 \begin{equation}\label{eq:gaussian-nll}
 \begin{aligned}
-\mathcal L_{\mathrm{NLL}}(\theta)&=-\log L(\theta),\
-\theta^*\in\operatorname*{arg\,min}_{\theta}\mathcal L_{\mathrm{NLL}}(\theta).
+\mathcal L_{\mathrm{NLL}}(\theta)&=-\log L(\theta),\\
+\theta^*&\in\operatorname*{arg\,min}_{\theta}\mathcal L_{\mathrm{NLL}}(\theta).
 \end{aligned}
 \end{equation}
 The two objectives give the same $\theta^*$: minimizing the negative log likelihood finds the parameters that best fit the observations under the assumed distribution. Unlike OLS with constant error variance, this criterion accounts for a variance that changes with the past, as in GARCH \cite{bollerslev1986}.
@@ -560,7 +563,7 @@ Thus $K$ local models with $p$ parameters each use $Kp$ fitted parameters, where
 C_{\mathrm{local}}=\prod_{i=1}^{K}|\mathcal H_i|,\quad
 C_{\mathrm{global}}=|\mathcal J|.
 \end{equation}
-The paper's  relation in Section~3.4 places these classes on the same worst-case generalization bound when $C_{\mathrm{local}}=C_{\mathrm{global}}$, assuming equal in-sample error, independent series, equal effective sample sizes, and loss bounded in $[0,1]$. Parameter complexity is a proxy for this comparison only if each parameter has the same number $B$ of possible values and distinct parameter choices give distinct functions. In that case, equal class cardinalities give
+The paper's relation in Section~3.4 places these classes on the same worst-case generalization bound when $C_{\mathrm{local}}=C_{\mathrm{global}}$, assuming equal in-sample error, independent series, equal effective sample sizes, and loss bounded in $[0,1]$. Parameter complexity is a proxy for this comparison only if each parameter has the same number $B$ of possible values and distinct parameter choices give distinct functions. In that case, equal class cardinalities give
 \begin{equation}\label{eq:local-global-equal-count}
 B^{P_{\mathrm{local}}}=B^{P_{\mathrm{global}}}
 \quad\Longrightarrow\quad
@@ -615,7 +618,7 @@ If only one model remains, retain it without another test \cite{hansen2011mcs}.
 \subsection{Data}
 The equity stock universe is assembled from NASDAQ and NYSE listing files containing symbols, instrument names, and market capitalizations. These lists define candidate stocks, rather than constructed financial indices. For NASDAQ, symbols are stripped of surrounding whitespace, slashes are replaced by hyphens for Yahoo compatibility, and duplicates are removed. NYSE receives additional filtering: symbols containing a caret are excluded, and share classes are grouped by the base symbol obtained by removing a trailing class suffix. Within each group, the unsuffixed symbol is preferred, followed by class A; otherwise, the largest-market-capitalization row is selected. After this selection, instrument names containing Fund, Trust, Notes, Warrant, Preferred, Debentures, Senior Floating Rate, or Term are excluded without regard to case. Slashes are then replaced by hyphens and duplicates removed. The acquisition scheduler also removes duplicates from the combined exchange lists. The NYSE name and share-class rules are not applied to NASDAQ.
 
-Each ticker is downloaded sequentially from Yahoo Finance through yfinance Python library, requesting its maximum available history with adjusted OHLC prices and volume. We used a retry mechanism to handle rate limits and network errors. 
+Each ticker is downloaded sequentially from Yahoo Finance through the yfinance Python library, requesting its maximum available history with adjusted OHLC prices and volume. We used a retry mechanism to handle rate limits and network errors. 
 
 The full dataset contains 22,817,463 observations across 5,842 tickers through September 10, 2026. The forecasting subset is smaller: 2,714 tickers have more than 80 raw observations before January 1, 2016 and a recorded observation on December 31, 2025. Training targets precede January 1, 2016; validation targets run from January 1, 2016 through December 31, 2018; test targets run from January 1, 2019 through December 31, 2025. 
 
@@ -623,7 +626,7 @@ For local model estimation, five individual equities are selected from the 2,714
 
 For the out-of-sample transfer evaluation on cryptocurrencies, five assets are selected from vendor history across the 2019--2025 period: BTC, ETH, SOL, XRP, and DOGE. Unlike equities, cryptocurrency token supplies span more than ten orders of magnitude without standardized denominations; selecting by raw token volume captures micro-priced tokens while omitting dominant market assets such as BTC (which ranks 113th in raw token volume). Assets are therefore selected by mean daily dollar volume ($\text{Close}\times\text{Volume}$), ensuring representative market liquidity. 
 
-The major observed variance proxy is the reduced Garman-Klass estimator in \eqref{eq:garman-klass-variance}. We select it because it combines information from the intraday high-low range and the open-to-close log return, providing a daily variance proxy that uses all four OHLC prices. Rows are invalid if OHLCV values are missing or nonfinite, prices are nonpositive, volume is negative, the high is below either open or close, the low is above either open or close, or the calculated variance is negative or nonfinite. Every input observation in a usable window must have valid, strictly positive variance. In the case of a zero variance: as an input, the window become invalid; as a target it becomes the floor value. The models need to understand the inputs that led to a zero target.
+The major observed variance proxy is the reduced Garman-Klass estimator in \eqref{eq:garman-klass-variance}. We select it because it combines information from the intraday high-low range and the open-to-close log return, providing a daily variance proxy that uses all four OHLC prices. Rows are invalid if OHLCV values are missing or nonfinite, prices are nonpositive, volume is negative, the high is below either open or close, the low is above either open or close, or the calculated variance is negative or nonfinite. Every input observation in a usable window must have valid, strictly positive variance. In the case of zero variance, an input makes the window invalid; a target takes the floor value. The models need to understand the inputs that led to a zero target.
 
 Furthermore, while equities rely solely on Garman--Klass (GK) estimator built from daily OHLC data, the cryptocurrency dataset builds both the daily Garman--Klass (GK) estimator in \eqref{eq:garman-klass-variance} and the 15-minute intraday realized variance (RV) proxy in \eqref{eq:realized-variance} (summing 96 fifteen-minute squared log returns per UTC day), enabling transfer testing across both proxy formulations.
 
@@ -669,7 +672,7 @@ The timeline shows elevated variance around late 1987 and early 1988, near the O
 \FloatBarrier
 
 \subsubsection{Local Data}
-The local view pools NVDA, AAPL, NFLX, GOOG, and AMZN across their full available histories through December 31, 2025. The timeline shows elevated variance around the 2000--2001 dot-com collapse \cite{fed2001mpr} and after the September 11, 2001 attacks \cite{fomc2001oct} with greater 
+The local view pools NVDA, AAPL, NFLX, GOOG, and AMZN across their full available histories through December 31, 2025. The timeline shows elevated variance around the 2000--2001 dot-com collapse \cite{fed2001mpr} and after the September 11, 2001 attacks \cite{fomc2001oct}. 
 
 \begin{figure}[htbp]
 \centering
@@ -697,7 +700,7 @@ The one-lag autoregressive baseline models variance by
 v(t+1)=\beta_0+\beta_1v(t)+\varepsilon(t),\qquad
 \widehat v(t+1)=\beta_0+\beta_1v(t).
 \end{equation}
-\noindent Where $\varepsilon(t)$ is assumed to be $\mathrm{WN}(0,\sigma^2)$. $\beta_0$ is an intercept and $\beta_1$ weights the latest variance \cite{yule1927}.
+\noindent Here $\varepsilon(t)$ is assumed to be $\mathrm{WN}(0,\sigma^2)$. $\beta_0$ is an intercept and $\beta_1$ weights the latest variance \cite{yule1927}.
 
 \subsubsection{SARIMA}
 Let $L$ be the lag operator, $Lx(t)=x(t-1)$, for a generic series $x$. The seasonal autoregressive integrated moving-average specification for the variance series is
@@ -746,7 +749,7 @@ The heterogeneous autoregressive forecast is
 \widetilde y(t+1)=\beta_0+\sum_{j\in\mathcal J}\beta_j\bar v^{(j)}(t),\qquad
 \mathcal J=\{1,5,20\}\ \text{or}\ \{1,5,20,40,80\}.
 \end{equation}
-$\beta_0$ is the intercept and each $\beta_j$ weights a distinct historical horizon. The first set defines HAR-20; the second extends it to HAR-80. Daily, approximately weekly, and approximately monthly averages give a parsimonious representation of dependence across horizons \cite{corsi2009,reisenhofer2022}. The project uses a 20-observation monthly horizon in accordance with Reisenhofer, Bayer, and Hautsch \cite{reisenhofer2022}, to ensure consistent window sizes when comparing HAR and HARNet.
+$\beta_0$ is the intercept and each $\beta_j$ weights a distinct historical horizon. The first set defines HAR-20; the second extends it to HAR-80. Daily, approximately weekly, and approximately monthly averages give a parsimonious representation of dependence across horizons \cite{corsi2009,reisenhofer2022}. The project uses a 20-observation monthly horizon in accordance with Reisenhofer, Bayer, and Hautsch \cite{reisenhofer2022} to ensure consistent window sizes when comparing HAR and HARNet.
 
 \subsubsection{RFSV}
 Rough fractional stochastic volatility uses the mean-reverting log-volatility dynamics:
@@ -754,7 +757,7 @@ Rough fractional stochastic volatility uses the mean-reverting log-volatility dy
 X(t)=\log\sigma(t),\qquad
 \mathrm dX(t)=-\alpha\bigl(X(t)-m\bigr)\,\mathrm dt+\nu\,\mathrm dB^H(t).
 \end{equation}
-Here $B^H$ is fractional Brownian motion, where $0<H<1/2$ measures roughness, $\alpha>0$ is the mean-reversion rate, $m$ is the long-run log-volatility level, and $\nu$ scales the noise. $X(t)$ here is the scalar latent process. Gatheral et al.'s Equation~(5.1) gives a historical kernel for log variance. With the positive proxy substituted for latent variance, write
+Here $B^H$ is fractional Brownian motion, and $0<H<1/2$ measures roughness, $\alpha>0$ is the mean-reversion rate, $m$ is the long-run log-volatility level, and $\nu$ scales the noise. $X(t)$ here is the scalar latent process. Gatheral et al.'s Equation~(5.1) gives a historical kernel for log variance. With the positive proxy substituted for latent variance, write
 \begin{equation}\label{eq:methods-rfsv-kernel}
 \widehat\ell(t+\Delta)=\frac{\cos(\pi H)}{\pi}\Delta^{H+1/2}
 \int_0^{\infty}\frac{\log v(t-u)}{(u+\Delta)u^{H+1/2}}\,\mathrm du.
@@ -831,7 +834,7 @@ $w_\ell$ are scalar readout weights and $b_{\mathrm{out}}$ is its intercept.
 \subsection{Input data}
 The configurations below describe the experiments selected by the current evaluation scripts. Global fits pool the 2,714-ticker forecasting dataset; local fits estimate parameters separately for the five tickers with the highest average daily trading volume before 2016: NVDA, AAPL, NFLX, GOOG, and AMZN. Each target is next-recorded-observation, daily, unannualized adjusted Garman--Klass variance, with the zero-target adjustment defined in \eqref{eq:methods-target-floor}.
 
-The four training-history figures below describe valid observed variances before January 1, 2016, using the same ticker set as section 3.1. Daily timelines average available tickers, then take the natural log of that mean for the log panel. The logarithm compresses large variance values and gives equal distances to equal ratios: $0.001 \rightarrow 0.0001$ spans the same distance as $0.0001 \rightarrow 0.00001$ on the log scale. Valid zero observations use the floor $f_{\mathrm{target}}=3.396062419686545\times10^{-13}$ before logarithms because $\log(0)$ is undefined. Box and Jenkins recommend using log-transform to stabilize the heteroscedasticity on variance \cite{boxjenkins1970}. Our data is not stationary in mean neither in variance. We can't find evidences of cycles as well.
+The four training-history figures below describe valid observed variances before January 1, 2016, using the same ticker set as section 3.1. Daily timelines average available tickers, then take the natural log of that mean for the log panel. The logarithm compresses large variance values and gives equal distances to equal ratios: $0.001 \rightarrow 0.0001$ spans the same distance as $0.0001 \rightarrow 0.00001$ on the log scale. Valid zero observations use the floor $f_{\mathrm{target}}=3.396062419686545\times10^{-13}$ before logarithms because $\log(0)$ is undefined. Box and Jenkins recommend using log-transform to stabilize the heteroscedasticity on variance \cite{boxjenkins1970}. Our data is not stationary in either mean or variance. We can't find evidence of cycles either.
 
 \begin{figure}[htbp]
 \centering
@@ -860,12 +863,12 @@ The four training-history figures below describe valid observed variances before
     \item \textbf{MLP:} \textbf{Input:} the 20- and 80-observation variants use two features per observation: log volatility $= \tfrac12\log v(t)$ and log return. The scalar output is log variance, exponentiated for a variance forecast.
     \item \textbf{LSTM:} log volatility and log return. The 20- and 80-observation variants process these features in chronological sequence order and output log variance.
     \item \textbf{SiLU-LSTM:} \textbf{Input:} raw variance and log return. The 20- and 80-observation variants produce a direct variance output.
-    \item \textbf{HARNet:} \textbf{Input:} HARNet-20 and HARNet-80 receive variance alone, in 20- and 80-observation histories respectively, and produce direct variance outputs.
+    \item \textbf{HARNet:} \textbf{Input:} Both variants receive variance alone in 20- and 80-observation histories, respectively, and produce direct variance outputs.
 \end{itemize}
- Training-derived positive prediction floors are applied after the output mapping in \eqref{eq:methods-output-map}; each local fit derives its floor from its own ticker's training history. We've observed during fitting that log scaled inputs responded better for MLPs and LSTM. We've used log returns since $\log(1) = 0$ and explore the property where $\log\left(\frac{\mathrm{Close}}{\mathrm{Open}}\right) = \log(\mathrm{Close})-\log(\mathrm{Open})$.
+ Training-derived positive prediction floors are applied after the output mapping in \eqref{eq:methods-output-map}; each local fit derives its floor from its own ticker's training history. We've observed during fitting that log-scaled inputs worked better for MLPs and LSTMs. We've used log returns since $\log(1) = 0$ and explore the property where $\log\left(\frac{\mathrm{Close}}{\mathrm{Open}}\right) = \log(\mathrm{Close})-\log(\mathrm{Open})$.
 
 \subsection{Hyperparameters}
-The neural model hyperparameters were selected by comparing baseline LSTM configurations with a fixed input window of 20 observations. Hidden sizes of $\{4,16,32,64,128\}$ were evaluated, with 128 yielding the best performance in these comparisons. This choice is also consistent with Zhang et al., who used 128 units in the first hidden layer of their LSTM architectures \cite{zhang2022}. Learning rates of $10^{-3}$ and $10^{-4}$ were compared, and $10^{-3}$ was selected for its better convergence performance.
+Neural model hyperparameters were selected by comparing baseline LSTM configurations with a fixed 20-observation input window. Hidden sizes of $\{4,16,32,64,128\}$ were evaluated, with 128 yielding the best performance in these comparisons. This choice is also consistent with Zhang et al., who used 128 units in the first hidden layer of their LSTM architectures \cite{zhang2022}. Learning rates of $10^{-3}$ and $10^{-4}$ were compared, and $10^{-3}$ was selected for its better convergence performance.
 \begin{itemize}
     \item \textbf{History length:} 20 and 80 observations for MLP, LSTM, SiLU-LSTM, HAR, and HARNet. AR uses one lag with window-20 eligibility; SARIMA and GARCH use preceding filtering history, window-20 scoring eligibility, and segment-based estimation. RFSV uses the full positive history $T$.
     \item \textbf{HAR averaging horizons:} HAR-20 uses $\{1,5,20\}$. HAR-80 uses $\{1,5,20,40,80\}$. HARNet uses the matching horizons.
@@ -925,10 +928,10 @@ The saved tables use a test-relative MASE scale: for each ticker and window, div
 % Describe the experimental results. This is the most important section.
 
 \subsection{Setting}
-All of the fitting and evaluation process were done in a machine with 16GB RAM, NVIDIA RTX 2060 6GB and Ryzen 5 5600x.
+All of the fitting and evaluation processes were performed on a machine with 16 GB of RAM, an NVIDIA RTX 2060 with 6 GB of memory, and a Ryzen 5 5600X.
 
 \subsection{Computational Evaluation}
-At least 70 hours and 52 minutes of cumulative run time across global model selection, final global fits and local fits.
+The cumulative recorded run time was at least 70 hours and 52 minutes across global model selection, final global fits and local fits.
 
 \begin{table}[htbp]
 \centering
@@ -964,8 +967,7 @@ The five-stock local comparison required 49 minutes and 5 seconds for all 70 loc
 \subsection{Overall Result}
 The equity tables report saved one-step forecasts of daily, unannualized adjusted Garman--Klass variance; Table~\ref{tab:crypto-results} instead uses daily vendor crypto OHLC without equity adjustment. Forecasts are mapped back from any model-specific output transformation. MAE and RMSE have variance units, MSE has squared variance units, and MASE and QLIKE are dimensionless. Smaller losses are better. The equity source dataset has 2,714 tickers. 
 
-On \ref{tab:global-results}, it's clear to observe that models who used longer periods per forecast performed better than their counterparts. MLP-80 and Base LSTM-80 presented the best results. MLP-80 had the lowest MAE ($7.73236\times10^{-4}$), MASE (0.835773) and second lowest MSE, demonstrating an overall capacity to reconstruct actual values, while avoiding larger errors which would bring MSE up and keeping a better performance compared to the naive mean absolute change between observations. Base LSTM-80 had the lowest QLIKE and second best MAE ($7.79013\times10^{-4}$) and MASE (0.836285), values extremely close to MLP-80's. It was the model that best behaved accordingly to practical standards where predicting lower values are worse than higher values. SiLU-LSTM-80 had the best performance for MSE, which was expected due to its fitting process, however had the second worse QLIKE value, following our hypothesis of its inherently forecasting instability. AR(1) had the worst MASE and second biggest MAE and MSE, expected from its limited forecasting horizon and linear-only capabilities. It's interesting to see that RFSV-20, while having the worst MAE, it had a lower MSE compared to most models in the 20 window size scope, supporting the idea that although the average of its errors were bigger, it had less outliers. SARIMA had the third lowest MASE with the other metrics being on average, with the exception QLIKE small value explosion, proving that performing better than the average difference between a lag doesn't mean a better performance overall, supporting our decision of not using MASE as the objective loss function.
-\clearpage
+Table~\ref{tab:global-results} shows that models that used longer periods per forecast performed better than their counterparts. MLP-80 and Base LSTM-80 presented the best results. MLP-80 had the lowest MAE ($7.73236\times10^{-4}$), MASE (0.835773) and second lowest MSE, demonstrating an overall capacity to reconstruct actual values, while avoiding larger errors that would raise MSE and maintaining better performance compared to the naive mean absolute change between observations. Base LSTM-80 had the lowest QLIKE and second best MAE ($7.79013\times10^{-4}$) and MASE (0.836285), values extremely close to MLP-80's. It was the model that behaved best according to practical standards where underpredictions are worse than overpredictions. SiLU-LSTM-80 had the best performance for MSE, which was expected due to its fitting process, but had the second-worst QLIKE value, following our hypothesis of its inherently forecasting instability. AR(1) had the worst MASE and second biggest MAE and MSE, expected from its limited forecasting horizon and linear-only capabilities. It's interesting to see that RFSV-20, while having the worst MAE, had a lower MSE compared to most models in the 20 window size scope, supporting the idea that although the average of its errors were bigger, it had fewer outliers. SARIMA had the third lowest MASE with the other metrics being on average, with the exception of a large QLIKE value, proving that performing better than the average difference between consecutive observations doesn't mean a better performance overall, supporting our decision of not using MASE as the objective loss function.
 \begingroup\scriptsize\setlength{\tabcolsep}{2pt}
 \begin{longtable}{@{}p{.235\linewidth}>{\raggedleft\arraybackslash}p{\dimexpr .165\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .115\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .165\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .175\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .145\linewidth-2\tabcolsep\relax}@{}}
 \hline Model & MAE ($\times10^{-4}$) & MASE & MSE ($\times10^{-5}$) & RMSE ($\times10^{-3}$) & QLIKE\\
@@ -998,9 +1000,8 @@ RFSV-80 & 9.48762 & 1.04249 & 5.85084 & 7.64908 & 0.444466\\
 \end{longtable}
 \endgroup
 
-The full-period rows of Table~\ref{tab:matched-results} evaluate NVDA, AAPL, NFLX, GOOG, and AMZN on the same 8,800 ticker/date targets during 2019--2025, selected by mean volume. We observe that all metrics, with the exception of MASE, presented smaller values ranges. Among those rows, the model that minimized absolute errors and performed the best compared to the mean change between observations is SARIMA Local. MLP-80 Global presented the best result on MSE and QLIKE. Even though SARIMA Local had the best MAE, its MSE is bigger than all HARNet models, which presented a MAE above $2\times10^{-4}$, providing evidences on models having stronger outliers while having the smallest error overall, the inverse behaviour shown in Table~\ref{tab:global-results} supported by RFSV-20. HARNET-80 had the second best values on MAE and MASE, while RFSV-80 Local on MSE and Base LSTM-20 Global on QLIKE. AR(1) Global had the worst performance across MAE, MASE and MSE supporting the lack of representation power of this model type. RFSV-20 Global and RFSV-80 Global provides the inverse behaviour as observed in SARIMA inside Table~\ref{tab:global-results}: both presents a large MASE (1.18549 and 1.15992, respectively) while having a QLIKE close to MLP-20 Local, and better than GARCH(1,1) Local, presenting evidences that overall performance doesn't necessarily mean it's better relative to the average difference between consecutive observations. With the exception of MLP-20 Local that had a worse performance compared to its global version, as well as MLP-80, all local models had either a similar or better performance, as expected. The Local models are supposed to perform overall better than its global version for specific stocks, since each model type was trained specifically for its paper. 
+The full-period rows of Table~\ref{tab:matched-results} evaluate NVDA, AAPL, NFLX, GOOG, and AMZN on the same 8,800 ticker/date targets during 2019--2025, selected by mean volume. We observe that all metrics, with the exception of MASE, presented smaller value ranges. Among those rows, the model that minimized absolute errors and performed the best compared to the mean change between observations is SARIMA Local. MLP-80 Global presented the best result on MSE and QLIKE. Even though SARIMA Local had the best MAE, its MSE is bigger than all HARNet models, which presented an MAE above $2\times10^{-4}$, providing evidence of models having stronger outliers while having the smallest error overall, the inverse behaviour shown in Table~\ref{tab:global-results} supported by RFSV-20. HARNet-80 had the second best values on MAE and MASE, while RFSV-80 Local on MSE and Base LSTM-20 Global on QLIKE. AR(1) Global had the worst performance across MAE, MASE, and MSE, supporting the lack of representation power of this model type. RFSV-20 Global and RFSV-80 Global provide the inverse behaviour as observed in SARIMA inside Table~\ref{tab:global-results}: both present a large MASE (1.18549 and 1.15992, respectively) while having a QLIKE close to MLP-20 Local, and better than GARCH(1,1) Local, presenting evidence that overall performance doesn't necessarily mean it's better relative to the average difference between consecutive observations. With the exception of MLP-20 Local that had a worse performance compared to its global version, as well as MLP-80, all local models had either a similar or better performance, as expected. The Local models are supposed to perform overall better than their global versions for specific stocks, since each model type was trained specifically for that stock. 
 
-\clearpage
 \begingroup\scriptsize\setlength{\tabcolsep}{2pt}
 \begin{longtable}{@{}p{.235\linewidth}>{\raggedleft\arraybackslash}p{\dimexpr .165\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .115\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .165\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .175\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .145\linewidth-2\tabcolsep\relax}@{}}
 \hline Model & MAE ($\times10^{-4}$) & MASE & MSE ($\times10^{-7}$) & RMSE ($\times10^{-4}$) & QLIKE\\
@@ -1047,14 +1048,13 @@ RFSV-80 Global & 2.80188 & 1.15992 & 2.25784 & 4.751670 & 0.322797\\
 \end{longtable}
 \endgroup
 
-No model stood out as the best. There were models who were constantly better across metrics, with the example of MLP-80, but overall, we are unable to determine the top one. Data structure matters deeply. Audrino et al. found that HAR stands out when predicting realized volatility on 1,445 U.S stocks \cite{audrino2024}. Liu et al. found that Global LSTM stood out, while in the local-model comparison, GARCH(1,1) stood out across daily returns from 11,771 from 10 exchanges \cite{liu2023}. Reisenhofer et al. found that HARNet stood out for five-minute-based daily variance for the S\&P 500, FTSE and DJIA indices \cite{reisenhofer2022}. Mouti found that HAR performed best for one-day log-variance forecasts, while RFSV performed best for many of the 21-day forecasts across indices and stocks \cite{mouti2023}. Brini found that Tiny Time Mixers stood out on the average QLIKE across 40 U.S. equities, five foreign-exchange pairs and five futures, while its combination with Log-HAR performed slightly better \cite{brini2026}. Rodikov et al. found that $\sigma$-LSTM had the lowest RMSE for the S\&P 500 and Apple, while HAR-RV was slightly better for Bitcoin using daily realized volatility \cite{rodikov2022}. Tang et al. found that the 30-observation LSTM with return inputs stood out for daily volatility built from five-minute observations of 213 cryptocurrencies, with RFSV combined with quadratic rough Heston performing similarly \cite{tang2023}. Zhang et al. found that augmented global LSTM led the intraday realized-volatility QLIKE results for 93 S\&P 500 stocks, augmented OLS led the one-day forecasts from daily volatility, and MLP stood out when intraday volatility was used to forecast daily volatility \cite{zhang2022}. In conclusion, the data used impacts greatly the efficiency of a model. 
+No model stood out as the best. There were models that were consistently better across metrics, with the example of MLP-80, but overall, we are unable to determine the top one. Data structure matters deeply. Audrino et al. found that HAR stands out when predicting realized volatility on 1,445 U.S stocks \cite{audrino2024}. Liu et al. found that Global LSTM stood out, while in the local-model comparison, GARCH(1,1) stood out across daily returns from 11,771 stocks from 10 exchanges \cite{liu2023}. Reisenhofer et al. found that HARNet stood out for five-minute-based daily variance for the S\&P 500, FTSE and DJIA indices \cite{reisenhofer2022}. Mouti found that HAR performed best for one-day log-variance forecasts, while RFSV performed best for many of the 21-day forecasts across indices and stocks \cite{mouti2023}. Brini found that Tiny Time Mixers stood out on the average QLIKE across 40 U.S. equities, five foreign-exchange pairs and five futures, while its combination with Log-HAR performed slightly better \cite{brini2026}. Rodikov et al. found that $\sigma$-LSTM had the lowest RMSE for the S\&P 500 and Apple, while HAR-RV was slightly better for Bitcoin using daily realized volatility \cite{rodikov2022}. Tang et al. found that the 30-observation LSTM with return inputs stood out for daily volatility built from five-minute observations of 213 cryptocurrencies, with RFSV combined with quadratic rough Heston performing similarly \cite{tang2023}. Zhang et al. found that augmented global LSTM led the intraday realized-volatility QLIKE results for 93 S\&P 500 stocks, augmented OLS led the one-day forecasts from daily volatility, and MLP stood out when intraday volatility was used to forecast daily volatility \cite{zhang2022}. In conclusion, the data used greatly affect a model's performance. 
 
 \subsection{Crypto Evaluation}
 The saved equity-trained Global fits were also evaluated without refitting on the five dollar-volume-selected cryptocurrencies (BTC, ETH, SOL, XRP, and DOGE). Table \ref{tab:crypto-results} uses the same 1,760 positive target dates per crypto at both input windows, or 8,800 ticker/date forecasts per row. Each forecast targets the next recorded vendor daily, unannualized Garman--Klass variance. 
 
-When comparing the models on unseen cryptocurrencies, they presented bigger error values, which was expected. Base LSTM-20 has the smallest crypto MAE and MASE, SiLU-LSTM-80 the smallest MSE and RMSE, and Base LSTM-80 the smallest QLIKE under daily Garman--Klass variance. Compared to the equities Global comparison, we can't affirm that a longer window is better. Furthermore, MLP-80 dropped from the top, having the 4th largest QLIKE score. However, RFSV-80 entered the leaderboard with the second lowest QLIKE score. It's interesting that the lowest MASE presented is smaller than any equities comparison value. We guess that's attributed to non-stop trading times characteristic, which contributes to a more constant average change between consecutive observations, where GK estimator isn't able to effectively express this behaviour, contributing to a higher average, driving the MASE down.
+When comparing the models on unseen cryptocurrencies, they presented larger error values, which was expected. Base LSTM-20 has the smallest crypto MAE and MASE, SiLU-LSTM-80 the smallest MSE and RMSE, and Base LSTM-80 the smallest QLIKE under daily Garman--Klass variance. Compared to the equities Global comparison, we can't affirm that a longer window is better. Furthermore, MLP-80 dropped from the top, having the 4th largest QLIKE score. However, RFSV-80 entered the leaderboard with the second lowest QLIKE score. It's interesting that the lowest MASE presented is smaller than any equities comparison value. We guess that's attributed to continuous-trading characteristic, which contributes to a more constant average change between consecutive observations, which the GK estimator isn't able to express effectively this behaviour, contributing to a higher average, driving the MASE down.
 
-\clearpage
 \begingroup\scriptsize\setlength{\tabcolsep}{2pt}
 \begin{longtable}{@{}p{.235\linewidth}>{\raggedleft\arraybackslash}p{\dimexpr .165\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .115\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .165\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .175\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .145\linewidth-2\tabcolsep\relax}@{}}
 \hline Model & MAE ($\times10^{-3}$) & MASE & MSE ($\times10^{-4}$) & RMSE ($\times10^{-2}$) & QLIKE\\
@@ -1089,9 +1089,8 @@ RFSV-80 & 2.94822 & 0.971546 & 1.47642 & 1.21508 & \textcolor{blue}{0.612174}\\
 
 To evaluate cross-proxy transfer across estimator formulations, the same 15 saved equity-trained Global fits were also evaluated on the 15-minute intraday realized variance proxy in \eqref{eq:realized-variance} across the identical 8,800 ticker/date crypto sample, feeding preceding valid RV observations into the models. Table~\ref{tab:crypto-rv-results} reports the transfer performance under realized variance.
 
-The results demonstrate the inexistence of a trend. For \ref{tab:crypto-rv-results}, LSTM-20 achieves the lowest QLIKE and MASE. For MAE only, SiLU-LSTM-20 scored the best, whereas for MSE RSFV-80 was superior. Severe QLIKE values are caused by underprediction and are driven by $y/f_{\mathrm{pred}}$ term, where as $f_{\mathrm{pred}}$ goes to zero, the quantity explodes, as shown by MLP-20, SiLU-LSTM-20, SiLU-LSTM-80 and SARIMA. We are able to observe that MASE returned to the average values present in the equities comparison. Following our hypothesis, we attribute this to the RV proxy, which translated the naive change more constant behaviour, giving a smaller average change, driving MASE up.   
+The results demonstrate the absence of a consistent trend. In Table~\ref{tab:crypto-rv-results}, LSTM-20 achieves the lowest QLIKE and MASE. For MAE only, SiLU-LSTM-20 scored the best, whereas for MSE RFSV-80 was superior. Severe QLIKE values are caused by underprediction and are driven by the $y/f_{\mathrm{pred}}$ term, whereas $f_{\mathrm{pred}}$ goes to zero, the quantity explodes, as shown by MLP-20, SiLU-LSTM-20, SiLU-LSTM-80 and SARIMA. We are able to observe that MASE returned to the average values present in the equities comparison. Following our hypothesis, we attribute this to the RV proxy, which made the naive changes more constant, giving a smaller average change, driving MASE up.   
 
-\clearpage
 \begingroup\scriptsize\setlength{\tabcolsep}{2pt}
 \begin{longtable}{@{}p{.235\linewidth}>{\raggedleft\arraybackslash}p{\dimexpr .165\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .115\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .165\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .175\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .145\linewidth-2\tabcolsep\relax}@{}}
 \hline Model & MAE ($\times10^{-3}$) & MASE & MSE ($\times10^{-2}$) & RMSE ($\times10^{-1}$) & QLIKE\\
@@ -1124,13 +1123,13 @@ RFSV-80 & \textcolor{blue}{7.07342} & 1.065548 & \textcolor{red}{0.96381} & \tex
 \end{longtable}
 \endgroup
 
-Overall, our global models possesses the ability of generalizing to unseen tartgets such as cryptocurrencies. We know based on Tang et al. \cite{tang2023} that cryptocurrencies do not necessarily behave the same as equities in their response to positive and negative returns, but even so Base LSTM-20 was able to obtain a QLIKE value in Table~\ref{tab:crypto-rv-results} comparable to the ones shown in Table~\ref{tab:global-results}. We suppose that RV proxies are significantly better predictors than GK for crypto volatility forecasting due to continuous trading times not being able to be translated in the Garman-Klass estimator. Even if error scale is larger in Table~\ref{tab:crypto-rv-results} compared to Table~\ref{tab:crypto-results},its presents smaller lowest QLIKE values, which means that the ratio $y/f_{\mathrm{pred}}$ is smaller. The predicted values are closer in percentage to the actual compared to predictions driven by GK inputs. 
+Overall, our global models possess the ability to generalize to unseen targets such as cryptocurrencies. We know based on Tang et al. \cite{tang2023} that cryptocurrencies do not necessarily behave the same as equities in their response to positive and negative returns, but even so Base LSTM-20 was able to obtain a QLIKE value in Table~\ref{tab:crypto-rv-results} comparable to the ones shown in Table~\ref{tab:global-results}. We suppose that RV proxies are significantly better predictors than GK for crypto volatility forecasting due to continuous trading times not being able to be translated in the Garman-Klass estimator. Even if error scale is larger in Table~\ref{tab:crypto-rv-results} compared to Table~\ref{tab:crypto-results}, it presents a lower minimum QLIKE value, which means that the ratio $y/f_{\mathrm{pred}}$ is smaller. The predicted values are proportionally closer to the actual values than predictions driven by GK inputs. 
 
 
 \subsection{Model Statistical Significance}
 As described in Section 2.5, we compare all 30 distinct local and global candidates on the same 1,760 test observations per stock using QLIKE and a 90\% model confidence set. We run the procedure separately with moving bootstrap blocks of 20 and 80 retained observations. Both comparisons include the 20- and 80-observation forecast variants. 
 
-Each stock produces its own final set. Table~\ref{tab:mcs-cross-window} reports its size under each block length and the models appearing in only one of those sets. The intersection across the five stock-level final sets is identical for \emph{both} block lengths: Base LSTM-20 Global; Base LSTM-80 Global; Base LSTM-80 Local; HARNet-20 Global; HARNet-80 Global; HARNet-80 Local; MLP-20 Global; MLP-80 Global; RFSV-20 Local; and RFSV-80 Local. Eight are ML models, and two are statistical RFSV models. Six are Global and four are Local. Retention means the procedure did not reject a model from the remaining set at the chosen level. We'll be focusing further analysis on this subset of models.
+Each stock produces its own final set. Table~\ref{tab:mcs-cross-window} reports its size under each block length and the models appearing in only one of those sets. The intersection across the five stock-level final sets is identical for \emph{both} block lengths: Base LSTM-20 Global; Base LSTM-80 Global; Base LSTM-80 Local; HARNet-20 Global; HARNet-80 Global; HARNet-80 Local; MLP-20 Global; MLP-80 Global; RFSV-20 Local; and RFSV-80 Local. Eight are ML models, and two are statistical RFSV models. Six are Global and four are Local. Retention means the procedure did not reject a model from the remaining set at the chosen level. We focus the following analysis on this subset of models.
 
 \begin{table}[htbp]
 \centering
@@ -1146,12 +1145,14 @@ NVDA & 22 & 22 & None\\\hline
 \end{table}
 \FloatBarrier 
 
+
+
 \subsection{Residual Structure}
 We inspect residual timelines and histograms for the model variants shared by all five stock-level final MCS sets. The evaluation uses the same five stocks and forecast targets as Table~\ref{tab:matched-results}.
 
 First, the observed test targets provide a common reference for the model residuals. Write $v_i(t)$ for the observed adjusted Garman--Klass variance of ticker $i$ on test date $t$. The 8,800 positive variances comprise 1,760 dates for each of NVDA, AAPL, NFLX, GOOG, and AMZN from 2019 through 2025. The raw timeline plots the daily mean across the five stocks; the log timeline plots the natural logarithm of that mean. The histograms pool the individual targets, with an orange normal curve fitted to all 8,800 observations using their mean and population variance. 
 
-On \ref{fig:local-test-target-timeline} and \ref{fig:local-test-target-histograms} we present the timeline and histograms of our target data. The raw histogram is strongly right-skewed, whereas the log histogram is more symmetric. The descriptive normal fit for the pooled log variances is $\log v_i(t)\sim\mathcal N(\mu=-8.472,\sigma^2=0.9996)$, with its data approximating this normal. 
+In Figures~\ref{fig:local-test-target-timeline} and~\ref{fig:local-test-target-histograms} we present the timeline and histograms of our target data. The raw histogram is strongly right-skewed, whereas the log histogram is more symmetric. The descriptive normal fit for the pooled log variances is $\log v_i(t)\sim\mathcal N(\mu=-8.472,\sigma^2=0.9996)$, with the data approximating this normal distribution. 
 The timeline also shows a pronounced volatility spike in April 2025, coinciding with market turmoil following the April 2 US tariff announcement \cite{ecb2025fsr}. 
 
 \begin{figure}[htbp]
@@ -1209,6 +1210,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \end{figure}
 \FloatBarrier
 
+
 \textbf{Base LSTM-80 Global.} The saved 80-observation global forecast is summarized in the following timeline and histogram figures.
 
 \begin{figure}[htbp]
@@ -1228,6 +1230,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \end{figure}
 \FloatBarrier
 
+
 \textbf{Base LSTM-80 Local.} The saved 80-observation local forecast is summarized in the following timeline and histogram figures.
 
 \begin{figure}[htbp]
@@ -1245,6 +1248,8 @@ The following ten variants are the intersection of all five stock-level final MC
 \caption{Base LSTM-80 Local: raw and log individual-residual histograms (left and right).}
 \label{fig:residual-base-lstm-80-local-histograms}
 \end{figure}
+
+
 \FloatBarrier
 
 \subsubsection{HARNet}
@@ -1267,6 +1272,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \end{figure}
 \FloatBarrier
 
+
 \textbf{HARNet-80 Global.} The saved 80-observation global forecast is summarized in the following timeline and histogram figures.
 
 \begin{figure}[htbp]
@@ -1286,6 +1292,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \end{figure}
 \FloatBarrier
 
+
 \textbf{HARNet-80 Local.} The saved 80-observation local forecast is summarized in the following timeline and histogram figures.
 
 \begin{figure}[htbp]
@@ -1303,6 +1310,8 @@ The following ten variants are the intersection of all five stock-level final MC
 \caption{HARNet-80 Local: raw and log individual-residual histograms (left and right).}
 \label{fig:residual-harnet-80-local-histograms}
 \end{figure}
+
+
 \FloatBarrier
 
 \subsubsection{MLP}
@@ -1325,6 +1334,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \end{figure}
 \FloatBarrier
 
+
 \textbf{MLP-80 Global.} The saved 80-observation global forecast is summarized in the following timeline and histogram figures.
 
 \begin{figure}[htbp]
@@ -1342,6 +1352,8 @@ The following ten variants are the intersection of all five stock-level final MC
 \caption{MLP-80 Global: raw and log individual-residual histograms (left and right).}
 \label{fig:residual-mlp-80-global-histograms}
 \end{figure}
+
+
 \FloatBarrier
 
 \subsubsection{RFSV}
@@ -1364,6 +1376,7 @@ The following ten variants are the intersection of all five stock-level final MC
 \end{figure}
 \FloatBarrier
 
+
 \textbf{RFSV-80 Local.} The saved 80-observation local forecast is summarized in the following timeline and histogram figures.
 
 \begin{figure}[htbp]
@@ -1381,10 +1394,10 @@ The following ten variants are the intersection of all five stock-level final MC
 \caption{RFSV-80 Local: raw and log individual-residual histograms (left and right).}
 \label{fig:residual-rfsv-80-local-histograms}
 \end{figure}
-\clearpage
+\FloatBarrier
 
 \subsubsection{Models Summary}
-Tables \ref{tab:residual-moments-raw} and \ref{tab:residual-moments-log} display the moments for each model variant, while Table \ref{tab:residual-moment-outliers} gives the outliers for each moment. An outlier is defined following Tukey in \cite{tukey1977} by a value outside of $1.5\ X\ IQR$ range. We identify MLP-20 Global as an outliers in both mean scales. Base LSTM-80 Local in raw standard deviation. Base LSTM-20 Global in log-scale skewness and RFSV-20 Local, RFSV-80 Local both in log-scaled excess kurtosis. 
+Tables \ref{tab:residual-moments-raw} and \ref{tab:residual-moments-log} display the moments for each model variant, while Table \ref{tab:residual-moment-outliers} gives the outliers for each moment. An outlier is defined following Tukey in \cite{tukey1977} by a value outside of $1.5\ X\ IQR$ range. We identify MLP-20 Global as an outlier in both mean scales. Base LSTM-80 Local is an outlier in raw standard deviation. Base LSTM-20 Global is an outlier in log-scale skewness, and RFSV-20 Local and RFSV-80 Local are both outliers in log-scale excess kurtosis. 
 
 \begin{table}[htbp]
 \centering\small\setlength{\tabcolsep}{4pt}
@@ -1428,7 +1441,7 @@ RFSV-80 Local & $-0.2679$ & $0.7483$ & $+0.2298$ & $+0.1101$ \\
 \caption{Dimensionless log-variance residual moments for each model variant's 8,800 matched test predictions. Here $\mu$ is the mean and $\sigma$ is the standard deviation; all values are unscaled.}
 \label{tab:residual-moments-log}
 \end{table}
-\clearpage
+\FloatBarrier
 \begin{table}[htbp]
 \centering\small\setlength{\tabcolsep}{5pt}
 \begin{tabular}{lll}
@@ -1477,7 +1490,7 @@ Our final model selection favours overprediction over underprediction, which is 
 
 \subsection{Data Properties}
 \subsubsection{Leverage Effect}
-For Figures~\ref{fig:data-property-return} and~\ref{fig:data-property-global-return}, we are interested in checking the leverage effect in both actual and predicted data. We'll be using the models with best QLIKE for prediction purposes: MLP-80 Global for local test subset and Base LSTM-80 Global for global test subset.
+For Figures~\ref{fig:data-property-return} and~\ref{fig:data-property-global-return}, we are interested in checking the leverage effect in both actual and predicted data. We'll be using the models with the best QLIKE for prediction purposes: MLP-80 Global for local test subset and Base LSTM-80 Global for global test subset.
 
 Let $S(t)$ contain the stocks with an eligible forecast on test date $t$, let $v_i(t)$ and $\widehat v_i(t)$ be the observed and saved forecast daily adjusted Garman--Klass variances, and let $O_i$ and $C_i$ be adjusted open and close prices. Here $t-1$ denotes stock $i$'s preceding valid observation. The date-level coordinates are:
 \begin{equation}\label{eq:property-return-coordinates}
@@ -1490,7 +1503,7 @@ y(t)&=\log V(t),\qquad \widehat y(t)=\log\widehat V(t).
 \end{equation}
 Sort the 1,760 date coordinates by $x(t)$ and divide them into 88 consecutive sets $B_k$ of 20 dates. Each plotted point is $(\bar x_k,\bar y_k)$ or $(\bar x_k,\overline{\widehat y}_k)$, where each bar is the arithmetic mean over $t\in B_k$; lines join consecutive points. 
 
-Figure~\ref{fig:data-property-return} uses $S(t)=\{\mathrm{AAPL,AMZN,GOOG,NFLX,NVDA}\}$ and the saved MLP-80 Global forecasts on their shared test dates. We are unable to verify a clear evidence of the leverage effect neither in the actual as the predicted data. Both extremities lies in the similar heights. The only difference we are able to observe is the mean GK predicted variance being higher than actual throughout the graph. 
+Figure~\ref{fig:data-property-return} uses $S(t)=\{\mathrm{AAPL,AMZN,GOOG,NFLX,NVDA}\}$ and the saved MLP-80 Global forecasts on their shared test dates. We are unable to find clear evidence of the leverage effect in either the actual or predicted data. Both extremes lie at similar heights. The only difference we are able to observe is the mean GK predicted variance being higher than the actual variance throughout the graph. 
 
 \begin{figure}[htbp]
 \centering
@@ -1498,7 +1511,6 @@ Figure~\ref{fig:data-property-return} uses $S(t)=\{\mathrm{AAPL,AMZN,GOOG,NFLX,N
 \caption{Log five-stock mean observed (blue) and MLP-80 Global forecast (red) daily adjusted Garman--Klass variance against mean preceding signed adjusted open-to-close log return, averaged across 88 consecutive bins of 20 return-sorted test dates.}
 \label{fig:data-property-return}
 \end{figure}
-\FloatBarrier
 
 Figure~\ref{fig:data-property-global-return} uses the same coordinates and 20-date bins from Equation~\ref{eq:property-return-coordinates}, with $S(t)$ drawn from the eligible window-80 global test cohort and $\widehat v_i(t)$ from the Base LSTM-80 Global fit. On this subset, we observe similar levels of variance between predicted and actual. We are able to observe a more extended extremity on the negative returns, indicating a small leverage effect, being more pronounced in the actual data compared to the model forecast. 
 
@@ -1510,14 +1522,14 @@ Figure~\ref{fig:data-property-global-return} uses the same coordinates and 20-da
 \end{figure}
 \FloatBarrier
 
-For Figures~\ref{fig:data-property-nic} and~\ref{fig:data-property-nic-mean}, the News Impact Curve (NIC) follows the synthetic-input protocol in \cite{liu2023} based on \cite{engle1993}. We focus our analysis for the eight ML models in our final MCS to understand the capacity of those models to learn usual properties of volatility. Our objective is to check if the model effectively reproduces the leverage effect. In addition to the returns, we use variance as input due to how our models were fitted. For log definability purposes and to match the paper when using zero net returns input, which configures a zero volatility process, on Figure~\ref{fig:data-property-nic} we set the shared reference variance to the saved global equity fitting-history floor $v_0\approx3.39606242\times10^{-13}$, which is fixed before test evaluation, and the matching log-volatility input to $\ell_0=\frac{1}{2}\log(v_0)\approx-14.3555$. For window $w\in\{20,80\}$ and shock $s\in\{-5,-4,\ldots,5\}$ percentage points, the log-volatility/return inputs for the Base LSTM and MLP fits are:
+For Figures~\ref{fig:data-property-nic} and~\ref{fig:data-property-nic-mean}, the News Impact Curve (NIC) follows the synthetic-input protocol in \cite{liu2023} based on \cite{engle1993}. We focus our analysis on the eight ML models in our final MCS to understand the capacity of those models to learn usual properties of volatility. Our objective is to check if the model effectively reproduces the leverage effect. In addition to the returns, we use variance as input due to how our models were fitted. For log definability purposes and to match the paper when using zero net returns input, which configures a zero volatility process, in Figure~\ref{fig:data-property-nic} we set the shared reference variance to the saved global equity fitting-history floor $v_0\approx3.39606242\times10^{-13}$, which is fixed before test evaluation, and the matching log-volatility input to $\ell_0=\frac{1}{2}\log(v_0)\approx-14.3555$. For window $w\in\{20,80\}$ and shock $s\in\{-5,-4,\ldots,5\}$ percentage points, the log-volatility/return inputs for the Base LSTM and MLP fits are:
 \begin{equation}\label{eq:property-nic-input}
 z_j(s)=\begin{cases}(\ell_0,0),&1\leq j<w,\\(\ell_0,s/100),&j=w,\end{cases}
 \qquad s=100\log\frac{C(t)}{O(t)}.
 \end{equation}
 Their log-variance outputs are exponentiated to obtain the one-step variance forecasts. HARNet instead receives $(v_0,\ldots,v_0)$ at every shock. Each Local curve is the arithmetic mean of the five stock-specific forecasts at that shock. 
 
-We observe a inverse leverage effect, conditioned by the extremely low values of volatility. Base LSTM-20 Global presents the highest inversed leverage effect, while Base LSTM-80 Global a mild effect. The rest presents an almost constant response. Having constant returns doesn't mean there isn't intraday movement. In fact, it's known that using High and Low for estimating variance is useful because it captures the movements within a Open/Close range. 
+We observe an inverse leverage effect, conditioned by the extremely low values of volatility. Base LSTM-20 Global presents the strongest inverse leverage effect, while Base LSTM-80 Global presents a mild effect. The remaining models present an almost constant response. Having constant returns doesn't mean there isn't intraday movement. In fact, it's known that using High and Low for estimating variance is useful because it captures the movements within an Open/Close range. 
 
 \begin{figure}[htbp]
 \centering
@@ -1525,13 +1537,12 @@ We observe a inverse leverage effect, conditioned by the extremely low values of
 \caption{One-step forecast daily adjusted Garman--Klass variance against the synthetic signed return shock for eight MCS variants.}
 \label{fig:data-property-nic}
 \end{figure}
-\FloatBarrier
 
 
 
-On Figure~\ref{fig:data-property-nic-mean} we repeat the same simulation, but using the arithmetic mean of the 12,232,393 valid pre-2016 adjusted Garman--Klass variances in the same global training cohort. Let $v_0=\overline v_{\mathrm{train}}\approx9.98228505\times10^{-4}$ and $\ell_0=\frac{1}{2}\log(\overline v_{\mathrm{train}})\approx-3.4548$. Both figures use identical saved models, return shocks, and window lengths.
+In Figure~\ref{fig:data-property-nic-mean} we repeat the same simulation, but using the arithmetic mean of the 12,232,393 valid pre-2016 adjusted Garman--Klass variances in the same global training cohort. Let $v_0=\overline v_{\mathrm{train}}\approx9.98228505\times10^{-4}$ and $\ell_0=\frac{1}{2}\log(\overline v_{\mathrm{train}})\approx-3.4548$. Both figures use identical saved models, return shocks, and window lengths.
 
-On this setup, we observe the leverage effect clearly. The typical assymetric curve is presented on MLP-20 Global, Base LSTM-20 Global, Base LSTM-80 Global, whereas we have MLP-80 Global and Base LSTM-80 Local presenting assymetric linear responses. The rest of the models showed constant reactions. 
+In this setup, we observe the leverage effect clearly. The typical asymmetric curve appears in MLP-20 Global, Base LSTM-20 Global, Base LSTM-80 Global, whereas we have MLP-80 Global and Base LSTM-80 Local presenting asymmetric linear responses. The remaining models showed constant reactions. 
 
 
 \begin{figure}[htbp]
@@ -1542,10 +1553,10 @@ On this setup, we observe the leverage effect clearly. The typical assymetric cu
 \end{figure}
 \FloatBarrier
 
-We suppose that by using the floor we conditioned our model to present a inverse leverage effect to compensate the impact of not-frequent floor-valued inputs as constant volatility. By using the unconditional mean, our model recovered its original behaviour and in this case the usual leverage effect. 
+We suppose that by using the floor we conditioned our model to present an inverse leverage effect to compensate for the impact of infrequent floor-valued inputs as constant volatility. By using the unconditional mean, our model recovered its original behaviour and in this case the usual leverage effect. 
 
 \subsubsection{Mean Reversion and Volatility Clustering}
-For Figures~\ref{fig:data-property-rolling} and~\ref{fig:data-property-global-rolling}, we're interested in observing the mean reversion process and the volatility clustering on the actual \textit{versus} predicted data. We'll be using the same models and datasets as Figures~\ref{fig:data-property-return} and~\ref{fig:data-property-global-return}. 
+For Figures~\ref{fig:data-property-rolling} and~\ref{fig:data-property-global-rolling}, we're interested in observing the mean reversion process and the volatility clustering in the actual \textit{versus} predicted data. We'll be using the same models and datasets as Figures~\ref{fig:data-property-return} and~\ref{fig:data-property-global-return}. 
 
 Let $m_i(t)$ be stock $i$'s mean of the 252 preceding \emph{observed} valid variances, where $t-j$ indexes valid observations rather than calendar days. For the stocks $S(t)$ included on date $t$, the plotted observed and forecast coordinates are:
 \begin{equation}\label{eq:property-rolling-coordinates}
@@ -1558,9 +1569,9 @@ q(t)&=\log\frac{V(t)}{R(t)},\qquad
 \end{equation}
 where $V(t)$ and $\widehat V(t)$ are the cross-stock variance means in Equation~\ref{eq:property-return-coordinates}. 
 
-Figure~\ref{fig:data-property-rolling} uses the five shared-date stocks and the saved MLP-80 Global forecasts on 1,760 test dates; pre-2019 observations supply the initial 252-observation references. Zero is the point where $v_i(t) = m_i(t)$. Negative values represents $v_i(t) < m_i(t)$ where positive values $v_i(t) < m_i(t)$.  
+Figure~\ref{fig:data-property-rolling} uses the five shared-date stocks and the saved MLP-80 Global forecasts on 1,760 test dates; pre-2019 observations supply the initial 252-observation references. Zero is the point where $v_i(t) = m_i(t)$. Negative values represent $v_i(t) < m_i(t)$ where positive values $v_i(t) < m_i(t)$.  
 
-We are able to observe both properties here. We have few spikes, periods of low and high variance tend to cluster. Furthermore, each cluster is consistent of spikes which tend to reverse the trend, reverting to the 0. The magnitude of negative spikes go past -2 where positive arrive close to 3.
+We are able to observe both properties here. We have few spikes, periods of low and high variance tend to cluster. Furthermore, each cluster is consistent of spikes which tend to reverse the trend, reverting to the 0. The magnitude of negative spikes goes past -2 where positive arrive close to 3.
 
 \begin{figure}[htbp]
 \centering
@@ -1568,7 +1579,6 @@ We are able to observe both properties here. We have few spikes, periods of low 
 \caption{Natural log ratio of the five-stock mean observed (blue) or MLP-80 Global forecast (red) daily adjusted Garman--Klass variance to the mean of the five stock-specific preceding 252-observation rolling references, on 1,760 shared 2019--2025 test dates.}
 \label{fig:data-property-rolling}
 \end{figure}
-\FloatBarrier
 
 Figure~\ref{fig:data-property-global-rolling} applies Equation~\ref{eq:property-rolling-coordinates} to the global window-80 dataset with Base LSTM-80 Global forecasts. On this figure, we perceive less pronounced spikes, with negative values reaching -1 and positive values reaching up to 3, but most staying below 1. Moreover, we observe both effects present in the actual and predicted points, similarly to Figure \ref{fig:data-property-rolling}. 
 
@@ -1580,7 +1590,7 @@ Figure~\ref{fig:data-property-global-rolling} applies Equation~\ref{eq:property-
 \end{figure}
 \FloatBarrier
 
-The models, in Local and Global scope are able to retrieve the data properties expected by variance in financial timeseries. Even while using the models with lowest QLIKE to produce the predicted values, it wasn't able to accurately match the actual demeaned data. We attribute this as difference in metric construction. We build our final error metrics after averaging the individual values per dates and then across the stocks, while on Figures ~\ref{fig:data-property-rolling} and \ref{fig:data-property-global-rolling}, the graphs average the values across stocks first, meaning that overpredictions and underpredictions can cancel themselves before the gap is shown. 
+The models in the Local and Global scopes are able to retrieve the data properties expected by variance in financial time series. Even while using the models with lowest QLIKE to produce the predicted values, they weren't able to accurately match the actual demeaned data. We attribute this to a difference in metric construction. We build our final error metrics after averaging the individual values per date and then across the stocks, while on Figures ~\ref{fig:data-property-rolling} and \ref{fig:data-property-global-rolling}, the graphs average the values across stocks first, meaning that overpredictions and underpredictions can cancel each other before the gap is shown. 
 
 \subsection{Price Reconstruction}
 The objective here is to display a one-day simulated adjusted Close alongside the observed adjusted Close on the 2019--2025 test dates as well as forecasted returns with actual returns. We'll be using the MLP-80 Global for Local test data and Base LSTM-80 Global for Global test data. 
@@ -1601,7 +1611,7 @@ The following one-day, post-open simulation is adapted from Equation~\eqref{eq:l
 \end{equation}
 This is a \emph{forecast-conditioned single-draw simulation}: the predicted variance sets its dispersion, while the sampled shock determines one scenario rather than a unique forecast. 
 
-WHLR, XXII, NUWE, ZNB, PPCB, JAGX, XTIA, and CETX are excluded from the global price plot because their retrospectively split-adjusted per-share prices can dominate the cross-stock mean. After a 1-for-100 reverse split, for example, an earlier \$0.50 Close is displayed as approximately \$50 on the new share basis, with repeated reverse splits multiplying this effect \cite{yahooAdjustedClose}. On each date, we average respectively $C_i(t)$ and $\widehat C_i(t)$ across the same remaining stocks before taking the logarithm. We use the log transformation to reduce the effect caused by adjustments along the years.
+WHLR, XXII, NUWE, ZNB, PPCB, JAGX, XTIA, and CETX are excluded from the global price plot because their retrospectively split-adjusted per-share prices can dominate the cross-stock mean. After a 1-for-100 reverse split, for example, an earlier \$0.50 Close is displayed as approximately \$50 on the new share basis, with repeated reverse splits multiplying this effect \cite{yahooAdjustedClose}. On each date, we average respectively $C_i(t)$ and $\widehat C_i(t)$ across the same remaining stocks before taking the logarithm. We use the log transformation to reduce the effect caused by adjustments over the years.
 
 For the log-Close view, first compute the arithmetic cross-stock mean on each date, then take its natural logarithm. With $S(t)$ denoting the plotted stocks on date $t$ and adjusted Closes expressed numerically in USD, the coordinates are
 \begin{equation}\label{eq:price-reconstruction-log-mean}
@@ -1619,7 +1629,6 @@ The vertical axes in Figures~\ref{fig:price-reconstruction-local-log} and~\ref{f
 \caption{Natural log of the five-stock test-date arithmetic mean adjusted Close: observed (blue) and MLP-80 Global variance-based simulation (red).}
 \label{fig:price-reconstruction-local-log}
 \end{figure}
-\FloatBarrier
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.88\textwidth]{../../imgs/data_properties/global_base_lstm80_price_reconstruction_log.png}
@@ -1628,7 +1637,7 @@ The vertical axes in Figures~\ref{fig:price-reconstruction-local-log} and~\ref{f
 \end{figure}
 \FloatBarrier
 
-Both plots show an accurate reconstruction of the actual close prices from an overview. When we zoom in, we are able to perceive the difference between actual and predicted. However, it's satifies our expectations of having the predicted path similar to our actual. In order to assess the difference on each day, without the complications of stocks with prices that differ by several orders of magnitude, we will simulate the returns. 
+Both plots show an accurate reconstruction of the actual close prices from an overview. When we zoom in, we are able to perceive the difference between actual and predicted. However, they satisfy our expectation that the predicted path is similar to the actual path. In order to assess the difference on each day, without the complications of stocks with prices that differ by several orders of magnitude, we will simulate the returns. 
 
 The net Open-to-Close return view instead divides each stock's adjusted Close by its adjusted Open and subtracts one before averaging. The full global test dataset is used. $S(t)$ in the following equation denotes the stocks eligible for the particular return plot. The observed and simulated date coordinates are
 \begin{equation}\label{eq:price-reconstruction-gross-return}
@@ -1647,7 +1656,6 @@ Figures~\ref{fig:price-reconstruction-local-gross} and~\ref{fig:price-reconstruc
 \caption{Five-stock daily mean adjusted Open-to-Close net simple return: observed (blue) and MLP-80 Global forecast-conditioned simulation (red).}
 \label{fig:price-reconstruction-local-gross}
 \end{figure}
-\FloatBarrier
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.88\textwidth]{../../imgs/data_properties/global_base_lstm80_price_reconstruction_gross_return.png}
@@ -1656,7 +1664,7 @@ Figures~\ref{fig:price-reconstruction-local-gross} and~\ref{fig:price-reconstruc
 \end{figure}
 \FloatBarrier
 
-As expected, the MLP-80 Global local forecast simulation matched significantly more the actual values compared to the Base LSTM-80 Global global prediction. We believe it's due to the order of MSE across scopes and a low estimated $\mu_i(t)$. In the Global prediction, MSE order is $10^{2}$ greater compared to the Local. Furthermore, converting the average implied unconditional log-return means from the rolling AR(1) fits using $\exp(m)-1$ gives daily simple-return equivalents of $4.998\times10^{-4}$ for the five-stock subset and $-7.254\times10^{-4}$ for the full global return subset. The predicted returns are driven mainly by the variance shocks compared to the unconditional mean, supporting our belief. 
+As expected, the MLP-80 Global local forecast simulation matched the actual values significantly more closely than the Base LSTM-80 Global global prediction. We believe it's due to the order of MSE across scopes and a low estimated $\mu_i(t)$. In the Global prediction, MSE order is $10^{2}$ times greater than the Local. Furthermore, converting the average implied unconditional log-return means from the rolling AR(1) fits using $\exp(m)-1$ gives daily simple-return equivalents of $4.998\times10^{-4}$ for the five-stock subset and $-7.254\times10^{-4}$ for the full global return subset. The predicted returns are driven mainly by the variance shocks compared to the unconditional mean, supporting our belief. 
 \subsection{Sharpe and Realized Utility}
 
 The Sharpe ratio measures excess return relative to risk. For example, a Sharpe ratio of $0.5$ corresponds to an expected excess return of $0.5\%$ for each $1\%$ of volatility, provided both are measured over the same time horizon. In plain terms,
@@ -1737,7 +1745,7 @@ RFSV-80 Local & 6.366960\\\hline
 \end{table}
 \FloatBarrier
 
-We conclude this subsection with the proof that overall performance in error metrics doesn't necessarily mean a significant difference in utility across models. Daily utility is extremely close throughout the variants. Annual utility scaling increases this difference to a $0.134409\%$ between the maximum (MLP-20 Global) and minimum (RFSV-20 Local). Finally, even with close values, MLP-20 Global scored a higher RU compared to MLP-80 Global, which had the best MSE and QLIKE in Table~\ref{tab:matched-results}.
+We conclude this subsection with the proof that overall performance in error metrics doesn't necessarily mean a significant difference in utility across models. Daily utility is extremely close across the variants. Annual utility scaling increases this difference to $0.134409\%$ between the maximum (MLP-20 Global) and minimum (RFSV-20 Local). Finally, even with close values, MLP-20 Global scored a higher RU compared to MLP-80 Global, which had the best MSE and QLIKE in Table~\ref{tab:matched-results}.
 
 \subsection{Parameter Complexity}
 For the idealized comparison in \cite{monteromanso2021}, take $B=2^{64}$ possible encodings per scalar parameter and $K=2,714$ tickers. For a model with $p$ fitted scalars, the parameter-combination budgets are
@@ -1768,8 +1776,6 @@ HARNet-80 & 19 & $2^{1,216}$ & $2^{3,300,224}$\\\hline
 \FloatBarrier
 
 Counts include fitted coefficients and neural weights and biases, excluding optimizer state, filtering state, fixed hyperparameters, and preprocessing metadata. 
-
-\clearpage
 
 \section{Conclusions}
 This thesis reviews statistical and machine-learning approaches to volatility forecasting and compares their saved one-step forecasts of daily, unannualized adjusted Garman--Klass variance. The equity study draws on a 2,714-ticker NYSE and NASDAQ filter, with a matched comparison for NVDA, AAPL, NFLX, GOOG, and AMZN over the 2019--2025 test period (Section~3.1). The historical and methodological review provides the context for interpreting these empirical results.
