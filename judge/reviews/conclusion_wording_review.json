@@ -1,0 +1,29 @@
+{
+  "task": "Cold review of the latest wording in the Input-window length, Transfer to cryptocurrencies, and Price and return simulations Results items in Section 6.1 of ref/final_report/thesis_structure.tex",
+  "sources": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "ref/thesis/plan.md",
+    "judge/prompt.md",
+    "judge/score.schema.json",
+    "judge/validate.py",
+    "git diff -- ref/final_report/thesis_structure.tex",
+    "ref/final_report/thesis_structure.tex (Sections 5.3, 5.8, and 6.1; global, matched five-stock, crypto GK, and crypto RV tables)",
+    "ref/final_report/thesis_structure.log",
+    "ref/final_report/thesis_structure.pdf",
+    "imgs/data_properties/local_mlp80_price_reconstruction_log.png",
+    "imgs/data_properties/global_base_lstm80_price_reconstruction_log.png",
+    "imgs/data_properties/local_mlp80_price_reconstruction_gross_return.png",
+    "imgs/data_properties/global_base_lstm80_price_reconstruction_gross_return.png"
+  ],
+  "scores": {
+    "requirements": 30,
+    "correctness": 25,
+    "verification": 20,
+    "grounding": 15,
+    "maintainability": 10
+  },
+  "findings": [],
+  "total": 100,
+  "pass": true
+}

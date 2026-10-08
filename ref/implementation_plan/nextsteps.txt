@@ -15,4 +15,8 @@ Structure:
 5.4.7 Sharpe, Utility and portfolio estimator 
 
 
+1. Fix grammar and spacing across thesis to avoid having great spaces between images, occupying as much space as possible keeping it clean. 
+2. Create the table of contents, and change the first pages to match sapthesis format. 
+
+ 
  
