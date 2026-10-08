@@ -11,6 +11,7 @@
 7. Use one common, unannualized Sharpe input: `(mean return - daily risk-free proxy) / sqrt(mean actual GK variance)`. It is retrospective because the test returns were unknown at forecast time.
 8. Adapt Zhang et al. (2022), Section 5.4, Equation (21) with risk aversion `gamma = 2`: `RU = SR^2/gamma * sqrt(actual/predicted) - SR^2/(2*gamma) * actual/predicted`.
 9. Average RU within ticker, then across tickers; multiply by 100 to report daily percent of wealth. Do not deduct transaction costs or simulate portfolio returns.
+10. Retain the daily RU table and add an annualized RU table with `SR_annual = sqrt(252) * SR_daily`; using the same variance ratios gives `RU_annual = 252 * RU_daily`. This is a scaling convention for comparison with Bollerslev et al. (2018), not realized annual trading performance.
 
 ## Dataset and implementation work
 

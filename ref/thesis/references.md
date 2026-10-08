@@ -8,6 +8,10 @@ to a single alphabetical list when exporting to the thesis bibliography.
 
 ## 1. Panel / cross-sectional volatility forecasting (closest to this thesis)
 
+Bollerslev, T., Hood, B., Huss, J., & Pedersen, L. H. (2018). Risk everywhere:
+Modeling and managing volatility. *The Review of Financial Studies, 31*(7),
+2729--2773. https://doi.org/10.1093/rfs/hhy041
+
 Audrino, F., & Chassot, J. (2024). *HARd to beat: The overlooked impact of rolling windows
 in the era of machine learning* (arXiv:2406.08041). arXiv.
 https://arxiv.org/abs/2406.08041

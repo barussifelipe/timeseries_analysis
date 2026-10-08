@@ -79,11 +79,7 @@ Daily variance must therefore be estimated from observable prices. With sufficie
 
 
 \subsection{Motivations}
-The main objective with this project is understanding the better approach for predicting the price of an asset from a volatility forecast. The potential capabilities of ML models in finance forecasting tasks are tremendous, although the stability and robustness of statistical models are extremely reliable. 
-
-Several approaches have been presented as comparing both types of models. However, our objective is to extend these comparisons to include, besides the baseline models (AR, SARIMA, GARCH, HAR, MLP, LSTM), HARnet and RFSV models. 
-
-Furthermore, we are interested in understanding the generalization capacity of such models. Our focus is to understand the difference in performance between a local (fitted by one equity data) and a global (fitted by several tickers) model. 
+The main objective with this project is finding the better choice for predicting volatility. The potential capabilities of ML models in finance forecasting tasks are tremendous, although the stability and robustness of statistical models are extremely reliable. Several approaches have been presented as comparing both types of models. However, our objective is to extend these comparisons to include, besides the baseline models (AR, SARIMA, GARCH, HAR, MLP, LSTM), HARnet and RFSV models. We are interested in finding the best model by evaluating performance across evaluation metrics (MAE, MASE, MSE, RMSE and QLIKE). Furthermore, we are intrigued on the 
 
 
 \subsection{Contributions}
@@ -867,20 +863,8 @@ Here $g_{\theta}$ has shared parameters, while $f_{\theta_i}$ has ticker-specifi
 
 The saved tables use a test-relative MASE scale: for each ticker and window, divide absolute forecast errors by the naive mean absolute variance change over exactly that ticker's eligible test target dates, using the preceding observed variance for each naive forecast. RFSV-full uses the final target's absolute change from its preceding observation.
 
-\section{Experiments Overview}
+\section{Experimental Results}
 % Describe the experimental results. This is the most important section.
-
-\subsection{Goals}
-% Describe the objectives of the experimental activity, typically:
-% - demonstrate correctness;
-% - evaluate computational performance, such as CPU/GPU time and RAM usage;
-% - evaluate effectiveness, such as expected gain and its standard deviation.
-\begin{itemize}
-    \item Identify the best generalizing model on our dataset
-    \item Compare related work results
-    \item Analyze residuals structure 
-    \item Understand the parameter complexity between same model class.
-\end{itemize}
 
 \subsection{Setting}
 All of the fitting and evaluation process were done in a machine with 16GB RAM, NVIDIA RTX 2060 6GB and Ryzen 5 5600x.
@@ -919,7 +903,6 @@ The Base LSTM-20 and MLP-80 entries cover only their resumed runs. Earlier runs 
 
 The five-stock local comparison required 49 minutes and 5 seconds for all 70 local fits. 
 
-\section{Technical Evaluation}
 \subsection{Overall Result}
 The equity tables report saved one-step forecasts of daily, unannualized adjusted Garman--Klass variance; Table~\ref{tab:crypto-results} instead uses daily vendor crypto OHLC without equity adjustment. Forecasts are mapped back from any model-specific output transformation. MAE and RMSE have variance units, MSE has squared variance units, and MASE and QLIKE are dimensionless. Smaller losses are better. The equity source dataset has 2,714 tickers. 
 
@@ -1615,8 +1598,18 @@ Figures~\ref{fig:price-reconstruction-local-gross} and~\ref{fig:price-reconstruc
 \end{figure}
 \FloatBarrier
 
-As expected, the MLP-80 Global local forecast simulation matched significantly more the actual values compared to the Base LSTM-80 Global global prediction. We believe it's due to the order of errors and a low estimated $\mu_i(t)$. In the Global prediction is $10^{2}$ greater compared to the Local. Furthermore, converting the average implied unconditional log-return means from the rolling AR(1) fits using $\exp(m)-1$ gives daily simple-return equivalents of $4.998\times10^{-4}$ for the five-stock subset and $-7.254\times10^{-4}$ for the full global return subset. The predicted returns are driven mainly by the variance shocks compared to the unconditional mean, supporting our belief. 
-\subsection{Sharpe, Utility and Portfolio Estimation}
+As expected, the MLP-80 Global local forecast simulation matched significantly more the actual values compared to the Base LSTM-80 Global global prediction. We believe it's due to the order of MSE across scopes and a low estimated $\mu_i(t)$. In the Global prediction, MSE order is $10^{2}$ greater compared to the Local. Furthermore, converting the average implied unconditional log-return means from the rolling AR(1) fits using $\exp(m)-1$ gives daily simple-return equivalents of $4.998\times10^{-4}$ for the five-stock subset and $-7.254\times10^{-4}$ for the full global return subset. The predicted returns are driven mainly by the variance shocks compared to the unconditional mean, supporting our belief. 
+\subsection{Sharpe and Realized Utility}
+
+The Sharpe ratio measures excess return relative to risk. For example, a Sharpe ratio of $0.5$ corresponds to an expected excess return of $0.5\%$ for each $1\%$ of volatility, provided both are measured over the same time horizon. In plain terms,
+\begin{equation*}
+\text{Utility}=\text{expected excess return}-\text{expected risk penalty}.
+\end{equation*}
+For a fraction $x(t)$ of wealth invested in a risky asset, mean--variance utility per unit of wealth is~\cite[Section~5.1]{bollerslev2018risk}
+\begin{equation}\label{eq:mean-variance-utility}
+\frac{U(t,x(t))}{W(t)}=x(t)\mathbb E_t[r^e(t+1)]-\frac{\gamma}{2}x^2(t)\mathbb E_t[v(t+1)],
+\end{equation}
+where $r^e(t+1)$ is the excess return and $\gamma$ is risk aversion. In this framework, realized utility can be interpreted as the fraction of wealth an investor would hypothetically pay to access a strategy sized using the model's volatility forecasts instead of investing only in the risk-free asset. 
 
 We evaluate the ten model variants retained across both five-stock MCS runs with the frictionless realized utility (RU) of Zhang et al. \cite[Section~5.4, Eq.~(21)]{zhang2022}. Each model uses the same 1,760 test dates in 2019--2025 for AAPL, AMZN, GOOG, NFLX, and NVDA, giving 8,800 matched ticker-date observations. Let $O_i(t)$ and $C_i(t)$ be adjusted session prices, $v_i(t)>0$ the saved daily, unannualized adjusted Garman--Klass target, and $\widehat v_{i,m}(t)>0$ model $m$'s saved one-step forecast. The adjusted session net simple return is
 \begin{equation}\label{eq:utility-return}
@@ -1626,23 +1619,25 @@ We use the 4.26\% long-term average 10-year Treasury yield reported by YCharts \
 \begin{equation}\label{eq:utility-risk-free}
 r^f=(1+0.0426)^{1/252}-1\approx0.00016556.
 \end{equation}
-Writing $T_i$ for ticker $i$'s 1,760 shared test dates and $\mathcal I$ for the five stocks, we first average returns and GK variances within each ticker and then across stocks. The common, unannualized Sharpe input is
+Writing $T_i$ for ticker $i$'s 1,760 shared test dates and $\mathcal I$ for the five stocks, we first average returns and GK variances within each ticker and then across stocks. The common daily and annualized Sharpe inputs are
 \begin{equation}\label{eq:utility-sharpe}
 \begin{aligned}
 \overline r&=\frac{1}{|\mathcal I|}\sum_{i\in\mathcal I}\frac{1}{|T_i|}\sum_{t\in T_i}r_i(t),\\
 \overline V&=\frac{1}{|\mathcal I|}\sum_{i\in\mathcal I}\frac{1}{|T_i|}\sum_{t\in T_i}v_i(t),\\
-SR&=\frac{\overline r-r^f}{\sqrt{\overline V}}\approx0.03447937.
+SR_{\mathrm d}&=\frac{\overline r-r^f}{\sqrt{\overline V}}\approx0.03447937,\\
+SR_{\mathrm a}&=\sqrt{252}\,SR_{\mathrm d}\approx0.54734298.
 \end{aligned}
 \end{equation}
+We apply the conventional $\sqrt{252}$ annualization to the daily input, matching the annual Sharpe scale used by Bollerslev et al.~\cite[Section~5.1]{bollerslev2018risk}; $r^f$ remains daily in the calculation of $SR_{\mathrm d}$.
 With risk aversion $\gamma=2$, our adaptation of Zhang et al.'s Equation~(21) is
 \begin{equation}\label{eq:utility-ru}
 \begin{aligned}
 RU_{i,m}(t)&=\frac{SR^2}{\gamma}\sqrt{\frac{v_i(t)}{\widehat v_{i,m}(t)}}
 -\frac{SR^2}{2\gamma}\frac{v_i(t)}{\widehat v_{i,m}(t)},\\
-\overline{RU}_m&=\frac{100}{5}\sum_{i\in\mathcal I}\frac{1}{|T_i|}\sum_{t\in T_i}RU_{i,m}(t).
+\overline{RU}_m&=\frac{100}{|\mathcal I|}\sum_{i\in\mathcal I}\frac{1}{|T_i|}\sum_{t\in T_i}RU_{i,m}(t).
 \end{aligned}
 \end{equation}
-The factor 100 expresses the table values as daily percent of wealth. The test-sample $SR$ is a retrospective experiment input: its test returns were unknown when forecasts were made. The Treasury rate is a fixed proxy converted to a daily rate, not an observed daily cash return. No model was refitted and no transaction costs were deducted.
+The factor 100 expresses the table values as daily percent of wealth when $SR=SR_{\mathrm d}$.
 
 \begin{table}[htbp]
 \centering
@@ -1662,7 +1657,29 @@ RFSV-80 Local & 0.025266\\\hline
 \caption{Frictionless mean realized utility on the same 8,800 adjusted-GK test targets per model. Each value is averaged within ticker and then across the five tickers. Red marks the greatest RU and blue the second greatest.}
 \label{tab:realized-utility}
 \end{table}
+Using $SR=SR_{\mathrm a}$ in the same utility formula gives the annualized values in Table~\ref{tab:realized-utility-annual}. Since the formula is proportional to $SR^2$, these values equal 252 times those in Table~\ref{tab:realized-utility}; the forecasts, realized variances, and model ranking are unchanged. The annualized percentages use the conventional square-root-of-time scaling, not observed annual portfolio returns.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lr}\hline
+Model variant & Mean RU (annualized \% of wealth)\\\hline
+Base LSTM-20 Global & \textcolor{blue}{6.487171}\\
+Base LSTM-80 Global & 6.463890\\
+Base LSTM-80 Local & 6.400439\\
+HARNet-20 Global & 6.458242\\
+HARNet-80 Global & 6.448283\\
+HARNet-80 Local & 6.443291\\
+MLP-20 Global & \textcolor{red}{6.491300}\\
+MLP-80 Global & 6.478928\\
+RFSV-20 Local & 6.356891\\
+RFSV-80 Local & 6.366960\\\hline
+\end{tabular}
+\caption{Frictionless annualized mean realized utility on the same 8,800 adjusted-GK test targets per model, using $SR_{\mathrm a}=\sqrt{252}\,SR_{\mathrm d}$. Each value is averaged within ticker and then across the five tickers. Red marks the greatest RU and blue the second greatest.}
+\label{tab:realized-utility-annual}
+\end{table}
 \FloatBarrier
+
+We conclude this subsection with the proof that overall performance in error metrics doesn't necessarily mean a significant difference in utility across models. Daily utility is extremely close throughout the variants. Annual utility scaling increases this difference to a $0.134409\%$ between the maximum (MLP-20 Global) and minimum (RFSV-20 Local). Finally, even with close values, MLP-20 Global scored a higher RU compared to MLP-80 Global, which had the best MSE and QLIKE in Table~\ref{tab:matched-results}.
 
 \subsection{Parameter Complexity}
 For the idealized comparison in \cite{monteromanso2021}, take $B=2^{64}$ possible encodings per scalar parameter and $K=2,714$ tickers. For a model with $p$ fitted scalars, the parameter-combination budgets are
@@ -1697,7 +1714,9 @@ Counts include fitted coefficients and neural weights and biases, excluding opti
 \clearpage
 
 \section{Conclusions}
-% Summarize the work and outline possible future developments.
+\subsection{Results}
+\subsection{Limitations}
+\subsection{Further Work}
 
 \begin{thebibliography}{99}
 \bibitem{bernhardt1987crash} Bernhardt, D., and Eckblad, M. (n.d.). Stock market crash of 1987. \emph{Federal Reserve History}. \url{https://www.federalreservehistory.org/essays/stock-market-crash-of-1987}.
@@ -1754,6 +1773,7 @@ Counts include fitted coefficients and neural weights and biases, excluding opti
 \bibitem{parkinson1980} Parkinson, M. (1980). The extreme value method for estimating the variance of the rate of return. \emph{The Journal of Business}, 53(1), 61--65.
 \bibitem{garmanklass1980} Garman, M. B., and Klass, M. J. (1980). On the estimation of security price volatilities from historical data. \emph{The Journal of Business}, 53(1), 67--78.
 \bibitem{audrino2024} Audrino, F., and Chassot, J. (2024). HARd to beat: The overlooked impact of rolling windows in the era of machine learning. arXiv:2406.08041.
+\bibitem{bollerslev2018risk} Bollerslev, T., Hood, B., Huss, J., and Pedersen, L. H. (2018). Risk everywhere: Modeling and managing volatility. \emph{The Review of Financial Studies}, 31(7), 2729--2773.
 \bibitem{monteromanso2021} Montero-Manso, P., and Hyndman, R. J. (2021). Principles and algorithms for forecasting groups of time series: Locality and globality. \emph{International Journal of Forecasting}, 37(4), 1632--1653.
 \bibitem{liu2023} Liu, C., Tran, M.-N., Wang, C., Gerlach, R., and Kohn, R. (2023). Global neural networks and the data scaling effect in financial time series forecasting. arXiv:2309.02072.
 \bibitem{zhang2022} Zhang, C., Zhang, Y., Cucuringu, M., and Qian, Z. (2022). Volatility forecasting with machine learning and intraday commonality. arXiv:2202.08962.
