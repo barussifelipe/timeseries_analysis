@@ -79,7 +79,7 @@ This thesis was typeset with \LaTeX~and sapthesis class.\\[2mm]
 \addcontentsline{toc}{section}{Abstract}
 
 \begin{abstract}
-All investments strategy are based on pursuing accurate information about the future for bigger profits. With more information, one is able to make decisions regarding its position, whether to hold, sell or buy an investment. One of the ways of estimating the future is by modeling forecasting frameworks based on past data. This thesis compares statistical and machine-learning methods for one-step forecasts of daily, adjusted Garman--Klass variance proxy. The equity sample contains 2,714 NYSE and NASDAQ tickers. Models are fitted globally and separately for five selected stocks, with 20- and 80-observation input windows. Saved forecasts from the 2019--2025 test period are evaluated using MAE, MASE, MSE, RMSE, and QLIKE. On the larger global evaluation dataset, MLP-80 has the lowest MAE and MASE, and Base LSTM-80 the lowest QLIKE. On 8,800 matched forecasts for the five selected stocks, SARIMA Local has the lowest MAE and MASE, while MLP-80 Global has the lowest MSE, RMSE, and QLIKE. Equity-trained global models are also evaluated on five cryptocurrencies using daily Garman--Klass variance and intraday realized variance. Ten variants are retained in the intersection of the five stock-level QLIKE model confidence sets, but retention does not identify a winner. Their no-cost utility values are close. Overall, model rankings depend on the metric and evaluation population, while neither a universally best model nor a real-world portfolio benefit has been established.
+Investment strategies often depend on estimates of future market conditions to seek higher profits. Such estimates can help investors decide whether to hold, sell, or buy an asset. One way to make these estimates is to build forecasting models from past data. This thesis compares statistical and machine-learning methods for one-step forecasts of the daily adjusted Garman--Klass variance proxy. The equity sample contains 2,714 NYSE and NASDAQ tickers. Models are fitted globally and separately for five selected stocks, with 20- and 80-observation input windows. Saved forecasts from the 2019--2025 test period are evaluated using MAE, MASE, MSE, RMSE, and QLIKE. On the larger global evaluation dataset, MLP-80 has the lowest MAE and MASE, and Base LSTM-80 the lowest QLIKE. On 8,800 matched forecasts for the five selected stocks, SARIMA Local has the lowest MAE and MASE, while MLP-80 Global has the lowest MSE, RMSE, and QLIKE. Equity-trained global models are also evaluated on five cryptocurrencies using daily Garman--Klass variance and intraday realized variance. Ten variants are retained in the intersection of the five stock-level QLIKE model confidence sets, but retention does not identify a winner. Their no-cost utility values are close. Overall, model rankings depend on the metric and evaluation population, while neither a universally best model nor a real-world portfolio benefit has been established.
 \end{abstract}
 
 \clearpage
@@ -94,11 +94,11 @@ All investments strategy are based on pursuing accurate information about the fu
 % Briefly describe the context of the work.
 % Example: All human beings need food to survive.
 
-Modern share trading is often traced to Amsterdam in 1602, when the Dutch East India Company issued transferable shares and investors began trading them with one another \cite{euronext2015}. At that point in time, it originated the possibility to earn money by buying the paper at a lower price, hoping that the company would grow with its expansion. Or, if someone had privileged information, e.g. a failed expedition or a successful one, would be in a better position than the others, being able to sell its position before it loses value or buy more before it gets a higher price.
+Modern share trading is often traced to Amsterdam in 1602, when the Dutch East India Company issued transferable shares and investors began trading them with one another \cite{euronext2015}. At that point in time, investors could earn money by buying shares at a lower price, hoping that the company would grow with its expansion. Or, someone with privileged information, e.g. about a failed or successful expedition, would be in a better position than others, able to sell their position before it lost value or buy more before the price rose.
 
-The desire to obtain and interpret information that may affect stock prices remains central to financial markets. Services such as the Bloomberg Terminal give investors rapid access to news and data \cite{bloombergterminal}, while some traders use direct exchange feeds when even small delays matter \cite{nasdaqtotalview}. If you receive the information before every player, you have an advantage over them and can position yourself in a beneficial way. Jim Simons, the founder of Renaissance Technologies, whose fund Medallion had an average annual return of 66\% before investor fees, started his trading using news in early human trading decisions, before moving to models that study historical market data as stated by Gregory Zuckerman in his Jim Simons biography, \emph{The Man Who Solved the Market} \cite{zuckerman2019}.
+The desire to obtain and interpret information that may affect stock prices remains central to financial markets. Services such as the Bloomberg Terminal give investors rapid access to news and data \cite{bloombergterminal}, while some traders use direct exchange feeds when even small delays matter \cite{nasdaqtotalview}. If you receive the information before every player, you have an advantage over them and can position yourself in a beneficial way. Jim Simons, the founder of Renaissance Technologies, whose fund Medallion had an average annual return of 66\% before investor fees, initially used news to inform human trading decisions before moving to models that studied historical market data, as described by Gregory Zuckerman in his Simons biography, \emph{The Man Who Solved the Market} \cite{zuckerman2019}.
 
-As competition for information increases, the opportunity to profit from that same information decreases. Fama's efficient-market hypothesis states that prices reflect available information. In its weak form, the hypothesis says that today’s price already reflects information from earlier prices \cite{fama1970}. An efficient market is one where prices adjust quickly enough to available information such that an investor cannot reliably earn extra returns from it after accounting for risk and trading costs. However,  historical prices can still be studied for candidate patterns, including volatility behaviour, but market efficiency gives no reason to assume that those patterns will yield profits. Even so, market efficiency cannot be observed directly, it can only be estimated. Then as described by Zuckerman, Simons searched historical price data for recurring patterns \cite{zuckerman2019}.
+As competition for information increases, the opportunity to profit from that same information decreases. Fama's efficient-market hypothesis states that prices reflect available information. In its weak form, the hypothesis says that today's price already reflects information from earlier prices \cite{fama1970}. An efficient market is one where prices adjust quickly enough to available information such that an investor cannot reliably earn extra returns from it after accounting for risk and trading costs. However,  historical prices can still be studied for candidate patterns, including volatility behaviour, but market efficiency gives no reason to assume that those patterns will yield profits. Even so, market efficiency cannot be observed directly. It can only be estimated. Then as described by Zuckerman, Simons searched historical price data for recurring patterns \cite{zuckerman2019}.
 
 A historical dataset of observations over time is known as a time series. Time series analysis has been a widely explored field in statistics and ML (Machine Learning). Statistical analysis is focused on understanding the properties of the data (stationarity, mean reversion, seasonality, trend, cycles, etc.) and creating a model based on such characteristics that successfully explains the movements observed in such data. ML, meanwhile, is interested in creating a model that efficiently explains the data without effectively needing its traits. 
 
@@ -124,7 +124,7 @@ In 1987, Lapedes and Farber studied feedforward neural networks for nonlinear si
 
 Elman's 1990 recurrent neural network illustrates how a model can process sequential observations while carrying a hidden state forward \cite{elman1990}. Standard RNNs can have difficulty learning long-range dependencies because gradients may vanish or explode. Hochreiter and Schmidhuber introduced the LSTM (Long Short-Term Memory) in 1997 to help preserve error signals over longer spans \cite{hochreiter1997}. Cho et al. introduced the gated recurrent unit (GRU) in 2014, using a simpler gated state than the LSTM \cite{cho2014}.
 
-In 2001, Breiman presented random forests, which aggregate predictions from randomized decision trees which for regression, their outputs are averaged \cite{breiman2001}. Chen and Guestrin introduced XGBoost in 2016 as a scalable implementation of gradient-boosted trees, fitted sequentially to improve an objective function \cite{chen2016}.
+In 2001, Breiman presented random forests, which aggregate predictions from randomized decision trees by averaging their outputs for regression \cite{breiman2001}. Chen and Guestrin introduced XGBoost in 2016 as a scalable implementation of gradient-boosted trees, fitted sequentially to improve an objective function \cite{chen2016}.
 
 Vaswani et al. introduced the Transformer in 2017. Its self-attention relates positions in a sequence without a recurrent pass. Autoregressive forecasting additionally requires a causal attention mask \cite{vaswani2017}.
 
@@ -236,7 +236,7 @@ Covariance generalizes variance to two variables:
 \end{equation}
 Applied to $Y(t)$ and $Y(t-k)$, it measures linear dependence across a lag $k$.
 
-Homoscedasticity means that error variance is constant across observations, Conditional homoscedasticity specifically means the variance given past information stays fixed. Heteroscedasticity means it changes. Thus a homoscedastic model has
+Homoscedasticity means that error variance is constant across observations. Conditional homoscedasticity specifically means the variance given past information stays fixed. Heteroscedasticity means it changes. Thus a homoscedastic model has
 \begin{equation}\label{eq:homoscedasticity}
 \mathrm{Var}(\varepsilon(t)\mid\mathcal{F}(t-1))=\sigma^2,
 \end{equation}
@@ -318,7 +318,7 @@ Fractional Brownian motion $B^H(t)$ replaces the Brownian scaling exponent $1/2$
 \end{equation}
 The case $H=1/2$ recovers standard Brownian motion. For $H>1/2$, fractional Brownian increments are positively correlated across time, indicating persistence and long memory in the increment process. For $H<1/2$, the paths are rougher than Brownian paths: at increasingly fine time scales they remain continuous but look more jagged, because typical changes shrink more slowly as the time interval decreases \cite{gatheral2018}.
 
-Fractional Ornstein--Uhlenbeck (fOU) log volatility combines a mean-reverting drift drivem by fractional Brownian motion:
+Fractional Ornstein--Uhlenbeck (fOU) log volatility combines a mean-reverting drift driven by fractional Brownian motion:
 \begin{equation}\label{eq:fou-dynamics}
 dX(t)=-\alpha(X(t)-m)\,dt+\nu\,dB^H(t),\ \alpha>0.
 \end{equation}
@@ -450,7 +450,7 @@ An optimizer searches for parameters that minimize the chosen training loss, whi
 =\operatorname*{arg\,min}_{\theta}\frac{1}{|Z_{\mathrm{train}}|}
 \sum_{(x,y)\in Z_{\mathrm{train}}}\ell\!\left(f_{\theta}(x),y\right).
 \end{equation}
-The argmin is the set of parameter values attaining the smallest training loss, an optimizer aims to approach one of them. Backpropagation applies the chain rule from the loss through each layer to compute $\nabla_\theta J$ \cite{rumelhart1986}. Gradient descent then updates the parameters by
+The argmin is the set of parameter values attaining the smallest training loss. An optimizer aims to approach one of them. Backpropagation applies the chain rule from the loss through each layer to compute $\nabla_\theta J$ \cite{rumelhart1986}. Gradient descent then updates the parameters by
 \begin{equation}\label{eq:gradient-descent}
 \theta_{k+1}=\theta_k-\eta\nabla_\theta J(\theta_k;Z_k).
 \end{equation}
@@ -867,7 +867,7 @@ The four training-history figures below describe valid observed variances before
     \item \textbf{SiLU-LSTM:} utilizes raw variance and log return. The 20- and 80-observation variants produce a direct variance output.
     \item \textbf{HARNet:} HARNet-20 uses 20 past variance observations and \\ HARNet-80 uses 80. Both output variance directly.
 \end{itemize}
- Training-derived positive prediction floors are applied after the output mapping in \eqref{eq:methods-output-map}. Each local fit derives its floor from its own ticker's training history. We've observed during fitting that log-scaled inputs worked better for MLPs and LSTMs. We use within-session log returns because an unchanged price gives a return of zero $\log(1) = 0$ and and the logarithm’s quotient rule gives $\log\left(\frac{\mathrm{Close}}{\mathrm{Open}}\right) = \log(\mathrm{Close})-\log(\mathrm{Open})$.
+ Training-derived positive prediction floors are applied after the output mapping in \eqref{eq:methods-output-map}. Each local fit derives its floor from its own ticker's training history. We've observed during fitting that log-scaled inputs worked better for MLPs and LSTMs. We use within-session log returns because an unchanged price gives a return of zero ($\log(1) = 0$) and the logarithm's quotient rule gives $\log\left(\frac{\mathrm{Close}}{\mathrm{Open}}\right) = \log(\mathrm{Close})-\log(\mathrm{Open})$.
 
 \subsection{Hyperparameters}
 Neural model hyperparameters were selected by comparing baseline LSTM configurations with a fixed 20-observation input window. Hidden sizes of $\{4,16,32,64,128\}$ were evaluated, with 128 yielding the best performance in these comparisons. This choice is also consistent with Zhang et al., who used 128 units in the first hidden layer of their LSTM architectures \cite{zhang2022}. Learning rates of $10^{-3}$ and $10^{-4}$ were compared, and $10^{-3}$ was selected for its better convergence performance.
@@ -1048,6 +1048,7 @@ RFSV-20 Local & 2.21821 & 0.924491 & 1.84617 & 4.296710 & 0.299769\\
 RFSV-20 Global & 2.86563 & 1.18549 & 2.41805 & 4.917370 & 0.324429\\
 RFSV-80 Local & 2.19111 & 0.914082 & \textcolor{blue}{1.80254} & \textcolor{blue}{4.245630} & 0.297806\\
 RFSV-80 Global & 2.80188 & 1.15992 & 2.25784 & 4.751670 & 0.322797\\
+\hline
 \noalign{\vskip\abovecaptionskip}
 \caption{Five-stock Local and Global saved losses on 8,800 shared 2019--2025 targets per row. Red, blue, and dark orange mark the smallest, second-smallest, and largest values, respectively, per column across all rows.}\label{tab:matched-results}\\
 \end{longtable}
@@ -1096,6 +1097,7 @@ To evaluate cross-proxy transfer across estimator formulations, the same 15 save
 
 The results demonstrate the absence of a consistent trend. In Table~\ref{tab:crypto-rv-results}, LSTM-20 achieves the lowest QLIKE and MASE. For MAE only, SiLU-LSTM-20 scored the best, whereas for MSE RFSV-80 was superior. Severe QLIKE values are caused by underprediction: as $f_{\mathrm{pred}}$ approaches zero, the ratio $y/f_{\mathrm{pred}}$ grows. This may explain the high values for MLP-20, SiLU-LSTM-20, SiLU-LSTM-80, and SARIMA. We are able to observe that MASE returned to the average values present in the equities comparison. Following our hypothesis, we attribute this to the RV proxy, which made the naive changes more constant, giving a smaller average change, driving MASE up.   
 
+\newpage
 \begingroup\scriptsize\setlength{\tabcolsep}{2pt}
 \begin{longtable}{@{}p{.235\linewidth}>{\raggedleft\arraybackslash}p{\dimexpr .165\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .115\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .165\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .175\linewidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr .145\linewidth-2\tabcolsep\relax}@{}}
 \hline Model & MAE ($\times10^{-3}$) & MASE & MSE ($\times10^{-2}$) & RMSE ($\times10^{-1}$) & QLIKE\\
@@ -1668,7 +1670,7 @@ Figures~\ref{fig:price-reconstruction-local-gross} and~\ref{fig:price-reconstruc
 \end{figure}
 \FloatBarrier
 
-As expected, the MLP-80 Global local forecast simulation matched the actual values more closely than the Base LSTM-80 Global global prediction. We believe it reflects the fiver-stock simulation lower variance-forecast MSE and a small $\mu_i(t)$. The global evaluation MSE is about 330 times the five-stock MSE. Furthermore, let $m$ denote the average unconditional log-return mean implied by the rolling AR(1) fits for each subset. Converting $m$ with $\exp(m)-1$ gives daily simple-return equivalents of $4.998\times10^{-4}$ for the five-stock subset and $-7.254\times10^{-4}$ for the full global return subset. The predicted returns are driven mainly by the variance shocks compared to the unconditional mean, supporting our belief. 
+As expected, the MLP-80 Global local forecast simulation matched the actual values more closely than the Base LSTM-80 Global global prediction. We believe it reflects the five-stock simulation's lower variance-forecast MSE and a small $\mu_i(t)$. The global evaluation MSE is about 330 times the five-stock MSE. Furthermore, let $m$ denote the average unconditional log-return mean implied by the rolling AR(1) fits for each subset. Converting $m$ with $\exp(m)-1$ gives daily simple-return equivalents of $4.998\times10^{-4}$ for the five-stock subset and $-7.254\times10^{-4}$ for the full global return subset. The predicted returns are driven mainly by the variance shocks compared to the unconditional mean, supporting our belief. 
 \subsection{Sharpe and Realized Utility}
 
 The Sharpe ratio measures excess return relative to risk. For example, a Sharpe ratio of $0.5$ corresponds to an expected excess return of $0.5\%$ for each $1\%$ of volatility, provided both are measured over the same time horizon. 
