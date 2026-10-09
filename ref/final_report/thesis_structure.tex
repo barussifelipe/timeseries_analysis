@@ -55,6 +55,7 @@ Prof. Enrico Tronci\\[12mm]
 \begin{minipage}[t]{0.48\linewidth}
 Student ID 2109113\\[1mm]
 Felipe Sant' Anna Barussi\\[12mm]
+\makebox[0pt][l]{\raisebox{2mm}[0pt][0pt]{\includegraphics[width=5cm]{student_signature.png}}}%
 \rule{5cm}{0.4pt}
 \end{minipage}
 
@@ -1798,7 +1799,7 @@ The comparison uses MAE, MASE, MSE, RMSE, and QLIKE on saved local and global fo
     \item \textbf{Transfer to cryptocurrencies.} The equity-trained fits have larger error magnitude order on crypto than on the five stocks and global data (Tables~\ref{tab:crypto-results}, ~\ref{tab:matched-results}, ~\ref{tab:global-results}). We hypothesize that intraday realized variance may better capture crypto's continuous trading than daily Garman--Klass variance. 
     \item \textbf{Model confidence sets.} Six of the ten variants are global and four are local, whereas eight are ML models and two statistical. 
     \item \textbf{Residual structure.} The ten retained variants show broadly similar residual timelines and distributions in the residual analysis. 
-    \item \textbf{Conditional data-property plots.} The signed-return bins, synthetic News Impact Curves, and rolling-reference plots show that some saved forecasts respond to return shocks with a leverage effect and track parts of the observed clustering and reversion patterns (Figures~\ref{fig:data-property-return}, \ref{fig:data-property-nic}, \ref{fig:data-property-nic-mean}, and~\ref{fig:data-property-rolling}). 
+    \item \textbf{Conditional data-property plots.} Together, these plots (Figures~\\\ref{fig:data-property-return}, \ref{fig:data-property-nic}, \ref{fig:data-property-nic-mean}, and~\ref{fig:data-property-rolling}) suggest that some saved forecasts show leverage-like responses to return shocks and broadly follow the observed clustering and reversion patterns.
     \item \textbf{Price and return simulations.} The simulated adjusted Close paths follow a similar broad visual direction to the observed paths (Figures~\ref{fig:price-reconstruction-local-log} and~\ref{fig:price-reconstruction-global-log}). The five-stock return simulation appears closer to the observed returns than the global simulation (Figures~\ref{fig:price-reconstruction-local-gross} and~\ref{fig:price-reconstruction-global-gross}). We believe the larger global gaps in the returns reflect its higher error scale and small estimated mean return, leaving sampled variance shocks more influential. 
     \item \textbf{Realized utility.} The small differences in utility across the 10 model variants do not establish realized portfolio benefit for a single model. 
     \item \textbf{Parameter budgets.} Table~\ref{tab:parameter-combinations} illustrates the storage and potential combination-space incentive for global fits.
@@ -1828,7 +1829,10 @@ These are proposed extensions; none is evaluated in the present results.
 
 \clearpage
 \appendix
-\section{Training Roughness Plots}
+\renewcommand{\thesection}{Appendix}
+\refstepcounter{section}
+\section*{Appendix: Training Roughness Plots}
+\addcontentsline{toc}{section}{Appendix: Training Roughness Plots}
 
 \begin{figure}[htbp]
 \centering
