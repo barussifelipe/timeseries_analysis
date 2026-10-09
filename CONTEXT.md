@@ -1,3 +1,7 @@
+## Thesis training roughness appendix (2026-10-09)
+
+Added Appendix A after the conclusions with the existing pre-2016 global adjusted Garman--Klass scaling plot and the five local plots for NVDA, AAPL, NFLX, GOOG, and AMZN. The RFSV fitting paragraph cites Figures A.1--A.6. Two in-place SyncTeX `pdflatex` passes succeeded; all six references resolve, the plots appear two per page, and the appendix is in the table of contents. The log retains one unrelated overfull line in the input-data list at source lines 868--869. No cold review was run under the user's standing instruction. Next: continue author-led thesis wording and factual review.
+
 ## Advisor signature on thesis cover (2026-10-08)
 
 Copied the user-supplied handwritten-signature PNG to `ref/final_report/advisor_signature.png` and embedded it above the advisor rule on the cover in `ref/final_report/thesis_structure.tex`. The PNG copy is byte-identical to the supplied image; the annotated PDF remains untouched as the original signed record. Two in-place SyncTeX `pdflatex` passes succeeded, the rebuilt cover was visually checked against the annotated PDF, and the log has no errors, unresolved references, or overfull lines. No cold review was run, following the user's standing instruction. Next: author checks the finished cover and continues the thesis interpretation review.
